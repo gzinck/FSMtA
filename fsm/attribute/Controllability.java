@@ -1,5 +1,5 @@
 package fsm.attribute;
 
-public class Controllability {
+public interface Controllability {
 
 }
