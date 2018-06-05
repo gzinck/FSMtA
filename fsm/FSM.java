@@ -1,61 +1,47 @@
 package fsm;
 
-import java.io.File;
 import java.util.*;
 import support.*;
 import support.transition.Transition;
 
+/**
+ * This class models a Finite State Machine with some of the essential elements.
+ * It must be extended to be used (eg. by NonDeterministic or Deterministic to
+ * determine how transitions and initial states are handled).
+ * 
+ * It is part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ *
+ */
 public abstract class FSM {
-	//--- Constant Values  -------------------------------------------------------------------------
+	
+//--- Constant Values  -------------------------------------------------------------------------
 	
 	/** String constant designating this object as a specific type of FSM for clarification purposes*/
 	public static final String FSM_TYPE = "FSM";
 	/** String constant designating the file extension to append to the file name when writing to the system*/
 	public static final String FSM_EXTENSION = ".fsm";
 	
-	//--- Instance Variables  ----------------------------------------------------------------------
+//--- Instance Variables  ----------------------------------------------------------------------
 	
 	/** HashMap<String, State> mapping state names to state objects, which all contain attributes
 	 * of the given state. */
-	protected HashMap<String, State> states;
+	protected StateMap<State> states;
 	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with
 	 * various events that are possible. */
 	protected HashMap<State, ArrayList<Transition>> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
-	//--- Constructors  ----------------------------------------------------------------------------
-	
-	/**
-	 * Constructor for an FSM object that takes in a file encoding the contents of the FSM.
-	 * 
-	 * @param in - File read in order to create the FSM.
-	 */
-	public FSM(File in) {
-		id = "";
-	} // FSM(File)
-	
-	/**
-	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself.
-	 */
-	public FSM() {
-		id = "";
-	}
-	
-	//--- Single-FSM Operations  ------------------------------------------------------------------------------
+//--- Single-FSM Operations  ------------------------------------------------------------------------------
+
 	/**
 	 * Renames all the states in the set of states in the FSM so that
 	 * states are named sequentially ("0", "1", "2"...).
 	 */
 	public void renameStates() {
-		int index = 0;
-		for(State state : states.values()) {
-			String oldKey = state.getStateName();
-			state.setStateName(index + "");
-			states.remove(oldKey, state);
-			states.put(index + "", state);
-		} // for
+		states.renameStates();
 	} // renameStates()
 	
 	/**
@@ -102,7 +88,7 @@ public abstract class FSM {
 	 */
 	public abstract void toTextFile(String filePath, String name);
 	
-	//--- Multi-FSM Operations  ------------------------------------------------------------------------------
+//--- Multi-FSM Operations  ------------------------------------------------------------------------------
 	
 	/**
 	 * Performs a union operation on two FSMs and returns the result.
@@ -120,16 +106,25 @@ public abstract class FSM {
 	 */
 	public abstract FSM product(FSM other);
 	
-	//--- Getter/Setter Methods  --------------------------------------------------------------------------
+//--- Getter/Setter Methods  --------------------------------------------------------------------------
 	
 	/**
-	 * Adds a new state to the FSM.
+	 * Adds a new state to the FSM using a String object.
 	 * 
 	 * @param state - String representing the state to add.
 	 * @return - True if the state was successfully added, false
 	 * if the state already existed.
 	 */
 	public abstract boolean addState(String newState);
+	
+	/**
+	 * Adds a new state to the FSM using a State object.
+	 * 
+	 * @param state - State object to add.
+	 * @return - True if the state was successfully added, false
+	 * if the state already existed.
+	 */
+	public abstract boolean addState(State newState);
 	
 	/**
 	 * Removes a state from the FSM, unless it is the initial state.
@@ -140,6 +135,14 @@ public abstract class FSM {
 	 * could not be removed or if the state did not exist.
 	 */
 	public abstract boolean removeState(String state);
+	
+	/**
+	 * Returns if a state exists in the FSM.
+	 * 
+	 * @param state - String representing the state to check for existence.
+	 * @return - True if the state exists in the FSM, false otherwise.
+	 */
+	public abstract boolean stateExists(String state);
 	
 	/**
 	 * Toggles a state's marked property.
