@@ -1,5 +1,7 @@
 package support;
 
+import java.util.*;
+
 /**
  * This class models a State object in an FSM.
  * 
@@ -8,7 +10,7 @@ package support;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class State {
+public class State implements Comparator<State>{
 	
 //--- Instance Variables   --------------------------------------------------------------------
 
@@ -191,7 +193,7 @@ public class State {
 	 */
 	
 	public void setStateInitial(boolean init) {
-		
+		initial = init;
 	}
 	
 	/**
@@ -201,7 +203,21 @@ public class State {
 	 */
 	
 	public void setStateMarked(boolean init) {
-		
+		marked = init;
+	}
+
+//---  Miscellaneous   ------------------------------------------------------------------------
+	
+	/**
+	 * This
+	 * 
+	 * @param o1 - 
+	 * @param o2 - 
+	 */
+	
+	@Override
+	public int compare(State st1, State st2) {
+		return st1.getStateName().compareTo(st2.getStateName());
 	}
 	
 }
