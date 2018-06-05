@@ -1,18 +1,28 @@
 package fsm;
 
-import java.io.File;
 import java.util.*;
 import support.*;
 
+/**
+ * This class models a Finite State Machine with some of the essential elements.
+ * It must be extended to be used (eg. by NonDeterministic or Deterministic to
+ * determine how transitions and initial states are handled).
+ * 
+ * It is part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ *
+ */
 public abstract class FSM {
-	//--- Constant Values  -------------------------------------------------------------------------
+	
+//--- Constant Values  -------------------------------------------------------------------------
 	
 	/** String constant designating this object as a specific type of FSM for clarification purposes*/
 	public static final String FSM_TYPE = "FSM";
 	/** String constant designating the file extension to append to the file name when writing to the system*/
 	public static final String FSM_EXTENSION = ".fsm";
 	
-	//--- Instance Variables  ----------------------------------------------------------------------
+//--- Instance Variables  ----------------------------------------------------------------------
 	
 	/** HashMap<String, State> mapping state names to state objects, which all contain attributes
 	 * of the given state. */
@@ -23,26 +33,8 @@ public abstract class FSM {
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
-	//--- Constructors  ----------------------------------------------------------------------------
-	
-	/**
-	 * Constructor for an FSM object that takes in a file encoding the contents of the FSM.
-	 * 
-	 * @param in - File read in order to create the FSM.
-	 */
-	public FSM(File in) {
-		id = "";
-	} // FSM(File)
-	
-	/**
-	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself.
-	 */
-	public FSM() {
-		id = "";
-	}
-	
-	//--- Single-FSM Operations  ------------------------------------------------------------------------------
+//--- Single-FSM Operations  ------------------------------------------------------------------------------
+
 	/**
 	 * Renames all the states in the set of states in the FSM so that
 	 * states are named sequentially ("0", "1", "2"...).
@@ -101,7 +93,7 @@ public abstract class FSM {
 	 */
 	public abstract void toTextFile(String filePath, String name);
 	
-	//--- Multi-FSM Operations  ------------------------------------------------------------------------------
+//--- Multi-FSM Operations  ------------------------------------------------------------------------------
 	
 	/**
 	 * Performs a union operation on two FSMs and returns the result.
@@ -119,7 +111,7 @@ public abstract class FSM {
 	 */
 	public abstract FSM product(FSM other);
 	
-	//--- Getter/Setter Methods  --------------------------------------------------------------------------
+//--- Getter/Setter Methods  --------------------------------------------------------------------------
 	
 	/**
 	 * Adds a new state to the FSM.
