@@ -1,104 +1,81 @@
 package support;
 
-import java.util.*;
-
 /**
- * This class models a path that connects a State to another State in an FSM, storing an
- * Event and a list of States it may lead to. It is the NonDeterministicFSM variant of
- * the base Transition class.
+ * This class models a path that connects a State to another State in an FSM, storing an Event
+ * and the Single State that it leads to. This is the base variation of a Transition, only
+ * storing the one State, and thus modeling in a Deterministic manner.
  * 
- * This class is a part of the support package
+ * This class is a part of the support package.
  * 
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetTransition extends Transition{
+public class Transition {
 
-//--- Instance Variables   --------------------------------------------------------------------
+//---  Instance Variables   -------------------------------------------------------------------
 	
-	/** ArrayList<String> object holding all States associated to the Event associated to this NonDetTransition object*/
-	private ArrayList<String> state;
+	/** String instance variable representing the name of the Event associated to this object*/
+	private String event;
+	/** String instance variable representing the name of the target State associated to this object*/
+	private String state;
 	
-//--- Constructors   --------------------------------------------------------------------------
+//---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a NonDetTransition object, assigning a single String value as the Event name associated
-	 * to this object and a list of Strings as the State names led to by that Event.
+	 * Constructor for a Transition object, assigning the provided Event and State names to their
+	 * corresponding instance variables.
 	 * 
-	 * @param eventNom - String object representing the name of the Event associated to this NonDetTransition object
-	 * @param states - List of String objects representing the States led to by the Event associated to this NonDetTransition object
+	 * @param inEvent - String object representing the name of the Event associated to this Transition
+	 * @param inState - String object representing the name of the State being led to by the Event of this Transition
 	 */
 	
-	public NonDetTransition(String eventNom, String ... states) {
-		super(eventNom, "");
-		state = new ArrayList<String>();
-		for(int i = 0; i < states.length; i++)
-		  state.add(states[i]);
+	public Transition(String inEvent, String inState) {
+		event = inEvent;
+		state = inState;
 	}
 	
-//--- Setter Methods   ------------------------------------------------------------------------
+//---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Setter method to replace the current ArrayList<String> of State names with
-	 * the provided one.
+	 * Getter method to access the name of the Event associated to this Transition object
 	 * 
-	 * @param in - ArrayList<String> object representing the list of States led to by the Event associated to this NonDetTransition object
+	 * @return - Returns a String object representing the name of the Event associated to this Transition object
 	 */
 	
-	public void setTransitionState(ArrayList<String> in) {
-		state = in;
+	public String getTransitionEvent() {
+		return event;
 	}
 	
-//--- Getter Methods   ------------------------------------------------------------------------
-	
 	/**
-	 * Getter method to access the ArrayList<String> of State names led to by the Event
-	 * associated to this NonDetTransition object
+	 * Getter method to access the name of the State associated to the Event associated to this Transition object
 	 * 
-	 * @return - Returns an ArrayList<String> containing the State names led to by the Event associated to this NonDetTransition object
+	 * @return - Returns a String object representing the name of the State associated to the Event associated to this Transition object
 	 */
 	
-	public ArrayList<String> getTransitionStates(){
+	public String getTransitionState() {
 		return state;
 	}
 	
+//---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Getter method to query whether or not a State exists in the ArrayList<String> containing the
-	 * State names led to by the Event associated to this NonDetTransition object
+	 * Setter method to assign a new String as the Event name associated to this Transition object
 	 * 
-	 * @param stateName - String object representing the name of the State to search for in ArrayList<String> held by this object
-	 * @return - Returns a boolean value describing the result of the query; if true, the State is present, false otherwise.
+	 * @param in - String object representing the new name of this Transition object's Event
 	 */
 	
-	public boolean stateExists(String stateName) {
-		return state.contains(stateName);
-	}
-	
-//--- Manipulations   -------------------------------------------------------------------------
-	
-	/**
-	 * This method appends the provided String, representing the name of a State, to the
-	 * ArrayList<String> holding all State names led to by the Event associated to this
-	 * NonDetTransition object
-	 * 
-	 * @param stateName - String object representing the State to append to the end of the list of States associated to this object
-	 */
-	
-	public void addTransitionState(String stateName) {
-		state.add(stateName);
+	public void setTransitionEvent(String in) {
+		event = in;
 	}
 	
 	/**
-	 * This method removes a State from the ArrayList<String> holding all States as
-	 * defined by the provided object stateName
+	 * Setter method to assign a new String as the State name associated to the Event associated to this Transition object
 	 * 
-	 * @param stateName - String object representing a State to remove from the ArrayList<String> holding all States associated to this object
+	 * @param in - String object representing the new name of this Transition object's Event's target State
 	 */
 	
-	public void removeTransitionState(String stateName) {
-		state.remove(stateName);
+	public void setTransitionState(String in) {
+		state = in;
 	}
-
 	
 }
