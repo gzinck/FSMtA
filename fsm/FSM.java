@@ -3,6 +3,7 @@ package fsm;
 import java.io.File;
 import java.util.*;
 import support.*;
+import support.transition.Transition;
 
 public abstract class FSM {
 	//--- Constant Values  -------------------------------------------------------------------------

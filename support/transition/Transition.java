@@ -1,4 +1,6 @@
-package support;
+package support.transition;
+
+import support.State;
 
 /**
  * This class models a path that connects a State to another State in an FSM, storing an Event
@@ -16,8 +18,8 @@ public class Transition {
 	
 	/** String instance variable representing the name of the Event associated to this object*/
 	private String event;
-	/** String instance variable representing the name of the target State associated to this object*/
-	private String state;
+	/** State instance variable representing the target State associated to this object*/
+	private State state;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -26,10 +28,10 @@ public class Transition {
 	 * corresponding instance variables.
 	 * 
 	 * @param inEvent - String object representing the name of the Event associated to this Transition
-	 * @param inState - String object representing the name of the State being led to by the Event of this Transition
+	 * @param inState - State object representing the State being led to by the Event of this Transition
 	 */
 	
-	public Transition(String inEvent, String inState) {
+	public Transition(String inEvent, State inState) {
 		event = inEvent;
 		state = inState;
 	}
@@ -49,10 +51,10 @@ public class Transition {
 	/**
 	 * Getter method to access the name of the State associated to the Event associated to this Transition object
 	 * 
-	 * @return - Returns a String object representing the name of the State associated to the Event associated to this Transition object
+	 * @return - Returns a State object representing the State associated to the Event associated to this Transition object
 	 */
 	
-	public String getTransitionState() {
+	public State getTransitionState() {
 		return state;
 	}
 	
@@ -71,10 +73,10 @@ public class Transition {
 	/**
 	 * Setter method to assign a new String as the State name associated to the Event associated to this Transition object
 	 * 
-	 * @param in - String object representing the new name of this Transition object's Event's target State
+	 * @param in - State object representing the Transition object's Event's new target State
 	 */
 	
-	public void setTransitionState(String in) {
+	public void setTransitionState(State in) {
 		state = in;
 	}
 	
