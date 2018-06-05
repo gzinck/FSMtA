@@ -1,6 +1,7 @@
 package support.transition;
 
 import support.State;
+import support.event.Event;
 
 /**
  * This class models a path that connects a State to another State in an FSM, storing an Event
@@ -17,7 +18,7 @@ public class Transition {
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** String instance variable representing the name of the Event associated to this object*/
-	private String event;
+	private Event event;
 	/** State instance variable representing the target State associated to this object*/
 	private State state;
 	
@@ -31,7 +32,7 @@ public class Transition {
 	 * @param inState - State object representing the State being led to by the Event of this Transition
 	 */
 	
-	public Transition(String inEvent, State inState) {
+	public Transition(Event inEvent, State inState) {
 		event = inEvent;
 		state = inState;
 	}
@@ -44,7 +45,7 @@ public class Transition {
 	 * @return - Returns a String object representing the name of the Event associated to this Transition object
 	 */
 	
-	public String getTransitionEvent() {
+	public Event getTransitionEvent() {
 		return event;
 	}
 	
@@ -66,7 +67,7 @@ public class Transition {
 	 * @param in - String object representing the new name of this Transition object's Event
 	 */
 	
-	public void setTransitionEvent(String in) {
+	public void setTransitionEvent(Event in) {
 		event = in;
 	}
 	
