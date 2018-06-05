@@ -14,11 +14,13 @@ public abstract class FSM {
 	
 	//--- Instance Variables  ----------------------------------------------------------------------
 	
-	protected ArrayList<State> states;
+	/** HashMap<String, State> mapping state names to state objects, which all contain attributes
+	 * of the given state. */
+	protected HashMap<String, State> states;
 	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with
-	 * various events that are possible*/
+	 * various events that are possible. */
 	protected HashMap<State, ArrayList<Transition>> transitions;
-	/** String object possessing the identification for this FSM object*/
+	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
 	//--- Constructors  ----------------------------------------------------------------------------
@@ -47,8 +49,12 @@ public abstract class FSM {
 	 */
 	public void renameStates() {
 		int index = 0;
-		for(State state : states)
+		for(State state : states.values()) {
+			String oldKey = state.getStateName();
 			state.setStateName(index + "");
+			states.remove(oldKey, state);
+			states.put(index + "", state);
+		} // for
 	} // renameStates()
 	
 	/**
@@ -64,6 +70,36 @@ public abstract class FSM {
 	 * FSM. 
 	 */
 	public abstract FSM makeAccessible();
+	
+	/**
+	 * Searches through the graph represented by the transitions hashmap, and removes any
+	 * states that cannot reach a marked state.
+	 * 
+	 * Every state is added to a queue to search through its neighbors via a recursive
+	 * depth-first search. In this search, once a Marked State is found, all States
+	 * along that path are considered 'in' the new FSM which will be returned. Otherwise,
+	 * those states are left out.
+	 * 
+	 * @return - An FSM representing the CoAccessible version of the original FSM.
+	 */
+	public abstract FSM makeCoAccessible();
+	
+	/**
+	 * This method performs a trim operation on the calling FSM (performing the
+	 * makeAccessible() and makeCoAccessible() methods) to make sure only states
+	 * that are reachable from initial states and can reach marked states are
+	 * included.
+	 * 
+	 * @return - An FSM representing the trimmed version of the calling FSM.
+	 */
+	public abstract FSM trim();
+	
+	/**
+	 * Formerly createFileFormat(), toTextFile(String, String) converts an
+	 * FSM into a text file which can be read back in and used to recreate
+	 * an FSM later.
+	 */
+	public abstract void toTextFile(String filePath, String name);
 	
 	//--- Multi-FSM Operations  ------------------------------------------------------------------------------
 	
@@ -83,7 +119,64 @@ public abstract class FSM {
 	 */
 	public abstract FSM product(FSM other);
 	
+	//--- Getter/Setter Methods  --------------------------------------------------------------------------
 	
+	/**
+	 * Adds a new state to the FSM.
+	 * 
+	 * @param state - String representing the state to add.
+	 * @return - True if the state was successfully added, false
+	 * if the state already existed.
+	 */
+	public abstract boolean addState(String newState);
 	
-	//--- Constructors  ----------------------------------------------------------------------------
+	/**
+	 * Removes a state from the FSM, unless it is the initial state.
+	 * 
+	 * @param state - String value representing the State to remove from the FSM.
+	 * @return - Returns a boolean value representing the outcome of the operation:
+	 * true if the state was removed, false if the state was an initial state and
+	 * could not be removed or if the state did not exist.
+	 */
+	public abstract boolean removeState(String state);
+	
+	/**
+	 * Toggles a state's marked property.
+	 * 
+	 * @param state - String representing the name of the state.
+	 * @return - True if the state is now marked, false if the state is
+	 * now unmarked (or if the state does not exist).
+	 */
+	public abstract boolean toggleMarkedState(String state);
+	
+	/**
+	 * Adds the parameter state as an initial state of the FSM.
+	 * Behavior depends on if the FSM is deterministic or non-deterministic.
+	 * 
+	 * @param newState - String for the state name to be added as an initial state.
+	 */
+	public abstract void addInitialState(String newState);
+	
+	/**
+	 * Removes the parameter state from the FSM's set of initial states.
+	 * 
+	 * @param state - String for the state name to be removed as an initial state.
+	 * @return - True if the input state was successfully removed from the set of initial
+	 * states, false otherwise.
+	 */
+	public abstract boolean removeInitialState(String state);
+	
+	/**
+	 * Adds transitions leaving a given state to the FSM.
+	 * 
+	 * @param state - The State object to start from.
+	 * @param transitions - ArrayList of Transition objects leading to all the
+	 * places state is connected to.
+	 */
+	public abstract void addStateTransitions(State state, ArrayList<Transition> transitions);
+	
+	/**
+	 * Adds an event from one state to another state.
+	 */
+	public abstract void addEvent(String state1, String eventName, String state2);
 } // class FSM
