@@ -1,7 +1,5 @@
 package support;
 
-import java.util.*;
-
 /**
  * This class models a State object in an FSM.
  * 
@@ -18,13 +16,69 @@ public class State {
 	private String id;
 	/** String instance variable representing the name of the FSM that this State object is a part of*/
 	private String fsm;
-	/** ArrayList<Boolean> instance variable holding the values that correspond to different features of the State*/
-	private ArrayList<Boolean> attributes;
+	/** boolean instance variable representing the status of this State's being initial*/
+	private boolean initial;
+	/** boolean instance variable representing the status of this State's being marked*/
+	private boolean marked;
 
 //--- Constructors   --------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a State object that assigns a name and parent-FSM to the object.
+	 * Constructor for a State object that assigns values to the object's id, parent-FSM, initial status,
+	 * and marked status as defined by the user input.
+	 * 
+	 * @param name - String object representing the name of this State object
+	 * @param parent - String object representing the name of this State object's FSM-parent
+	 * @param init - boolean value representing the status of this State object's being an initial State
+	 * @param mark - boolean value representing the status of this State object's being a marked State
+	 */
+	
+	public State(String name, String parent, boolean init, boolean mark) {
+		id = name;
+		fsm = parent;
+		initial = init;
+		marked = mark;
+	}
+	
+	/**
+	 * Constructor for a State object that assigns a name and parent-FSM to the object, and
+	 * assigns, according to the user-defined code value, values to the initial and marked
+	 * boolean values.
+	 * 
+	 * Code: 0  - Initial: false, Marked: false
+	 *       1  - Initial: false, Marked: true
+	 *       2  - Initial: true, Marked: false
+	 *       3  - Initial: true, Marked: true
+	 * 
+	 * @param name - String object representing the name of this State object
+	 * @param parent - String object representing the name of this State object's FSM-parent
+	 * @param code - int value describing how to configure the initial and marked boolean values
+	 */
+	
+	public State(String name, String parent, int code) {
+		id = name;
+		fsm = parent;
+		switch(code) {
+		  case 0: initial = false;
+		  		  marked = false;
+		  		  break;
+		  case 1: marked = true;
+		  		  initial = false;
+		  		  break;
+		  case 2: initial = true;
+		  		  marked = false;
+		  		  break;  
+		  case 3: initial = true;
+		  		  marked = true;
+		  		  break;
+		  default:
+				  break;
+		}
+	}
+	
+	/**
+	 * Constructor for a State object that assigns a name and parent-FSM to the object, and
+	 * defaults the initial and marked boolean values to false.
 	 * 
 	 * @param name - String object representing the State object's name
 	 * @param parent - String object representing the State object's parent's name
@@ -33,13 +87,37 @@ public class State {
 	public State(String name, String parent) {
 		id = name;
 		fsm = parent;
-		attributes = new ArrayList<Boolean>();
+		initial = false;
+		marked = false;
 	}
+	
+	/**
+	 * Constructor for a State object that assigns a name to this object as defined by
+	 * the input, defaults the parent-FSM String, and defaults the initial and marked
+	 * values to false.
+	 * 
+	 * @param name - String object representing the State object's name
+	 */
 	
 	public State(String name) {
 		id = name;
 		fsm = "";
-		attributes = new ArrayList<Boolean>();
+		initial = false;
+		marked = false;
+	}
+	
+	/**
+	 * Constructor for a State object that copies the values stored in an existing State
+	 * object into this State object.
+	 * 
+	 * @param replace - State object that's contents are copied into the object being constructed
+	 */
+	
+	public State(State replace) {
+		id = replace.getStateName();
+		fsm = replace.getStateFSM();
+		initial = replace.getStateInitial();
+		marked = replace.getStateMarked();
 	}
 	
 //--- Getter Methods   ------------------------------------------------------------------------
@@ -65,18 +143,23 @@ public class State {
 	}
 	
 	/**
-	 * Getter method to access the State object's attributes at a specified index, upgrading
-	 * the ArrayList<Boolean> to be large enough for this action if necessary.
+	 * Getter method to request the status of this State being initial
 	 * 
-	 * @param index - int value representing the position to access at in the Attributes ArrayList<Boolean>
-	 * @return - Returns a boolean value representing the value stored at the specified index in the Attributes ArrayList<Boolean>
+	 * @return - Returns a boolean value representing the status of this State being initial
 	 */
 	
-	public boolean getStateAttribute(int index) {
-		while(attributes.size() <= index) {
-			attributes.add(false);
-		}
-		return attributes.get(index);
+	public boolean getStateInitial() {
+		return initial;
+	}
+	
+	/**
+	 * Getter method to request the status of this State being marked
+	 * 
+	 * @return - Returns a boolean value representing the status of this State being marked
+	 */
+	
+	public boolean getStateMarked() {
+		return marked;
 	}
 	
 //--- Setter Methods   ------------------------------------------------------------------------
@@ -97,23 +180,28 @@ public class State {
 	 * @param in - String object representing the new parent's name to assign this State object 
 	 */
 	
-	public void setStateParent(String in) {
+	public void setStateFSM(String in) {
 		fsm = in;
 	}
 	
 	/**
-	 * Setter method to replace the currently stored object at the specified index in the State object's Attribute ArrayList<Boolean>,
-	 * upgrading the ArrayList<Boolean> to be large enough for this transaction if necessary
+	 * Setter method to assign a new boolean value to this State object's initial boolean instance variable
 	 * 
-	 * @param index - int value specifying the location in the Attributes ArrayList<Boolean> to replace the value of
-	 * @param posit - boolean value specifying the new value to place at the specified index in the Attributes ArrayList<Boolean>
+	 * @param init - boolean value representing the new status of this State object's being Initial
 	 */
 	
-	public void setStateAttribute(int index, boolean posit) {
-		while(attributes.size() <= index) {
-			attributes.add(false);
-		}
-		attributes.set(index, posit);
+	public void setStateInitial(boolean init) {
+		
+	}
+	
+	/**
+	 * Setter method to assign a new boolean value to this State object's marked boolean instance variable
+	 * 
+	 * @param init - boolean value representing the new status of this State object's being Marked
+	 */
+	
+	public void setStateMarked(boolean init) {
+		
 	}
 	
 }

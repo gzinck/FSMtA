@@ -2,6 +2,7 @@ package support.transition;
 
 import java.util.*;
 import support.State;
+import support.event.Event;
 
 /**
  * This class models a path that connects a State to another State in an FSM, storing an
@@ -30,7 +31,7 @@ public class NonDetTransition extends Transition{
 	 * @param states - List of State objects representing the States led to by the Event associated to this NonDetTransition object
 	 */
 	
-	public NonDetTransition(String eventNom, State ... states) {
+	public NonDetTransition(Event eventNom, State ... states) {
 		super(eventNom, new State(""));
 		state = new ArrayList<State>();
 		for(int i = 0; i < states.length; i++)
@@ -60,7 +61,6 @@ public class NonDetTransition extends Transition{
 	public ArrayList<State> getTransitionStates(){
 		return state;
 	}
-	
 	
 	/**
 	 * Getter method to query whether or not a State exists in the ArrayList<State> containing the
@@ -98,5 +98,4 @@ public class NonDetTransition extends Transition{
 		state.remove(new State(stateName));
 	}
 
-	
 }

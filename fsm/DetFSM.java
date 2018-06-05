@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.*;
 
 import support.*;
+import java.util.ArrayList;
+
+import support.State;
 import support.transition.Transition;
 
 public class DetFSM extends FSM{
@@ -153,17 +156,16 @@ public class DetFSM extends FSM{
 	}
 
 	@Override
-	public boolean removeState(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean stateExists(String state) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 	
+	public boolean removeState(String state) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	@Override
 	public boolean toggleMarkedState(String state) {
 		// TODO Auto-generated method stub
