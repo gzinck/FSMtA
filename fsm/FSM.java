@@ -27,7 +27,7 @@ public abstract class FSM {
 	
 	/** HashMap<String, State> mapping state names to state objects, which all contain attributes
 	 * of the given state. */
-	protected HashMap<String, State> states;
+	protected StateMap<State> states;
 	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with
 	 * various events that are possible. */
 	protected HashMap<State, ArrayList<Transition>> transitions;
@@ -41,13 +41,7 @@ public abstract class FSM {
 	 * states are named sequentially ("0", "1", "2"...).
 	 */
 	public void renameStates() {
-		int index = 0;
-		for(State state : states.values()) {
-			String oldKey = state.getStateName();
-			state.setStateName(index + "");
-			states.remove(oldKey, state);
-			states.put(index + "", state);
-		} // for
+		states.renameStates();
 	} // renameStates()
 	
 	/**
@@ -115,13 +109,22 @@ public abstract class FSM {
 //--- Getter/Setter Methods  --------------------------------------------------------------------------
 	
 	/**
-	 * Adds a new state to the FSM.
+	 * Adds a new state to the FSM using a String object.
 	 * 
 	 * @param state - String representing the state to add.
 	 * @return - True if the state was successfully added, false
 	 * if the state already existed.
 	 */
 	public abstract boolean addState(String newState);
+	
+	/**
+	 * Adds a new state to the FSM using a State object.
+	 * 
+	 * @param state - State object to add.
+	 * @return - True if the state was successfully added, false
+	 * if the state already existed.
+	 */
+	public abstract boolean addState(State newState);
 	
 	/**
 	 * Removes a state from the FSM, unless it is the initial state.
@@ -132,6 +135,14 @@ public abstract class FSM {
 	 * could not be removed or if the state did not exist.
 	 */
 	public abstract boolean removeState(String state);
+	
+	/**
+	 * Returns if a state exists in the FSM.
+	 * 
+	 * @param state - String representing the state to check for existence.
+	 * @return - True if the state exists in the FSM, false otherwise.
+	 */
+	public abstract boolean stateExists(String state);
 	
 	/**
 	 * Toggles a state's marked property.
