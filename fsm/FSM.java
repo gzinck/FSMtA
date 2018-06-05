@@ -2,6 +2,7 @@ package fsm;
 
 import java.util.*;
 import support.*;
+import support.transition.Transition;
 
 /**
  * This class models a Finite State Machine with some of the essential elements.

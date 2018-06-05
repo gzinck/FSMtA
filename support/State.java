@@ -36,6 +36,12 @@ public class State {
 		attributes = new ArrayList<Boolean>();
 	}
 	
+	public State(String name) {
+		id = name;
+		fsm = "";
+		attributes = new ArrayList<Boolean>();
+	}
+	
 //--- Getter Methods   ------------------------------------------------------------------------
 	
 	/**
