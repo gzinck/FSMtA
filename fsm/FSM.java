@@ -12,33 +12,32 @@ import support.transition.Transition;
  * It is part of the fsm package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
 public abstract class FSM<T extends Transition> {
 	
-//--- Constant Values  -------------------------------------------------------------------------
+//---  Constant Values   ----------------------------------------------------------------------
 	
 	/** String constant designating this object as a specific type of FSM for clarification purposes*/
 	public static final String FSM_TYPE = "FSM";
 	/** String constant designating the file extension to append to the file name when writing to the system*/
 	public static final String FSM_EXTENSION = ".fsm";
 	
-//--- Instance Variables  ----------------------------------------------------------------------
+//---  Instance Variables   -------------------------------------------------------------------
 	
-	/** HashMap<String, State> mapping state names to state objects, which all contain attributes
-	 * of the given state. */
+	/** HashMap<String, State> mapping state names to state objects, which all contain attributes of the given state. */
 	protected StateMap<State> states;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
 	protected TransitionFunction<T> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
-//--- Single-FSM Operations  ------------------------------------------------------------------------------
+//---  Single-FSM Operations   ----------------------------------------------------------------
 
 	/**
 	 * Renames all the states in the set of states in the FSM so that
 	 * states are named sequentially ("0", "1", "2"...).
 	 */
+	
 	public void renameStates() {
 		states.renameStates();
 	} // renameStates()
@@ -55,7 +54,8 @@ public abstract class FSM<T extends Transition> {
 	 * @return - Returns an FSM object representing the accessible version of the current
 	 * FSM. 
 	 */
-	public abstract FSM makeAccessible();
+	
+	public abstract FSM<T> makeAccessible();
 	
 	/**
 	 * Searches through the graph represented by the transitions hashmap, and removes any
@@ -68,7 +68,8 @@ public abstract class FSM<T extends Transition> {
 	 * 
 	 * @return - An FSM representing the CoAccessible version of the original FSM.
 	 */
-	public abstract FSM makeCoAccessible();
+	
+	public abstract FSM<T> makeCoAccessible();
 	
 	/**
 	 * This method performs a trim operation on the calling FSM (performing the
@@ -78,8 +79,9 @@ public abstract class FSM<T extends Transition> {
 	 * 
 	 * @return - An FSM representing the trimmed version of the calling FSM.
 	 */
-	public FSM trim() {
-		FSM newFSM = this.makeAccessible();
+	
+	public FSM<T> trim() {
+		FSM<T> newFSM = this.makeAccessible();
 		return newFSM.makeCoAccessible();
 	}
 	
@@ -88,9 +90,10 @@ public abstract class FSM<T extends Transition> {
 	 * FSM into a text file which can be read back in and used to recreate
 	 * an FSM later.
 	 */
+	
 	public abstract void toTextFile(String filePath, String name);
 	
-//--- Multi-FSM Operations  ------------------------------------------------------------------------------
+//---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	/**
 	 * Performs a union operation on two FSMs and returns the result.
@@ -99,16 +102,61 @@ public abstract class FSM<T extends Transition> {
 	 * FSM.
 	 * @return - The result of the union.
 	 */
-	public abstract FSM union(FSM other);
+	
+	public abstract FSM<T> union(FSM<T> other);
 	
 	/**
 	 * Performs a product or intersection operation on two FSMs and returns the result.
 	 * @param other - The FSM to perform the product operation on with the current FSM.
 	 * @return - The resulting FSM from the product operation.
 	 */
-	public abstract FSM product(FSM other);
 	
-//--- Getter/Setter Methods  --------------------------------------------------------------------------
+	public abstract FSM<T> product(FSM<T> other);
+	
+//---  Getter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * Gets the specified state object from the FSM with the same
+	 * state name as the parameter (but it might not be the same
+	 * object, if the input state was associated with a different
+	 * fsm).
+	 * 
+	 * @param state - State object from another FSM to find the
+	 * corresponding one in the current FSM.
+	 * @return - The corresponding State in the current FSM.
+	 */
+	
+	public State getState(State state) {
+		return states.getState(state);
+	}
+	
+	/**
+	 * Gets the State object with the specified name.
+	 * 
+	 * @param stateName - String name of the state to get.
+	 * @return - The corresponding State in the current FSM.
+	 */
+	
+	public State getState(String stateName) {
+		return states.getState(stateName);
+	}
+	
+	/**
+	 * Returns if a state exists in the FSM.
+	 * 
+	 * @param state - String representing the state to check for existence.
+	 * @return - True if the state exists in the FSM, false otherwise.
+	 */
+	
+	public abstract boolean stateExists(String state);
+	
+//---  Manipulations - Adding   ---------------------------------------------------------------
+	
+	/**
+	 * 
+	 * @param stateName
+	 * @return
+	 */
 	
 	public boolean addState(String stateName) {
 		if(states.stateExists(stateName)) return false;
@@ -124,6 +172,7 @@ public abstract class FSM<T extends Transition> {
 	 * @return - True if the state was successfully added, false
 	 * if the state already existed.
 	 */
+	
 	public boolean addState(State oldState) {
 		if(states.stateExists(oldState.getStateName())) return false;
 		State newState = new State(oldState);
@@ -132,28 +181,31 @@ public abstract class FSM<T extends Transition> {
 	}
 	
 	/**
-	 * Gets the specified state object from the FSM with the same
-	 * state name as the parameter (but it might not be the same
-	 * object, if the input state was associated with a different
-	 * fsm).
+	 * Adds the parameter state as an initial state of the FSM.
+	 * Behavior depends on if the FSM is deterministic or non-deterministic.
 	 * 
-	 * @param state - State object from another FSM to find the
-	 * corresponding one in the current FSM.
-	 * @return - The corresponding State in the current FSM.
+	 * @param newState - String for the state name to be added as an initial state.
 	 */
-	public State getState(State state) {
-		return states.getState(state);
-	}
+	
+	public abstract void addInitialState(String newState);
 	
 	/**
-	 * Gets the State object with the specified name.
+	 * Adds transitions leaving a given state to the FSM.
 	 * 
-	 * @param stateName - String name of the state to get.
-	 * @return - The corresponding State in the current FSM.
+	 * @param state - The State object to start from.
+	 * @param transitions - ArrayList of Transition objects leading to all the
+	 * places state is connected to.
 	 */
-	public State getState(String stateName) {
-		return states.getState(stateName);
-	}
+	
+	public abstract void addStateTransitions(State state, ArrayList<Transition> transitions);
+
+	/**
+	 * Adds an event from one state to another state.
+	 */
+	
+	public abstract void addEvent(String state1, String eventName, String state2);
+
+//---  Manipulations - Removing   -------------------------------------------------------------
 	
 	/**
 	 * Removes a state from the FSM, unless it is the initial state.
@@ -163,33 +215,9 @@ public abstract class FSM<T extends Transition> {
 	 * true if the state was removed, false if the state was an initial state and
 	 * could not be removed or if the state did not exist.
 	 */
+
 	public abstract boolean removeState(String state);
-	
-	/**
-	 * Returns if a state exists in the FSM.
-	 * 
-	 * @param state - String representing the state to check for existence.
-	 * @return - True if the state exists in the FSM, false otherwise.
-	 */
-	public abstract boolean stateExists(String state);
-	
-	/**
-	 * Toggles a state's marked property.
-	 * 
-	 * @param state - String representing the name of the state.
-	 * @return - True if the state is now marked, false if the state is
-	 * now unmarked (or if the state does not exist).
-	 */
-	public abstract boolean toggleMarkedState(String state);
-	
-	/**
-	 * Adds the parameter state as an initial state of the FSM.
-	 * Behavior depends on if the FSM is deterministic or non-deterministic.
-	 * 
-	 * @param newState - String for the state name to be added as an initial state.
-	 */
-	public abstract void addInitialState(String newState);
-	
+
 	/**
 	 * Removes the parameter state from the FSM's set of initial states.
 	 * 
@@ -197,19 +225,19 @@ public abstract class FSM<T extends Transition> {
 	 * @return - True if the input state was successfully removed from the set of initial
 	 * states, false otherwise.
 	 */
+	
 	public abstract boolean removeInitialState(String state);
-	
+
+//---  Manipulations   ------------------------------------------------------------------------
+
 	/**
-	 * Adds transitions leaving a given state to the FSM.
+	 * Toggles a state's marked property.
 	 * 
-	 * @param state - The State object to start from.
-	 * @param transitions - ArrayList of Transition objects leading to all the
-	 * places state is connected to.
+	 * @param state - String representing the name of the state.
+	 * @return - True if the state is now marked, false if the state is
+	 * now unmarked (or if the state does not exist).
 	 */
-	public abstract void addStateTransitions(State state, ArrayList<Transition> transitions);
 	
-	/**
-	 * Adds an event from one state to another state.
-	 */
-	public abstract void addEvent(String state1, String eventName, String state2);
+	public abstract boolean toggleMarkedState(String state);
+
 } // class FSM
