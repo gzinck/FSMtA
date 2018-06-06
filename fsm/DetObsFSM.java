@@ -1,6 +1,6 @@
 package fsm;
+
 import fsm.attribute.Observability;
-import support.State;
 import java.util.*;
 import support.event.ObservableEvent;
 
