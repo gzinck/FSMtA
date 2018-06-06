@@ -50,13 +50,23 @@ public class Transition {
 	}
 	
 	/**
-	 * Getter method to access the name of the State associated to the Event associated to this Transition object
+	 * Getter method to access the State associated to the Event associated to this Transition object
 	 * 
 	 * @return - Returns a State object representing the State associated to the Event associated to this Transition object
 	 */
 	
 	public State getTransitionState() {
 		return state;
+	}
+	
+	/**
+	 * Getter method to access the String name of the State associated to the Event associated to this Transition object
+	 * 
+	 * @return - Returns a String representing the State's name.
+	 */
+	
+	public String getTransitionStateName() {
+		return state.getStateName();
 	}
 	
 //---  Setter Methods   -----------------------------------------------------------------------

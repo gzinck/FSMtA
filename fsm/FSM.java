@@ -107,14 +107,50 @@ public abstract class FSM {
 	
 //--- Getter/Setter Methods  --------------------------------------------------------------------------
 	
+	public boolean addState(String stateName) {
+		if(states.stateExists(stateName)) return false;
+		states.addState(new State(stateName));
+		return true;
+	}
+	
 	/**
-	 * Adds a new state to the FSM using a State object.
+	 * Adds a new state to the FSM using a State object. It creates a
+	 * copy of the input state object.
 	 * 
-	 * @param state - State object to add.
+	 * @param oldState - State object to add, which will be copied.
 	 * @return - True if the state was successfully added, false
 	 * if the state already existed.
 	 */
-	public abstract boolean addState(State newState);
+	public boolean addState(State oldState) {
+		if(states.stateExists(oldState.getStateName())) return false;
+		State newState = new State(oldState);
+		states.addState(newState);
+		return true;
+	}
+	
+	/**
+	 * Gets the specified state object from the FSM with the same
+	 * state name as the parameter (but it might not be the same
+	 * object, if the input state was associated with a different
+	 * fsm).
+	 * 
+	 * @param state - State object from another FSM to find the
+	 * corresponding one in the current FSM.
+	 * @return - The corresponding State in the current FSM.
+	 */
+	public State getState(State state) {
+		return states.getState(state);
+	}
+	
+	/**
+	 * Gets the State object with the specified name.
+	 * 
+	 * @param stateName - String name of the state to get.
+	 * @return - The corresponding State in the current FSM.
+	 */
+	public State getState(String stateName) {
+		return states.getState(stateName);
+	}
 	
 	/**
 	 * Removes a state from the FSM, unless it is the initial state.
