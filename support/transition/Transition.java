@@ -8,7 +8,7 @@ import support.event.Event;
  * and the Single State that it leads to. This is the base variation of a Transition, only
  * storing the one State, and thus modeling in a Deterministic manner.
  * 
- * This class is a part of the support package.
+ * This class is a part of the support.transition package.
  * 
  * @author Mac Clevinger and Graeme Zinck
  */

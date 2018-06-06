@@ -9,7 +9,7 @@ import support.event.Event;
  * Event and a list of States it may lead to. It is the NonDeterministicFSM variant of
  * the base Transition class.
  * 
- * This class is a part of the support package
+ * This class is a part of the support.transition package
  * 
  * @author Mac Clevinger and Graeme Zinck
  */
