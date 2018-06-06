@@ -184,20 +184,24 @@ public abstract class FSM<T extends Transition> {
 	 * Adds the parameter state as an initial state of the FSM.
 	 * Behavior depends on if the FSM is deterministic or non-deterministic.
 	 * 
-	 * @param newState - String for the state name to be added as an initial state.
+	 * @param newInitial - String for the state name to be added as an initial state.
+	 * @return - True if the initial state was added successfully, otherwise false
+	 * (fails if the initial state did not already exist).
 	 */
 	
-	public abstract void addInitialState(String newState);
+	public abstract boolean addInitialState(String newInitial);
 	
 	/**
 	 * Adds transitions leaving a given state to the FSM.
 	 * 
 	 * @param state - The State object to start from.
-	 * @param transitions - ArrayList of Transition objects leading to all the
+	 * @param newTransitions - ArrayList of Transition objects leading to all the
 	 * places state is connected to.
 	 */
 	
-	public abstract void addStateTransitions(State state, ArrayList<Transition> transitions);
+	public void addStateTransitions(State state, ArrayList<T> newTransitions) {
+		transitions.putTransitions(state, newTransitions);
+	}
 
 	/**
 	 * Adds an event from one state to another state.
@@ -233,11 +237,15 @@ public abstract class FSM<T extends Transition> {
 	/**
 	 * Toggles a state's marked property.
 	 * 
-	 * @param state - String representing the name of the state.
+	 * @param stateName - String representing the name of the state.
 	 * @return - True if the state is now marked, false if the state is
 	 * now unmarked (or if the state does not exist).
 	 */
 	
-	public abstract boolean toggleMarkedState(String state);
+	public boolean toggleMarkedState(String stateName) {
+		boolean isMarked = states.getState(stateName).getStateMarked();
+		states.getState(stateName).setStateMarked(!isMarked);
+		return !isMarked;
+	}
 
 } // class FSM

@@ -120,21 +120,15 @@ public class NonDetFSM extends FSM<NonDetTransition>{
 	}
 
 	@Override
-	public void addInitialState(String newState) {
+	public boolean addInitialState(String newState) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
 	public boolean removeInitialState(String state) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void addStateTransitions(State state, ArrayList<Transition> transitions) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

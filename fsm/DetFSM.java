@@ -69,7 +69,7 @@ public class DetFSM extends FSM<Transition> {
 //--- Single-FSM Operations  ------------------------------------------------------------------------------
 	
 	@Override
-	public FSM makeAccessible() {
+	public FSM<Transition> makeAccessible() {
 		DetFSM newFSM = new DetFSM();
 		
 		// Add the initial state
@@ -117,7 +117,7 @@ public class DetFSM extends FSM<Transition> {
 	} // makeAccessible()
 	
 	@Override
-	public FSM makeCoAccessible() {
+	public FSM<Transition> makeCoAccessible() {
 		DetFSM newFSM = new DetFSM();
 		// When a state is processed, add it to the map and state if it reached a marked state.
 		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>();
@@ -154,6 +154,65 @@ public class DetFSM extends FSM<Transition> {
 		return null;
 	} // makeCoAccessible()
 	
+	@Override
+	public void toTextFile(String filePath, String name) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+//--- Multi-FSM Operations  ------------------------------------------------------------------------------
+
+	@Override
+	public FSM<Transition> union(FSM<Transition> other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FSM<Transition> product(FSM<Transition> other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+//--- Getter/Setter Methods  --------------------------------------------------------------------------
+
+	@Override
+	public boolean stateExists(String state) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean removeState(String state) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addInitialState(String newInitial) {
+		if(states.stateExists(newInitial)) {
+			initialState = states.getState(newInitial);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeInitialState(String state) {
+		if(state.equals(initialState.getStateName())) {
+			initialState = null;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void addEvent(String state1, String eventName, String state2) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+//--- Helper methods --------------------------------------------------------------------------
 	/**
 	 * isCoAccessible checks if a State leads to a marked state. In the process, the
 	 * method modifies a hashmap of processed states that says 1) if a state has been
@@ -187,70 +246,4 @@ public class DetFSM extends FSM<Transition> {
 		// If none are marked
 		return false;
 	} // isCoAccessible(State, HashMap<String, Boolean>)
-	
-	@Override
-	public void toTextFile(String filePath, String name) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-//--- Multi-FSM Operations  ------------------------------------------------------------------------------
-
-	@Override
-	public FSM union(FSM other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FSM product(FSM other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-//--- Getter/Setter Methods  --------------------------------------------------------------------------
-
-	@Override
-	public boolean stateExists(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	public boolean removeState(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean toggleMarkedState(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void addInitialState(String newState) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean removeInitialState(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void addStateTransitions(State state, ArrayList<Transition> transitions) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addEvent(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-//--- Helper methods --------------------------------------------------------------------------
-	
-}
+} // class DetFSM
