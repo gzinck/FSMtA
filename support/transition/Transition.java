@@ -91,4 +91,23 @@ public class Transition {
 		state = in;
 	}
 	
+	/**
+	 * Removes the state from the transition object; or, if the state
+	 * is the only item in the transition object (as it is for the base
+	 * Transition object), it returns true to indicate that the transition
+	 * object should be deleted entirely.
+	 * 
+	 * @param state State to delete from the transition object.
+	 * @return True if the transition object has no states to which it points,
+	 * else false.
+	 */
+	
+	public boolean removeTransitionState(State inState) {
+		if(inState.equals(state)) {
+			state = null;
+			return true;
+		}
+		return false;
+	}
+	
 }

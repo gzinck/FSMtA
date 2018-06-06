@@ -20,4 +20,19 @@ public class TransitionFunction<T extends Transition> {
 	public void putTransitions(State state, ArrayList<T> inTransitions) {
 		transitions.put(state, inTransitions);
 	}
+	
+	public void addTransition(State state, T transition) {
+		ArrayList<T> currT = transitions.get(state);
+		currT.add(transition);
+	}
+	
+	public void removeState(State state) {
+		transitions.remove(state);
+		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
+			for(T transition : entry.getValue())
+				if(transition.removeTransitionState(state))
+					// Then remove the transition from existence
+					entry.getValue().remove(state);
+		}
+	}
 }

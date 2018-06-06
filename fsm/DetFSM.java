@@ -151,13 +151,14 @@ public class DetFSM extends FSM<Transition> {
 		if(processedStates.get(initialState.getStateName()))
 			newFSM.addInitialState(initialState.getStateName());
 		
-		return null;
+		return newFSM;
 	} // makeCoAccessible()
 	
 	@Override
 	public void toTextFile(String filePath, String name) {
-		// TODO Auto-generated method stub
-		
+		if(name == null)
+			name = id;
+		// TODO Actually deal with this.
 	}
 	
 //--- Multi-FSM Operations  ------------------------------------------------------------------------------
@@ -175,16 +176,15 @@ public class DetFSM extends FSM<Transition> {
 	}
 
 //--- Getter/Setter Methods  --------------------------------------------------------------------------
-
-	@Override
-	public boolean stateExists(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 	
 	@Override
 	public boolean removeState(String state) {
-		// TODO Auto-generated method stub
+		// If the state exists and is not the initial state...
+		if(states.stateExists(state) && !initialState.getStateName().equals(state)) {
+			states.removeState(state);
+			// Then, we need to remove the state from every reference to it in the transitions.
+			return true;
+		}
 		return false;
 	}
 
@@ -207,12 +207,17 @@ public class DetFSM extends FSM<Transition> {
 	}
 
 	@Override
-	public void addEvent(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-		
+	public boolean addEvent(String state1, String eventName, String state2) {
+		if(stateExists(state1) && stateExists(state2)) {
+			Event e = events.getEvent(eventName);
+			transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
+			return true;
+		}
+		return false;
 	}
 	
 //--- Helper methods --------------------------------------------------------------------------
+
 	/**
 	 * isCoAccessible checks if a State leads to a marked state. In the process, the
 	 * method modifies a hashmap of processed states that says 1) if a state has been
