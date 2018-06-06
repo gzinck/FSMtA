@@ -28,9 +28,8 @@ public abstract class FSM {
 	/** HashMap<String, State> mapping state names to state objects, which all contain attributes
 	 * of the given state. */
 	protected StateMap<State> states;
-	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with
-	 * various events that are possible. */
-	protected HashMap<State, ArrayList<Transition>> transitions;
+	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
+	protected TransitionFunction<Transition> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	

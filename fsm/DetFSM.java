@@ -11,6 +11,11 @@ import support.transition.Transition;
 
 public class DetFSM extends FSM{
 	
+//--- Constant Values  -------------------------------------------------------------------------
+
+	/** String constant designating this object as a specific type of FSM for clarification purposes*/
+	public static final String FSM_TYPE = "Deterministic FSM";
+	
 //--- Instance Variables  ----------------------------------------------------------------------
 	
 	/** State object with the initial state for the deterministic FSM. */
@@ -27,7 +32,7 @@ public class DetFSM extends FSM{
 	public DetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>();
-		transitions = new HashMap<State, ArrayList<Transition>>();
+		transitions = new TransitionFunction<Transition>();
 		
 		// Deal with the actual input here
 		// Gibberish goes here
@@ -46,7 +51,7 @@ public class DetFSM extends FSM{
 	public DetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>();
-		transitions = new HashMap<State, ArrayList<Transition>>();
+		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
 	
@@ -57,7 +62,7 @@ public class DetFSM extends FSM{
 	public DetFSM() {
 		id = "";
 		states = new StateMap<State>();
-		transitions = new HashMap<State, ArrayList<Transition>>();
+		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
 
@@ -68,7 +73,7 @@ public class DetFSM extends FSM{
 		DetFSM newFSM = new DetFSM();
 		
 		// Add the initial state
-		State newInitial = new State(initialState, this);
+		State newInitial = new State(initialState, id);
 		newFSM.addState(newInitial);
 		newFSM.initialState = newInitial;
 		
@@ -84,36 +89,56 @@ public class DetFSM extends FSM{
 			State newCurr = newQueue.poll();
 				
 			// Add the transitions from it
-			ArrayList<Transition> currTransitions = this.transitions.get(curr);
+			ArrayList<Transition> currTransitions = transitions.getTransitions(curr);
 			ArrayList<Transition> newTransitions = new ArrayList<Transition>();
+			
 			// Go through the transitions and add the states to the queue
 			for(Transition transition : currTransitions) {
 				// Get the current state in the old FSM
 				State state = transition.getTransitionState();
 				State newState;
+				
 				if(!newFSM.stateExists(state.getStateName())) {
 					// Since the state does not yet exist, add it to the new fsm.
-					newState = new State(state, this);
+					newState = new State(state, id);
 					newFSM.addState(newState);
 					oldQueue.add(state);
 					newQueue.add(newState);
 				} else {
 					newState = newFSM.states.getState(state.getStateName());
 				}
+				
 				// Add a new transition to the new FSM set of transitions
 				newTransitions.add(new Transition(transition.getTransitionEvent(), newState));
 			} // for
-			newFSM.transitions.put(newCurr, newTransitions);
+			newFSM.transitions.putTransitions(newCurr, newTransitions);
 		} // while
 		
 		return newFSM;
-	}
+	} // makeAccessible()
 	
 	@Override
 	public FSM makeCoAccessible() {
-		// TODO Auto-generated method stub
+		DetFSM newFSM = new DetFSM();
+		// When a state is processed, add it to the map and state if it reached a marked state.
+		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>();
+		
+		// First, we'll just add the states
+		// Start by adding all the states to a queue
+		LinkedList<State> queue = new LinkedList<State>(states.getStates());
+		while(!queue.isEmpty()) {
+			State curr = queue.poll();
+			// If the state is not yet processed...
+			if(!processedStates.containsKey(curr.getStateName())) {
+				recurseCoAc(processedStates, curr);
+			} // if
+		} // while
 		return null;
-	}
+	} // makeCoAccessible()
+	
+	private void recurseCoAc(HashMap<String, Boolean> processedStates, State curr) {
+		
+	} // recurseCoAc()
 	
 	@Override
 	public FSM trim() {

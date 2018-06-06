@@ -110,6 +110,21 @@ public class State implements Comparator<State>{
 	
 	/**
 	 * Constructor for a State object that copies the values stored in an existing State
+	 * object into this State object, but changes the associated FSM.
+	 * 
+	 * @param replace - State object that's contents are copied into the object being constructed
+	 * @param parent - FSM that contains the newly created state.
+	 */
+	
+	public State(State replace, String parent) {
+		id = replace.getStateName();
+		fsm = parent;
+		initial = replace.getStateInitial();
+		marked = replace.getStateMarked();
+	}
+	
+	/**
+	 * Constructor for a State object that copies the values stored in an existing State
 	 * object into this State object.
 	 * 
 	 * @param replace - State object that's contents are copied into the object being constructed
