@@ -123,22 +123,71 @@ public class DetFSM extends FSM{
 		// When a state is processed, add it to the map and state if it reached a marked state.
 		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>();
 		
-		// First, we'll just add the states
-		// Start by adding all the states to a queue
-		LinkedList<State> queue = new LinkedList<State>(states.getStates());
-		while(!queue.isEmpty()) {
-			State curr = queue.poll();
-			// If the state is not yet processed...
-			if(!processedStates.containsKey(curr.getStateName())) {
-				recurseCoAc(processedStates, curr);
-			} // if
-		} // while
+		// First, just find what states we need to add.
+		for(State curr : states.getStates()) {
+			if(!processedStates.containsKey(curr.getStateName()))
+				isCoAccessible(curr, processedStates);
+		} // for
+		
+		// Second, create the states to add and add the transitions
+		for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
+			// If the state is coaccessible, add it!
+			if(entry.getValue()) {
+				State oldState = states.getState(entry.getKey());
+				// Add a new state which is a copy of the state in the original FSM 
+				newFSM.addState(oldState);
+				
+				// Add all the transitions that go to states that are coaccessible
+				ArrayList<Transition> newTransitions = new ArrayList<Transition>();
+				for(Transition trans : transitions.getTransitions(oldState)) {
+					String toState = trans.getTransitionState().getStateName();
+					// If it is coaccessible...
+					if(processedStates.get(toState))
+						newTransitions.add(new Transition(trans.getTransitionEvent(), newFSM.states.getState(toState)));
+				} // for transition
+			} // if coaccessible
+		} // for processed state
+		
+		// Finally, add the initial state
+		if(processedStates.get(initialState.getStateName()))
+			newFSM.addInitialState(initialState.getStateName());
+		
 		return null;
 	} // makeCoAccessible()
 	
-	private void recurseCoAc(HashMap<String, Boolean> processedStates, State curr) {
+	/**
+	 * isCoAccessible checks if a State leads to a marked state. In the process, the
+	 * method modifies a hashmap of processed states that says 1) if a state has been
+	 * evaluated yet, and 2) if so, whether a given state is accessible.  
+	 * 
+	 * @param curr The state to check for coaccessibility.
+	 * @param processedStates HashMap<String, Boolean> mapping string names of states
+	 * to true if the state is coaccessible, and false if the state is not. If a state
+	 * has not been processed, then the state will not exist in the HashMap.
+	 * @return True if the state is coaccessible, false otherwise.
+	 */
+	private boolean isCoAccessible(State curr, HashMap<String, Boolean> processedStates) {
+		// If curr is marked, it is coaccessible so it's OK.
+		if(curr.getStateMarked()) {
+			processedStates.put(curr.getStateName(), true);
+			return true;
+		}
+		// Before recursing, say that this state is processed.
+		processedStates.put(curr.getStateName(), false);
 		
-	} // recurseCoAc()
+		// Recurse until find a marked state
+		Iterator<Transition> itr = transitions.getTransitions(curr).iterator();
+		while(itr.hasNext()) {
+			State next = itr.next().getTransitionState();
+			// If the next is coaccessible, curr is too.
+			if(isCoAccessible(next, processedStates)) {
+				processedStates.put(curr.getStateName(), true);
+				return true;
+			} // if
+		} // while
+		// If none are marked
+		return false;
+	} // isCoAccessible(State, HashMap<String, Boolean>)
 	
 	@Override
 	public FSM trim() {
@@ -167,17 +216,12 @@ public class DetFSM extends FSM{
 	}
 
 //--- Getter/Setter Methods  --------------------------------------------------------------------------
-
-	@Override
-	public boolean addState(String newState) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 	
 	@Override
 	public boolean addState(State newState) {
-		// TODO Auto-generated method stub
-		return false;
+		if(states.stateExists(newState.getStateName())) return false;
+		states.addState(newState);
+		return true;
 	}
 
 	@Override

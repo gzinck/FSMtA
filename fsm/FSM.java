@@ -108,15 +108,6 @@ public abstract class FSM {
 //--- Getter/Setter Methods  --------------------------------------------------------------------------
 	
 	/**
-	 * Adds a new state to the FSM using a String object.
-	 * 
-	 * @param state - String representing the state to add.
-	 * @return - True if the state was successfully added, false
-	 * if the state already existed.
-	 */
-	public abstract boolean addState(String newState);
-	
-	/**
 	 * Adds a new state to the FSM using a State object.
 	 * 
 	 * @param state - State object to add.
