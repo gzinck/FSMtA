@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import support.State;
 import support.transition.Transition;
 
-public class DetFSM extends FSM{
+public class DetFSM extends FSM<Transition> {
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -165,12 +165,12 @@ public class DetFSM extends FSM{
 	 * has not been processed, then the state will not exist in the HashMap.
 	 * @return True if the state is coaccessible, false otherwise.
 	 */
-	private boolean isCoAccessible(State curr, HashMap<String, Boolean> processedStates) {
+	protected boolean isCoAccessible(State curr, HashMap<String, Boolean> processedStates) {
 		// If curr is marked, it is coaccessible so it's OK.
 		if(curr.getStateMarked()) {
 			processedStates.put(curr.getStateName(), true);
 			return true;
-		}
+		} // if
 		// Before recursing, say that this state is processed.
 		processedStates.put(curr.getStateName(), false);
 		
@@ -187,12 +187,6 @@ public class DetFSM extends FSM{
 		// If none are marked
 		return false;
 	} // isCoAccessible(State, HashMap<String, Boolean>)
-	
-	@Override
-	public FSM trim() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	@Override
 	public void toTextFile(String filePath, String name) {

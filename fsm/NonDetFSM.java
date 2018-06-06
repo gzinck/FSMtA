@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import support.State;
 import support.StateMap;
 import support.TransitionFunction;
-import support.transition.Transition;
+import support.transition.*;
 
-public class NonDetFSM extends FSM{
+public class NonDetFSM extends FSM<NonDetTransition>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ public class NonDetFSM extends FSM{
 	public NonDetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>();
-		transitions = new TransitionFunction<Transition>();
+		transitions = new TransitionFunction<NonDetTransition>();
 		
 		// Deal with the actual input here
 		// Gibberish goes here
@@ -50,7 +50,7 @@ public class NonDetFSM extends FSM{
 	public NonDetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>();
-		transitions = new TransitionFunction<Transition>();
+		transitions = new TransitionFunction<NonDetTransition>();
 		initialStates = null;
 	} // DetFSM()
 	
@@ -61,7 +61,7 @@ public class NonDetFSM extends FSM{
 	public NonDetFSM() {
 		id = "";
 		states = new StateMap<State>();
-		transitions = new TransitionFunction<Transition>();
+		transitions = new TransitionFunction<NonDetTransition>();
 		initialStates = null;
 	} // DetFSM()
 	

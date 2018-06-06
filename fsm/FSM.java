@@ -14,7 +14,7 @@ import support.transition.Transition;
  * @author Mac Clevinger and Graeme Zinck
  *
  */
-public abstract class FSM {
+public abstract class FSM<T extends Transition> {
 	
 //--- Constant Values  -------------------------------------------------------------------------
 	
@@ -29,7 +29,7 @@ public abstract class FSM {
 	 * of the given state. */
 	protected StateMap<State> states;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
-	protected TransitionFunction<Transition> transitions;
+	protected TransitionFunction<T> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
@@ -78,7 +78,10 @@ public abstract class FSM {
 	 * 
 	 * @return - An FSM representing the trimmed version of the calling FSM.
 	 */
-	public abstract FSM trim();
+	public FSM trim() {
+		FSM newFSM = this.makeAccessible();
+		return newFSM.makeCoAccessible();
+	}
 	
 	/**
 	 * Formerly createFileFormat(), toTextFile(String, String) converts an
