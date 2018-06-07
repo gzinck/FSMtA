@@ -79,19 +79,22 @@ public class TransitionFunction<T extends Transition> {
 		} // for every entry
 	}
 	
+	/**
+	 * Makes a String object which has the dot representation of the transitions, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @return String containing the dot representation of the transitions.
+	 */
+	
 	public String makeDotString() {
 		StringBuilder sb = new StringBuilder();
 		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
 			State firstState = entry.getKey();
 			ArrayList<T> thisTransitions = entry.getValue();
 			for(Transition aTransition : thisTransitions) {
-				sb.append(firstState.getStateName());
-				// sb.append(aTransition.makeDotString());
-				sb.append(";");
-				// TODO FIX THIS to actually go with the appropriate format
+				sb.append(aTransition.makeDotString(firstState));
 			} // for aTransition
 		} // for entry
-		
 		return sb.toString();
 	}
 }
