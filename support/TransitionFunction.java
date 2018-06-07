@@ -2,7 +2,6 @@ package support;
 
 import java.util.*;
 import support.transition.Transition;
-import support.*;
 
 public class TransitionFunction<T extends Transition> {
 	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with
@@ -32,7 +31,7 @@ public class TransitionFunction<T extends Transition> {
 			for(T transition : entry.getValue())
 				if(transition.removeTransitionState(state))
 					// Then remove the transition from existence
-					entry.getValue().remove(state);
-		}
+					entry.getValue().remove(transition);
+		} // for every entry
 	}
 }
