@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.*;
 
 import fsm.*;
+import support.*;
+import support.transition.Transition;
 
 /**
  * This class handles the transfer of an object from the fsm package to a .dot format
@@ -21,8 +23,8 @@ public class FSMToDot {
 //--- Operations  -------------------------------------------------------------------------
 	
 	/**
-	 * This method takes any generic object in the fsm package via descendence from DeterministicFSM
-	 * and calls its conversion method to dot-String-format and generates a .jpg image from it using
+	 * This method takes any generic object in the fsm package and calls its conversion
+	 * method to dot-String-format and generates a .jpg image from it using
 	 * the GraphViz library.
 	 * 
 	 * @param fsm - A generic FSM object in the family descended from DeterministicFSM.
@@ -31,8 +33,7 @@ public class FSMToDot {
 	 * @param configPath - A String denoting the path to the GraphViz config file.
 	 */
 	
-	public static <FSM extends DeterministicFSM> void createGraphFromFSM(FSM fsm, String path, String workingPath, String configPath){
-		fsm.aggregateAndSortHashMap();
+	public static void createImgFromFSM(FSM fsm, String path, String workingPath, String configPath){
 	    GraphViz gv=new GraphViz(workingPath, configPath);
 	    gv.addln(gv.start_graph());
 	    gv.add(convertFSMToDot(fsm));
@@ -46,18 +47,18 @@ public class FSMToDot {
 	}
 	
 	/**
-	 * This method handles the conversion of a FSM to a String in .dot format via
-	 * a ConvertToDot BiConsumer object in the support package.
+	 * This method handles the conversion of a FSM to a String in .dot format.
 	 * 
-	 * @param fsm - A generic FSM object to be converted into the dot-String form.
-	 * @return - Returns a String of the dot-String format from the FSM object passed in.
+	 * @param fsm An FSM object to be converted into the dot-String form.
+	 * @return Returns a String of the dot-String format from the FSM object passed in.
 	 */
 	
-	public static <FSM extends DeterministicFSM> String convertFSMToDot(FSM fsm) {
-		HashMap<String, String> fsmForm = fsm.getFSMHashMap();		//Gets the HashMap of the DeterministicFSM
-		ConvertToDot makeDot = new ConvertToDot(fsm.getSpecialArrays());				//Makes a new object of the ConvertToDot class
-		fsmForm.forEach(makeDot);		//Iterates through all values in the HashMap to adjust an instance variable in ConvertToDot
-		return(makeDot.getDotForm());		//Returns that instance variable as the dot-String form of the DeterministicFSM
+	public static String convertFSMToDot(FSM fsm) {
+		TransitionFunction<Transition> transitions = fsm.getTransitions();
+		// Go through each transition and convert each to dot
+		String transitionsInDot = transitions.makeDotString();
+		String statesInDot = ""; // TODO Get the Dot string for all the states
+		return transitionsInDot + statesInDot; // TODO return something nice
 	}
 
 }

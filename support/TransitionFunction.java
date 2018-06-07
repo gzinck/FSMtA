@@ -29,6 +29,31 @@ public class TransitionFunction<T extends Transition> {
 		transitions = new HashMap<State, ArrayList<T>>();
 	}
 	
+//---  Operations   ---------------------------------------------------------------------------
+		
+	/**
+	 * This method converts the information stored in this TransitionFunction object into the dot-form
+	 * representation for use with GraphViz. 
+	 * 
+	 * @return - Returns a String representing the dot-form version of the information stored by this TransitionFunction object.
+	 */
+	
+	public String makeDotString() {
+		StringBuilder sb = new StringBuilder();
+		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
+			State firstState = entry.getKey();
+			ArrayList<T> thisTransitions = entry.getValue();
+			for(Transition aTransition : thisTransitions) {
+				sb.append(firstState.getStateName());
+				// sb.append(aTransition.makeDotString());
+				sb.append(";");
+				// TODO FIX THIS to actually go with the appropriate format
+			} // for aTransition
+		} // for entry
+		
+		return sb.toString();
+	}
+
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
@@ -90,5 +115,5 @@ public class TransitionFunction<T extends Transition> {
 					entry.getValue().remove(transition);
 		} // for every entry
 	}
-	
+
 }
