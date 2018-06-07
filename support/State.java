@@ -224,10 +224,10 @@ public class State implements Comparator<State>{
 //---  Miscellaneous   ------------------------------------------------------------------------
 	
 	/**
-	 * This
+	 * This method is implemented as a part of the Comparable interface, defining how State objects should be compared.
 	 * 
-	 * @param o1 - 
-	 * @param o2 - 
+	 * @param st1 - State object provided as the first of two objects to compare to one another for sorting purposes. 
+	 * @param st2 - State objects provided as the second of two objects to compare to one another for sorting purposes. 
 	 */
 	
 	@Override

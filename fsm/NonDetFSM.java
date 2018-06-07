@@ -64,33 +64,15 @@ public class NonDetFSM extends FSM<NonDetTransition>{
 		transitions = new TransitionFunction<NonDetTransition>();
 		initialStates = null;
 	} // DetFSM()
-	
+
 	@Override
-	public FSM makeAccessible() {
+	public FSM<NonDetTransition> makeAccessible() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM union(FSM other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FSM product(FSM other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FSM makeCoAccessible() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FSM trim() {
+	public FSM<NonDetTransition> makeCoAccessible() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -102,7 +84,25 @@ public class NonDetFSM extends FSM<NonDetTransition>{
 	}
 
 	@Override
-	public boolean addState(String newState) {
+	public FSM<NonDetTransition> union(FSM<NonDetTransition> other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FSM<NonDetTransition> product(FSM<NonDetTransition> other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean addInitialState(String newInitial) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addEvent(String state1, String eventName, String state2) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -114,39 +114,11 @@ public class NonDetFSM extends FSM<NonDetTransition>{
 	}
 
 	@Override
-	public boolean toggleMarkedState(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean addInitialState(String newState) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean removeInitialState(String state) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	@Override
-	public void addEvent(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean addState(State newState) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean stateExists(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
+	
 
 }

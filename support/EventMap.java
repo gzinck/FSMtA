@@ -2,6 +2,7 @@ package support;
 
 import support.event.*;
 import java.util.*;
+import support.event.Event;
 
 /**
  * Wrapper for a HashMap allowing the user to search for an
