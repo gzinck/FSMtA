@@ -2,7 +2,6 @@ package fsm;
 
 import java.io.File;
 import java.util.*;
-import support.*;
 import java.util.ArrayList;
 import support.StateMap;
 import support.State;
@@ -11,7 +10,9 @@ import support.event.Event;
 import support.TransitionFunction;
 
 /**
- * This class 
+ * This class models a Deterministic FSM that expands upon the abstract FSM class to
+ * implement the Deterministic characteristics of an FSM - A Single Initial State, and
+ * only one State being led to by each Event at a given State.
  * 
  * This class is a part of the fsm package.
  * 
@@ -20,17 +21,17 @@ import support.TransitionFunction;
 
 public class DetFSM extends FSM<Transition, Event> {
 	
-//--- Constant Values  -------------------------------------------------------------------------
+//---  Constant Values   ----------------------------------------------------------------------
 
 	/** String constant designating this object as a specific type of FSM for clarification purposes*/
 	public static final String FSM_TYPE = "Deterministic FSM";
 	
-//--- Instance Variables  ----------------------------------------------------------------------
+//---  Instance Variables   -------------------------------------------------------------------
 	
 	/** State object with the initial state for the deterministic FSM. */
 	protected State initialState;
 	
-//--- Constructors  ----------------------------------------------------------------------------
+//---  Constructors   -------------------------------------------------------------------------
 
 	/**
 	 * Constructor for an DetFSM object that takes in a file encoding the contents of the FSM.
@@ -78,7 +79,7 @@ public class DetFSM extends FSM<Transition, Event> {
 		initialState = null;
 	} // DetFSM()
 
-//--- Single-FSM Operations  ------------------------------------------------------------------------------
+//---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
 	public FSM<Transition, Event> makeAccessible() {
@@ -173,7 +174,7 @@ public class DetFSM extends FSM<Transition, Event> {
 		// TODO Actually deal with this.
 	}
 	
-//--- Multi-FSM Operations  ------------------------------------------------------------------------------
+//---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
 	public FSM<Transition, Event> union(FSM<Transition, Event> other) {
@@ -187,51 +188,10 @@ public class DetFSM extends FSM<Transition, Event> {
 		return null;
 	}
 
-//--- Getter/Setter Methods  --------------------------------------------------------------------------
-	
-	@Override
-	public boolean removeState(String state) {
-		// If the state exists and is not the initial state...
-		if(states.stateExists(state) && !initialState.getStateName().equals(state)) {
-			states.removeState(state);
-			// Then, we need to remove the state from every reference to it in the transitions.
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean addInitialState(String newInitial) {
-		if(states.stateExists(newInitial)) {
-			initialState = states.getState(newInitial);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean removeInitialState(String state) {
-		if(state.equals(initialState.getStateName())) {
-			initialState = null;
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean addEvent(String state1, String eventName, String state2) {
-		if(stateExists(state1) && stateExists(state2)) {
-			Event e = events.getEvent(eventName);
-			transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
-			return true;
-		}
-		return false;
-	}
-	
-//--- Helper methods --------------------------------------------------------------------------
+//---  Getter Methods   -----------------------------------------------------------------------
 
 	/**
-	 * isCoAccessible checks if a State leads to a marked state. In the process, the
+	 * This method checks if a State leads to a marked state. In the process, the
 	 * method modifies a hashmap of processed states that says 1) if a state has been
 	 * evaluated yet, and 2) if so, whether a given state is accessible.  
 	 * 
@@ -265,4 +225,47 @@ public class DetFSM extends FSM<Transition, Event> {
 		return false;
 	} // isCoAccessible(State, HashMap<String, Boolean>)
 
+//---  Setter Methods   -----------------------------------------------------------------------
+	
+	@Override
+	public boolean addInitialState(String newInitial) {
+		if(states.stateExists(newInitial)) {
+			initialState = states.getState(newInitial);
+			return true;
+		}
+		return false;
+	}
+
+//---  Manipulations   ------------------------------------------------------------------------
+
+	@Override
+	public boolean removeState(String state) {
+		// If the state exists and is not the initial state...
+		if(states.stateExists(state) && !initialState.getStateName().equals(state)) {
+			states.removeState(state);
+			// Then, we need to remove the state from every reference to it in the transitions.
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeInitialState(String state) {
+		if(state.equals(initialState.getStateName())) {
+			initialState = null;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean addEvent(String state1, String eventName, String state2) {
+		if(stateExists(state1) && stateExists(state2)) {
+			Event e = events.getEvent(eventName);
+			transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
+			return true;
+		}
+		return false;
+	}
+	
 } // class DetFSM

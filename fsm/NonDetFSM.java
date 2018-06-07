@@ -9,6 +9,16 @@ import support.TransitionFunction;
 import support.transition.*;
 import support.event.Event;
 
+/**
+ * This class models a NonDeterministic FSM that expands upon the abstract FSM class to
+ * implement the Non-Deterministic characteristics of an FSM - Multiple Initial States, and
+ * multiple States being permitted to be led to by each Event at a given State.
+ * 
+ * This class is a part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
+
 public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
@@ -29,6 +39,7 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	 * @param in - File read in order to create the FSM.
 	 * @param id - The id for the FSM (can be any String).
 	 */
+	
 	public NonDetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>();
@@ -48,6 +59,7 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
 	 * user to add those elements him/herself.
 	 */
+	
 	public NonDetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>();
@@ -59,6 +71,7 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
 	 * user to add those elements him/herself. It has no id, either.
 	 */
+	
 	public NonDetFSM() {
 		id = "";
 		states = new StateMap<State>();
@@ -66,6 +79,8 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 		initialStates = null;
 	} // DetFSM()
 
+//---  Single-FSM Operations   ----------------------------------------------------------------
+	
 	@Override
 	public FSM<NonDetTransition, Event> makeAccessible() {
 		// TODO Auto-generated method stub
@@ -84,6 +99,8 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 		
 	}
 
+//---  Multi-FSM Operations   -----------------------------------------------------------------
+	
 	@Override
 	public FSM<NonDetTransition, Event> union(FSM<NonDetTransition, Event> other) {
 		// TODO Auto-generated method stub
@@ -96,6 +113,8 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 		return null;
 	}
 
+//---  Manipulations   ------------------------------------------------------------------------
+	
 	@Override
 	public boolean addInitialState(String newInitial) {
 		// TODO Auto-generated method stub

@@ -32,6 +32,7 @@ public class TransitionFunction<T extends Transition> {
 //---  Operations   ---------------------------------------------------------------------------
 		
 	/**
+	 * INCOMPLETE - NEED TO FINISH -
 	 * This method converts the information stored in this TransitionFunction object into the dot-form
 	 * representation for use with GraphViz. 
 	 * 

@@ -5,7 +5,8 @@ import java.util.*;
 import support.event.ObservableEvent;
 
 /**
- * This class
+ * This class models a Deterministic Observable FSM that expands upon the Deterministic FSM class to
+ * implement the Observable characteristics of an FSM - Events being capable of being UnObservable.
  * 
  * This class is a part of the fsm package
  * 

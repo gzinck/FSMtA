@@ -156,6 +156,12 @@ public abstract class FSM<T extends Transition, E extends Event> {
 		return states.stateExists(state);
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @return
+	 */
+	
 	public TransitionFunction<T> getTransitions() {
 		return transitions;
 	}
