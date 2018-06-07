@@ -149,7 +149,9 @@ public abstract class FSM<T extends Transition> {
 	 * @return - True if the state exists in the FSM, false otherwise.
 	 */
 	
-	public abstract boolean stateExists(String state);
+	public boolean stateExists(String state) {
+		return states.stateExists(state);
+	}
 	
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
@@ -206,9 +208,15 @@ public abstract class FSM<T extends Transition> {
 
 	/**
 	 * Adds an event from one state to another state.
+	 * 
+	 * @param state1 - The String corresponding to the origin state for the transition.
+	 * @param eventName - The String corresponding to the event to create.
+	 * @param state2 - The String corresponding to the destination state for the transition.
+	 * @return - True if the event was added successfully, false otherwise (i.e., if either
+	 * state1 or state2 did not exist in the FSM).
 	 */
 	
-	public abstract void addEvent(String state1, String eventName, String state2);
+	public abstract boolean addEvent(String state1, String eventName, String state2);
 
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
