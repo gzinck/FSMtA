@@ -34,4 +34,20 @@ public class TransitionFunction<T extends Transition> {
 					entry.getValue().remove(transition);
 		} // for every entry
 	}
+	
+	public String makeDotString() {
+		StringBuilder sb = new StringBuilder();
+		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
+			State firstState = entry.getKey();
+			ArrayList<T> thisTransitions = entry.getValue();
+			for(Transition aTransition : thisTransitions) {
+				sb.append(firstState.getStateName());
+				// sb.append(aTransition.makeDotString());
+				sb.append(";");
+				// TODO FIX THIS to actually go with the appropriate format
+			} // for aTransition
+		} // for entry
+		
+		return sb.toString();
+	}
 }
