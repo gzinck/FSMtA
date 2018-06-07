@@ -2,12 +2,13 @@ package fsm;
 
 import java.io.File;
 import java.util.*;
-
 import support.*;
 import java.util.ArrayList;
-
+import support.StateMap;
 import support.State;
 import support.transition.Transition;
+import support.event.Event;
+import support.TransitionFunction;
 
 public class DetFSM extends FSM<Transition> {
 	

@@ -1,6 +1,7 @@
 package support;
 
 import java.util.*;
+import support.event.Event;
 
 /**
  * Wrapper for a HashMap allowing the user to search for an
@@ -66,7 +67,7 @@ public class EventMap<E extends Event> {
 	 * @param event Event object to remove.
 	 */
 	public void removeEvent(E event) {
-		events.remove(event.getStateName());
+		events.remove(event.getEventName());
 	}
 	
 	/**

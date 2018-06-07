@@ -3,27 +3,71 @@ package support;
 import java.util.*;
 import support.transition.Transition;
 
+/**
+ * 
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ * @param <T>
+ */
+
 public class TransitionFunction<T extends Transition> {
-	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with
-	 * various events that are possible. */
+	
+//---  Instance Variables   -------------------------------------------------------------------
+	
+	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with various events that are possible. */
 	protected HashMap<State, ArrayList<T>> transitions;
+	
+//---  Constructors   -------------------------------------------------------------------------
+	
+	/**
+	 * Constructor for TransitionFunction objects
+	 */
 	
 	public TransitionFunction() {
 		transitions = new HashMap<State, ArrayList<T>>();
 	}
 	
+//---  Getter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	
 	public ArrayList<T> getTransitions(State state) {
 		return transitions.get(state);
 	}
+	
+//---  Setter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * 
+	 * @param state
+	 * @param inTransitions
+	 */
 	
 	public void putTransitions(State state, ArrayList<T> inTransitions) {
 		transitions.put(state, inTransitions);
 	}
 	
+//---  Manipulations   ------------------------------------------------------------------------
+
+	/**
+	 * 
+	 * @param state
+	 * @param transition
+	 */
+	
 	public void addTransition(State state, T transition) {
 		ArrayList<T> currT = transitions.get(state);
 		currT.add(transition);
 	}
+	
+	/**
+	 * 
+	 * @param state
+	 */
 	
 	public void removeState(State state) {
 		transitions.remove(state);
