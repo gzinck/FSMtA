@@ -8,8 +8,9 @@ import java.util.ArrayList;
 
 import support.State;
 import support.transition.Transition;
+import support.event.Event;
 
-public class DetFSM extends FSM<Transition> {
+public class DetFSM extends FSM<Transition, Event> {
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -69,7 +70,7 @@ public class DetFSM extends FSM<Transition> {
 //--- Single-FSM Operations  ------------------------------------------------------------------------------
 	
 	@Override
-	public FSM<Transition> makeAccessible() {
+	public FSM<Transition, Event> makeAccessible() {
 		DetFSM newFSM = new DetFSM();
 		
 		// Add the initial state
@@ -117,7 +118,7 @@ public class DetFSM extends FSM<Transition> {
 	} // makeAccessible()
 	
 	@Override
-	public FSM<Transition> makeCoAccessible() {
+	public FSM<Transition, Event> makeCoAccessible() {
 		DetFSM newFSM = new DetFSM();
 		// When a state is processed, add it to the map and state if it reached a marked state.
 		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>();
@@ -164,13 +165,13 @@ public class DetFSM extends FSM<Transition> {
 //--- Multi-FSM Operations  ------------------------------------------------------------------------------
 
 	@Override
-	public FSM<Transition> union(FSM<Transition> other) {
+	public FSM<Transition, Event> union(FSM<Transition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM<Transition> product(FSM<Transition> other) {
+	public FSM<Transition, Event> product(FSM<Transition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}

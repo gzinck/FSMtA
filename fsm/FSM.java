@@ -3,6 +3,7 @@ package fsm;
 import java.util.*;
 import support.*;
 import support.transition.Transition;
+import support.event.Event;
 
 /**
  * This class models a Finite State Machine with some of the essential elements.
@@ -14,7 +15,7 @@ import support.transition.Transition;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public abstract class FSM<T extends Transition> {
+public abstract class FSM<T extends Transition, E extends Event> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 	
@@ -27,6 +28,8 @@ public abstract class FSM<T extends Transition> {
 	
 	/** HashMap<String, State> mapping state names to state objects, which all contain attributes of the given state. */
 	protected StateMap<State> states;
+	/** HashMap<String, E> mapping event names to event objects, which all contain attributes of the given state. */
+	protected EventMap<E> events;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
 	protected TransitionFunction<T> transitions;
 	/** String object possessing the identification for this FSM object. */
@@ -56,7 +59,7 @@ public abstract class FSM<T extends Transition> {
 	 * FSM. 
 	 */
 	
-	public abstract FSM<T> makeAccessible();
+	public abstract FSM<T, E> makeAccessible();
 	
 	/**
 	 * Searches through the graph represented by the transitions hashmap, and removes any
@@ -70,7 +73,7 @@ public abstract class FSM<T extends Transition> {
 	 * @return - An FSM representing the CoAccessible version of the original FSM.
 	 */
 	
-	public abstract FSM<T> makeCoAccessible();
+	public abstract FSM<T, E> makeCoAccessible();
 	
 	/**
 	 * This method performs a trim operation on the calling FSM (performing the
@@ -81,8 +84,8 @@ public abstract class FSM<T extends Transition> {
 	 * @return - An FSM representing the trimmed version of the calling FSM.
 	 */
 	
-	public FSM<T> trim() {
-		FSM<T> newFSM = this.makeAccessible();
+	public FSM<T, E> trim() {
+		FSM<T, E> newFSM = this.makeAccessible();
 		return newFSM.makeCoAccessible();
 	}
 	
@@ -104,7 +107,7 @@ public abstract class FSM<T extends Transition> {
 	 * @return - The result of the union.
 	 */
 	
-	public abstract FSM<T> union(FSM<T> other);
+	public abstract FSM<T, E> union(FSM<T, E> other);
 	
 	/**
 	 * Performs a product or intersection operation on two FSMs and returns the result.
@@ -112,7 +115,7 @@ public abstract class FSM<T extends Transition> {
 	 * @return - The resulting FSM from the product operation.
 	 */
 	
-	public abstract FSM<T> product(FSM<T> other);
+	public abstract FSM<T, E> product(FSM<T, E> other);
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
