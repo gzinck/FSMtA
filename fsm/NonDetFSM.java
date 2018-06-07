@@ -7,8 +7,9 @@ import support.State;
 import support.StateMap;
 import support.TransitionFunction;
 import support.transition.*;
+import support.event.Event;
 
-public class NonDetFSM extends FSM<NonDetTransition>{
+public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -66,13 +67,13 @@ public class NonDetFSM extends FSM<NonDetTransition>{
 	} // DetFSM()
 
 	@Override
-	public FSM<NonDetTransition> makeAccessible() {
+	public FSM<NonDetTransition, Event> makeAccessible() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM<NonDetTransition> makeCoAccessible() {
+	public FSM<NonDetTransition, Event> makeCoAccessible() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -84,13 +85,13 @@ public class NonDetFSM extends FSM<NonDetTransition>{
 	}
 
 	@Override
-	public FSM<NonDetTransition> union(FSM<NonDetTransition> other) {
+	public FSM<NonDetTransition, Event> union(FSM<NonDetTransition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM<NonDetTransition> product(FSM<NonDetTransition> other) {
+	public FSM<NonDetTransition, Event> product(FSM<NonDetTransition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -118,7 +119,5 @@ public class NonDetFSM extends FSM<NonDetTransition>{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
 
 }

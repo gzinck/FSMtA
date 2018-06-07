@@ -10,6 +10,14 @@ import support.transition.Transition;
 import support.event.Event;
 import support.TransitionFunction;
 
+/**
+ * This class 
+ * 
+ * This class is a part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
+
 public class DetFSM extends FSM<Transition, Event> {
 	
 //--- Constant Values  -------------------------------------------------------------------------
@@ -30,6 +38,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	 * @param in - File read in order to create the FSM.
 	 * @param id - The id for the FSM (can be any String).
 	 */
+	
 	public DetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>();
@@ -47,8 +56,9 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself.
+	 * user to add those elements their-self.
 	 */
+	
 	public DetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>();
@@ -58,8 +68,9 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself. It has no id, either.
+	 * user to add those elements their-self. It has no id, either.
 	 */
+	
 	public DetFSM() {
 		id = "";
 		states = new StateMap<State>();
@@ -230,6 +241,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	 * has not been processed, then the state will not exist in the HashMap.
 	 * @return True if the state is coaccessible, false otherwise.
 	 */
+	
 	protected boolean isCoAccessible(State curr, HashMap<String, Boolean> processedStates) {
 		// If curr is marked, it is coaccessible so it's OK.
 		if(curr.getStateMarked()) {
@@ -252,4 +264,5 @@ public class DetFSM extends FSM<Transition, Event> {
 		// If none are marked
 		return false;
 	} // isCoAccessible(State, HashMap<String, Boolean>)
+
 } // class DetFSM

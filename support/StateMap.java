@@ -91,8 +91,8 @@ public class StateMap<S extends State> {
 	/**
 	 * Checks if a State exists using its corresponding stateName.
 	 * 
-	 * @param stateName String representing the state's name.
-	 * @return True if the state exists, false otherwise.
+	 * @param stateName - String object representing the state's name.
+	 * @return - Returns a boolean value; True if the state exists, false otherwise.
 	 */
 	
 	public boolean stateExists(String stateName) {
