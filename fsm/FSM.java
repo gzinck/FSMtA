@@ -97,6 +97,19 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	
 	public abstract void toTextFile(String filePath, String name);
 	
+	/**
+	 * Makes a String object which has the dot representation of the FSM, which
+	 * can be pulled into GraphViz.
+	 * 
+	 * @return String containing the dot representation of the FSM.
+	 */
+	
+	public String makeDotString() {
+		String statesInDot = states.makeDotString();
+		String transitionsInDot = transitions.makeDotString();
+		return statesInDot + transitionsInDot;
+	}
+	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	/**

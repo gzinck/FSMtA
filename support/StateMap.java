@@ -144,4 +144,19 @@ public class StateMap<S extends State> {
 		states.remove(stateName);
 	}
 
+	/**
+	 * Makes a String object which has the dot representation of the states, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @return String containing the dot representation of the states.
+	 */
+	
+	public String makeDotString() {
+		StringBuilder sb = new StringBuilder();
+		for(S state : states.values()) {
+			sb.append(state.makeDotString());
+		}
+		return sb.toString();
+	}
+	
 }
