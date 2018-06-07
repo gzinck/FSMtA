@@ -4,6 +4,14 @@ import fsm.attribute.Observability;
 import java.util.*;
 import support.event.ObservableEvent;
 
+/**
+ * This class
+ * 
+ * This class is a part of the fsm package
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
+
 public class DetObsFSM extends DetFSM implements Observability{
 	
 //--- Constant Values  -------------------------------------------------------------------------
@@ -13,7 +21,7 @@ public class DetObsFSM extends DetFSM implements Observability{
 		
 //--- Instance Variables  ----------------------------------------------------------------------
 		
-	/** State object with the initial state for the deterministic FSM. */
+	/** ArrayList<ObservableEvent> object */
 	protected ArrayList<ObservableEvent> observableEvents;
 	
 //---  Constructors  --------------------------------------------------------------------------

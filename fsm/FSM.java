@@ -13,6 +13,7 @@ import support.transition.Transition;
  * 
  * @author Mac Clevinger and Graeme Zinck
  */
+
 public abstract class FSM<T extends Transition> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
