@@ -110,4 +110,18 @@ public class Transition {
 		return false;
 	}
 	
+	//---  Manipulations   -----------------------------------------------------------------------
+	
+	/**
+	 * Makes a String object which has the dot representation of the transitions, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @param firstState The State which leads to the transition. This is used to
+	 * determine the exact text for the dot representation.
+	 * @return String containing the dot representation of the transitions.
+	 */
+	
+	public String makeDotString(State firstState) {
+		return "\"" + firstState.getStateName() + "\"->" + state.getStateName() + "} [label = \"" + event.getEventName() + "\";";
+	}
 }

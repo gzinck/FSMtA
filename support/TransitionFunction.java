@@ -45,13 +45,9 @@ public class TransitionFunction<T extends Transition> {
 			State firstState = entry.getKey();
 			ArrayList<T> thisTransitions = entry.getValue();
 			for(Transition aTransition : thisTransitions) {
-				sb.append(firstState.getStateName());
-				// sb.append(aTransition.makeDotString());
-				sb.append(";");
-				// TODO FIX THIS to actually go with the appropriate format
+				sb.append(aTransition.makeDotString(firstState));
 			} // for aTransition
 		} // for entry
-		
 		return sb.toString();
 	}
 

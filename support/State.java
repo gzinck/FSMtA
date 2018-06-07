@@ -12,6 +12,12 @@ import java.util.*;
 
 public class State implements Comparator<State>{
 	
+//--- Constants   --------------------------------------------------------------------
+	
+	/** String representing the prefix for a dummy state used for creating a line to an
+	 * initial state when performing makeDotString(). */
+	protected static final String DUMMY_STATE_NAME = "___NEVER_USE_THIS_NAME___";
+	
 //--- Instance Variables   --------------------------------------------------------------------
 
 	/** String instance variable representing the name of this State object*/
@@ -233,6 +239,29 @@ public class State implements Comparator<State>{
 	@Override
 	public int compare(State st1, State st2) {
 		return st1.getStateName().compareTo(st2.getStateName());
+	}
+	
+	/**
+	 * Makes a String object which has the dot representation of the state, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @return String containing the dot representation of the state.
+	 */
+	
+	public String makeDotString() {
+		StringBuilder sb = new StringBuilder();
+		// If marked, make the state have a double circle.
+		if(marked)
+			sb.append("\"" + id + "\"[shape = doublecircle];");
+		// Else, just make the normal state.
+		else
+			sb.append("\"" + id + "\";");
+		// If initial, make the state have a line going into it.
+		if(initial) {
+			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point];");
+			sb.append("{\"" + DUMMY_STATE_NAME + id + "\"}->{\"" + id + "\";");
+		}
+		return sb.toString();
 	}
 	
 }
