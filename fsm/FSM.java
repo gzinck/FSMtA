@@ -23,6 +23,10 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	public static final String FSM_TYPE = "FSM";
 	/** String constant designating the file extension to append to the file name when writing to the system*/
 	public static final String FSM_EXTENSION = ".fsm";
+	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
+	public final static String STATE1_PREFIX = "a";
+	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
+	public final static String STATE2_PREFIX = "b";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
@@ -120,7 +124,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return - The result of the union.
 	 */
 	
-	public abstract FSM<S, T, E> union(FSM<S, T, E> other);
+	public abstract FSM union(FSM<S, T, E> other);
 	
 	/**
 	 * Performs a product or intersection operation on two FSMs and returns the result.
@@ -128,7 +132,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return - The resulting FSM from the product operation.
 	 */
 	
-	public abstract FSM<S, T, E> product(FSM<S, T, E> other);
+	public abstract FSM product(FSM<S, T, E> other);
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
@@ -157,6 +161,14 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	public State getState(String stateName) {
 		return states.getState(stateName);
 	}
+	
+	/**
+	 * Gets all initial states in the object as an ArrayList.
+	 * 
+	 * @return An ArrayList of States which are all initial states.
+	 */
+	
+	public abstract ArrayList<S> getInitialStates();
 	
 	/**
 	 * Returns if a state exists in the FSM.

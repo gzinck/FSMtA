@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
 import support.*;
-import support.transition.Transition;
+import support.transition.*;
 import support.event.Event;
 
 /**
@@ -44,7 +44,7 @@ public class DetFSM extends FSM<State, Transition, Event> {
 		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		
-		// Deal with the actual input here
+		// TODO Deal with the actual input here
 		// Gibberish goes here
 		// Gibberish goes here
 		// Gibberish goes here
@@ -168,9 +168,24 @@ public class DetFSM extends FSM<State, Transition, Event> {
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
-	public FSM<State, Transition, Event> union(FSM<State, Transition, Event> other) {
-		// TODO Auto-generated method stub
-		return null;
+	public FSM<State, NonDetTransition, Event> union(FSM<State, Transition, Event> other) {
+		NonDetFSM newFSM = new NonDetFSM();
+		
+		// Add initial states
+		newFSM.addInitialState(STATE1_PREFIX + initialState.getStateName());
+		for(State s : other.getInitialStates()) // Add the states from the other FSM
+			newFSM.addInitialState(STATE2_PREFIX + s.getStateName());
+		
+		// Add normal states as well
+		for(State s : this.states.getStates())
+			newFSM.states.addState(s, STATE1_PREFIX);
+		for(State s : other.states.getStates())
+			newFSM.states.addState(s, STATE2_PREFIX);
+		
+		// Add transitions
+		
+		
+		return newFSM;
 	}
 
 	@Override
@@ -217,6 +232,13 @@ public class DetFSM extends FSM<State, Transition, Event> {
 		// If none are marked
 		return false;
 	} // isCoAccessible(State, HashMap<String, Boolean>)
+	
+	@Override
+	public ArrayList<State> getInitialStates() {
+		ArrayList<State> initial = new ArrayList<State>();
+		initial.add(initialState);
+		return initial;
+	} // getInitialStates()
 
 //---  Add Setter Methods   -----------------------------------------------------------------------
 	

@@ -149,6 +149,27 @@ public class StateMap<S extends State> {
 	}
 	
 	/**
+	 * This method adds a copy of the parameter state to the HashMap<String, <S extends State>>
+	 * mapping, but with an id with a prefix attached.
+	 * If a state with the same id (with the prefix) already exists, nothing is changed and the
+	 * corresponding pre-existing State object is returned.
+	 * 
+	 * @param state - State object to add to the HashMap<String, <S extends State>>.
+	 * @return State object representing the object added to the mapping (or the one that
+	 * already existed in the mapping).
+	 */
+	
+	public State addState(S state, String prefix) {
+		String stateName = prefix + state.getStateName();
+		if(states.containsKey(stateName))
+			return states.get(stateName);
+		S newState = state.copy();
+		newState.setStateName(stateName);
+		states.put(stateName, newState);
+		return newState;
+	}
+	
+	/**
 	 * This method adds a new State with the given name to the HashMap<String, State> mapping.
 	 * If a state with the same id already exists, nothing is changed and the corresponding
 	 * pre-existing State object is returned.
