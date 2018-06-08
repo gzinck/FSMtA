@@ -69,6 +69,11 @@ public class Transition {
 		return state.getStateName();
 	}
 	
+	public boolean hasTransitionState(State inState) {
+		if(state == inState) return true;
+		return false;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
@@ -122,6 +127,6 @@ public class Transition {
 	 */
 	
 	public String makeDotString(State firstState) {
-		return "\"" + firstState.getStateName() + "\"->" + state.getStateName() + "} [label = \"" + event.getEventName() + "\";";
+		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\"];";
 	}
 }

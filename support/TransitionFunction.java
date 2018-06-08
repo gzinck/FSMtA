@@ -2,6 +2,7 @@ package support;
 
 import java.util.*;
 import support.transition.Transition;
+import support.event.Event;
 
 /**
  * This class models all Transitions in an FSM, storing States and an ArrayList<T> of Transitions as <Key, Value> pairs.
@@ -111,5 +112,27 @@ public class TransitionFunction<T extends Transition> {
 					entry.getValue().remove(transition);
 		} // for every entry
 	}
-
+	
+	/**
+	 * Removes the transition from a given State and going to another State with
+	 * a certain Event.
+	 * 
+	 * @param stateFrom State object that the transition starts from.
+	 * @param event Event object associated with the transition.
+	 * @param stateTo State object that the transition ends at.
+	 * @return True if the transition existed and was removed; false otherwise.
+	 */
+	public boolean removeTransition(State stateFrom, Event event, State stateTo) {
+		ArrayList<T> thisTransitions = transitions.get(stateFrom);
+		for(T transition : thisTransitions) {
+			if(transition.getTransitionEvent() == event) {
+				if(transition.hasTransitionState(stateTo)) {
+					boolean shouldDeleteTransition = transition.removeTransitionState(stateTo);
+					if(shouldDeleteTransition) thisTransitions.remove(transition);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

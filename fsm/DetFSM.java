@@ -3,8 +3,7 @@ package fsm;
 import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
-import support.StateMap;
-import support.State;
+import support.*;
 import support.transition.Transition;
 import support.event.Event;
 import support.TransitionFunction;
@@ -43,6 +42,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	public DetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>();
+		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		
 		// Deal with the actual input here
@@ -63,6 +63,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	public DetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>();
+		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
@@ -75,6 +76,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	public DetFSM() {
 		id = "";
 		states = new StateMap<State>();
+		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
@@ -225,23 +227,47 @@ public class DetFSM extends FSM<Transition, Event> {
 		return false;
 	} // isCoAccessible(State, HashMap<String, Boolean>)
 
-//---  Setter Methods   -----------------------------------------------------------------------
+//---  Add Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
 	public boolean addInitialState(String newInitial) {
 		if(states.stateExists(newInitial)) {
-			initialState = states.getState(newInitial);
+			State theState = states.getState(newInitial);
+			theState.setStateInitial(true);
+			if(initialState != null) initialState.setStateInitial(false);
+			initialState = theState;
 			return true;
 		}
 		return false;
 	}
+	
+	@Override
+	public void addEvent(String state1, String eventName, String state2) {
+		// If they do not exist yet, add the states.
+		addState(state1);
+		addState(state2);
+		
+		// Get the event or make it
+		Event e;
+		if(events.eventExists(eventName)) {
+			e = events.getEvent(eventName);
+		} else {
+			e = new Event(eventName);
+			events.addEvent(e);
+		}
+		transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
+	}
 
-//---  Manipulations   ------------------------------------------------------------------------
+//---  Remove Setter Methods   ------------------------------------------------------------------------
 
 	@Override
 	public boolean removeState(String state) {
-		// If the state exists and is not the initial state...
-		if(states.stateExists(state) && !initialState.getStateName().equals(state)) {
+		// If the state exists...
+		if(states.stateExists(state)) {
+			// If it is the initial state, it shouldn't be anymore
+			if(initialState != null && initialState.getStateName().equals(state)) {
+				initialState = null;
+			}
 			states.removeState(state);
 			// Then, we need to remove the state from every reference to it in the transitions.
 			return true;
@@ -252,20 +278,22 @@ public class DetFSM extends FSM<Transition, Event> {
 	@Override
 	public boolean removeInitialState(String state) {
 		if(state.equals(initialState.getStateName())) {
+			initialState.setStateInitial(false);
 			initialState = null;
 			return true;
 		}
 		return false;
 	}
-
+	
 	@Override
-	public boolean addEvent(String state1, String eventName, String state2) {
-		if(stateExists(state1) && stateExists(state2)) {
-			Event e = events.getEvent(eventName);
-			transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
-			return true;
-		}
+	public boolean removeTransition(String state1, String eventName, String state2) {
+		State s1 = getState(state1);
+		State s2 = getState(state2);
+		Event e = events.getEvent(eventName);
+		if(s1 == null || s2 == null || e == null) return false;
+		if(transitions.removeTransition(s1, e, s2)) return true;
 		return false;
+		// 
 	}
 	
 } // class DetFSM

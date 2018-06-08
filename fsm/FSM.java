@@ -242,21 +242,19 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * @param state1 - The String corresponding to the origin state for the transition.
 	 * @param eventName - The String corresponding to the event to create.
 	 * @param state2 - The String corresponding to the destination state for the transition.
-	 * @return - True if the event was added successfully, false otherwise (i.e., if either
-	 * state1 or state2 did not exist in the FSM).
 	 */
 	
-	public abstract boolean addEvent(String state1, String eventName, String state2);
+	public abstract void addEvent(String state1, String eventName, String state2);
 
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
 	/**
-	 * Removes a state from the FSM, unless it is the initial state.
+	 * Removes a state from the FSM. If the State was an initial state, then the
+	 * State is no longer an initial state after removing it.
 	 * 
 	 * @param state - String value representing the State to remove from the FSM.
 	 * @return - Returns a boolean value representing the outcome of the operation:
-	 * true if the state was removed, false if the state was an initial state and
-	 * could not be removed or if the state did not exist.
+	 * true if the state was removed, false if the state did not exist.
 	 */
 
 	public abstract boolean removeState(String state);
@@ -270,6 +268,17 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 */
 	
 	public abstract boolean removeInitialState(String state);
+	
+	/**
+	 * Removes a transition from one state to another state.
+	 * 
+	 * @param state1 - The String corresponding to the origin state for the transition.
+	 * @param eventName - The String corresponding to the event to create.
+	 * @param state2 - The String corresponding to the destination state for the transition.
+	 * @return True if the event was removed, false if it did not exist.
+	 */
+	
+	public abstract boolean removeTransition(String state1, String eventName, String state2);
 
 //---  Manipulations - Other   ----------------------------------------------------------------
 

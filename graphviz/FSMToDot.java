@@ -41,20 +41,5 @@ public class FSMToDot {
 	    File out = new File(path + "." + type); 
 	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 	}
-	
-//	/**
-//	 * This method handles the conversion of a FSM to a String in .dot format.
-//	 * 
-//	 * @param fsm An FSM object to be converted into the dot-String form.
-//	 * @return Returns a String of the dot-String format from the FSM object passed in.
-//	 */
-//	
-//	public static String convertFSMToDot(FSM fsm) {
-//		TransitionFunction<Transition> transitions = fsm.getTransitions();
-//		// Go through each transition and convert each to dot
-//		String transitionsInDot = transitions.makeDotString();
-//		String statesInDot = ""; // TODO Get the Dot string for all the states
-//		return transitionsInDot + statesInDot; // TODO return something nice
-//	}
 
 }
