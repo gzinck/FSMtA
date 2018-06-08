@@ -28,7 +28,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	
 	/** HashMap<String, State> mapping state names to state objects, which all contain attributes of the given state. */
 	protected StateMap<State> states;
-	/** HashMap<String, E> mapping event names to event objects, which all contain attributes of the given state. */
+	/** HashMap<String, E> mapping event names to event objects, which all contain attributes of the given event. */
 	protected EventMap<E> events;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
 	protected TransitionFunction<T> transitions;
@@ -45,6 +45,33 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	public void renameStates() {
 		states.renameStates();
 	} // renameStates()
+	
+	/**
+	 * Makes a String object which has the dot representation of the FSM, which
+	 * can be pulled into GraphViz.
+	 * 
+	 * @return String containing the dot representation of the FSM.
+	 */
+	
+	public String makeDotString() {
+		String statesInDot = states.makeDotString();
+		String transitionsInDot = transitions.makeDotString();
+		return statesInDot + transitionsInDot;
+	}
+	
+	/**
+	 * This method performs a trim operation on the calling FSM (performing the
+	 * makeAccessible() and makeCoAccessible() methods) to make sure only states
+	 * that are reachable from initial states and can reach marked states are
+	 * included.
+	 * 
+	 * @return - An FSM representing the trimmed version of the calling FSM.
+	 */
+	
+	public FSM<T, E> trim() {
+		FSM<T, E> newFSM = this.makeAccessible();
+		return newFSM.makeCoAccessible();
+	}
 	
 	/**
 	 * Searches through the graph represented by the transitions hashmap, and removes
@@ -74,21 +101,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 */
 	
 	public abstract FSM<T, E> makeCoAccessible();
-	
-	/**
-	 * This method performs a trim operation on the calling FSM (performing the
-	 * makeAccessible() and makeCoAccessible() methods) to make sure only states
-	 * that are reachable from initial states and can reach marked states are
-	 * included.
-	 * 
-	 * @return - An FSM representing the trimmed version of the calling FSM.
-	 */
-	
-	public FSM<T, E> trim() {
-		FSM<T, E> newFSM = this.makeAccessible();
-		return newFSM.makeCoAccessible();
-	}
-	
+
 	/**
 	 * Formerly createFileFormat(), toTextFile(String, String) converts an
 	 * FSM into a text file which can be read back in and used to recreate
@@ -96,20 +109,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 */
 	
 	public abstract void toTextFile(String filePath, String name);
-	
-	/**
-	 * Makes a String object which has the dot representation of the FSM, which
-	 * can be pulled into GraphViz.
-	 * 
-	 * @return String containing the dot representation of the FSM.
-	 */
-	
-	public String makeDotString() {
-		String statesInDot = states.makeDotString();
-		String transitionsInDot = transitions.makeDotString();
-		return statesInDot + transitionsInDot;
-	}
-	
+
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	/**
@@ -170,9 +170,10 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	}
 	
 	/**
+	 * Getter method that returns the TransitionFunction<T> object containing all
+	 * the Transitions associated to this FSM object.
 	 * 
-	 * 
-	 * @return
+	 * @return - Returns a TransitionFunction<T> object containing all the Transitions associated to this FSM object.
 	 */
 	
 	public TransitionFunction<T> getTransitions() {
@@ -182,13 +183,16 @@ public abstract class FSM<T extends Transition, E extends Event> {
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
 	/**
+	 * This method adds a new State to the StateMap<State> object, returning true if it didn't exist
+	 * and was added successfully and false if it was already present.
 	 * 
-	 * @param stateName
-	 * @return
+	 * @param stateName - String object representing the name of a State to add to the StateMap
+	 * @return - Returns a boolean value describing the results of the defined operation
 	 */
 	
 	public boolean addState(String stateName) {
-		if(states.stateExists(stateName)) return false;
+		if(states.stateExists(stateName))
+			return false;
 		states.addState(new State(stateName));
 		return true;
 	}
@@ -208,17 +212,6 @@ public abstract class FSM<T extends Transition, E extends Event> {
 		states.addState(newState);
 		return true;
 	}
-	
-	/**
-	 * Adds the parameter state as an initial state of the FSM.
-	 * Behavior depends on if the FSM is deterministic or non-deterministic.
-	 * 
-	 * @param newInitial - String for the state name to be added as an initial state.
-	 * @return - True if the initial state was added successfully, otherwise false
-	 * (fails if the initial state did not already exist).
-	 */
-	
-	public abstract boolean addInitialState(String newInitial);
 	
 	/**
 	 * Adds transitions leaving a given state to the FSM.
@@ -243,7 +236,18 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	public abstract boolean addEvent(E oldEvent);
 	
 	/**
-	 * Adds a transition from one state to another state.
+	 * Adds the parameter state as an initial state of the FSM.
+	 * Behavior depends on if the FSM is deterministic or non-deterministic.
+	 * 
+	 * @param newInitial - String for the state name to be added as an initial state.
+	 * @return - True if the initial state was added successfully, otherwise false
+	 * (fails if the initial state did not already exist).
+	 */
+	
+	public abstract boolean addInitialState(String newInitial);
+
+	/**
+	 * Adds an transition from one state to another state.
 	 * 
 	 * @param state1 - The String corresponding to the origin state for the transition.
 	 * @param eventName - The String corresponding to the event to create.
@@ -286,7 +290,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	
 	public abstract boolean removeTransition(String state1, String eventName, String state2);
 
-//---  Manipulations   ------------------------------------------------------------------------
+//---  Manipulations - Other   ----------------------------------------------------------------
 
 	/**
 	 * Toggles a state's marked property.

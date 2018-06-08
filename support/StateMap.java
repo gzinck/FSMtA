@@ -9,7 +9,6 @@ import java.util.*;
  * This class is a part of the support package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
  * @param <S> Class that extends State.
  */
 
@@ -17,13 +16,13 @@ public class StateMap<S extends State> {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
-	/** HashMap mapping String names of states to their State objects. */
+	/** HashMap<String, <S extends State>> object that maps the String object names of States to their State objects. */
 	private HashMap<String, S> states;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a new HashMap for storing States.
+	 * Constructor for a StateMap object that initializes the state HashMap<String, <S extends State>> object.
 	 */
 	
 	public StateMap() {
@@ -33,18 +32,19 @@ public class StateMap<S extends State> {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Renames a state from its former String oldName to some String
-	 * newName.
+	 * This method renames a state from its former String oldName to a provided String newName.
 	 * 
-	 * @param oldName String representing the state's former name.
-	 * @param newName String representing the state's new name.
-	 * @return True if the state was successfully renamed; false otherwise.
+	 * @param oldName - String object representing the State's former name.
+	 * @param newName - String object representing the State's new name.
+	 * @return - Returns true if the state was successfully renamed; false otherwise.
 	 */
 	
 	public boolean renameState(String oldName, String newName) {
-		if(oldName == null || newName == null) return false;
+		if(oldName == null || newName == null)
+			return false;
 		S state = states.get(oldName);
-		if(state == null) return false; 
+		if(state == null) 
+			return false; 
 		state.setStateName(newName);
 		states.remove(oldName);
 		states.put(newName, state);
@@ -52,8 +52,7 @@ public class StateMap<S extends State> {
 	}
 	
 	/**
-	 * Renames all the states in the set of states in the FSM so that
-	 * states are named sequentially ("0", "1", "2"...).
+	 * This method renames all the states in the set of states in the FSM so that states are named sequentially ("0", "1", "2"...).
 	 */
 	
 	public void renameStates() {
@@ -62,93 +61,11 @@ public class StateMap<S extends State> {
 			renameState(state.getStateName(), index + "");
 	}
 	
-//---  Getter Methods   -----------------------------------------------------------------------
-	
-	/**
-	 * Gets a State from the map using its String stateName.
-	 * 
-	 * @param stateName Name corresponding to a State.
-	 * @return The corresponding State object.
-	 */
-	
-	public S getState(String stateName) {
-		return states.get(stateName);
-	}
 
 	/**
-	 * Gets a State in the current FSM using a State from another
-	 * FSM's String stateName.
+	 * Makes a String object which has the dot representation of the states, which can be used for sending an FSM to GraphViz.
 	 * 
-	 * @param state State object, not necessarily from the same FSM.
-	 * @return State object from the current FSM.
-	 */
-	
-	public S getState(S state) {
-		String stateName = state.getStateName();
-		return states.get(stateName);
-	}
-	
-	/**
-	 * Checks if a State exists using its corresponding stateName.
-	 * 
-	 * @param stateName - String object representing the state's name.
-	 * @return - Returns a boolean value; True if the state exists, false otherwise.
-	 */
-	
-	public boolean stateExists(String stateName) {
-		return states.containsKey(stateName);
-	}
-	
-	/**
-	 * Gets a Collection with all the States currently stored.
-	 * 
-	 * @return Collection of States that are currently stored.
-	 */
-	
-	public Collection<S> getStates() {
-		return states.values();
-	}
-
-//---  Setter Methods   -----------------------------------------------------------------------
-	
-	/**
-	 * Adds a State to the mapping.
-	 * 
-	 * @param state State object to add.
-	 */
-	
-	public void addState(S state) {
-		states.put(state.getStateName(), state);
-	}
-	
-//---  Manipulations   ------------------------------------------------------------------------
-	
-	/**
-	 * Removes a State from the HashMap.
-	 * 
-	 * @param state State to remove.
-	 */
-	
-	public void removeState(S state) {
-		states.remove(state.getStateName());
-	}
-	
-	/**
-	 * Removes a State from the HashMap using its
-	 * corresponding String name.
-	 * 
-	 * @param stateName Name of the state to remove.
-	 */
-	
-	public void removeState(String stateName) {
-		states.remove(stateName);
-	}
-
-	/**
-	 * Makes a String object which has the dot representation of the states, which
-	 * can be used for sending an FSM to GraphViz.
-	 * 
-	 * @return String containing the dot representation of the states.
+	 * @return - Returns a String object containing the dot representation of the states.
 	 */
 	
 	public String makeDotString() {
@@ -157,6 +74,87 @@ public class StateMap<S extends State> {
 			sb.append(state.makeDotString());
 		}
 		return sb.toString();
+	}
+	
+//---  Getter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * Getter method that requests a State from the map using a provided String.
+	 * 
+	 * @param stateName - Name corresponding to a State.
+	 * @return - Returns the State object corresponding to the provided String object.
+	 */
+	
+	public S getState(String stateName) {
+		return states.get(stateName);
+	}
+
+	/**
+	 * Gets a State in the current FSM using a State from another FSM's String stateName.
+	 * 
+	 * @param state - State object that's String-form name is used for identification in this StateMap object.
+	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, S> had stored at that position.
+	 */
+	
+	public S getState(S state) {
+		String stateName = state.getStateName();
+		return states.get(stateName);
+	}
+	
+	/**
+	 * Getter method that requests the status of whether or not an entry for a given State's name exists.
+	 * 
+	 * @param stateName - String object representing the State's name.
+	 * @return - Returns a boolean value; true if the String object has an entry, false otherwise.
+	 */
+	
+	public boolean stateExists(String stateName) {
+		return states.get(stateName) != null;
+	}
+	
+	/**
+	 * Getter method that requests the Collection of State objects that the HashMap<String, <S extends State>> object is storing.
+	 * 
+	 * @return - Returns the Collection of States that are stored within the HashMap<String, <S extends State>> object.
+	 */
+	
+	public Collection<S> getStates() {
+		return states.values();
+	}
+
+//---  Setter Methods   -----------------------------------------------------------------------
+
+	
+//---  Manipulations   ------------------------------------------------------------------------
+	
+	/**
+	 * This method adds a State to the HashMap<String, <S extends State>> mapping.
+	 * 
+	 * @param state - State object to add to the HashMap<String, <S extends State>>.
+	 */
+	
+	public void addState(S state) {
+		states.put(state.getStateName(), state);
+	}
+	
+	/**
+	 * This method removes a State from the HashMap<String, <S extends State>> mapping.
+	 * 
+	 * @param state - State object to remove from the HashMap<String, <S extends State>> mapping.
+	 */
+	
+	public void removeState(S state) {
+		states.remove(state.getStateName());
+	}
+	
+	/**
+	 * This method removes a State from the HashMap<String, <S extends State>> using its corresponding String name.
+	 * 
+	 * @param stateName - String object representing the name of the state to remove.
+	 */
+	
+	public void removeState(String stateName) {
+		states.remove(stateName);
 	}
 	
 }

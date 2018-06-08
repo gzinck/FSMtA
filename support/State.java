@@ -3,7 +3,8 @@ package support;
 import java.util.*;
 
 /**
- * This class models a State object in an FSM.
+ * This class models a State object in an FSM, storing information about its Name, the FSM it is a part of, and whether or
+ * not it is Initial or Marked.
  * 
  * This class is a part of the support package.
  * 
@@ -14,8 +15,7 @@ public class State implements Comparator<State>{
 	
 //--- Constants   --------------------------------------------------------------------
 	
-	/** String representing the prefix for a dummy state used for creating a line to an
-	 * initial state when performing makeDotString(). */
+	/** String representing the prefix for a dummy state used for creating a line to an initial state when performing makeDotString(). */
 	protected static final String DUMMY_STATE_NAME = "___NEVER_USE_THIS_NAME___";
 	
 //--- Instance Variables   --------------------------------------------------------------------
@@ -143,6 +143,31 @@ public class State implements Comparator<State>{
 		marked = replace.getStateMarked();
 	}
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
+	/**
+	 * Makes a String object which has the dot representation of the state, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @return - Returns a String object containing the dot representation of the State.
+	 */
+	
+	public String makeDotString() {
+		StringBuilder sb = new StringBuilder();
+		// If marked, make the state have a double circle.
+		if(marked)
+			sb.append("\"" + id + "\"[shape = doublecircle];");
+		// Else, just make the normal state.
+		else
+			sb.append("\"" + id + "\";");
+		// If initial, make the state have a line going into it.
+		if(initial) {
+			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point];");
+			sb.append("{\"" + DUMMY_STATE_NAME + id + "\"}->{\"" + id + "\"};");
+		}
+		return sb.toString();
+	}
+	
 //--- Getter Methods   ------------------------------------------------------------------------
 	
 	/**
@@ -240,28 +265,5 @@ public class State implements Comparator<State>{
 	public int compare(State st1, State st2) {
 		return st1.getStateName().compareTo(st2.getStateName());
 	}
-	
-	/**
-	 * Makes a String object which has the dot representation of the state, which
-	 * can be used for sending an FSM to GraphViz.
-	 * 
-	 * @return String containing the dot representation of the state.
-	 */
-	
-	public String makeDotString() {
-		StringBuilder sb = new StringBuilder();
-		// If marked, make the state have a double circle.
-		if(marked)
-			sb.append("\"" + id + "\"[shape = doublecircle];");
-		// Else, just make the normal state.
-		else
-			sb.append("\"" + id + "\";");
-		// If initial, make the state have a line going into it.
-		if(initial) {
-			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point];");
-			sb.append("{\"" + DUMMY_STATE_NAME + id + "\"}->{\"" + id + "\"};");
-		}
-		return sb.toString();
-	}
-	
+
 }

@@ -33,11 +33,10 @@ public class TransitionFunction<T extends Transition> {
 //---  Operations   ---------------------------------------------------------------------------
 		
 	/**
-	 * INCOMPLETE - NEED TO FINISH -
 	 * This method converts the information stored in this TransitionFunction object into the dot-form
 	 * representation for use with GraphViz. 
 	 * 
-	 * @return - Returns a String representing the dot-form version of the information stored by this TransitionFunction object.
+	 * @return - Returns a String object representing the dot-form version of the information stored by this TransitionFunction object.
 	 */
 	
 	public String makeDotString() {
@@ -118,11 +117,12 @@ public class TransitionFunction<T extends Transition> {
 	 * Removes the transition from a given State and going to another State with
 	 * a certain Event.
 	 * 
-	 * @param stateFrom State object that the transition starts from.
-	 * @param event Event object associated with the transition.
-	 * @param stateTo State object that the transition ends at.
-	 * @return True if the transition existed and was removed; false otherwise.
+	 * @param stateFrom - State object that the transition starts from.
+	 * @param event - Event object associated with the transition.
+	 * @param stateTo - State object that the transition ends at.
+	 * @return - Returns true if the transition existed and was removed; false otherwise.
 	 */
+	
 	public boolean removeTransition(State stateFrom, Event event, State stateTo) {
 		ArrayList<T> thisTransitions = transitions.get(stateFrom);
 		for(T transition : thisTransitions) {

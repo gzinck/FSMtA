@@ -122,11 +122,6 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	}
 
 	@Override
-	public void addEvent(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public boolean removeState(String state) {
 		// TODO Auto-generated method stub
 		return false;
@@ -136,6 +131,24 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	public boolean removeInitialState(String state) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean removeTransition(String state1, String eventName, String state2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addEvent(Event oldEvent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void addTransition(String state1, String eventName, String state2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
