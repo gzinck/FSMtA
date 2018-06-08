@@ -62,4 +62,16 @@ public class Event {
 		return id;
 	}
 	
+	/**
+	 * Gets a copy of the event.
+	 * 
+	 * @return Copied Event object.
+	 */
+	
+	public <E extends Event> E copy() {
+		// For use in other areas, and when Event is extended, this is
+		// necessary.
+		return (E)(new Event(this));
+	}
+	
 }

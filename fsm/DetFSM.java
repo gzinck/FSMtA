@@ -40,7 +40,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	public DetFSM(File in, String inId) {
 		id = inId;
-		states = new StateMap<State>();
+		states = new StateMap();
 		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		
@@ -61,7 +61,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	public DetFSM(String inId) {
 		id = inId;
-		states = new StateMap<State>();
+		states = new StateMap();
 		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
@@ -74,7 +74,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	public DetFSM() {
 		id = "";
-		states = new StateMap<State>();
+		states = new StateMap();
 		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
@@ -87,46 +87,30 @@ public class DetFSM extends FSM<Transition, Event> {
 		DetFSM newFSM = new DetFSM();
 		
 		// Add the initial state
-		newFSM.addState(this.initialState);
-		newFSM.initialState = newFSM.getState(this.initialState);
+		newFSM.addInitialState(this.initialState.getStateName());
 		
-		// Make a queue to keep track of states that are accessible and their
-		// neighbours.
-		LinkedList<State> oldQueue = new LinkedList<State>();
-		oldQueue.add(this.initialState);
-		LinkedList<State> newQueue = new LinkedList<State>();
-		newQueue.add(newFSM.initialState);
+		// Make a queue to keep track of states that are accessible and their neighbours.
+		LinkedList<String> queue = new LinkedList<String>();
+		queue.add(this.initialState.getStateName());
 		
-		while(!oldQueue.isEmpty()) {
-			State curr = oldQueue.poll();
-			State newCurr = newQueue.poll();
+		while(!queue.isEmpty()) {
+			String name = queue.poll();
 				
 			// Add the transitions from it
-			ArrayList<Transition> currTransitions = this.transitions.getTransitions(curr);
+			ArrayList<Transition> currTransitions = this.transitions.getTransitions(getState(name));
 			ArrayList<Transition> newTransitions = new ArrayList<Transition>();
 			
 			// Go through the transitions and add the states to the queue
 			if(currTransitions != null) {
 				for(Transition transition : currTransitions) {
-					// Get the current state in the old FSM
-					State state = transition.getTransitionState();
-					State newState;
-					
-					if(!newFSM.stateExists(state.getStateName())) {
-						// Since the state does not yet exist, add it to the new fsm.
-						newState = new State(state);
-						newFSM.addState(newState);
-						oldQueue.add(state);
-						newQueue.add(newState);
-					} else {
-						newState = newFSM.states.getState(state.getStateName());
-					}
-					
-					// Add a new transition to the new FSM set of transitions
-					newTransitions.add(new Transition(transition.getTransitionEvent(), newState));
+					String stateName = transition.getTransitionStateName();
+					if(!newFSM.stateExists(stateName))
+						queue.add(stateName);
+					State newState = newFSM.states.addState(getState(stateName)); // Get the new state for the transition
+					Event newEvent = newFSM.events.addEvent(transition.getTransitionEvent()); // Get the new event
+					newTransitions.add(new Transition(newEvent, newState)); // Add a new transition to the new FSM set of transitions
 				} // for
-				
-				newFSM.transitions.putTransitions(newCurr, newTransitions);
+				newFSM.transitions.putTransitions(newFSM.getState(name), newTransitions);
 			} // if not null
 		} // while
 		
@@ -255,8 +239,13 @@ public class DetFSM extends FSM<Transition, Event> {
 			if(initialState != null) initialState.setStateInitial(false);
 			initialState = theState;
 			return true;
+		} else {
+			State theState = states.addState(newInitial);
+			theState.setStateInitial(true);
+			if(initialState != null) initialState.setStateInitial(false);
+			initialState = theState;
+			return false;
 		}
-		return false;
 	}
 	
 	@Override

@@ -9,24 +9,23 @@ import java.util.*;
  * This class is a part of the support package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- * @param <S> Class that extends State.
  */
 
-public class StateMap<S extends State> {
+public class StateMap {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
-	/** HashMap<String, <S extends State>> object that maps the String object names of States to their State objects. */
-	private HashMap<String, S> states;
+	/** HashMap<String, State> object that maps the String object names of States to their State objects. */
+	private HashMap<String, State> states;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a StateMap object that initializes the state HashMap<String, <S extends State>> object.
+	 * Constructor for a StateMap object that initializes the state HashMap<String, State> object.
 	 */
 	
 	public StateMap() {
-		states = new HashMap<String, S>();
+		states = new HashMap<String, State>();
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -42,7 +41,7 @@ public class StateMap<S extends State> {
 	public boolean renameState(String oldName, String newName) {
 		if(oldName == null || newName == null)
 			return false;
-		S state = states.get(oldName);
+		State state = states.get(oldName);
 		if(state == null) 
 			return false; 
 		state.setStateName(newName);
@@ -57,7 +56,7 @@ public class StateMap<S extends State> {
 	
 	public void renameStates() {
 		int index = 0;
-		for(S state : states.values())
+		for(State state : states.values())
 			renameState(state.getStateName(), index + "");
 	}
 	
@@ -70,7 +69,7 @@ public class StateMap<S extends State> {
 	
 	public String makeDotString() {
 		StringBuilder sb = new StringBuilder();
-		for(S state : states.values()) {
+		for(State state : states.values()) {
 			sb.append(state.makeDotString());
 		}
 		return sb.toString();
@@ -85,7 +84,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns the State object corresponding to the provided String object.
 	 */
 	
-	public S getState(String stateName) {
+	public State getState(String stateName) {
 		return states.get(stateName);
 	}
 
@@ -93,10 +92,10 @@ public class StateMap<S extends State> {
 	 * Gets a State in the current FSM using a State from another FSM's String stateName.
 	 * 
 	 * @param state - State object that's String-form name is used for identification in this StateMap object.
-	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, S> had stored at that position.
+	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, State> had stored at that position.
 	 */
 	
-	public S getState(S state) {
+	public State getState(State state) {
 		String stateName = state.getStateName();
 		return states.get(stateName);
 	}
@@ -115,10 +114,10 @@ public class StateMap<S extends State> {
 	/**
 	 * Getter method that requests the Collection of State objects that the HashMap<String, <S extends State>> object is storing.
 	 * 
-	 * @return - Returns the Collection of States that are stored within the HashMap<String, <S extends State>> object.
+	 * @return - Returns the Collection of States that are stored within the HashMap<String, State> object.
 	 */
 	
-	public Collection<S> getStates() {
+	public Collection<State> getStates() {
 		return states.values();
 	}
 
@@ -128,22 +127,49 @@ public class StateMap<S extends State> {
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * This method adds a State to the HashMap<String, <S extends State>> mapping.
+	 * This method adds a copy of the parameter state to the HashMap<String, State> mapping.
+	 * If a state with the same id already exists, nothing is changed and the corresponding
+	 * pre-existing State object is returned.
 	 * 
-	 * @param state - State object to add to the HashMap<String, <S extends State>>.
+	 * @param state - State object to add to the HashMap<String, State>.
+	 * @return State object representing the object added to the mapping (or the one that
+	 * already existed in the mapping).
 	 */
 	
-	public void addState(S state) {
-		states.put(state.getStateName(), state);
+	public State addState(State state) {
+		String stateName = state.getStateName();
+		if(states.containsKey(stateName))
+			return states.get(stateName);
+		State newState = new State(state);
+		states.put(state.getStateName(), newState);
+		return newState;
 	}
 	
 	/**
-	 * This method removes a State from the HashMap<String, <S extends State>> mapping.
+	 * This method adds a new State with the given name to the HashMap<String, State> mapping.
+	 * If a state with the same id already exists, nothing is changed and the corresponding
+	 * pre-existing State object is returned.
 	 * 
-	 * @param state - State object to remove from the HashMap<String, <S extends State>> mapping.
+	 * @param stateName String representing the State's name.
+	 * @return State object representing the object added to the mapping (or the one that
+	 * already existed in the mapping).
 	 */
 	
-	public void removeState(S state) {
+	public State addState(String stateName) {
+		if(states.containsKey(stateName))
+			return states.get(stateName);
+		State newState = new State(stateName);
+		states.put(stateName, newState);
+		return newState;
+	}
+	
+	/**
+	 * This method removes a State from the HashMap<String, State> mapping.
+	 * 
+	 * @param state - State object to remove from the HashMap<String, State> mapping.
+	 */
+	
+	public void removeState(State state) {
 		states.remove(state.getStateName());
 	}
 	

@@ -27,7 +27,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** HashMap<String, State> mapping state names to state objects, which all contain attributes of the given state. */
-	protected StateMap<State> states;
+	protected StateMap states;
 	/** HashMap<String, E> mapping event names to event objects, which all contain attributes of the given event. */
 	protected EventMap<E> events;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
@@ -193,7 +193,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	public boolean addState(String stateName) {
 		if(states.stateExists(stateName))
 			return false;
-		states.addState(new State(stateName));
+		states.addState(stateName);
 		return true;
 	}
 	
@@ -208,8 +208,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	
 	public boolean addState(State oldState) {
 		if(states.stateExists(oldState.getStateName())) return false;
-		State newState = new State(oldState);
-		states.addState(newState);
+		states.addState(oldState.getStateName());
 		return true;
 	}
 	
@@ -240,8 +239,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * Behavior depends on if the FSM is deterministic or non-deterministic.
 	 * 
 	 * @param newInitial - String for the state name to be added as an initial state.
-	 * @return - True if the initial state was added successfully, otherwise false
-	 * (fails if the initial state did not already exist).
+	 * @return - True if the state already existed, false if had to create a new state.
 	 */
 	
 	public abstract boolean addInitialState(String newInitial);

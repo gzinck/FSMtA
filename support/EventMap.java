@@ -96,12 +96,22 @@ public class EventMap<E extends Event> {
 	
 	/**
 	 * Adds an event to the map which is mapped to the name stored within the Event object already.
+	 * It creates a copy to put into the map, unless the event already exists in the map (in
+	 * which case, nothing happens). The new event is returned, or the event that was already
+	 * in the map is.
 	 * 
-	 * @param newEvent - Event object provided as a new entry in the HashMap<String, E>; the Event object is not copied.
+	 * @param oldEvent - Event object provided as a new entry in the HashMap<String, E>; the Event object is not copied.
+	 * @return Event object which corresponds to the oldEvent's id, and which is currently
+	 * stored in the EventMap.
 	 */
 	
-	public void addEvent(E newEvent) {
-		events.put(newEvent.getEventName(), newEvent);
+	public E addEvent(E oldEvent) {
+		String eventName = oldEvent.getEventName();
+		if(events.containsKey(eventName))
+			return events.get(eventName);
+		E newEvent = oldEvent.copy();
+		events.put(eventName, newEvent);
+		return newEvent;
 	}
 
 	/**
