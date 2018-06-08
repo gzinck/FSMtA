@@ -89,14 +89,14 @@ public class DetFSM extends FSM<Transition, Event> {
 		
 		// Add the initial state
 		newFSM.addState(this.initialState);
-		newFSM.initialState = newFSM.states.getState(this.initialState);
+		newFSM.initialState = newFSM.getState(this.initialState);
 		
 		// Make a queue to keep track of states that are accessible and their
 		// neighbours.
 		LinkedList<State> oldQueue = new LinkedList<State>();
 		oldQueue.add(this.initialState);
 		LinkedList<State> newQueue = new LinkedList<State>();
-		oldQueue.add(newFSM.initialState);
+		newQueue.add(newFSM.initialState);
 		
 		while(!oldQueue.isEmpty()) {
 			State curr = oldQueue.poll();
@@ -107,25 +107,28 @@ public class DetFSM extends FSM<Transition, Event> {
 			ArrayList<Transition> newTransitions = new ArrayList<Transition>();
 			
 			// Go through the transitions and add the states to the queue
-			for(Transition transition : currTransitions) {
-				// Get the current state in the old FSM
-				State state = transition.getTransitionState();
-				State newState;
+			if(currTransitions != null) {
+				for(Transition transition : currTransitions) {
+					// Get the current state in the old FSM
+					State state = transition.getTransitionState();
+					State newState;
+					
+					if(!newFSM.stateExists(state.getStateName())) {
+						// Since the state does not yet exist, add it to the new fsm.
+						newState = new State(state);
+						newFSM.addState(newState);
+						oldQueue.add(state);
+						newQueue.add(newState);
+					} else {
+						newState = newFSM.states.getState(state.getStateName());
+					}
+					
+					// Add a new transition to the new FSM set of transitions
+					newTransitions.add(new Transition(transition.getTransitionEvent(), newState));
+				} // for
 				
-				if(!newFSM.stateExists(state.getStateName())) {
-					// Since the state does not yet exist, add it to the new fsm.
-					newState = new State(state);
-					newFSM.addState(newState);
-					oldQueue.add(state);
-					newQueue.add(newState);
-				} else {
-					newState = newFSM.states.getState(state.getStateName());
-				}
-				
-				// Add a new transition to the new FSM set of transitions
-				newTransitions.add(new Transition(transition.getTransitionEvent(), newState));
-			} // for
-			newFSM.transitions.putTransitions(newCurr, newTransitions);
+				newFSM.transitions.putTransitions(newCurr, newTransitions);
+			} // if not null
 		} // while
 		
 		return newFSM;
