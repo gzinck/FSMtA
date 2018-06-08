@@ -3,8 +3,7 @@ package fsm;
 import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
-import support.StateMap;
-import support.State;
+import support.*;
 import support.transition.Transition;
 import support.event.Event;
 import support.TransitionFunction;
@@ -43,6 +42,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	public DetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>();
+		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		
 		// Deal with the actual input here
@@ -63,6 +63,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	public DetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>();
+		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
@@ -75,6 +76,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	public DetFSM() {
 		id = "";
 		states = new StateMap<State>();
+		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
@@ -230,7 +232,10 @@ public class DetFSM extends FSM<Transition, Event> {
 	@Override
 	public boolean addInitialState(String newInitial) {
 		if(states.stateExists(newInitial)) {
-			initialState = states.getState(newInitial);
+			State theState = states.getState(newInitial);
+			theState.setStateInitial(true);
+			if(initialState != null) initialState.setStateInitial(false);
+			initialState = theState;
 			return true;
 		}
 		return false;
@@ -259,13 +264,20 @@ public class DetFSM extends FSM<Transition, Event> {
 	}
 
 	@Override
-	public boolean addEvent(String state1, String eventName, String state2) {
-		if(stateExists(state1) && stateExists(state2)) {
-			Event e = events.getEvent(eventName);
-			transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
-			return true;
+	public void addEvent(String state1, String eventName, String state2) {
+		// If they do not exist yet, add the states.
+		addState(state1);
+		addState(state2);
+		
+		// Get the event or make it
+		Event e;
+		if(events.eventExists(eventName)) {
+			e = events.getEvent(eventName);
+		} else {
+			e = new Event(eventName);
+			events.addEvent(e);
 		}
-		return false;
+		transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
 	}
 	
 } // class DetFSM

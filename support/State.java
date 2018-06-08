@@ -259,7 +259,7 @@ public class State implements Comparator<State>{
 		// If initial, make the state have a line going into it.
 		if(initial) {
 			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point];");
-			sb.append("{\"" + DUMMY_STATE_NAME + id + "\"}->{\"" + id + "\";");
+			sb.append("{\"" + DUMMY_STATE_NAME + id + "\"}->{\"" + id + "\"};");
 		}
 		return sb.toString();
 	}

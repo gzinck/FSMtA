@@ -122,6 +122,6 @@ public class Transition {
 	 */
 	
 	public String makeDotString(State firstState) {
-		return "\"" + firstState.getStateName() + "\"->" + state.getStateName() + "} [label = \"" + event.getEventName() + "\";";
+		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\"];";
 	}
 }
