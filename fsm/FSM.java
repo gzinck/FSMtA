@@ -233,14 +233,24 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	}
 
 	/**
-	 * Adds an event from one state to another state.
+	 * Adds a new event to the FSM using an Event object, creating a copy
+	 * of the input event object.
+	 * 
+	 * @param oldEvent Event object to add, which will be copied.
+	 * @return True if the event was successfully added, false if
+	 * the event already existed.
+	 */
+	public abstract boolean addEvent(E oldEvent);
+	
+	/**
+	 * Adds a transition from one state to another state.
 	 * 
 	 * @param state1 - The String corresponding to the origin state for the transition.
 	 * @param eventName - The String corresponding to the event to create.
 	 * @param state2 - The String corresponding to the destination state for the transition.
 	 */
 	
-	public abstract void addEvent(String state1, String eventName, String state2);
+	public abstract void addTransition(String state1, String eventName, String state2);
 
 //---  Manipulations - Removing   -------------------------------------------------------------
 	

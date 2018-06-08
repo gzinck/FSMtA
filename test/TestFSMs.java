@@ -15,15 +15,16 @@ class TestFSMs {
 	@Test
 	void test() {
 		DetFSM newFSM = new DetFSM();
-		newFSM.addEvent("1", "a", "2");
-		newFSM.addEvent("2", "a", "3");
-		newFSM.addEvent("4", "a", "5");
+		newFSM.addTransition("1", "a", "2");
+		newFSM.addTransition("2", "a", "3");
+		newFSM.toggleMarkedState("3");
+		newFSM.addTransition("4", "a", "5");
 		newFSM.addState("45");
 		newFSM.addInitialState("1");
 		System.out.println(newFSM.makeDotString());
 		FSMToDot.createImgFromFSM(newFSM, WORKING_FOLDER + "/" + "test", WORKING_FOLDER, CONFIG_FILE_PATH);
 		
-		FSM anotherFSM = newFSM.makeAccessible();
+		FSM anotherFSM = newFSM.makeCoAccessible();
 		System.out.println(anotherFSM.makeDotString());
 		FSMToDot.createImgFromFSM(anotherFSM, WORKING_FOLDER + "/" + "test2", WORKING_FOLDER, CONFIG_FILE_PATH);
 		

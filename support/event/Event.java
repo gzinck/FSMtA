@@ -27,6 +27,17 @@ public class Event {
 		id = in;
 	}
 	
+	/**
+	 * Constructor for Event objects that uses the parameter Event object's information
+	 * to contruct a new event object.
+	 * 
+	 * @param oldEvent - Event object to be copied.
+	 */
+	
+	public Event(Event oldEvent) {
+		id = oldEvent.id;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
