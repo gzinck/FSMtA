@@ -2,6 +2,7 @@ package fsm.attribute;
 
 import support.transition.Transition;
 import support.event.Event;
+import support.State;
 import fsm.FSM;
 
 /**
@@ -13,7 +14,7 @@ import fsm.FSM;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface Observability<T extends Transition, E extends Event>{
+public interface Observability<S extends State, T extends Transition, E extends Event>{
 
 //---  Operations   ---------------------------------------------------------------------------
 	
@@ -24,10 +25,10 @@ public interface Observability<T extends Transition, E extends Event>{
 	 * excluding all Unobservable Events from the end-result and processing their removal as it changes
 	 * the structure of the FSM graph.
 	 * 
-	 * @return - Returns an FSM<T, E> representing the Observer-View version of the original FSM, removing Unobservable events.
+	 * @return - Returns an FSM<S, T, E> representing the Observer-View version of the original FSM, removing Unobservable events.
 	 */
 	
-	public abstract FSM<T, E> createObserverView();
+	public abstract FSM<S, T, E> createObserverView();
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	

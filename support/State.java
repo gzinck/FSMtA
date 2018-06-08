@@ -22,8 +22,6 @@ public class State implements Comparator<State>{
 
 	/** String instance variable representing the name of this State object*/
 	private String id;
-	/** String instance variable representing the name of the FSM that this State object is a part of*/
-	private String fsm;
 	/** boolean instance variable representing the status of this State's being initial*/
 	private boolean initial;
 	/** boolean instance variable representing the status of this State's being marked*/
@@ -32,24 +30,22 @@ public class State implements Comparator<State>{
 //--- Constructors   --------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a State object that assigns values to the object's id, parent-FSM, initial status,
+	 * Constructor for a State object that assigns values to the object's id, initial status,
 	 * and marked status as defined by the user input.
 	 * 
 	 * @param name - String object representing the name of this State object
-	 * @param parent - String object representing the name of this State object's FSM-parent
 	 * @param init - boolean value representing the status of this State object's being an initial State
 	 * @param mark - boolean value representing the status of this State object's being a marked State
 	 */
 	
-	public State(String name, String parent, boolean init, boolean mark) {
+	public State(String name, boolean init, boolean mark) {
 		id = name;
-		fsm = parent;
 		initial = init;
 		marked = mark;
 	}
 	
 	/**
-	 * Constructor for a State object that assigns a name and parent-FSM to the object, and
+	 * Constructor for a State object that assigns a name to the object, and
 	 * assigns, according to the user-defined code value, values to the initial and marked
 	 * boolean values.
 	 * 
@@ -59,13 +55,11 @@ public class State implements Comparator<State>{
 	 *       3  - Initial: true, Marked: true
 	 * 
 	 * @param name - String object representing the name of this State object
-	 * @param parent - String object representing the name of this State object's FSM-parent
 	 * @param code - int value describing how to configure the initial and marked boolean values
 	 */
 	
-	public State(String name, String parent, int code) {
+	public State(String name, int code) {
 		id = name;
-		fsm = parent;
 		switch(code) {
 		  case 0: initial = false;
 		  		  marked = false;
@@ -85,48 +79,29 @@ public class State implements Comparator<State>{
 	}
 	
 	/**
-	 * Constructor for a State object that assigns a name and parent-FSM to the object, and
-	 * defaults the initial and marked boolean values to false.
-	 * 
-	 * @param name - String object representing the State object's name
-	 * @param parent - String object representing the State object's parent's name
-	 */
-	
-	public State(String name, String parent) {
-		id = name;
-		fsm = parent;
-		initial = false;
-		marked = false;
-	}
-	
-	/**
 	 * Constructor for a State object that assigns a name to this object as defined by
-	 * the input, defaults the parent-FSM String, and defaults the initial and marked
-	 * values to false.
+	 * the input and defaults the initial and marked values to false.
 	 * 
 	 * @param name - String object representing the State object's name
 	 */
 	
 	public State(String name) {
 		id = name;
-		fsm = "";
 		initial = false;
 		marked = false;
 	}
 	
 	/**
-	 * Constructor for a State object that copies the values stored in an existing State
-	 * object into this State object, but changes the associated FSM.
-	 * 
-	 * @param replace - State object that's contents are copied into the object being constructed
-	 * @param parent - FSM that contains the newly created state.
+	 * Constructor for a State object that contains nothing, not even an id. This is NOT
+	 * for general use, and it should only be used when immediately followed by setting
+	 * the State's id (see StateMap's addState(String) method to understand why this is
+	 * necessary with the generic type instantiation).
 	 */
 	
-	public State(State replace, String parent) {
-		id = replace.getStateName();
-		fsm = parent;
-		initial = replace.getStateInitial();
-		marked = replace.getStateMarked();
+	public State() {
+		id = "";
+		initial = false;
+		marked = false;
 	}
 	
 	/**
@@ -138,12 +113,23 @@ public class State implements Comparator<State>{
 	
 	public State(State replace) {
 		id = replace.getStateName();
-		fsm = replace.getStateFSM();
 		initial = replace.getStateInitial();
 		marked = replace.getStateMarked();
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
+	
+	/**
+	 * Gets a copy of the state.
+	 * 
+	 * @return Copied State object.
+	 */
+	
+	public <S extends State> S copy() {
+		// For use in other areas, and when State is extended, this is
+		// necessary.
+		return (S)(new State(this));
+	}
 	
 	/**
 	 * Makes a String object which has the dot representation of the state, which
@@ -181,16 +167,6 @@ public class State implements Comparator<State>{
 	}
 	
 	/**
-	 * Getter method to access the State object's parent's name
-	 * 
-	 * @return - Returns a String object representing the State object's parent's name
-	 */
-	
-	public String getStateFSM() {
-		return fsm;
-	}
-	
-	/**
 	 * Getter method to request the status of this State being initial
 	 * 
 	 * @return - Returns a boolean value representing the status of this State being initial
@@ -220,16 +196,6 @@ public class State implements Comparator<State>{
 	
 	public void setStateName(String in) {
 		id = in;
-	}
-	
-	/**
-	 * Setter method to replace the currently stored object representing the State object's parent's name with the provided String
-	 * 
-	 * @param in - String object representing the new parent's name to assign this State object 
-	 */
-	
-	public void setStateFSM(String in) {
-		fsm = in;
 	}
 	
 	/**

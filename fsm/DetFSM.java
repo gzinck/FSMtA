@@ -17,7 +17,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetFSM extends FSM<Transition, Event> {
+public class DetFSM extends FSM<State, Transition, Event> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	public DetFSM(File in, String inId) {
 		id = inId;
-		states = new StateMap();
+		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		
@@ -61,7 +61,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	public DetFSM(String inId) {
 		id = inId;
-		states = new StateMap();
+		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
@@ -74,7 +74,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	
 	public DetFSM() {
 		id = "";
-		states = new StateMap();
+		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>();
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
@@ -83,7 +83,7 @@ public class DetFSM extends FSM<Transition, Event> {
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public FSM<Transition, Event> makeAccessible() {
+	public FSM<State, Transition, Event> makeAccessible() {
 		DetFSM newFSM = new DetFSM();
 		newFSM.addInitialState(this.initialState.getStateName());
 		
@@ -116,7 +116,7 @@ public class DetFSM extends FSM<Transition, Event> {
 	} // makeAccessible()
 	
 	@Override
-	public FSM<Transition, Event> makeCoAccessible() {
+	public FSM<State, Transition, Event> makeCoAccessible() {
 		DetFSM newFSM = new DetFSM();
 		// When a state is processed, add it to the map and state if it reached a marked state.
 		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>();
@@ -168,13 +168,13 @@ public class DetFSM extends FSM<Transition, Event> {
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
-	public FSM<Transition, Event> union(FSM<Transition, Event> other) {
+	public FSM<State, Transition, Event> union(FSM<State, Transition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM<Transition, Event> product(FSM<Transition, Event> other) {
+	public FSM<State, Transition, Event> product(FSM<State, Transition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -257,14 +257,14 @@ public class DetFSM extends FSM<Transition, Event> {
 //---  Remove Setter Methods   ------------------------------------------------------------------------
 
 	@Override
-	public boolean removeState(String state) {
+	public boolean removeState(String stateName) {
 		// If the state exists...
-		if(states.stateExists(state)) {
+		if(states.stateExists(stateName)) {
 			// If it is the initial state, it shouldn't be anymore
-			if(initialState != null && initialState.getStateName().equals(state)) {
+			if(initialState != null && initialState.getStateName().equals(stateName)) {
 				initialState = null;
 			}
-			states.removeState(state);
+			states.removeState(stateName);
 			// Then, we need to remove the state from every reference to it in the transitions.
 			return true;
 		}
@@ -272,8 +272,8 @@ public class DetFSM extends FSM<Transition, Event> {
 	}
 
 	@Override
-	public boolean removeInitialState(String state) {
-		if(state.equals(initialState.getStateName())) {
+	public boolean removeInitialState(String stateName) {
+		if(stateName.equals(initialState.getStateName())) {
 			initialState.setStateInitial(false);
 			initialState = null;
 			return true;

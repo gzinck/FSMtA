@@ -15,7 +15,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public abstract class FSM<T extends Transition, E extends Event> {
+public abstract class FSM<S extends State, T extends Transition, E extends Event> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 	
@@ -26,9 +26,9 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** HashMap<String, State> mapping state names to state objects, which all contain attributes of the given state. */
-	protected StateMap states;
-	/** HashMap<String, E> mapping event names to event objects, which all contain attributes of the given event. */
+	/** HashMap<String, <S extends State>> mapping state names to state objects, which all contain attributes of the given state. */
+	protected StateMap<S> states;
+	/** HashMap<String, <E extends Event>> mapping event names to event objects, which all contain attributes of the given event. */
 	protected EventMap<E> events;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
 	protected TransitionFunction<T> transitions;
@@ -68,8 +68,8 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * @return - An FSM representing the trimmed version of the calling FSM.
 	 */
 	
-	public FSM<T, E> trim() {
-		FSM<T, E> newFSM = this.makeAccessible();
+	public FSM<S, T, E> trim() {
+		FSM<S, T, E> newFSM = this.makeAccessible();
 		return newFSM.makeCoAccessible();
 	}
 	
@@ -86,7 +86,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * FSM. 
 	 */
 	
-	public abstract FSM<T, E> makeAccessible();
+	public abstract FSM<S, T, E> makeAccessible();
 	
 	/**
 	 * Searches through the graph represented by the transitions hashmap, and removes any
@@ -100,7 +100,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * @return - An FSM representing the CoAccessible version of the original FSM.
 	 */
 	
-	public abstract FSM<T, E> makeCoAccessible();
+	public abstract FSM<S, T, E> makeCoAccessible();
 
 	/**
 	 * Formerly createFileFormat(), toTextFile(String, String) converts an
@@ -120,7 +120,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * @return - The result of the union.
 	 */
 	
-	public abstract FSM<T, E> union(FSM<T, E> other);
+	public abstract FSM<S, T, E> union(FSM<S, T, E> other);
 	
 	/**
 	 * Performs a product or intersection operation on two FSMs and returns the result.
@@ -128,7 +128,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * @return - The resulting FSM from the product operation.
 	 */
 	
-	public abstract FSM<T, E> product(FSM<T, E> other);
+	public abstract FSM<S, T, E> product(FSM<S, T, E> other);
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
@@ -143,7 +143,7 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * @return - The corresponding State in the current FSM.
 	 */
 	
-	public State getState(State state) {
+	public State getState(S state) {
 		return states.getState(state);
 	}
 	
@@ -161,12 +161,12 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	/**
 	 * Returns if a state exists in the FSM.
 	 * 
-	 * @param state - String representing the state to check for existence.
+	 * @param stateName - String representing the state to check for existence.
 	 * @return - True if the state exists in the FSM, false otherwise.
 	 */
 	
-	public boolean stateExists(String state) {
-		return states.stateExists(state);
+	public boolean stateExists(String stateName) {
+		return states.stateExists(stateName);
 	}
 	
 	/**
@@ -235,22 +235,22 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	 * Removes a state from the FSM. If the State was an initial state, then the
 	 * State is no longer an initial state after removing it.
 	 * 
-	 * @param state - String value representing the State to remove from the FSM.
+	 * @param stateName - String value representing the State to remove from the FSM.
 	 * @return - Returns a boolean value representing the outcome of the operation:
 	 * true if the state was removed, false if the state did not exist.
 	 */
 
-	public abstract boolean removeState(String state);
+	public abstract boolean removeState(String stateName);
 
 	/**
 	 * Removes the parameter state from the FSM's set of initial states.
 	 * 
-	 * @param state - String for the state name to be removed as an initial state.
+	 * @param stateName - String for the state name to be removed as an initial state.
 	 * @return - True if the input state was successfully removed from the set of initial
 	 * states, false otherwise.
 	 */
 	
-	public abstract boolean removeInitialState(String state);
+	public abstract boolean removeInitialState(String stateName);
 	
 	/**
 	 * Removes a transition from one state to another state.

@@ -19,7 +19,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetFSM extends FSM<NonDetTransition, Event>{
+public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	
 	public NonDetFSM(File in, String inId) {
 		id = inId;
-		states = new StateMap<State>();
+		states = new StateMap<State>(State.class);
 		transitions = new TransitionFunction<NonDetTransition>();
 		
 		// Deal with the actual input here
@@ -62,7 +62,7 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	
 	public NonDetFSM(String inId) {
 		id = inId;
-		states = new StateMap<State>();
+		states = new StateMap<State>(State.class);
 		transitions = new TransitionFunction<NonDetTransition>();
 		initialStates = null;
 	} // DetFSM()
@@ -74,7 +74,7 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 	
 	public NonDetFSM() {
 		id = "";
-		states = new StateMap<State>();
+		states = new StateMap<State>(State.class);
 		transitions = new TransitionFunction<NonDetTransition>();
 		initialStates = null;
 	} // DetFSM()
@@ -82,13 +82,13 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public FSM<NonDetTransition, Event> makeAccessible() {
+	public FSM<State, NonDetTransition, Event> makeAccessible() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM<NonDetTransition, Event> makeCoAccessible() {
+	public FSM<State, NonDetTransition, Event> makeCoAccessible() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -102,13 +102,13 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public FSM<NonDetTransition, Event> union(FSM<NonDetTransition, Event> other) {
+	public FSM<State, NonDetTransition, Event> union(FSM<State, NonDetTransition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM<NonDetTransition, Event> product(FSM<NonDetTransition, Event> other) {
+	public FSM<State, NonDetTransition, Event> product(FSM<State, NonDetTransition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -135,12 +135,6 @@ public class NonDetFSM extends FSM<NonDetTransition, Event>{
 
 	@Override
 	public boolean removeTransition(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean addEvent(Event oldEvent) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -1,7 +1,7 @@
 package fsm;
 
 import fsm.attribute.Observability;
-import java.util.*;
+import support.State;
 import support.event.ObservableEvent;
 import support.transition.Transition;
 import java.io.*;
@@ -15,7 +15,7 @@ import java.io.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetObsFSM extends DetFSM implements Observability<Transition, ObservableEvent>{
+public class DetObsFSM extends DetFSM implements Observability<State, Transition, ObservableEvent>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ public class DetObsFSM extends DetFSM implements Observability<Transition, Obser
 //---  Operations   ---------------------------------------------------------------------------
 	
 	@Override
-	public FSM<Transition, ObservableEvent> createObserverView() {
+	public FSM<State, Transition, ObservableEvent> createObserverView() {
 		// TODO Auto-generated method stub
 		return null;
 	}

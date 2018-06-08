@@ -11,21 +11,24 @@ import java.util.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class StateMap {
+public class StateMap<S extends State> {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
-	/** HashMap<String, State> object that maps the String object names of States to their State objects. */
-	private HashMap<String, State> states;
+	/** HashMap<String, <S extends State>> object that maps the String object names of States to their State objects. */
+	private HashMap<String, S> states;
+	/** Holds the precise class of the generic State class. */
+	private Class<S> stateClass;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a StateMap object that initializes the state HashMap<String, State> object.
+	 * Constructor for a StateMap object that initializes the state HashMap<String, <S extends State>> object.
 	 */
 	
-	public StateMap() {
-		states = new HashMap<String, State>();
+	public StateMap(Class<S> inClass) {
+		states = new HashMap<String, S>();
+		stateClass = inClass;
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -41,7 +44,7 @@ public class StateMap {
 	public boolean renameState(String oldName, String newName) {
 		if(oldName == null || newName == null)
 			return false;
-		State state = states.get(oldName);
+		S state = states.get(oldName);
 		if(state == null) 
 			return false; 
 		state.setStateName(newName);
@@ -92,10 +95,10 @@ public class StateMap {
 	 * Gets a State in the current FSM using a State from another FSM's String stateName.
 	 * 
 	 * @param state - State object that's String-form name is used for identification in this StateMap object.
-	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, State> had stored at that position.
+	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, <S extends State>> had stored at that position.
 	 */
 	
-	public State getState(State state) {
+	public State getState(S state) {
 		String stateName = state.getStateName();
 		return states.get(stateName);
 	}
@@ -114,10 +117,10 @@ public class StateMap {
 	/**
 	 * Getter method that requests the Collection of State objects that the HashMap<String, <S extends State>> object is storing.
 	 * 
-	 * @return - Returns the Collection of States that are stored within the HashMap<String, State> object.
+	 * @return - Returns the Collection of States that are stored within the HashMap<String, <S extends State>> object.
 	 */
 	
-	public Collection<State> getStates() {
+	public Collection<S> getStates() {
 		return states.values();
 	}
 
@@ -127,21 +130,21 @@ public class StateMap {
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * This method adds a copy of the parameter state to the HashMap<String, State> mapping.
+	 * This method adds a copy of the parameter state to the HashMap<String, <S extends State>> mapping.
 	 * If a state with the same id already exists, nothing is changed and the corresponding
 	 * pre-existing State object is returned.
 	 * 
-	 * @param state - State object to add to the HashMap<String, State>.
+	 * @param state - State object to add to the HashMap<String, <S extends State>>.
 	 * @return State object representing the object added to the mapping (or the one that
 	 * already existed in the mapping).
 	 */
 	
-	public State addState(State state) {
+	public State addState(S state) {
 		String stateName = state.getStateName();
 		if(states.containsKey(stateName))
 			return states.get(stateName);
-		State newState = new State(state);
-		states.put(state.getStateName(), newState);
+		S newState = state.copy();
+		states.put(stateName, newState);
 		return newState;
 	}
 	
@@ -158,9 +161,15 @@ public class StateMap {
 	public State addState(String stateName) {
 		if(states.containsKey(stateName))
 			return states.get(stateName);
-		State newState = new State(stateName);
-		states.put(stateName, newState);
-		return newState;
+		try {
+			S newState = stateClass.newInstance();
+			newState.setStateName(stateName);
+			states.put(stateName, newState);
+			return newState;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**

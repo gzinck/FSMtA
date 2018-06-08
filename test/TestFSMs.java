@@ -21,15 +21,14 @@ class TestFSMs {
 		newFSM.addTransition("1", "a", "6");
 		newFSM.addTransition("4", "a", "5");
 		newFSM.addState("45");
+		newFSM.toggleMarkedState("45");
 		newFSM.addInitialState("1");
 		System.out.println(newFSM.makeDotString());
 		FSMToDot.createImgFromFSM(newFSM, WORKING_FOLDER + "/" + "test", WORKING_FOLDER, CONFIG_FILE_PATH);
 		
-		FSM anotherFSM = newFSM.makeCoAccessible();
+		FSM anotherFSM = newFSM.trim();
 		System.out.println(anotherFSM.makeDotString());
 		FSMToDot.createImgFromFSM(anotherFSM, WORKING_FOLDER + "/" + "test2", WORKING_FOLDER, CONFIG_FILE_PATH);
-		
-		fail("Not yet implemented");
 	}
 
 }
