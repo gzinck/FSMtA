@@ -1,18 +1,14 @@
 package graphviz;
 
 import java.io.File;
-import java.util.*;
-
 import fsm.*;
-import support.*;
-import support.transition.Transition;
 
 /**
  * This class handles the transfer of an object from the fsm package to a .dot format
  * so that it may be visually represented as a graph via graphviz, producing a .jpg
  * image at a hard-coded location using a name given at the time of creation.
  * 
- * This class is a part of the support package.
+ * This class is a part of the graphviz package.
  * 
  * @author Mac Clevinger and Graeme Zinck
  *
@@ -20,7 +16,7 @@ import support.transition.Transition;
 
 public class FSMToDot {
 	
-//--- Operations  -------------------------------------------------------------------------
+//---  Operations   ---------------------------------------------------------------------------
 	
 	/**
 	 * This method takes any generic object in the fsm package and calls its conversion
