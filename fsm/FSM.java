@@ -198,21 +198,6 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	}
 	
 	/**
-	 * Adds a new state to the FSM using a State object. It creates a
-	 * copy of the input state object.
-	 * 
-	 * @param oldState - State object to add, which will be copied.
-	 * @return - True if the state was successfully added, false
-	 * if the state already existed.
-	 */
-	
-	public boolean addState(State oldState) {
-		if(states.stateExists(oldState.getStateName())) return false;
-		states.addState(oldState.getStateName());
-		return true;
-	}
-	
-	/**
 	 * Adds transitions leaving a given state to the FSM.
 	 * 
 	 * @param state - The State object to start from.
@@ -223,16 +208,6 @@ public abstract class FSM<T extends Transition, E extends Event> {
 	public void addStateTransitions(State state, ArrayList<T> newTransitions) {
 		transitions.putTransitions(state, newTransitions);
 	}
-
-	/**
-	 * Adds a new event to the FSM using an Event object, creating a copy
-	 * of the input event object.
-	 * 
-	 * @param oldEvent Event object to add, which will be copied.
-	 * @return True if the event was successfully added, false if
-	 * the event already existed.
-	 */
-	public abstract boolean addEvent(E oldEvent);
 	
 	/**
 	 * Adds the parameter state as an initial state of the FSM.

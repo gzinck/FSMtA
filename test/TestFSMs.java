@@ -25,7 +25,7 @@ class TestFSMs {
 		System.out.println(newFSM.makeDotString());
 		FSMToDot.createImgFromFSM(newFSM, WORKING_FOLDER + "/" + "test", WORKING_FOLDER, CONFIG_FILE_PATH);
 		
-		FSM anotherFSM = newFSM.makeAccessible();
+		FSM anotherFSM = newFSM.makeCoAccessible();
 		System.out.println(anotherFSM.makeDotString());
 		FSMToDot.createImgFromFSM(anotherFSM, WORKING_FOLDER + "/" + "test2", WORKING_FOLDER, CONFIG_FILE_PATH);
 		
