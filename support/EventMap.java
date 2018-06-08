@@ -18,7 +18,6 @@ public class EventMap<E extends Event> {
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** HashMap mapping String names of events to their corresponding Event objects. */
-	
 	private HashMap<String, E> events;
 	
 //---  Constructors   -------------------------------------------------------------------------
@@ -34,11 +33,10 @@ public class EventMap<E extends Event> {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Renames the Event corresponding to the oldName String with the
-	 * newName String.
+	 * Renames the Event corresponding to the oldName String with the newName String.
 	 * 
-	 * @param oldName String representing the name of the Event.
-	 * @param newName String representing the desired new name of the Event.
+	 * @param oldName - String representing the name of the Event.
+	 * @param newName - String representing the desired new name of the Event.
 	 */
 	
 	public void renameEvent(String oldName, String newName) {
@@ -53,8 +51,8 @@ public class EventMap<E extends Event> {
 	/**
 	 * Gets an event using the event's String name to identify it.
 	 * 
-	 * @param eventName String representing the event.
-	 * @return The corresponding event.
+	 * @param eventName - String object representing an Event by its id.
+	 * @return - Returns the event corresponding to the provided String object.
 	 */
 	
 	public E getEvent(String eventName) {
@@ -64,10 +62,8 @@ public class EventMap<E extends Event> {
 	/**
 	 * Gets an event using an event object from another FSM.
 	 * 
-	 * @param event Event object from another FSM (but not necessarily
-	 * the current FSM).
-	 * @return The corresponding Event object from the current FSM, which
-	 * has the same event name String as the input event.
+	 * @param event - Event object from another FSM (but not necessarily the current FSM).
+	 * @return - Returns the corresponding Event object from the current FSM, which has the same event name String as the input event.
 	 */
 	
 	public E getEvent(E event) {
@@ -78,7 +74,7 @@ public class EventMap<E extends Event> {
 	/**
 	 * Gets all the events and returns them as a Collection.
 	 * 
-	 * @return Collection of Event objects.
+	 * @return - Returns a Collection of Event objects.
 	 */
 	
 	public Collection<E> getEvents() {
@@ -88,9 +84,8 @@ public class EventMap<E extends Event> {
 	/**
 	 * Checks if an event exists in the map.
 	 * 
-	 * @param eventName String representing the Event to
-	 * look for.
-	 * @return True iff the Event exists in the map.
+	 * @param eventName - String representing the Event to look for.
+	 * @return - Returns a boolean value; true if the Event exists in the map, false otherwise.
 	 */
 	
 	public boolean eventExists(String eventName) {
@@ -100,11 +95,9 @@ public class EventMap<E extends Event> {
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * Adds an event to the map which is mapped to the name
-	 * stored within the Event object already.
+	 * Adds an event to the map which is mapped to the name stored within the Event object already.
 	 * 
-	 * @param newEvent Event object (this object will NOT be
-	 * copied).
+	 * @param newEvent - Event object provided as a new entry in the HashMap<String, E>; the Event object is not copied.
 	 */
 	
 	public void addEvent(E newEvent) {
@@ -114,7 +107,7 @@ public class EventMap<E extends Event> {
 	/**
 	 * Removes the Event from the mapping.
 	 * 
-	 * @param event Event object to remove.
+	 * @param event - Event object to remove from the HashMap<String, E> events object.
 	 */
 	
 	public void removeEvent(E event) {
@@ -122,10 +115,9 @@ public class EventMap<E extends Event> {
 	}
 	
 	/**
-	 * Removes the Event corresponding to the String eventName
-	 * from the mapping.
+	 * Removes the Event corresponding to the provided String from the mapping if present.
 	 * 
-	 * @param eventName String name of the event to remove.
+	 * @param eventName - String object representing the name of the event to remove.
 	 */
 	
 	public void removeEvent(String eventName) {

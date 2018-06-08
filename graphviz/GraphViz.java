@@ -172,14 +172,14 @@ public class GraphViz
  	 */
  	
  	public int writeGraphToFile(byte[] img, File to)
- {
-     try {
-         FileOutputStream fos = new FileOutputStream(to);
-         fos.write(img);
-         fos.close();
-     } catch (java.io.IOException ioe) { return -1; }
-     return 1;
- }
+ 	{
+ 		try {
+ 			FileOutputStream fos = new FileOutputStream(to);
+ 			fos.write(img);
+ 			fos.close();
+ 		} catch (java.io.IOException ioe) { return -1; }
+ 		return 1;
+ 	}
 
  	/**
  	 * Writes the source of the graph in a file, and returns the written file

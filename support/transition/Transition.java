@@ -37,6 +37,21 @@ public class Transition {
 		state = inState;
 	}
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
+	/**
+	 * Makes a String object which has the dot representation of the transitions, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @param firstState The State which leads to the transition. This is used to
+	 * determine the exact text for the dot representation.
+	 * @return String containing the dot representation of the transitions.
+	 */
+	
+	public String makeDotString(State firstState) {
+		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\"];";
+	}
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
@@ -69,6 +84,13 @@ public class Transition {
 		return state.getStateName();
 	}
 	
+	/**
+	 * Getter method that requests whether a given State exists or not within the Transition object.
+	 * 
+	 * @param inState - State object defining the State to search for within the Transition object
+	 * @return - Returns a boolean value representing the result of the query; true if it exists, false if not.
+	 */
+	
 	public boolean hasTransitionState(State inState) {
 		if(state == inState) return true;
 		return false;
@@ -96,6 +118,8 @@ public class Transition {
 		state = in;
 	}
 	
+//---  Manipulations   -----------------------------------------------------------------------
+
 	/**
 	 * Removes the state from the transition object; or, if the state
 	 * is the only item in the transition object (as it is for the base
@@ -114,19 +138,5 @@ public class Transition {
 		}
 		return false;
 	}
-	
-	//---  Manipulations   -----------------------------------------------------------------------
-	
-	/**
-	 * Makes a String object which has the dot representation of the transitions, which
-	 * can be used for sending an FSM to GraphViz.
-	 * 
-	 * @param firstState The State which leads to the transition. This is used to
-	 * determine the exact text for the dot representation.
-	 * @return String containing the dot representation of the transitions.
-	 */
-	
-	public String makeDotString(State firstState) {
-		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\"];";
-	}
+
 }
