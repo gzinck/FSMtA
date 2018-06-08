@@ -69,6 +69,11 @@ public class Transition {
 		return state.getStateName();
 	}
 	
+	public boolean hasTransitionState(State inState) {
+		if(state == inState) return true;
+		return false;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**

@@ -227,7 +227,7 @@ public class DetFSM extends FSM<Transition, Event> {
 		return false;
 	} // isCoAccessible(State, HashMap<String, Boolean>)
 
-//---  Setter Methods   -----------------------------------------------------------------------
+//---  Add Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
 	public boolean addInitialState(String newInitial) {
@@ -240,29 +240,7 @@ public class DetFSM extends FSM<Transition, Event> {
 		}
 		return false;
 	}
-
-//---  Manipulations   ------------------------------------------------------------------------
-
-	@Override
-	public boolean removeState(String state) {
-		// If the state exists and is not the initial state...
-		if(states.stateExists(state) && !initialState.getStateName().equals(state)) {
-			states.removeState(state);
-			// Then, we need to remove the state from every reference to it in the transitions.
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean removeInitialState(String state) {
-		if(state.equals(initialState.getStateName())) {
-			initialState = null;
-			return true;
-		}
-		return false;
-	}
-
+	
 	@Override
 	public void addEvent(String state1, String eventName, String state2) {
 		// If they do not exist yet, add the states.
@@ -278,6 +256,44 @@ public class DetFSM extends FSM<Transition, Event> {
 			events.addEvent(e);
 		}
 		transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
+	}
+
+//---  Remove Setter Methods   ------------------------------------------------------------------------
+
+	@Override
+	public boolean removeState(String state) {
+		// If the state exists...
+		if(states.stateExists(state)) {
+			// If it is the initial state, it shouldn't be anymore
+			if(initialState != null && initialState.getStateName().equals(state)) {
+				initialState = null;
+			}
+			states.removeState(state);
+			// Then, we need to remove the state from every reference to it in the transitions.
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeInitialState(String state) {
+		if(state.equals(initialState.getStateName())) {
+			initialState.setStateInitial(false);
+			initialState = null;
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean removeTransition(String state1, String eventName, String state2) {
+		State s1 = getState(state1);
+		State s2 = getState(state2);
+		Event e = events.getEvent(eventName);
+		if(s1 == null || s2 == null || e == null) return false;
+		if(transitions.removeTransition(s1, e, s2)) return true;
+		return false;
+		// 
 	}
 	
 } // class DetFSM

@@ -16,9 +16,12 @@ class TestFSMs {
 	void test() {
 		DetFSM newFSM = new DetFSM();
 		newFSM.addEvent("1", "a", "2");
+		newFSM.addEvent("2", "a", "3");
 		newFSM.addInitialState("1");
+		newFSM.removeTransition("1", "a", "2");
+		newFSM.removeState("1");
 		System.out.println(newFSM.makeDotString());
-		FSMToDot.createImgFromFSM(newFSM, WORKING_FOLDER + "/" + "test", WORKING_FOLDER, CONFIG_FILE_PATH);
+		//FSMToDot.createImgFromFSM(newFSM, WORKING_FOLDER + "/" + "test", WORKING_FOLDER, CONFIG_FILE_PATH);
 		fail("Not yet implemented");
 	}
 
