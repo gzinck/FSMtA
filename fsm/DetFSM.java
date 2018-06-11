@@ -35,27 +35,28 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	/**
 	 * Constructor for an DetFSM object that takes in a file encoding the contents of the FSM.
 	 * 
+	 * DetFSM File Order for Special: Initial, Marked.
+	 * 
 	 * @param in - File read in order to create the FSM.
 	 * @param id - The id for the FSM (can be any String).
 	 */
 	
 	public DetFSM(File in, String inId) {
 		id = inId;
-		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, Transition>(Transition.class);
+		
+		StateMap<State> states = new StateMap<State>(State.class);
+		EventMap<Event> events = new EventMap<Event>(Event.class);
+		TransitionFunction<State, Transition> transitions = new TransitionFunction<State, Transition>(Transition.class);
+		
 		ReadWrite<State, Event, Transition> redWrt = new ReadWrite<State, Event, Transition>();
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
 		initialState = states.getState(special.get(0).get(0));
+		states.getState(initialState).setStateInitial(true);
+		for(int i = 0; i < special.get(1).size(); i++) {
+			states.getState(special.get(1).get(i)).setStateMarked(true);
+		}
 		
-		// TODO Deal with the actual input here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		System.err.println("Looks like Graeme didn't implement this.");
+		constructFSM(states, events, transitions);
 	} // DetFSM(File)
 	
 	/**
@@ -65,10 +66,11 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	
 	public DetFSM(String inId) {
 		id = inId;
-		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, Transition>(Transition.class);
+		StateMap<State> states = new StateMap<State>(State.class);
+		EventMap<Event> events = new EventMap<Event>(Event.class);
+		TransitionFunction<State, Transition> transitions = new TransitionFunction<State, Transition>(Transition.class);
 		initialState = null;
+		constructFSM(states, events, transitions);
 	} // DetFSM()
 	
 	/**

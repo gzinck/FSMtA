@@ -134,6 +134,26 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	
 	public abstract FSM product(FSM<S, T, E> other);
 	
+//---  Setter Methods   -----------------------------------------------------------------------
+	
+	public void setFSMStateMap(StateMap<S> inState) {
+		states = inState;
+	}
+	
+	public void setFSMEventMap(EventMap<E> inEvent) {
+		events = inEvent;
+	}
+	
+	public void setFSMTransitionFunction(TransitionFunction<S, T> inTrans) {
+		transitions = inTrans;
+	}
+	
+	public void constructFSM(StateMap<S> inStates, EventMap<E> inEvents, TransitionFunction<S, T> inTrans) {
+		setFSMStateMap(inStates);
+		setFSMEventMap(inEvents);
+		setFSMTransitionFunction(inTrans);
+	}
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
