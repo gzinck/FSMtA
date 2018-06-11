@@ -2,7 +2,6 @@ package fsm;
 
 import java.util.*;
 import support.*;
-import support.transition.DetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -16,7 +15,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public abstract class FSM<S extends State, T extends Transition, E extends Event> {
+public abstract class FSM<S extends State, T extends Transition<S, E>, E extends Event> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 	
@@ -279,18 +278,46 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	
 	public void addTransition(String state1, String eventName, String state2) {
 		// If they do not exist yet, add the states.
-		addState(state1);
-		addState(state2);
+		S s1 = states.addState(state1);
+		S s2 = states.addState(state2);
 		
 		// Get the event or make it
-		Event e = events.addEvent(eventName);
+		E e = events.addEvent(eventName);
 		try {
-		  T outbound = transitions.getTransitionFunctionClassType().newInstance();
-		  outbound.setTransitionEvent(e);
-		  outbound.setTransitionState(getState(state2));
-		  transitions.addTransition(getState(state1), outbound);
+			// TODO Make sure that we check if the transition's event already exists
+			// for the from state in the transition, because if it exists, then we
+			// have to add the state to that object instead...
+			// TODO Also make sure you CANNOT add a new state to the transition object
+			// elsewhere...
+			T outbound = transitions.getTransitionFunctionClassType().newInstance();
+			outbound.setTransitionEvent(e);
+			outbound.setTransitionState(s2);
+			transitions.addTransition(s1, outbound);
 		}
 		catch(Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Adds a transition from one state to another state by copying the parameter
+	 * state and transition objects.
+	 * 
+	 * @param state
+	 * @param transition
+	 */
+	public void addTransition(S state, T transition) {
+		S fromState = states.addState(state); // Get the state or make it
+		E e = events.addEvent(transition.getTransitionEvent()); // Get the event or make it
+		try {
+			T outbound = transitions.getTransitionFunctionClassType().newInstance(); // New transition object
+			outbound.setTransitionEvent(e);
+			for(S s : transition.getTransitionStates()) { // Add all the transition states (make them if necessary)
+				S toState = states.addState(s);
+				outbound.setTransitionState(toState);
+			} // for transition state
+			transitions.addTransition(fromState, outbound);
+		} catch(Exception e1) {
 			e1.printStackTrace();
 		}
 	}

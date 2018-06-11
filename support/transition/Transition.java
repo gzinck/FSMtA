@@ -6,13 +6,15 @@ import support.State;
 import support.event.Event;
 
 public interface Transition<S extends State, E extends Event> {
+	
 	/**
-	 * Setter method to assign a new String as the State name associated to the Event associated to this Transition object.
+	 * Setter method to add a new State to the Transition. If the transition is non-deterministic,
+	 * then setting the state will not overwrite any other states (it will just add). If it is
+	 * deterministic, the state will overwrite the previous state.
 	 * If the State was already a transition state, it is not duplicated.
 	 * 
 	 * @param in State object representing the Transition object's Event's new target State
 	 */
-	
 	public void setTransitionState(S in);
 	
 	/**

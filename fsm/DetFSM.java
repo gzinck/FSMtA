@@ -122,35 +122,23 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 	@Override
 	public DetFSM makeCoAccessible() {
 		DetFSM newFSM = new DetFSM();
-		// When a state is processed, add it to the map and state if it reached a marked state.
-		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>();
-		
 		// First, just find what states we need to add.
+		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>(); // When a state is processed, add it to the map and state if it reached a marked state.
 		for(State curr : this.states.getStates()) {
 			if(!processedStates.containsKey(curr.getStateName()))
 				isCoAccessible(curr, processedStates);
 		} // for states
-		
-		// Second, create the states and add the transitions
+
+		// Secondly, create the states and add the transitions
 		for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
 			// If the state is coaccessible, add it!
 			if(entry.getValue()) {
 				State oldState = getState(entry.getKey());
-				// Add a new state which is a copy of the state in the original FSM 
-				State newState = newFSM.states.addState(oldState);
 				
 				if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
-					ArrayList<DetTransition> newTransitions = new ArrayList<DetTransition>(); // Add all the transitions that go to states that are coaccessible
-					for(DetTransition t : transitions.getTransitions(oldState)) {
-						String toState = t.getTransitionState().getStateName();
-						// If it is coaccessible...
-						if(processedStates.get(toState)) {
-							State newToState = newFSM.states.addState(getState(toState)); // Add a duplicate of the current FSM's state
-							Event newEvent = newFSM.events.addEvent(t.getTransitionEvent());
-							newTransitions.add(new DetTransition(newEvent, newToState));
-						} // if
-					} // for transition
-					newFSM.addStateTransitions(newState, newTransitions);
+					for(DetTransition t : transitions.getTransitions(oldState))
+						if(processedStates.get(t.getTransitionState().getStateName())) // If it is coaccessible...
+							newFSM.addTransition(oldState, t);
 				} // if not null
 			} // if coaccessible
 		} // for processed state
@@ -158,7 +146,6 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 		// Finally, add the initial state
 		if(processedStates.get(initialState.getStateName()))
 			newFSM.addInitialState(initialState.getStateName());
-		
 		return newFSM;
 	} // makeCoAccessible()
 	
