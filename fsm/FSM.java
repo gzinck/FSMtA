@@ -35,7 +35,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	/** HashMap<String, <E extends Event>> mapping event names to event objects, which all contain attributes of the given event. */
 	protected EventMap<E> events;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
-	protected TransitionFunction<T> transitions;
+	protected TransitionFunction<S, T> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
@@ -188,7 +188,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return - Returns a TransitionFunction<T> object containing all the Transitions associated to this FSM object.
 	 */
 	
-	public TransitionFunction<T> getTransitions() {
+	public TransitionFunction<S, T> getTransitions() {
 		return transitions;
 	}
 	
@@ -217,7 +217,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * places state is connected to.
 	 */
 	
-	public void addStateTransitions(State state, ArrayList<T> newTransitions) {
+	public void addStateTransitions(S state, ArrayList<T> newTransitions) {
 		transitions.putTransitions(state, newTransitions);
 	}
 	

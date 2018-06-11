@@ -63,7 +63,6 @@ public class StateMap<S extends State> {
 			renameState(state.getStateName(), index + "");
 	}
 	
-
 	/**
 	 * Makes a String object which has the dot representation of the states, which can be used for sending an FSM to GraphViz.
 	 * 
@@ -126,6 +125,23 @@ public class StateMap<S extends State> {
 
 //---  Setter Methods   -----------------------------------------------------------------------
 
+	/**
+	 * 
+	 * @param inHash
+	 */
+	
+	public void setStateMapStates(HashMap<String, S> inHash) {
+		states = inHash;
+	}
+	
+	/**
+	 * 
+	 * @param inClass
+	 */
+	
+	public void setStateMapClass(Class<S> inClass) {
+		stateClass = inClass;
+	}
 	
 //---  Manipulations   ------------------------------------------------------------------------
 	
@@ -139,7 +155,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public State addState(S state) {
+	public S addState(S state) {
 		String stateName = state.getStateName();
 		if(states.containsKey(stateName))
 			return states.get(stateName);
@@ -159,7 +175,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public State addState(S state, String prefix) {
+	public S addState(S state, String prefix) {
 		String stateName = prefix + state.getStateName();
 		if(states.containsKey(stateName))
 			return states.get(stateName);
@@ -179,7 +195,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public State addState(String stateName) {
+	public S addState(String stateName) {
 		if(states.containsKey(stateName))
 			return states.get(stateName);
 		try {

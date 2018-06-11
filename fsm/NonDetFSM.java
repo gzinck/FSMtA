@@ -43,7 +43,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	public NonDetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<NonDetTransition>();
+		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
 		
 		// Deal with the actual input here
 		// Gibberish goes here
@@ -63,7 +63,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	public NonDetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<NonDetTransition>();
+		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
 		initialStates = null;
 	} // DetFSM()
 	
@@ -75,7 +75,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	public NonDetFSM() {
 		id = "";
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<NonDetTransition>();
+		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
 		initialStates = null;
 	} // DetFSM()
 
@@ -113,12 +113,26 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 		return null;
 	}
 
+//---  Getter Methods   -----------------------------------------------------------------------
+
+	@Override
+	public ArrayList<State> getInitialStates() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	@Override
 	public boolean addInitialState(String newInitial) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void addTransition(String state1, String eventName, String state2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -139,10 +153,5 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 		return false;
 	}
 
-	@Override
-	public void addTransition(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

@@ -36,6 +36,7 @@ public class NonDetTransition extends Transition{
 		state = new ArrayList<State>();
 		for(int i = 0; i < states.length; i++)
 		  state.add(states[i]);
+		super.setTransitionState(null);
 	}
 	
 //--- Setter Methods   ------------------------------------------------------------------------
@@ -47,6 +48,7 @@ public class NonDetTransition extends Transition{
 	 */
 	
 	public void setTransitionState(ArrayList<State> in) {
+		pullInTransitionState();
 		state = in;
 	}
 	
@@ -59,6 +61,7 @@ public class NonDetTransition extends Transition{
 	 */
 	
 	public ArrayList<State> getTransitionStates(){
+		pullInTransitionState();
 		return state;
 	}
 	
@@ -71,6 +74,7 @@ public class NonDetTransition extends Transition{
 	 */
 	
 	public boolean stateExists(String stateName) {
+		pullInTransitionState();
 		return state.contains(new State(stateName));
 	}
 	
@@ -84,6 +88,7 @@ public class NonDetTransition extends Transition{
 	 */
 	
 	public void addTransitionState(State stateNew) {
+		pullInTransitionState();
 		state.add(stateNew);
 	}
 	
@@ -95,7 +100,17 @@ public class NonDetTransition extends Transition{
 	 */
 	
 	public void removeTransitionState(String stateName) {
+		pullInTransitionState();
 		state.remove(new State(stateName));
+	}
+	
+//---  Miscellaneous   ------------------------------------------------------------------------
+	
+	public void pullInTransitionState() {
+		State held = super.getTransitionState();
+		if(state.indexOf(held) == -1 && held != null)
+			state.add(held);
+		super.setTransitionState(null);
 	}
 
 }

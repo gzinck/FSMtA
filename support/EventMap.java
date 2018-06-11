@@ -19,6 +19,8 @@ public class EventMap<E extends Event> {
 	
 	/** HashMap mapping String names of events to their corresponding Event objects. */
 	private HashMap<String, E> events;
+	/** Holds the precise class of the generic State class. */
+	private Class<E> eventClass;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -26,8 +28,9 @@ public class EventMap<E extends Event> {
 	 * Constructor for an EventMap that initializes the events HashMap<String, E>.
 	 */
 	
-	public EventMap() {
+	public EventMap(Class<E> inEventClass) {
 		events = new HashMap<String, E>();
+		eventClass = inEventClass;
 	}
 
 //---  Operations   ---------------------------------------------------------------------------
@@ -93,6 +96,21 @@ public class EventMap<E extends Event> {
 	}
 
 //---  Manipulations   ------------------------------------------------------------------------
+	
+	public E addEvent(String eventName) {
+		if(events.containsKey(eventName))
+			return events.get(eventName);
+		try {
+		  E newEvent = eventClass.newInstance();
+		  newEvent.setEventName(eventName);
+		  events.put(eventName, newEvent);
+		  return newEvent;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	/**
 	 * Adds an event to the map which is mapped to the name stored within the Event object already.

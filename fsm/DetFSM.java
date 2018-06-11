@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import support.*;
 import support.transition.*;
 import support.event.Event;
+import support.ReadWrite;
 
 /**
  * This class models a Deterministic FSM that expands upon the abstract FSM class to
@@ -41,8 +42,11 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	public DetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>();
-		transitions = new TransitionFunction<Transition>();
+		events = new EventMap<Event>(Event.class);
+		transitions = new TransitionFunction<State, Transition>(Transition.class);
+		ReadWrite<State, Event, Transition> redWrt = new ReadWrite<State, Event, Transition>();
+		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
+		initialState = states.getState(special.get(0).get(0));
 		
 		// TODO Deal with the actual input here
 		// Gibberish goes here
@@ -62,8 +66,8 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	public DetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>();
-		transitions = new TransitionFunction<Transition>();
+		events = new EventMap<Event>(Event.class);
+		transitions = new TransitionFunction<State, Transition>(Transition.class);
 		initialState = null;
 	} // DetFSM()
 	
@@ -75,8 +79,8 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	public DetFSM() {
 		id = "";
 		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>();
-		transitions = new TransitionFunction<Transition>();
+		events = new EventMap<Event>(Event.class);
+		transitions = new TransitionFunction<State, Transition>(Transition.class);
 		initialState = null;
 	} // DetFSM()
 

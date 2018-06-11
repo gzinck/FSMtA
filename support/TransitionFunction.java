@@ -13,12 +13,14 @@ import support.event.Event;
  * @param <T> - T being a class in the Transitions hierarchy from support.transition package
  */
 
-public class TransitionFunction<T extends Transition> {
+public class TransitionFunction<S extends State, T extends Transition> {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with various events that are possible. */
-	protected HashMap<State, ArrayList<T>> transitions;
+	protected HashMap<S, ArrayList<T>> transitions;
+	/** Holds the precise class of the generic State class. */
+	private Class<T> transitionClass;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -26,8 +28,9 @@ public class TransitionFunction<T extends Transition> {
 	 * Constructor for TransitionFunction objects that initializes the HashMap<State, ArrayList<T>> for this object.
 	 */
 	
-	public TransitionFunction() {
-		transitions = new HashMap<State, ArrayList<T>>();
+	public TransitionFunction(Class<T> transType) {
+		transitions = new HashMap<S, ArrayList<T>>();
+		transitionClass = transType;
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -41,7 +44,7 @@ public class TransitionFunction<T extends Transition> {
 	
 	public String makeDotString() {
 		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
+		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
 			State firstState = entry.getKey();
 			ArrayList<T> thisTransitions = entry.getValue();
 			for(Transition aTransition : thisTransitions) {
@@ -64,6 +67,15 @@ public class TransitionFunction<T extends Transition> {
 		return transitions.get(state);
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	
+	public Class<T> getTransitionFunctionClassType(){
+		return transitionClass;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
@@ -74,12 +86,12 @@ public class TransitionFunction<T extends Transition> {
 	 * @param inTransitions - ArrayList<T> of Transition objects to become the new Value stored in a <Key, Value> data structure.
 	 */
 	
-	public void putTransitions(State state, ArrayList<T> inTransitions) {
+	public void putTransitions(S state, ArrayList<T> inTransitions) {
 		transitions.put(state, inTransitions);
 	}
 	
 //---  Manipulations   ------------------------------------------------------------------------
-
+	
 	/**
 	 * This method appends a new Transition object to the ArrayList<T> at the specified State Key in <Key, Value>
 	 * data sets (<State, ArrayList<T>>), creating the entry if it doesn't yet exist.
@@ -88,7 +100,7 @@ public class TransitionFunction<T extends Transition> {
 	 * @param transition - <T extends Transition> object representing the new Transition to append to the existing ArrayList<T> at Key State in <Key, Value>. 
 	 */
 	
-	public void addTransition(State state, T transition) {
+	public void addTransition(S state, T transition) {
 		ArrayList<T> currT = transitions.get(state);
 		if(currT == null) {
 			transitions.put(state, new ArrayList<T>());
@@ -105,7 +117,7 @@ public class TransitionFunction<T extends Transition> {
 	
 	public void removeState(State state) {
 		transitions.remove(state);
-		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
+		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
 			for(T transition : entry.getValue())
 				if(transition.removeTransitionState(state))
 					// Then remove the transition from existence
@@ -136,4 +148,5 @@ public class TransitionFunction<T extends Transition> {
 		}
 		return false;
 	}
+
 }
