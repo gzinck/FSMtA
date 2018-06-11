@@ -18,6 +18,15 @@ public class Event {
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
+	 * Constructor for Event objects that does not assign an ID. This should not be used unless it is
+	 * promptly renamed after called, it is simply used so that instantiation is possible in generic
+	 * EventMap methods. 
+	 */
+	public Event() {
+		id = "";
+	}
+	
+	/**
 	 * Constructor for Event objects that assigns the provided String object as the Name of this Event object
 	 * 
 	 * @param in - String object provided as the value for this Event object's name

@@ -19,14 +19,19 @@ public class EventMap<E extends Event> {
 	
 	/** HashMap mapping String names of events to their corresponding Event objects. */
 	private HashMap<String, E> events;
+	/** Holds the precise class of the generic Event class. */
+	private Class<E> eventClass;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
 	 * Constructor for an EventMap that initializes the events HashMap<String, E>.
+	 * 
+	 * @param inClass - The class of Event the map will hold, used for instantiation.
 	 */
 	
-	public EventMap() {
+	public EventMap(Class<E> inClass) {
+		eventClass = inClass;
 		events = new HashMap<String, E>();
 	}
 
@@ -101,7 +106,7 @@ public class EventMap<E extends Event> {
 	 * in the map is.
 	 * 
 	 * @param oldEvent - Event object provided as a new entry in the HashMap<String, E>; the Event object is not copied.
-	 * @return Event object which corresponds to the oldEvent's id, and which is currently
+	 * @return - Event object which corresponds to the oldEvent's id, and which is currently
 	 * stored in the EventMap.
 	 */
 	
@@ -112,6 +117,30 @@ public class EventMap<E extends Event> {
 		E newEvent = oldEvent.copy();
 		events.put(eventName, newEvent);
 		return newEvent;
+	}
+	
+	/**
+	 * Adds an event to the map which is mapped to the name indicated. The new event initializes with
+	 * the default settings for the given Event class. If the event already existed, no new object is
+	 * created.
+	 * 
+	 * @param eventName - The String name of the event to add.
+	 * @return - The newly created event if the event existed, the event that existed already, or null
+	 * if there was an error instantiating the event.
+	 */
+	
+	public E addEvent(String eventName) {
+		if(events.containsKey(eventName))
+			return events.get(eventName);
+		try {
+			E newEvent = eventClass.newInstance();
+			newEvent.setEventName(eventName);
+			events.put(eventName, newEvent);
+			return newEvent;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

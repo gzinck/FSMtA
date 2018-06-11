@@ -41,7 +41,7 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	public DetFSM(File in, String inId) {
 		id = inId;
 		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>();
+		events = new EventMap<Event>(Event.class);
 		transitions = new TransitionFunction<Transition>();
 		
 		// TODO Deal with the actual input here
@@ -62,7 +62,7 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	public DetFSM(String inId) {
 		id = inId;
 		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>();
+		events = new EventMap<Event>(Event.class);
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
@@ -75,7 +75,7 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	public DetFSM() {
 		id = "";
 		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>();
+		events = new EventMap<Event>(Event.class);
 		transitions = new TransitionFunction<Transition>();
 		initialState = null;
 	} // DetFSM()
@@ -210,7 +210,7 @@ public class DetFSM extends FSM<State, Transition, Event> {
 	}
 
 	@Override
-	public FSM<State, Transition, Event> product(FSM<State, Transition, Event> other) {
+	public DetFSM product(FSM<State, Transition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -279,40 +279,8 @@ public class DetFSM extends FSM<State, Transition, Event> {
 			return false;
 		}
 	}
-	
-	@Override
-	public void addTransition(String state1, String eventName, String state2) {
-		// If they do not exist yet, add the states.
-		addState(state1);
-		addState(state2);
-		
-		// Get the event or make it
-		Event e;
-		if(events.eventExists(eventName)) {
-			e = events.getEvent(eventName);
-		} else {
-			e = new Event(eventName);
-			events.addEvent(e);
-		}
-		transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
-	}
 
 //---  Remove Setter Methods   ------------------------------------------------------------------------
-
-	@Override
-	public boolean removeState(String stateName) {
-		// If the state exists...
-		if(states.stateExists(stateName)) {
-			// If it is the initial state, it shouldn't be anymore
-			if(initialState != null && initialState.getStateName().equals(stateName)) {
-				initialState = null;
-			}
-			states.removeState(stateName);
-			// Then, we need to remove the state from every reference to it in the transitions.
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public boolean removeInitialState(String stateName) {

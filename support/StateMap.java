@@ -24,6 +24,8 @@ public class StateMap<S extends State> {
 	
 	/**
 	 * Constructor for a StateMap object that initializes the state HashMap<String, <S extends State>> object.
+	 * 
+	 * @param inClass - The class of State the map will hold, used for instantiation.
 	 */
 	
 	public StateMap(Class<S> inClass) {

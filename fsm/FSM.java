@@ -239,8 +239,17 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @param state2 - The String corresponding to the destination state for the transition.
 	 */
 	
-	public abstract void addTransition(String state1, String eventName, String state2);
-
+	public void addTransition(String state1, String eventName, String state2) {
+		// If they do not exist yet, add the states.
+		addState(state1);
+		addState(state2);
+		
+		// Get the event or make it
+		Event e = events.addEvent(eventName);
+		transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
+	}
+	
+	
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
 	/**
@@ -252,7 +261,18 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * true if the state was removed, false if the state did not exist.
 	 */
 
-	public abstract boolean removeState(String stateName);
+	public boolean removeState(String stateName) {
+		// If the state exists...
+		if(states.stateExists(stateName)) {
+			// If it is the initial state, it shouldn't be anymore
+			removeInitialState(stateName);
+			states.removeState(stateName);
+			// Then, we need to remove the state from every reference to it in the transitions.
+			transitions.removeState(states.getState(stateName));
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * Removes the parameter state from the FSM's set of initial states.
