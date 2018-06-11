@@ -172,28 +172,49 @@ public class DetFSM extends FSM<State, Transition, Event> {
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
-	public FSM<State, NonDetTransition, Event> union(FSM<State, Transition, Event> other) {
+	public NonDetFSM union(FSM<State, Transition, Event> other) {
 		NonDetFSM newFSM = new NonDetFSM();
 		
 		// Add initial states
-		newFSM.addInitialState(STATE1_PREFIX + initialState.getStateName());
+		newFSM.addInitialState(STATE_PREFIX_1 + initialState.getStateName());
 		for(State s : other.getInitialStates()) // Add the states from the other FSM
-			newFSM.addInitialState(STATE2_PREFIX + s.getStateName());
+			newFSM.addInitialState(STATE_PREFIX_2 + s.getStateName());
 		
-		// Add normal states as well
+		// Add other states as well
 		for(State s : this.states.getStates())
-			newFSM.states.addState(s, STATE1_PREFIX);
+			newFSM.states.addState(s, STATE_PREFIX_1);
 		for(State s : other.states.getStates())
-			newFSM.states.addState(s, STATE2_PREFIX);
+			newFSM.states.addState(s, STATE_PREFIX_2);
+		
+		// Add events
+		for(Event e : this.events.getEvents())
+			newFSM.events.addEvent(e);
+		for(Event e : other.events.getEvents())
+			newFSM.events.addEvent(e);
 		
 		// Add transitions
-		
+		for(Map.Entry<State, ArrayList<Transition>> entry : this.transitions.getAllTransitions()) {
+			State currState = newFSM.states.getState(STATE_PREFIX_1 + entry.getKey().getStateName());
+			for(Transition t : entry.getValue()) {
+				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
+				State newState = newFSM.states.getState(STATE_PREFIX_1 + t.getTransitionStateName());
+				newFSM.transitions.addTransition(currState, new NonDetTransition(newEvent, newState));
+			} // for transition
+		} // for entry
+		for(Map.Entry<State, ArrayList<Transition>> entry : other.transitions.getAllTransitions()) {
+			State currState = newFSM.states.getState(STATE_PREFIX_2 + entry.getKey().getStateName());
+			for(Transition t : entry.getValue()) {
+				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
+				State newState = newFSM.states.getState(STATE_PREFIX_2 + t.getTransitionStateName());
+				newFSM.transitions.addTransition(currState, new NonDetTransition(newEvent, newState));
+			} // for transition
+		} // for entry
 		
 		return newFSM;
 	}
 
 	@Override
-	public FSM<State, Transition, Event> product(FSM<State, Transition, Event> other) {
+	public DetFSM product(FSM<State, Transition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -262,40 +283,8 @@ public class DetFSM extends FSM<State, Transition, Event> {
 			return false;
 		}
 	}
-	
-	@Override
-	public void addTransition(String state1, String eventName, String state2) {
-		// If they do not exist yet, add the states.
-		addState(state1);
-		addState(state2);
-		
-		// Get the event or make it
-		Event e;
-		if(events.eventExists(eventName)) {
-			e = events.getEvent(eventName);
-		} else {
-			e = new Event(eventName);
-			events.addEvent(e);
-		}
-		transitions.addTransition(getState(state1), new Transition(e, getState(state2)));
-	}
 
 //---  Remove Setter Methods   ------------------------------------------------------------------------
-
-	@Override
-	public boolean removeState(String stateName) {
-		// If the state exists...
-		if(states.stateExists(stateName)) {
-			// If it is the initial state, it shouldn't be anymore
-			if(initialState != null && initialState.getStateName().equals(stateName)) {
-				initialState = null;
-			}
-			states.removeState(stateName);
-			// Then, we need to remove the state from every reference to it in the transitions.
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public boolean removeInitialState(String stateName) {
@@ -305,17 +294,6 @@ public class DetFSM extends FSM<State, Transition, Event> {
 			return true;
 		}
 		return false;
-	}
-	
-	@Override
-	public boolean removeTransition(String state1, String eventName, String state2) {
-		State s1 = getState(state1);
-		State s2 = getState(state2);
-		Event e = events.getEvent(eventName);
-		if(s1 == null || s2 == null || e == null) return false;
-		if(transitions.removeTransition(s1, e, s2)) return true;
-		return false;
-		// 
 	}
 	
 } // class DetFSM

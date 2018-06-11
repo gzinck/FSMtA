@@ -24,9 +24,9 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	/** String constant designating the file extension to append to the file name when writing to the system*/
 	public static final String FSM_EXTENSION = ".fsm";
 	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
-	public final static String STATE1_PREFIX = "a";
+	public final static String STATE_PREFIX_1 = "a";
 	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
-	public final static String STATE2_PREFIX = "b";
+	public final static String STATE_PREFIX_2 = "b";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
@@ -147,7 +147,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return - The corresponding State in the current FSM.
 	 */
 	
-	public State getState(S state) {
+	public S getState(S state) {
 		return states.getState(state);
 	}
 	
@@ -158,7 +158,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return - The corresponding State in the current FSM.
 	 */
 	
-	public State getState(String stateName) {
+	public S getState(String stateName) {
 		return states.getState(stateName);
 	}
 	
@@ -239,8 +239,25 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @param state2 - The String corresponding to the destination state for the transition.
 	 */
 	
-	public abstract void addTransition(String state1, String eventName, String state2);
-
+	public void addTransition(String state1, String eventName, String state2) {
+		// If they do not exist yet, add the states.
+		addState(state1);
+		addState(state2);
+		
+		// Get the event or make it
+		Event e = events.addEvent(eventName);
+		try {
+		  T outbound = transitions.getTransitionFunctionClassType().newInstance();
+		  outbound.setTransitionEvent(e);
+		  outbound.setTransitionState(getState(state2));
+		  transitions.addTransition(getState(state1), outbound);
+		}
+		catch(Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
 	/**
@@ -252,8 +269,19 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * true if the state was removed, false if the state did not exist.
 	 */
 
-	public abstract boolean removeState(String stateName);
-
+	public boolean removeState(String stateName) {
+		// If the state exists...
+		if(states.stateExists(stateName)) {
+			// If it is the initial state, it shouldn't be anymore
+			removeInitialState(stateName);
+			states.removeState(stateName);
+			// Then, we need to remove the state from every reference to it in the transitions.
+			transitions.removeState(states.getState(stateName));
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Removes the parameter state from the FSM's set of initial states.
 	 * 
@@ -273,7 +301,14 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return True if the event was removed, false if it did not exist.
 	 */
 	
-	public abstract boolean removeTransition(String state1, String eventName, String state2);
+	public boolean removeTransition(String state1, String eventName, String state2) {
+		S s1 = getState(state1);
+		S s2 = getState(state2);
+		E e = events.getEvent(eventName);
+		if(s1 == null || s2 == null || e == null) return false;
+		if(transitions.removeTransition(s1, e, s2)) return true;
+		return false;
+	}
 
 //---  Manipulations - Other   ----------------------------------------------------------------
 

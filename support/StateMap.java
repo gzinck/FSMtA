@@ -24,6 +24,8 @@ public class StateMap<S extends State> {
 	
 	/**
 	 * Constructor for a StateMap object that initializes the state HashMap<String, <S extends State>> object.
+	 * 
+	 * @param inClass - The class of State the map will hold, used for instantiation.
 	 */
 	
 	public StateMap(Class<S> inClass) {
@@ -86,7 +88,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns the State object corresponding to the provided String object.
 	 */
 	
-	public State getState(String stateName) {
+	public S getState(String stateName) {
 		return states.get(stateName);
 	}
 
@@ -97,7 +99,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, <S extends State>> had stored at that position.
 	 */
 	
-	public State getState(S state) {
+	public S getState(S state) {
 		String stateName = state.getStateName();
 		return states.get(stateName);
 	}
