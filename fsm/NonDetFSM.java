@@ -83,12 +83,6 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public FSM<State, NonDetTransition, Event> makeAccessible() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public FSM<State, NonDetTransition, Event> makeCoAccessible() {
 		// TODO Auto-generated method stub
 		return null;

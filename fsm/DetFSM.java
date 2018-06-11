@@ -87,39 +87,6 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public DetFSM makeAccessible() {
-		DetFSM newFSM = new DetFSM();
-		newFSM.addInitialState(this.initialState.getStateName());
-		
-		// Make a queue to keep track of states that are accessible and their neighbours.
-		LinkedList<String> queue = new LinkedList<String>();
-		queue.add(this.initialState.getStateName());
-		
-		while(!queue.isEmpty()) {
-			String name = queue.poll();
-				
-			// Add the transitions from it
-			ArrayList<DetTransition> currTransitions = this.transitions.getTransitions(getState(name));
-			ArrayList<DetTransition> newTransitions = new ArrayList<DetTransition>();
-			
-			// Go through the transitions and add the states to the queue
-			if(currTransitions != null) {
-				for(DetTransition t : currTransitions) {
-					String stateName = t.getTransitionState().getStateName();
-					if(!newFSM.stateExists(stateName))
-						queue.add(stateName);
-					State newState = newFSM.states.addState(getState(stateName)); // Get the new state for the transition
-					Event newEvent = newFSM.events.addEvent(t.getTransitionEvent()); // Get the new event
-					newTransitions.add(new DetTransition(newEvent, newState)); // Add a new transition to the new FSM set of transitions
-				} // for
-				newFSM.transitions.putTransitions(newFSM.getState(name), newTransitions);
-			} // if not null
-		} // while
-		
-		return newFSM;
-	} // makeAccessible()
-	
-	@Override
 	public DetFSM makeCoAccessible() {
 		DetFSM newFSM = new DetFSM();
 		// First, just find what states we need to add.
@@ -134,11 +101,10 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 			// If the state is coaccessible, add it!
 			if(entry.getValue()) {
 				State oldState = getState(entry.getKey());
-				
 				if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
 					for(DetTransition t : transitions.getTransitions(oldState))
 						if(processedStates.get(t.getTransitionState().getStateName())) // If it is coaccessible...
-							newFSM.addTransition(oldState, t);
+							newFSM.addTransition(oldState, t); // Add the transition (using copies in the newFSM)
 				} // if not null
 			} // if coaccessible
 		} // for processed state

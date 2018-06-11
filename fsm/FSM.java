@@ -2,6 +2,7 @@ package fsm;
 
 import java.util.*;
 import support.*;
+import support.transition.DetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -90,7 +91,43 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * FSM. 
 	 */
 	
-	public abstract FSM<S, T, E> makeAccessible();
+	public FSM<S, T, E> makeAccessible() {
+		// Make a queue to keep track of states that are accessible and their neighbours.
+		LinkedList<String> queue = new LinkedList<String>();
+		
+		// Initialize a new FSM with initial states.
+		try {
+			FSM<S, T, E> newFSM = this.getClass().newInstance();
+			for(S initial : getInitialStates()) {
+				newFSM.addInitialState(initial.getStateName());
+				queue.add(initial.getStateName());
+			} // for initial state
+			
+			while(!queue.isEmpty()) {
+				String stateName = queue.poll();
+				// Go through the transitions
+				ArrayList<T> currTransitions = this.transitions.getTransitions(getState(stateName));
+				if(currTransitions != null) {
+					for(T t : currTransitions) {
+						// Add the states it goes to to the queue if not already present
+						for(S s : t.getTransitionStates())
+							if(!newFSM.stateExists(s.getStateName()))
+								queue.add(s.getStateName());
+						// Add the transition by copying the old one.
+						newFSM.addTransition(newFSM.getState(stateName), t);
+					} // for
+				} // if not null
+			} // while
+			
+			return newFSM;
+		} catch(IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		} catch(InstantiationException e) {
+			e.printStackTrace();
+			return null;
+		}	
+	} // makeAccessible()
 	
 	/**
 	 * Searches through the graph represented by the transitions hashmap, and removes any
