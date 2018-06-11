@@ -87,7 +87,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns the State object corresponding to the provided String object.
 	 */
 	
-	public State getState(String stateName) {
+	public S getState(String stateName) {
 		return states.get(stateName);
 	}
 
@@ -98,7 +98,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, <S extends State>> had stored at that position.
 	 */
 	
-	public State getState(S state) {
+	public S getState(S state) {
 		String stateName = state.getStateName();
 		return states.get(stateName);
 	}
@@ -139,7 +139,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public State addState(S state) {
+	public S addState(S state) {
 		String stateName = state.getStateName();
 		if(states.containsKey(stateName))
 			return states.get(stateName);
@@ -159,7 +159,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public State addState(S state, String prefix) {
+	public S addState(S state, String prefix) {
 		String stateName = prefix + state.getStateName();
 		if(states.containsKey(stateName))
 			return states.get(stateName);
@@ -179,7 +179,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public State addState(String stateName) {
+	public S addState(String stateName) {
 		if(states.containsKey(stateName))
 			return states.get(stateName);
 		try {

@@ -34,7 +34,7 @@ class TestFSMs {
 		fsm2.toggleMarkedState("45");
 		fsm2.addInitialState("1");
 		
-		NonDetFSM fsm3 = (NonDetFSM)fsm1.union(fsm2);
+		NonDetFSM fsm3 = fsm1.union(fsm2);
 		
 		System.out.println(fsm3.makeDotString());
 //		FSMToDot.createImgFromFSM(newFSM, GRAEME_WORKING_FOLDER + "/" + "test", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);

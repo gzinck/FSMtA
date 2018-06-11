@@ -168,7 +168,7 @@ public class DetFSM extends FSM<State, Transition, Event> {
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
-	public FSM<State, NonDetTransition, Event> union(FSM<State, Transition, Event> other) {
+	public NonDetFSM union(FSM<State, Transition, Event> other) {
 		NonDetFSM newFSM = new NonDetFSM();
 		
 		// Add initial states
@@ -322,17 +322,6 @@ public class DetFSM extends FSM<State, Transition, Event> {
 			return true;
 		}
 		return false;
-	}
-	
-	@Override
-	public boolean removeTransition(String state1, String eventName, String state2) {
-		State s1 = getState(state1);
-		State s2 = getState(state2);
-		Event e = events.getEvent(eventName);
-		if(s1 == null || s2 == null || e == null) return false;
-		if(transitions.removeTransition(s1, e, s2)) return true;
-		return false;
-		// 
 	}
 	
 } // class DetFSM

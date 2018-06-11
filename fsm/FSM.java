@@ -147,7 +147,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return - The corresponding State in the current FSM.
 	 */
 	
-	public State getState(S state) {
+	public S getState(S state) {
 		return states.getState(state);
 	}
 	
@@ -158,7 +158,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return - The corresponding State in the current FSM.
 	 */
 	
-	public State getState(String stateName) {
+	public S getState(String stateName) {
 		return states.getState(stateName);
 	}
 	
@@ -253,7 +253,7 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 */
 
 	public abstract boolean removeState(String stateName);
-
+	
 	/**
 	 * Removes the parameter state from the FSM's set of initial states.
 	 * 
@@ -273,7 +273,14 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * @return True if the event was removed, false if it did not exist.
 	 */
 	
-	public abstract boolean removeTransition(String state1, String eventName, String state2);
+	public boolean removeTransition(String state1, String eventName, String state2) {
+		S s1 = getState(state1);
+		S s2 = getState(state2);
+		E e = events.getEvent(eventName);
+		if(s1 == null || s2 == null || e == null) return false;
+		if(transitions.removeTransition(s1, e, s2)) return true;
+		return false;
+	}
 
 //---  Manipulations - Other   ----------------------------------------------------------------
 
