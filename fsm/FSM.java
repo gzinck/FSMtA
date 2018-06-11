@@ -24,9 +24,9 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	/** String constant designating the file extension to append to the file name when writing to the system*/
 	public static final String FSM_EXTENSION = ".fsm";
 	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
-	public final static String STATE1_PREFIX = "a";
+	public final static String STATE_PREFIX_1 = "a";
 	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
-	public final static String STATE2_PREFIX = "b";
+	public final static String STATE_PREFIX_2 = "b";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	

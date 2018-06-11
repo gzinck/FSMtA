@@ -64,6 +64,15 @@ public class TransitionFunction<T extends Transition> {
 		return transitions.get(state);
 	}
 	
+	/**
+	 * Getter method to acquire a set of all states and its corresponding transition objects.
+	 * 
+	 * @return A set of map entries with State objects and an ArrayList of the Transitions.
+	 */
+	public Set<Map.Entry<State, ArrayList<T>>> getAllTransitions() {
+		return transitions.entrySet();
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**

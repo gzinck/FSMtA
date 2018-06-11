@@ -172,18 +172,39 @@ public class DetFSM extends FSM<State, Transition, Event> {
 		NonDetFSM newFSM = new NonDetFSM();
 		
 		// Add initial states
-		newFSM.addInitialState(STATE1_PREFIX + initialState.getStateName());
+		newFSM.addInitialState(STATE_PREFIX_1 + initialState.getStateName());
 		for(State s : other.getInitialStates()) // Add the states from the other FSM
-			newFSM.addInitialState(STATE2_PREFIX + s.getStateName());
+			newFSM.addInitialState(STATE_PREFIX_2 + s.getStateName());
 		
-		// Add normal states as well
+		// Add other states as well
 		for(State s : this.states.getStates())
-			newFSM.states.addState(s, STATE1_PREFIX);
+			newFSM.states.addState(s, STATE_PREFIX_1);
 		for(State s : other.states.getStates())
-			newFSM.states.addState(s, STATE2_PREFIX);
+			newFSM.states.addState(s, STATE_PREFIX_2);
+		
+		// Add events
+		for(Event e : this.events.getEvents())
+			newFSM.events.addEvent(e);
+		for(Event e : other.events.getEvents())
+			newFSM.events.addEvent(e);
 		
 		// Add transitions
-		
+		for(Map.Entry<State, ArrayList<Transition>> entry : this.transitions.getAllTransitions()) {
+			State currState = newFSM.states.getState(STATE_PREFIX_1 + entry.getKey().getStateName());
+			for(Transition t : entry.getValue()) {
+				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
+				State newState = newFSM.states.getState(STATE_PREFIX_1 + t.getTransitionStateName());
+				newFSM.transitions.addTransition(currState, new NonDetTransition(newEvent, newState));
+			} // for transition
+		} // for entry
+		for(Map.Entry<State, ArrayList<Transition>> entry : other.transitions.getAllTransitions()) {
+			State currState = newFSM.states.getState(STATE_PREFIX_2 + entry.getKey().getStateName());
+			for(Transition t : entry.getValue()) {
+				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
+				State newState = newFSM.states.getState(STATE_PREFIX_2 + t.getTransitionStateName());
+				newFSM.transitions.addTransition(currState, new NonDetTransition(newEvent, newState));
+			} // for transition
+		} // for entry
 		
 		return newFSM;
 	}
