@@ -1,142 +1,88 @@
 package support.transition;
 
+import java.util.ArrayList;
+
 import support.State;
 import support.event.Event;
 
-/**
- * This class models a path that connects a State to another State in an FSM, storing an Event
- * and the Single State that it leads to. This is the base variation of a Transition, only
- * storing the one State, and thus modeling in a Deterministic manner.
- * 
- * This class is a part of the support.transition package.
- * 
- * @author Mac Clevinger and Graeme Zinck
- */
-
-public class Transition {
-
-//---  Instance Variables   -------------------------------------------------------------------
-	
-	/** Event instance variable representing the Event associated to this object*/
-	private Event event;
-	/** State instance variable representing the target State associated to this object*/
-	private State state;
-	
-//---  Constructors   -------------------------------------------------------------------------
-	
+public interface Transition {
 	/**
-	 * Constructor for a Transition object, assigning the provided Event and State to their
-	 * corresponding instance variables.
+	 * Setter method to assign a new String as the State name associated to the Event associated to this Transition object.
+	 * If the State was already a transition state, it is not duplicated.
 	 * 
-	 * @param inEvent - Event object representing the Event associated to this Transition
-	 * @param inState - State object representing the State being led to by the Event of this Transition
+	 * @param in State object representing the Transition object's Event's new target State
 	 */
 	
-	public Transition(Event inEvent, State inState) {
-		event = inEvent;
-		state = inState;
-	}
-	
-//---  Operations   ---------------------------------------------------------------------------
+	public void setTransitionState(State in);
 	
 	/**
-	 * Makes a String object which has the dot representation of the transitions, which
-	 * can be used for sending an FSM to GraphViz.
+	 * Setter method to assign an Event object as the Event associated to this Transition object
 	 * 
-	 * @param firstState The State which leads to the transition. This is used to
-	 * determine the exact text for the dot representation.
-	 * @return String containing the dot representation of the transitions.
+	 * @param in Event object provided to replace the value stored previously in this Transition object
 	 */
-	
-	public String makeDotString(State firstState) {
-		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\"];";
-	}
-	
-//---  Getter Methods   -----------------------------------------------------------------------
+	public void setTransitionEvent(Event in);
 	
 	/**
 	 * Getter method to access the Event associated to this Transition object
 	 * 
-	 * @return - Returns a Event object representing the Event associated to this Transition object
+	 * @return Returns a Event object representing the Event associated to this Transition object
 	 */
-	
-	public Event getTransitionEvent() {
-		return event;
-	}
+	public Event getTransitionEvent();
 	
 	/**
-	 * Getter method to access the State associated to the Event associated to this Transition object
+	 * Getter method to access the ArrayList of State names led to by the Event associated to this NonDetTransition object
 	 * 
-	 * @return - Returns a State object representing the State associated to the Event associated to this Transition object
+	 * @return Returns an ArrayList containing the States led to by the Event associated to this NonDetTransition object
 	 */
-	
-	public State getTransitionState() {
-		return state;
-	}
+	public ArrayList<State> getTransitionStates();
 	
 	/**
-	 * Getter method to access the String name of the State associated to the Event associated to this Transition object
+	 * Getter method to query whether or not a State exists in the Transition object.
 	 * 
-	 * @return - Returns a String representing the State's name.
+	 * @param stateName String object representing the name of the State to search for.
+	 * @return Returns a boolean value describing the result of the query; if true, the State is present, false otherwise.
 	 */
-	
-	public String getTransitionStateName() {
-		return state.getStateName();
-	}
+	public boolean stateExists(String stateName);
 	
 	/**
-	 * Getter method that requests whether a given State exists or not within the Transition object.
+	 * Getter method to query whether or not a State exists in the Transition object.
 	 * 
-	 * @param inState - State object defining the State to search for within the Transition object
-	 * @return - Returns a boolean value representing the result of the query; true if it exists, false if not.
+	 * @param inState State object to search for.
+	 * @return Returns a boolean value describing the result of the query; if true, the State is present, false otherwise.
 	 */
+	public boolean stateExists(State inState);
 	
-	public boolean hasTransitionState(State inState) {
-		if(state == inState) return true;
-		return false;
-	}
-	
-//---  Setter Methods   -----------------------------------------------------------------------
-	
-	/**
-	 * Setter method to assign a new Event object as the Event associated to this Transition object
-	 * 
-	 * @param in - Event object provided to replace the value stored previously in this Transition object
-	 */
-	
-	public void setTransitionEvent(Event in) {
-		event = in;
-	}
-	
-	/**
-	 * Setter method to assign a new String as the State name associated to the Event associated to this Transition object
-	 * 
-	 * @param in - State object representing the Transition object's Event's new target State
-	 */
-	
-	public void setTransitionState(State in) {
-		state = in;
-	}
-	
-//---  Manipulations   -----------------------------------------------------------------------
-
 	/**
 	 * Removes the state from the transition object; or, if the state
 	 * is the only item in the transition object (as it is for the base
 	 * Transition object), it returns true to indicate that the transition
 	 * object should be deleted entirely.
 	 * 
-	 * @param state State to delete from the transition object.
+	 * @param state String representing the state to delete from the transition object.
 	 * @return True if the transition object has no states to which it points,
 	 * else false.
 	 */
+	public boolean removeTransitionState(String stateName);
 	
-	public boolean removeTransitionState(State inState) {
-		if(inState.equals(state)) {
-			state = null;
-			return true;
-		}
-		return false;
-	}
-
+	/**
+	 * Removes the state from the transition object; or, if the state
+	 * is the only item in the transition object (as it is for the base
+	 * Transition object), it returns true to indicate that the transition
+	 * object should be deleted entirely.
+	 * 
+	 * @param inState State object to delete from the transition object.
+	 * @return True if the transition object has no states to which it points,
+	 * else false.
+	 */
+	public boolean removeTransitionState(State inState);
+	
+	/**
+	 * Makes a String object which has the dot representation of the Transition, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @param firstState The State which leads to the transition. This is used to
+	 * determine the exact text for the dot representation.
+	 * @return String containing the dot representation of the Transition.
+	 */
+	public String makeDotString(State firstState);
 }

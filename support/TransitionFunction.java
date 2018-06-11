@@ -148,7 +148,7 @@ public class TransitionFunction<S extends State, T extends Transition> {
 		ArrayList<T> thisTransitions = transitions.get(stateFrom);
 		for(T transition : thisTransitions) {
 			if(transition.getTransitionEvent() == event) {
-				if(transition.hasTransitionState(stateTo)) {
+				if(transition.stateExists(stateTo)) {
 					boolean shouldDeleteTransition = transition.removeTransitionState(stateTo);
 					if(shouldDeleteTransition) thisTransitions.remove(transition);
 					return true;

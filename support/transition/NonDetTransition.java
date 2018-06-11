@@ -14,12 +14,14 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetTransition extends Transition{
+public class NonDetTransition implements Transition {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
+	/** Event instance variable representing the Event associated to this object*/
+	public Event event;
 	/** ArrayList<State> object holding all States associated to the Event associated to this NonDetTransition object*/
-	private ArrayList<State> state;
+	private ArrayList<State> states;
 	
 //--- Constructors   --------------------------------------------------------------------------
 	
@@ -27,16 +29,25 @@ public class NonDetTransition extends Transition{
 	 * Constructor for a NonDetTransition object, assigning a single String value as the Event name associated
 	 * to this object and a list of Strings as the State names led to by that Event
 	 * 
-	 * @param eventNom - String object representing the name of the Event associated to this NonDetTransition object
-	 * @param states - List of State objects representing the States led to by the Event associated to this NonDetTransition object
+	 * @param inEvent - String object representing the name of the Event associated to this NonDetTransition object
+	 * @param inStates - List of State objects representing the States led to by the Event associated to this NonDetTransition object
 	 */
 	
-	public NonDetTransition(Event eventNom, State ... states) {
-		super(eventNom, new State(""));
-		state = new ArrayList<State>();
-		for(int i = 0; i < states.length; i++)
-		  state.add(states[i]);
-		super.setTransitionState(null);
+	public NonDetTransition(Event inEvent, State ... inStates) {
+		event = inEvent;
+		states = new ArrayList<State>();
+		for(int i = 0; i < inStates.length; i++)
+			states.add(inStates[i]);
+	}
+	
+	/**
+	 * Constructor for a NonDetTransition object, assigning the event and states empty values
+	 * until added later on. This is essential for instantiation in generic types.
+	 */
+	
+	public NonDetTransition() {
+		event = null;
+		states = new ArrayList<State>();
 	}
 	
 //--- Setter Methods   ------------------------------------------------------------------------
@@ -48,34 +59,46 @@ public class NonDetTransition extends Transition{
 	 */
 	
 	public void setTransitionState(ArrayList<State> in) {
-		pullInTransitionState();
-		state = in;
+		states = in;
+	}
+	
+	// Implementation as per the Transition interface
+	@Override
+	public void setTransitionState(State in) {
+		if(!states.contains(in))
+			states.add(in);
+	}
+	
+	// Implementation as per the Transition interface
+	@Override
+	public void setTransitionEvent(Event in) {
+		event = in;
 	}
 	
 //--- Getter Methods   ------------------------------------------------------------------------
 	
-	/**
-	 * Getter method to access the ArrayList<State> of State names led to by the Event associated to this NonDetTransition object
-	 * 
-	 * @return - Returns an ArrayList<State> containing the States led to by the Event associated to this NonDetTransition object
-	 */
-	
-	public ArrayList<State> getTransitionStates(){
-		pullInTransitionState();
-		return state;
+	// Implementation as per the Transition interface
+	@Override
+	public Event getTransitionEvent() {
+		return event;
 	}
 	
-	/**
-	 * Getter method to query whether or not a State exists in the ArrayList<State> containing the
-	 * State names led to by the Event associated to this NonDetTransition object
-	 * 
-	 * @param stateName - String object representing the name of the State to search for in ArrayList<State> held by this object
-	 * @return - Returns a boolean value describing the result of the query; if true, the State is present, false otherwise.
-	 */
+	// Implementation as per the Transition interface
+	@Override
+	public ArrayList<State> getTransitionStates() {
+		return states;
+	}
 	
+	// Implementation as per the Transition interface
+	@Override
 	public boolean stateExists(String stateName) {
-		pullInTransitionState();
-		return state.contains(new State(stateName));
+		return states.contains(new State(stateName));
+	}
+	
+	// Implementation as per the Transition interface
+	@Override
+	public boolean stateExists(State inState) {
+		return states.contains(inState);
 	}
 	
 //--- Manipulations   -------------------------------------------------------------------------
@@ -88,29 +111,33 @@ public class NonDetTransition extends Transition{
 	 */
 	
 	public void addTransitionState(State stateNew) {
-		pullInTransitionState();
-		state.add(stateNew);
+		states.add(stateNew);
 	}
 	
-	/**
-	 * This method removes a State from the ArrayList<State> holding all States as
-	 * defined by the provided object stateName
-	 * 
-	 * @param stateName - String object representing a State to remove from the ArrayList<State> holding all States associated to this object
-	 */
-	
-	public void removeTransitionState(String stateName) {
-		pullInTransitionState();
-		state.remove(new State(stateName));
+	// Implementation as per the Transition interface
+	@Override
+	public boolean removeTransitionState(String stateName) {
+		states.remove(new State(stateName));
+		return (states.size() == 0);
 	}
 	
-//---  Miscellaneous   ------------------------------------------------------------------------
-	
-	public void pullInTransitionState() {
-		State held = super.getTransitionState();
-		if(state.indexOf(held) == -1 && held != null)
-			state.add(held);
-		super.setTransitionState(null);
+	// Implementation as per the Transition interface
+	@Override
+	public boolean removeTransitionState(State inState) {
+		states.remove(inState);
+		return (states.size() == 0);
 	}
+	
+//---  Operations   ---------------------------------------------------------------------------
 
+	// Implementation as per the Transition interface
+	@Override
+	public String makeDotString(State firstState) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\"" + firstState.getStateName() + "\"->{\"");
+		for(State s : states)
+			sb.append(s.getStateName());
+		sb.append("\"} [label = \"" + event.getEventName() + "\"];");
+		return sb.toString();
+	}
 }
