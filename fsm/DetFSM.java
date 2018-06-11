@@ -220,43 +220,6 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------
-
-	/**
-	 * This method checks if a State leads to a marked state. In the process, the
-	 * method modifies a hashmap of processed states that says 1) if a state has been
-	 * evaluated yet, and 2) if so, whether a given state is accessible.  
-	 * 
-	 * @param curr The state to check for coaccessibility.
-	 * @param processedStates HashMap<String, Boolean> mapping string names of states
-	 * to true if the state is coaccessible, and false if the state is not. If a state
-	 * has not been processed, then the state will not exist in the HashMap.
-	 * @return True if the state is coaccessible, false otherwise.
-	 */
-	
-	protected boolean isCoAccessible(State curr, HashMap<String, Boolean> processedStates) {
-		// If curr is marked, it is coaccessible so it's OK.
-		if(curr.getStateMarked()) {
-			processedStates.put(curr.getStateName(), true);
-			return true;
-		} // if
-		// Before recursing, say that this state is processed.
-		processedStates.put(curr.getStateName(), false);
-		
-		// Recurse until find a marked state
-		ArrayList<DetTransition> thisTransitions = transitions.getTransitions(curr);
-		if(thisTransitions != null) {
-			for(DetTransition t : thisTransitions) {
-				State next = t.getTransitionState();
-				// If the next is coaccessible, curr is too.
-				if(isCoAccessible(next, processedStates)) {
-					processedStates.put(curr.getStateName(), true);
-					return true;
-				} // if
-			} // while
-		} // if not null
-		// If none are marked
-		return false;
-	} // isCoAccessible(State, HashMap<String, Boolean>)
 	
 	@Override
 	public ArrayList<State> getInitialStates() {
@@ -268,20 +231,12 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 //---  Add Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
-	public boolean addInitialState(String newInitial) {
-		if(states.stateExists(newInitial)) {
-			State theState = states.getState(newInitial);
-			theState.setStateInitial(true);
-			if(initialState != null) initialState.setStateInitial(false);
-			initialState = theState;
-			return true;
-		} else {
-			State theState = states.addState(newInitial);
-			theState.setStateInitial(true);
-			if(initialState != null) initialState.setStateInitial(false);
-			initialState = theState;
-			return false;
-		}
+	public void addInitialState(String newInitial) {
+		// Get the state, or add it if not yet present
+		State theState = states.addState(newInitial);
+		theState.setStateInitial(true);
+		if(initialState != null) initialState.setStateInitial(false);
+		initialState = theState;
 	}
 
 //---  Remove Setter Methods   ------------------------------------------------------------------------

@@ -15,7 +15,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetTransition implements Transition {
+public class DetTransition implements Transition<State, Event> {
 
 	/** Event instance variable representing the Event associated to this object*/
 	public Event event;

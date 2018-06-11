@@ -2,6 +2,7 @@ package fsm;
 
 import java.util.*;
 import support.*;
+import support.transition.DetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -192,6 +193,44 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 		return transitions;
 	}
 	
+	/**
+	 * This method checks if a State leads to a marked state. In the process, the
+	 * method modifies a hashmap of processed states that says 1) if a state has been
+	 * evaluated yet, and 2) if so, whether a given state is accessible.  
+	 * 
+	 * @param curr The state to check for coaccessibility.
+	 * @param processedStates HashMap<String, Boolean> mapping string names of states
+	 * to true if the state is coaccessible, and false if the state is not. If a state
+	 * has not been processed, then the state will not exist in the HashMap.
+	 * @return True if the state is coaccessible, false otherwise.
+	 */
+	
+	protected boolean isCoAccessible(S curr, HashMap<String, Boolean> processedStates) {
+		// If curr is marked, it is coaccessible so it's OK.
+		if(curr.getStateMarked()) {
+			processedStates.put(curr.getStateName(), true);
+			return true;
+		} // if
+		// Before recursing, say that this state is processed.
+		processedStates.put(curr.getStateName(), false);
+		
+		// Recurse until find a marked state
+		ArrayList<T> thisTransitions = transitions.getTransitions(curr);
+		if(thisTransitions != null) {
+			for(T t : thisTransitions) {
+				for(S next : (ArrayList<S>)t.getTransitionStates()) {
+					// If next is coaccessible, so is curr.
+					if(isCoAccessible(next, processedStates)) {
+						processedStates.put(curr.getStateName(), true);
+						return true;
+					} // if coaccessible
+				} // for each transition state
+			} // for each transition object
+		} // if not null
+		// If none are marked
+		return false;
+	} // isCoAccessible(State, HashMap<String, Boolean>)
+	
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
 	/**
@@ -226,10 +265,9 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * Behavior depends on if the FSM is deterministic or non-deterministic.
 	 * 
 	 * @param newInitial - String for the state name to be added as an initial state.
-	 * @return - True if the state already existed, false if had to create a new state.
 	 */
 	
-	public abstract boolean addInitialState(String newInitial);
+	public abstract void addInitialState(String newInitial);
 
 	/**
 	 * Adds an transition from one state to another state.

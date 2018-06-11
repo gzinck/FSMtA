@@ -124,11 +124,10 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	@Override
-	public boolean addInitialState(String newInitial) {
+	public void addInitialState(String newInitial) {
 		State theState = states.addState(newInitial);
 		theState.setStateInitial(true);
 		initialStates.add(theState);
-		return true;
 	}
 
 	@Override

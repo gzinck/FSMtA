@@ -37,7 +37,7 @@ class TestFSMs {
 		NonDetFSM fsm3 = fsm1.union(fsm2);
 		
 		System.out.println(fsm3.makeDotString());
-//		FSMToDot.createImgFromFSM(newFSM, GRAEME_WORKING_FOLDER + "/" + "test", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(fsm3, GRAEME_WORKING_FOLDER + "/" + "test", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 //		
 //		FSM anotherFSM = newFSM.trim();
 //		System.out.println(anotherFSM.makeDotString());

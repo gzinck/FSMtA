@@ -14,7 +14,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetTransition implements Transition {
+public class NonDetTransition implements Transition<State, Event> {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	

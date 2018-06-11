@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import support.State;
 import support.event.Event;
 
-public interface Transition {
+public interface Transition<S extends State, E extends Event> {
 	/**
 	 * Setter method to assign a new String as the State name associated to the Event associated to this Transition object.
 	 * If the State was already a transition state, it is not duplicated.
@@ -13,28 +13,28 @@ public interface Transition {
 	 * @param in State object representing the Transition object's Event's new target State
 	 */
 	
-	public void setTransitionState(State in);
+	public void setTransitionState(S in);
 	
 	/**
 	 * Setter method to assign an Event object as the Event associated to this Transition object
 	 * 
 	 * @param in Event object provided to replace the value stored previously in this Transition object
 	 */
-	public void setTransitionEvent(Event in);
+	public void setTransitionEvent(E in);
 	
 	/**
 	 * Getter method to access the Event associated to this Transition object
 	 * 
 	 * @return Returns a Event object representing the Event associated to this Transition object
 	 */
-	public Event getTransitionEvent();
+	public E getTransitionEvent();
 	
 	/**
 	 * Getter method to access the ArrayList of State names led to by the Event associated to this NonDetTransition object
 	 * 
 	 * @return Returns an ArrayList containing the States led to by the Event associated to this NonDetTransition object
 	 */
-	public ArrayList<State> getTransitionStates();
+	public ArrayList<S> getTransitionStates();
 	
 	/**
 	 * Getter method to query whether or not a State exists in the Transition object.
