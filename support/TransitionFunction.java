@@ -68,15 +68,17 @@ public class TransitionFunction<S extends State, T extends Transition> {
 	}
 	
 	/**
+	 * Gets the class type of the transitions stored in the TransitionFunction
 	 * 
-	 * @return
+	 * @return The class type of the transitions.
 	 */
 	
 	public Class<T> getTransitionFunctionClassType(){
 		return transitionClass;
 	}
 	
-	/** Getter method to acquire a set of all states and its corresponding transition objects.
+	/**
+	 * Getter method to acquire a set of all states and its corresponding transition objects.
 	 * 
 	 * @return A set of map entries with State objects and an ArrayList of the Transitions.
 	 */
@@ -102,10 +104,10 @@ public class TransitionFunction<S extends State, T extends Transition> {
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * This method appends a new Transition object to the ArrayList<T> at the specified State Key in <Key, Value>
-	 * data sets (<State, ArrayList<T>>), creating the entry if it doesn't yet exist.
+	 * This method appends a new Transition object to the ArrayList<T> at the specified State key.
+	 * creating the entry if it doesn't yet exist.
 	 * 
-	 * @param state - State object representing the Key in the stored <Key, Value> data structure, <State, ArrayList<T>>.
+	 * @param state - State object representing the Key in the stored <Key, Value> data structure, \<State, ArrayList\<T\>\>.
 	 * @param transition - <T extends Transition> object representing the new Transition to append to the existing ArrayList<T> at Key State in <Key, Value>. 
 	 */
 	

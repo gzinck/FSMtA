@@ -124,6 +124,16 @@ public class StateMap<S extends State> {
 	public Collection<S> getStates() {
 		return states.values();
 	}
+	
+	/**
+	 * Gets the class type of the States stored in the StateMap
+	 * 
+	 * @return The class type of the States.
+	 */
+	
+	public Class<S> getStateClassType(){
+		return stateClass;
+	}
 
 //---  Setter Methods   -----------------------------------------------------------------------
 

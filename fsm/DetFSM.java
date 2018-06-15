@@ -89,70 +89,24 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public DetFSM makeAccessible() {
-		DetFSM newFSM = new DetFSM();
-		newFSM.addInitialState(this.initialState.getStateName());
-		
-		// Make a queue to keep track of states that are accessible and their neighbours.
-		LinkedList<String> queue = new LinkedList<String>();
-		queue.add(this.initialState.getStateName());
-		
-		while(!queue.isEmpty()) {
-			String name = queue.poll();
-				
-			// Add the transitions from it
-			ArrayList<DetTransition> currTransitions = this.transitions.getTransitions(getState(name));
-			ArrayList<DetTransition> newTransitions = new ArrayList<DetTransition>();
-			
-			// Go through the transitions and add the states to the queue
-			if(currTransitions != null) {
-				for(DetTransition t : currTransitions) {
-					String stateName = t.getTransitionState().getStateName();
-					if(!newFSM.stateExists(stateName))
-						queue.add(stateName);
-					State newState = newFSM.states.addState(getState(stateName)); // Get the new state for the transition
-					Event newEvent = newFSM.events.addEvent(t.getTransitionEvent()); // Get the new event
-					newTransitions.add(new DetTransition(newEvent, newState)); // Add a new transition to the new FSM set of transitions
-				} // for
-				newFSM.transitions.putTransitions(newFSM.getState(name), newTransitions);
-			} // if not null
-		} // while
-		
-		return newFSM;
-	} // makeAccessible()
-	
-	@Override
 	public DetFSM makeCoAccessible() {
 		DetFSM newFSM = new DetFSM();
-		// When a state is processed, add it to the map and state if it reached a marked state.
-		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>();
-		
 		// First, just find what states we need to add.
+		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>(); // When a state is processed, add it to the map and state if it reached a marked state.
 		for(State curr : this.states.getStates()) {
 			if(!processedStates.containsKey(curr.getStateName()))
 				isCoAccessible(curr, processedStates);
 		} // for states
-		
-		// Second, create the states and add the transitions
+
+		// Secondly, create the states and add the transitions
 		for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
 			// If the state is coaccessible, add it!
 			if(entry.getValue()) {
 				State oldState = getState(entry.getKey());
-				// Add a new state which is a copy of the state in the original FSM 
-				State newState = newFSM.states.addState(oldState);
-				
 				if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
-					ArrayList<DetTransition> newTransitions = new ArrayList<DetTransition>(); // Add all the transitions that go to states that are coaccessible
-					for(DetTransition t : transitions.getTransitions(oldState)) {
-						String toState = t.getTransitionState().getStateName();
-						// If it is coaccessible...
-						if(processedStates.get(toState)) {
-							State newToState = newFSM.states.addState(getState(toState)); // Add a duplicate of the current FSM's state
-							Event newEvent = newFSM.events.addEvent(t.getTransitionEvent());
-							newTransitions.add(new DetTransition(newEvent, newToState));
-						} // if
-					} // for transition
-					newFSM.addStateTransitions(newState, newTransitions);
+					for(DetTransition t : transitions.getTransitions(oldState))
+						if(processedStates.get(t.getTransitionState().getStateName())) // If it is coaccessible...
+							newFSM.addTransition(oldState, t); // Add the transition (using copies in the newFSM)
 				} // if not null
 			} // if coaccessible
 		} // for processed state
@@ -160,7 +114,6 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 		// Finally, add the initial state
 		if(processedStates.get(initialState.getStateName()))
 			newFSM.addInitialState(initialState.getStateName());
-		
 		return newFSM;
 	} // makeCoAccessible()
 	
@@ -222,43 +175,6 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------
-
-	/**
-	 * This method checks if a State leads to a marked state. In the process, the
-	 * method modifies a hashmap of processed states that says 1) if a state has been
-	 * evaluated yet, and 2) if so, whether a given state is accessible.  
-	 * 
-	 * @param curr The state to check for coaccessibility.
-	 * @param processedStates HashMap<String, Boolean> mapping string names of states
-	 * to true if the state is coaccessible, and false if the state is not. If a state
-	 * has not been processed, then the state will not exist in the HashMap.
-	 * @return True if the state is coaccessible, false otherwise.
-	 */
-	
-	protected boolean isCoAccessible(State curr, HashMap<String, Boolean> processedStates) {
-		// If curr is marked, it is coaccessible so it's OK.
-		if(curr.getStateMarked()) {
-			processedStates.put(curr.getStateName(), true);
-			return true;
-		} // if
-		// Before recursing, say that this state is processed.
-		processedStates.put(curr.getStateName(), false);
-		
-		// Recurse until find a marked state
-		ArrayList<DetTransition> thisTransitions = transitions.getTransitions(curr);
-		if(thisTransitions != null) {
-			for(DetTransition t : thisTransitions) {
-				State next = t.getTransitionState();
-				// If the next is coaccessible, curr is too.
-				if(isCoAccessible(next, processedStates)) {
-					processedStates.put(curr.getStateName(), true);
-					return true;
-				} // if
-			} // while
-		} // if not null
-		// If none are marked
-		return false;
-	} // isCoAccessible(State, HashMap<String, Boolean>)
 	
 	@Override
 	public ArrayList<State> getInitialStates() {
@@ -270,20 +186,12 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 //---  Add Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
-	public boolean addInitialState(String newInitial) {
-		if(states.stateExists(newInitial)) {
-			State theState = states.getState(newInitial);
-			theState.setStateInitial(true);
-			if(initialState != null) initialState.setStateInitial(false);
-			initialState = theState;
-			return true;
-		} else {
-			State theState = states.addState(newInitial);
-			theState.setStateInitial(true);
-			if(initialState != null) initialState.setStateInitial(false);
-			initialState = theState;
-			return false;
-		}
+	public void addInitialState(String newInitial) {
+		// Get the state, or add it if not yet present
+		State theState = states.addState(newInitial);
+		theState.setStateInitial(true);
+		if(initialState != null) initialState.setStateInitial(false);
+		initialState = theState;
 	}
 
 //---  Remove Setter Methods   ------------------------------------------------------------------------

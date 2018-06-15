@@ -2,6 +2,7 @@ package fsm;
 
 import java.util.*;
 import support.*;
+import support.transition.DetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -15,7 +16,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public abstract class FSM<S extends State, T extends Transition, E extends Event> {
+public abstract class FSM<S extends State, T extends Transition<S, E>, E extends Event> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 	
@@ -90,7 +91,43 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * FSM. 
 	 */
 	
-	public abstract FSM<S, T, E> makeAccessible();
+	public FSM<S, T, E> makeAccessible() {
+		// Make a queue to keep track of states that are accessible and their neighbours.
+		LinkedList<String> queue = new LinkedList<String>();
+		
+		// Initialize a new FSM with initial states.
+		try {
+			FSM<S, T, E> newFSM = this.getClass().newInstance();
+			for(S initial : getInitialStates()) {
+				newFSM.addInitialState(initial.getStateName());
+				queue.add(initial.getStateName());
+			} // for initial state
+			
+			while(!queue.isEmpty()) {
+				String stateName = queue.poll();
+				// Go through the transitions
+				ArrayList<T> currTransitions = this.transitions.getTransitions(getState(stateName));
+				if(currTransitions != null) {
+					for(T t : currTransitions) {
+						// Add the states it goes to to the queue if not already present
+						for(S s : t.getTransitionStates())
+							if(!newFSM.stateExists(s.getStateName()))
+								queue.add(s.getStateName());
+						// Add the transition by copying the old one.
+						newFSM.addTransition(newFSM.getState(stateName), t);
+					} // for
+				} // if not null
+			} // while
+			
+			return newFSM;
+		} catch(IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		} catch(InstantiationException e) {
+			e.printStackTrace();
+			return null;
+		}	
+	} // makeAccessible()
 	
 	/**
 	 * Searches through the graph represented by the transitions hashmap, and removes any
@@ -212,6 +249,44 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 		return transitions;
 	}
 	
+	/**
+	 * This method checks if a State leads to a marked state. In the process, the
+	 * method modifies a hashmap of processed states that says 1) if a state has been
+	 * evaluated yet, and 2) if so, whether a given state is accessible.  
+	 * 
+	 * @param curr The state to check for coaccessibility.
+	 * @param processedStates HashMap<String, Boolean> mapping string names of states
+	 * to true if the state is coaccessible, and false if the state is not. If a state
+	 * has not been processed, then the state will not exist in the HashMap.
+	 * @return True if the state is coaccessible, false otherwise.
+	 */
+	
+	protected boolean isCoAccessible(S curr, HashMap<String, Boolean> processedStates) {
+		// If curr is marked, it is coaccessible so it's OK.
+		if(curr.getStateMarked()) {
+			processedStates.put(curr.getStateName(), true);
+			return true;
+		} // if
+		// Before recursing, say that this state is processed.
+		processedStates.put(curr.getStateName(), false);
+		
+		// Recurse until find a marked state
+		ArrayList<T> thisTransitions = transitions.getTransitions(curr);
+		if(thisTransitions != null) {
+			for(T t : thisTransitions) {
+				for(S next : (ArrayList<S>)t.getTransitionStates()) {
+					// If next is coaccessible, so is curr.
+					if(isCoAccessible(next, processedStates)) {
+						processedStates.put(curr.getStateName(), true);
+						return true;
+					} // if coaccessible
+				} // for each transition state
+			} // for each transition object
+		} // if not null
+		// If none are marked
+		return false;
+	} // isCoAccessible(State, HashMap<String, Boolean>)
+	
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
 	/**
@@ -246,10 +321,9 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	 * Behavior depends on if the FSM is deterministic or non-deterministic.
 	 * 
 	 * @param newInitial - String for the state name to be added as an initial state.
-	 * @return - True if the state already existed, false if had to create a new state.
 	 */
 	
-	public abstract boolean addInitialState(String newInitial);
+	public abstract void addInitialState(String newInitial);
 
 	/**
 	 * Adds an transition from one state to another state.
@@ -261,18 +335,46 @@ public abstract class FSM<S extends State, T extends Transition, E extends Event
 	
 	public void addTransition(String state1, String eventName, String state2) {
 		// If they do not exist yet, add the states.
-		addState(state1);
-		addState(state2);
+		S s1 = states.addState(state1);
+		S s2 = states.addState(state2);
 		
 		// Get the event or make it
-		Event e = events.addEvent(eventName);
+		E e = events.addEvent(eventName);
 		try {
-		  T outbound = transitions.getTransitionFunctionClassType().newInstance();
-		  outbound.setTransitionEvent(e);
-		  outbound.setTransitionState(getState(state2));
-		  transitions.addTransition(getState(state1), outbound);
+			// TODO Make sure that we check if the transition's event already exists
+			// for the from state in the transition, because if it exists, then we
+			// have to add the state to that object instead...
+			// TODO Also make sure you CANNOT add a new state to the transition object
+			// elsewhere...
+			T outbound = transitions.getTransitionFunctionClassType().newInstance();
+			outbound.setTransitionEvent(e);
+			outbound.setTransitionState(s2);
+			transitions.addTransition(s1, outbound);
 		}
 		catch(Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Adds a transition from one state to another state by copying the parameter
+	 * state and transition objects.
+	 * 
+	 * @param state
+	 * @param transition
+	 */
+	public void addTransition(S state, T transition) {
+		S fromState = states.addState(state); // Get the state or make it
+		E e = events.addEvent(transition.getTransitionEvent()); // Get the event or make it
+		try {
+			T outbound = transitions.getTransitionFunctionClassType().newInstance(); // New transition object
+			outbound.setTransitionEvent(e);
+			for(S s : transition.getTransitionStates()) { // Add all the transition states (make them if necessary)
+				S toState = states.addState(s);
+				outbound.setTransitionState(toState);
+			} // for transition state
+			transitions.addTransition(fromState, outbound);
+		} catch(Exception e1) {
 			e1.printStackTrace();
 		}
 	}
