@@ -1,6 +1,5 @@
 package support;
 
-import fsm.*;
 import java.util.*;
 import support.event.*;
 import support.transition.*;

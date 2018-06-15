@@ -6,7 +6,6 @@ import support.ReadWrite;
 import support.State;
 import support.StateMap;
 import support.TransitionFunction;
-import support.event.Event;
 import support.event.ObservableEvent;
 import support.transition.Transition;
 import java.io.*;

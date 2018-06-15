@@ -3,9 +3,7 @@ package fsm;
 import java.io.File;
 import java.util.ArrayList;
 
-import support.State;
-import support.StateMap;
-import support.TransitionFunction;
+import support.*;
 import support.transition.*;
 import support.event.Event;
 
@@ -42,9 +40,10 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	
 	public NonDetFSM(File in, String inId) {
 		id = inId;
+		events = new EventMap<Event>(Event.class);
 		states = new StateMap<State>(State.class);
 		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
-		
+		initialStates = new ArrayList<State>();
 		// Deal with the actual input here
 		// Gibberish goes here
 		// Gibberish goes here
@@ -62,9 +61,10 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	
 	public NonDetFSM(String inId) {
 		id = inId;
+		events = new EventMap<Event>(Event.class);
 		states = new StateMap<State>(State.class);
 		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
-		initialStates = null;
+		initialStates = new ArrayList<State>();
 	} // DetFSM()
 	
 	/**
@@ -74,9 +74,10 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	
 	public NonDetFSM() {
 		id = "";
+		events = new EventMap<Event>(Event.class);
 		states = new StateMap<State>(State.class);
 		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
-		initialStates = null;
+		initialStates = new ArrayList<State>();
 	} // DetFSM()
 
 //---  Single-FSM Operations   ----------------------------------------------------------------
@@ -102,13 +103,13 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public FSM<State, NonDetTransition, Event> union(FSM<State, NonDetTransition, Event> other) {
+	public NonDetFSM union(FSM<State, NonDetTransition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FSM<State, NonDetTransition, Event> product(FSM<State, NonDetTransition, Event> other) {
+	public NonDetFSM product(FSM<State, NonDetTransition, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -117,41 +118,24 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 
 	@Override
 	public ArrayList<State> getInitialStates() {
-		// TODO Auto-generated method stub
-		return null;
+		return initialStates;
 	}
 	
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	@Override
 	public boolean addInitialState(String newInitial) {
-		// TODO Auto-generated method stub
-		return false;
+		State theState = states.addState(newInitial);
+		theState.setStateInitial(true);
+		initialStates.add(theState);
+		return true;
 	}
 
 	@Override
-	public void addTransition(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean removeState(String state) {
-		// TODO Auto-generated method stub
+	public boolean removeInitialState(String stateName) {
+		State theState = states.getState(stateName);
+		theState.setStateInitial(false);
+		if(initialStates.remove(theState)) return true;
 		return false;
 	}
-
-	@Override
-	public boolean removeInitialState(String state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean removeTransition(String state1, String eventName, String state2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
 }
