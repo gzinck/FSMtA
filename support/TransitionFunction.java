@@ -13,24 +13,27 @@ import support.event.Event;
  * @param <T> - T being a class in the Transitions hierarchy from support.transition package
  */
 
-public class TransitionFunction<S extends State, T extends Transition> {
+public class TransitionFunction<S extends State, T extends Transition<S, E>, E extends Event> {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** HashMap<String, ArrayList<Transition>> containing all the transitions from a given state with various events that are possible. */
+	/** HashMap<String, ArrayList<Transition>> object containing all the transitions from a given state with various events that are possible. */
 	protected HashMap<S, ArrayList<T>> transitions;
-	/** Holds the precise class of the generic State class. */
-	private Class<T> transitionClass;
+	/** T object extending Transition<<s>S, E> used for reference to the object's methods in a non-static way.*/
+	private T dummyTransition;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for TransitionFunction objects that initializes the HashMap<State, ArrayList<T>> for this object.
+	 * Constructor for TransitionFunction objects that initializes the HashMap<State, ArrayList<T>> for this object, and
+	 * accepts an object extending Transition<<s>S, E> for use as an instance variable.
+	 * 
+	 * @param obj - Object of the type T that extends Transition<<s>S, E> to provide to the TransitionFunction object.
 	 */
 	
-	public TransitionFunction(Class<T> transType) {
+	public TransitionFunction(T obj) {
 		transitions = new HashMap<S, ArrayList<T>>();
-		transitionClass = transType;
+		dummyTransition = obj;
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -47,7 +50,7 @@ public class TransitionFunction<S extends State, T extends Transition> {
 		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
 			State firstState = entry.getKey();
 			ArrayList<T> thisTransitions = entry.getValue();
-			for(Transition aTransition : thisTransitions) {
+			for(T aTransition : thisTransitions) {
 				sb.append(aTransition.makeDotString(firstState));
 			} // for aTransition
 		} // for entry
@@ -68,16 +71,6 @@ public class TransitionFunction<S extends State, T extends Transition> {
 	}
 	
 	/**
-	 * Gets the class type of the transitions stored in the TransitionFunction
-	 * 
-	 * @return The class type of the transitions.
-	 */
-	
-	public Class<T> getTransitionFunctionClassType(){
-		return transitionClass;
-	}
-	
-	/**
 	 * Getter method to acquire a set of all states and its corresponding transition objects.
 	 * 
 	 * @return A set of map entries with State objects and an ArrayList of the Transitions.
@@ -85,6 +78,18 @@ public class TransitionFunction<S extends State, T extends Transition> {
 	 
 	public Set<Map.Entry<S, ArrayList<T>>> getAllTransitions() {
 		return transitions.entrySet();
+	}
+	
+	/**
+	 * Getter method to generate a new object extending Transition<<s>S, E> through a method present in
+	 * the Transition interface that creates a new object of that object 'T' for creating Transition
+	 * objects corresponding to the generic classes used to produce this TransitionFunction object.
+	 * 
+	 * @return - Returns an object extending Transition<<s>S, E> that can be assigned new values.
+	 */
+	
+	public T getEmptyTransition() {
+		return dummyTransition.generateTransition();
 	}
 	
 //---  Setter Methods   -----------------------------------------------------------------------

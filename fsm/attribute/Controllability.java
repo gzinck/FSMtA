@@ -2,6 +2,7 @@ package fsm.attribute;
 
 import support.transition.Transition;
 import support.event.Event;
+import support.State;
 
 /**
  * This interface defines the methods that any FSM with the characteristic of Controllable
@@ -12,7 +13,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface Controllability<T extends Transition, E extends Event>{
+public interface Controllability<S extends State, T extends Transition<S, E>, E extends Event>{
 
 //---  Getter Methods   -----------------------------------------------------------------------
 	

@@ -48,12 +48,14 @@ public class ObservableEvent extends Event implements EventObservability{
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
+	@Override
 	public void setEventObservability(boolean replace) {
 		observability = replace;
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
+	@Override
 	public boolean getEventObservability() {
 		return observability;
 	}

@@ -17,7 +17,7 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
+public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 			
 //--- Instance Variables  ----------------------------------------------------------------------
 			
-	/** State object with the initial state for the deterministic FSM. */
+	/** ArrayList<<s>State> object that holds a list of Initial States for this Non Deterministic FSM object. */
 	protected ArrayList<State> initialStates;
 		
 //---  Constructors  --------------------------------------------------------------------------
@@ -34,24 +34,29 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 	/**
 	 * Constructor for an DetFSM object that takes in a file encoding the contents of the FSM.
 	 * 
+	 * NonDetFSM File Order for Special: Initial, Marked.
+	 * 
 	 * @param in - File read in order to create the FSM.
 	 * @param id - The id for the FSM (can be any String).
 	 */
 	
 	public NonDetFSM(File in, String inId) {
 		id = inId;
-		events = new EventMap<Event>(Event.class);
+		
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
+		events = new EventMap<Event>(Event.class);
+		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(null);
+		ReadWrite<State, NonDetTransition<State, Event>, Event> redWrt = new ReadWrite<State, NonDetTransition<State, Event>, Event>();
+		
+		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
 		initialStates = new ArrayList<State>();
-		// Deal with the actual input here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		// Gibberish goes here
-		System.err.println("Looks like Graeme didn't implement this.");
+		for(int i = 0; i < special.get(0).size(); i++) {
+			states.getState(special.get(0).get(i)).setStateInitial(true);
+			initialStates.add(states.getState(special.get(0).get(i)));
+		}
+		for(int i = 0; i < special.get(1).size(); i++) {
+			states.getState(special.get(1).get(i)).setStateMarked(true);
+		}
 	} // DetFSM(File)
 	
 	/**
@@ -63,7 +68,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 		id = inId;
 		events = new EventMap<Event>(Event.class);
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
+		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
 		initialStates = new ArrayList<State>();
 	} // DetFSM()
 	
@@ -76,14 +81,14 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 		id = "";
 		events = new EventMap<Event>(Event.class);
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<State, NonDetTransition>(NonDetTransition.class);
+		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
 		initialStates = new ArrayList<State>();
 	} // DetFSM()
 
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public FSM<State, NonDetTransition, Event> makeCoAccessible() {
+	public FSM<State, NonDetTransition<State, Event>, Event> makeCoAccessible() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -97,13 +102,13 @@ public class NonDetFSM extends FSM<State, NonDetTransition, Event>{
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public NonDetFSM union(FSM<State, NonDetTransition, Event> other) {
+	public NonDetFSM union(FSM<State, NonDetTransition<State, Event>, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public NonDetFSM product(FSM<State, NonDetTransition, Event> other) {
+	public NonDetFSM product(FSM<State, NonDetTransition<State, Event>, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}

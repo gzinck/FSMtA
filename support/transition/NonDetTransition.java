@@ -14,14 +14,14 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetTransition implements Transition<State, Event> {
+public class NonDetTransition<S extends State, E extends Event> implements Transition<S, E> {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
 	/** Event instance variable representing the Event associated to this object*/
-	public Event event;
-	/** ArrayList<State> object holding all States associated to the Event associated to this NonDetTransition object*/
-	private ArrayList<State> states;
+	public E event;
+	/** ArrayList<<s>State> object holding all States associated to the Event associated to this NonDetTransition object*/
+	private ArrayList<S> states;
 	
 //--- Constructors   --------------------------------------------------------------------------
 	
@@ -33,9 +33,9 @@ public class NonDetTransition implements Transition<State, Event> {
 	 * @param inStates - List of State objects representing the States led to by the Event associated to this NonDetTransition object
 	 */
 	
-	public NonDetTransition(Event inEvent, State ... inStates) {
+	public NonDetTransition(E inEvent, S ... inStates) {
 		event = inEvent;
-		states = new ArrayList<State>();
+		states = new ArrayList<S>();
 		for(int i = 0; i < inStates.length; i++)
 			states.add(inStates[i]);
 	}
@@ -47,7 +47,7 @@ public class NonDetTransition implements Transition<State, Event> {
 	
 	public NonDetTransition() {
 		event = null;
-		states = new ArrayList<State>();
+		states = new ArrayList<S>();
 	}
 	
 //--- Setter Methods   ------------------------------------------------------------------------
@@ -58,44 +58,38 @@ public class NonDetTransition implements Transition<State, Event> {
 	 * @param in - ArrayList<State> object representing the list of States led to by the Event associated to this NonDetTransition object
 	 */
 	
-	public void setTransitionState(ArrayList<State> in) {
+	public void setTransitionState(ArrayList<S> in) {
 		states = in;
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
-	public void setTransitionState(State in) {
+	public void setTransitionState(S in) {
 		if(!states.contains(in))
 			states.add(in);
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
-	public void setTransitionEvent(Event in) {
+	public void setTransitionEvent(E in) {
 		event = in;
 	}
 	
 //--- Getter Methods   ------------------------------------------------------------------------
 	
-	// Implementation as per the Transition interface
 	@Override
-	public Event getTransitionEvent() {
+	public E getTransitionEvent() {
 		return event;
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
-	public ArrayList<State> getTransitionStates() {
+	public ArrayList<S> getTransitionStates() {
 		return states;
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
 	public boolean stateExists(String stateName) {
 		return states.contains(new State(stateName));
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
 	public boolean stateExists(State inState) {
 		return states.contains(inState);
@@ -110,18 +104,16 @@ public class NonDetTransition implements Transition<State, Event> {
 	 * @param stateName - State object representing the State to append to the end of the list of States associated to this object
 	 */
 	
-	public void addTransitionState(State stateNew) {
+	public void addTransitionState(S stateNew) {
 		states.add(stateNew);
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
 	public boolean removeTransitionState(String stateName) {
 		states.remove(new State(stateName));
 		return (states.size() == 0);
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
 	public boolean removeTransitionState(State inState) {
 		states.remove(inState);
@@ -130,7 +122,6 @@ public class NonDetTransition implements Transition<State, Event> {
 	
 //---  Operations   ---------------------------------------------------------------------------
 
-	// Implementation as per the Transition interface
 	@Override
 	public String makeDotString(State firstState) {
 		StringBuilder sb = new StringBuilder();
@@ -139,5 +130,11 @@ public class NonDetTransition implements Transition<State, Event> {
 			sb.append(s.getStateName());
 		sb.append("\"} [label = \"" + event.getEventName() + "\"];");
 		return sb.toString();
+	}
+	
+	@Override
+	public NonDetTransition<S, E> generateTransition(){
+		NonDetTransition<S, E> outbound = new NonDetTransition<S, E>();
+		return outbound;
 	}
 }

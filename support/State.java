@@ -79,6 +79,19 @@ public class State implements Comparator<State>{
 	}
 	
 	/**
+	 * Constructor for a State object that copies the values stored in an existing State
+	 * object into this State object.
+	 * 
+	 * @param replace - State object that's contents are copied into the object being constructed
+	 */
+	
+	public State(State replace) {
+		id = replace.getStateName();
+		initial = replace.getStateInitial();
+		marked = replace.getStateMarked();
+	}
+	
+	/**
 	 * Constructor for a State object that assigns a name to this object as defined by
 	 * the input and defaults the initial and marked values to false.
 	 * 
@@ -103,26 +116,14 @@ public class State implements Comparator<State>{
 		initial = false;
 		marked = false;
 	}
-	
-	/**
-	 * Constructor for a State object that copies the values stored in an existing State
-	 * object into this State object.
-	 * 
-	 * @param replace - State object that's contents are copied into the object being constructed
-	 */
-	
-	public State(State replace) {
-		id = replace.getStateName();
-		initial = replace.getStateInitial();
-		marked = replace.getStateMarked();
-	}
-	
+
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Gets a copy of the state.
+	 * Getter method to acquire a copy of the state via a Constructor that takes in a State and
+	 * copies its contents.
 	 * 
-	 * @return Copied State object.
+	 * @return - Returns an object extending State that represents a disjoint object identical to the original State extending object.
 	 */
 	
 	public <S extends State> S copy() {

@@ -7,6 +7,21 @@ import support.event.Event;
 
 public interface Transition<S extends State, E extends Event> {
 	
+//--- Operations   ----------------------------------------------------------------------------
+	
+	/**
+	 * Makes a String object which has the dot representation of the Transition, which
+	 * can be used for sending an FSM to GraphViz.
+	 * 
+	 * @param firstState The State which leads to the transition. This is used to
+	 * determine the exact text for the dot representation.
+	 * @return String containing the dot representation of the Transition.
+	 */
+	
+	public String makeDotString(State firstState);
+
+//--- Setter Methods   ------------------------------------------------------------------------
+	
 	/**
 	 * Setter method to add a new State to the Transition. If the transition is non-deterministic,
 	 * then setting the state will not overwrite any other states (it will just add). If it is
@@ -15,6 +30,7 @@ public interface Transition<S extends State, E extends Event> {
 	 * 
 	 * @param in State object representing the Transition object's Event's new target State
 	 */
+	
 	public void setTransitionState(S in);
 	
 	/**
@@ -22,22 +38,8 @@ public interface Transition<S extends State, E extends Event> {
 	 * 
 	 * @param in Event object provided to replace the value stored previously in this Transition object
 	 */
+	
 	public void setTransitionEvent(E in);
-	
-	/**
-	 * Getter method to access the Event associated to this Transition object
-	 * 
-	 * @return Returns a Event object representing the Event associated to this Transition object
-	 */
-	public E getTransitionEvent();
-	
-	/**
-	 * Getter method to access the ArrayList of State names led to by the Event associated to this NonDetTransition object
-	 * 
-	 * @return Returns an ArrayList containing the States led to by the Event associated to this NonDetTransition object
-	 */
-	
-	public ArrayList<S> getTransitionStates();
 	
 	/**
 	 * Getter method to query whether or not a State exists in the Transition object.
@@ -57,6 +59,35 @@ public interface Transition<S extends State, E extends Event> {
 	
 	public boolean stateExists(State inState);
 	
+//--- Getter Methods   ------------------------------------------------------------------------
+	
+	/**
+	 * Getter method to access the Event associated to this Transition object
+	 * 
+	 * @return Returns a Event object representing the Event associated to this Transition object
+	 */
+	
+	public E getTransitionEvent();
+	
+	/**
+	 * Getter method to access the ArrayList of State names led to by the Event associated to this NonDetTransition object
+	 * 
+	 * @return Returns an ArrayList containing the States led to by the Event associated to this NonDetTransition object
+	 */
+	
+	public ArrayList<S> getTransitionStates();
+	
+	/**
+	 * Getter method that requests a blank-slate Transition object of a type that matches that of the object
+	 * to whom this method belongs with no correspondence to the object calling this method.
+	 * 
+	 * @return - Returns an object extending the Transition<<s>S, E> interface built from scratch and empty.
+	 */
+	
+	public <T extends Transition<S, E>> T generateTransition();
+	
+//---  Manipulations   ------------------------------------------------------------------------	
+
 	/**
 	 * Removes the state from the transition object; or, if the state
 	 * is the only item in the transition object (as it is for the base
@@ -82,15 +113,5 @@ public interface Transition<S extends State, E extends Event> {
 	 */
 	
 	public boolean removeTransitionState(State inState);
-	
-	/**
-	 * Makes a String object which has the dot representation of the Transition, which
-	 * can be used for sending an FSM to GraphViz.
-	 * 
-	 * @param firstState The State which leads to the transition. This is used to
-	 * determine the exact text for the dot representation.
-	 * @return String containing the dot representation of the Transition.
-	 */
-	
-	public String makeDotString(State firstState);
+
 }

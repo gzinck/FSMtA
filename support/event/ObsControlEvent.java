@@ -56,20 +56,24 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
+	@Override
 	public void setEventObservability(boolean obs) {
 		observe = obs;
 	}
 	
+	@Override
 	public void setEventControllability(boolean con) {
 		control = con;
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
+	@Override
 	public boolean getEventObservability() {
 		return observe;
 	}
 	
+	@Override
 	public boolean getEventControllability() {
 		return control;
 	}

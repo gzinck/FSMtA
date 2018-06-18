@@ -36,7 +36,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	/** HashMap<String, <E extends Event>> mapping event names to event objects, which all contain attributes of the given event. */
 	protected EventMap<E> events;
 	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
-	protected TransitionFunction<S, T> transitions;
+	protected TransitionFunction<S, T, E> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
@@ -173,19 +173,46 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
+	/**
+	 * Setter method that assigns a new StateMap<<s>S> to replace the previously assigned set of States.
+	 * 
+	 * @param inState - StateMap<<s>S> object that assigns a new set of Events to this FSM object
+	 */
+	
 	public void setFSMStateMap(StateMap<S> inState) {
 		states = inState;
 	}
+	
+	/**
+	 * Setter method that assigns a new EventMap<<s>E> object to replace the previously assigned set of Events.
+	 * 
+	 * @param inEvent - EventMap<<s>E> object that assigns a new set of Events to this FSM object
+	 */
 	
 	public void setFSMEventMap(EventMap<E> inEvent) {
 		events = inEvent;
 	}
 	
-	public void setFSMTransitionFunction(TransitionFunction<S, T> inTrans) {
+	/**
+	 * Setter method that assigns a new TransitionFunction<<s>S, T, E> object to replace the previously assigned set of Transitions.
+	 * 
+	 * @param inTrans - TransitionFunction<<s>S, T, E> object that assigns a new set of Transitions to this FSM object
+	 */
+	
+	public void setFSMTransitionFunction(TransitionFunction<S, T, E> inTrans) {
 		transitions = inTrans;
 	}
 	
-	public void constructFSM(StateMap<S> inStates, EventMap<E> inEvents, TransitionFunction<S, T> inTrans) {
+	/**
+	 * Setter method that aggregates the other setter methods to assign new values to the instance variables containing
+	 * information about the State, Transitions, and Events.
+	 * 
+	 * @param inStates - StateMap<<s>S> object that stores a new set of States to assign to this FSM object
+	 * @param inEvents - TransitionFunction<<s>S, T, E> object that stores a new set of Transitions to assign to this FSM object
+	 * @param inTrans - EventMap<<e>E> object that stores a new set of Events to assign to this FSM object
+	 */
+	
+	public void constructFSM(StateMap<S> inStates, TransitionFunction<S, T, E> inTrans, EventMap<E> inEvents) {
 		setFSMStateMap(inStates);
 		setFSMEventMap(inEvents);
 		setFSMTransitionFunction(inTrans);
@@ -245,7 +272,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @return - Returns a TransitionFunction<T> object containing all the Transitions associated to this FSM object.
 	 */
 	
-	public TransitionFunction<S, T> getTransitions() {
+	public TransitionFunction<S, T, E> getTransitions() {
 		return transitions;
 	}
 	
@@ -326,7 +353,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	public abstract void addInitialState(String newInitial);
 
 	/**
-	 * Adds an transition from one state to another state.
+	 * Adds a transition from one state to another state.
 	 * 
 	 * @param state1 - The String corresponding to the origin state for the transition.
 	 * @param eventName - The String corresponding to the event to create.
@@ -346,7 +373,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 			// have to add the state to that object instead...
 			// TODO Also make sure you CANNOT add a new state to the transition object
 			// elsewhere...
-			T outbound = transitions.getTransitionFunctionClassType().newInstance();
+			T outbound = transitions.getEmptyTransition();
 			outbound.setTransitionEvent(e);
 			outbound.setTransitionState(s2);
 			transitions.addTransition(s1, outbound);
@@ -363,11 +390,12 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @param state
 	 * @param transition
 	 */
+	
 	public void addTransition(S state, T transition) {
 		S fromState = states.addState(state); // Get the state or make it
 		E e = events.addEvent(transition.getTransitionEvent()); // Get the event or make it
 		try {
-			T outbound = transitions.getTransitionFunctionClassType().newInstance(); // New transition object
+			T outbound = transitions.getEmptyTransition(); // New transition object
 			outbound.setTransitionEvent(e);
 			for(S s : transition.getTransitionStates()) { // Add all the transition states (make them if necessary)
 				S toState = states.addState(s);

@@ -138,8 +138,9 @@ public class StateMap<S extends State> {
 //---  Setter Methods   -----------------------------------------------------------------------
 
 	/**
+	 * Setter method that assigns the provided HashMap<<s>String, S> object to this object's corresponding instance variable.
 	 * 
-	 * @param inHash
+	 * @param inHash - HashMap<<s>String, S> object that represents a matched set of Strings leading to State objects.
 	 */
 	
 	public void setStateMapStates(HashMap<String, S> inHash) {
@@ -147,8 +148,9 @@ public class StateMap<S extends State> {
 	}
 	
 	/**
+	 * Setter method that assigns a new Class<<s>S> object to this object's corresponding instance variable.
 	 * 
-	 * @param inClass
+	 * @param inClass - Class<<s>S> object that represents a Class type corresponding to the type of State stored by this StateMap.
 	 */
 	
 	public void setStateMapClass(Class<S> inClass) {

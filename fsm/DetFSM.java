@@ -3,6 +3,8 @@ package fsm;
 import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
+import java.util.Map.Entry;
+
 import support.*;
 import support.transition.*;
 import support.event.Event;
@@ -18,7 +20,7 @@ import support.ReadWrite;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetFSM extends FSM<State, DetTransition, Event> {
+public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 
@@ -46,8 +48,8 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 		
 		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, DetTransition>(DetTransition.class);
-		ReadWrite<State, Event, DetTransition> redWrt = new ReadWrite<State, Event, DetTransition>();
+		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(null);
+		ReadWrite<State, DetTransition<State, Event>, Event> redWrt = new ReadWrite<State, DetTransition<State, Event>, Event>();
 		
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
 		initialState = states.getState(special.get(0).get(0));
@@ -55,8 +57,6 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 		for(int i = 0; i < special.get(1).size(); i++) {
 			states.getState(special.get(1).get(i)).setStateMarked(true);
 		}
-		
-		constructFSM(states, events, transitions);
 	} // DetFSM(File)
 	
 	/**
@@ -68,9 +68,8 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 		id = inId;
 		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, DetTransition>(DetTransition.class);
+		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		initialState = null;
-		constructFSM(states, events, transitions);
 	} // DetFSM()
 	
 	/**
@@ -82,7 +81,7 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 		id = "";
 		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, DetTransition>(DetTransition.class);
+		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		initialState = null;
 	} // DetFSM()
 
@@ -104,7 +103,7 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 			if(entry.getValue()) {
 				State oldState = getState(entry.getKey());
 				if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
-					for(DetTransition t : transitions.getTransitions(oldState))
+					for(DetTransition<State, Event> t : transitions.getTransitions(oldState))
 						if(processedStates.get(t.getTransitionState().getStateName())) // If it is coaccessible...
 							newFSM.addTransition(oldState, t); // Add the transition (using copies in the newFSM)
 				} // if not null
@@ -127,7 +126,7 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
-	public NonDetFSM union(FSM<State, DetTransition, Event> other) {
+	public NonDetFSM union(FSM<State, DetTransition<State, Event>, Event> other) {
 		NonDetFSM newFSM = new NonDetFSM();
 		
 		// Add initial states
@@ -148,20 +147,22 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 			newFSM.events.addEvent(e);
 		
 		// Add transitions
-		for(Map.Entry<State, ArrayList<DetTransition>> entry : this.transitions.getAllTransitions()) {
-			State currState = newFSM.states.getState(STATE_PREFIX_1 + entry.getKey().getStateName());
-			for(DetTransition t : entry.getValue()) {
+		
+		for(Map.Entry<State, ArrayList<DetTransition<State, Event>>> entry : this.transitions.getAllTransitions()) {
+			State currState = newFSM.states.getState(STATE_PREFIX_1 + entry .getKey().getStateName());
+			for(DetTransition<State, Event> t : entry.getValue()) {
 				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
 				State newState = newFSM.states.getState(STATE_PREFIX_1 + t.getTransitionState().getStateName());
-				newFSM.transitions.addTransition(currState, new NonDetTransition(newEvent, newState));
+				newFSM.transitions.addTransition(currState, new NonDetTransition<State, Event>(newEvent, newState));
 			} // for transition
 		} // for entry
-		for(Map.Entry<State, ArrayList<DetTransition>> entry : other.transitions.getAllTransitions()) {
+		
+		for(Map.Entry<State, ArrayList<DetTransition<State, Event>>> entry : other.transitions.getAllTransitions()) {
 			State currState = newFSM.states.getState(STATE_PREFIX_2 + entry.getKey().getStateName());
-			for(DetTransition t : entry.getValue()) {
+			for(DetTransition<State, Event> t : entry.getValue()) {
 				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
 				State newState = newFSM.states.getState(STATE_PREFIX_2 + t.getTransitionState().getStateName());
-				newFSM.transitions.addTransition(currState, new NonDetTransition(newEvent, newState));
+				newFSM.transitions.addTransition(currState, new NonDetTransition<State, Event>(newEvent, newState));
 			} // for transition
 		} // for entry
 		
@@ -169,7 +170,7 @@ public class DetFSM extends FSM<State, DetTransition, Event> {
 	}
 
 	@Override
-	public DetFSM product(FSM<State, DetTransition, Event> other) {
+	public DetFSM product(FSM<State, DetTransition<State, Event>, Event> other) {
 		// TODO Auto-generated method stub
 		return null;
 	}

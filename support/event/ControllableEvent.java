@@ -49,12 +49,14 @@ public class ControllableEvent extends Event implements EventControllability{
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
+	@Override
 	public void setEventControllability(boolean newControl) {
 		controllability = newControl;
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 
+	@Override
 	public boolean getEventControllability() {
 		return controllability;
 	}

@@ -100,7 +100,6 @@ public class EventMap<E extends Event> {
 
 //---  Manipulations   ------------------------------------------------------------------------
 
-	
 	/**
 	 * Adds an event to the map which is mapped to the name stored within the Event object already.
 	 * It creates a copy to put into the map, unless the event already exists in the map (in

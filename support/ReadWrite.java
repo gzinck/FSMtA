@@ -7,23 +7,41 @@ import support.State;
 import java.io.*;
 
 /**
- * This class is used for conversions between FSM objects and their Text File representations
- * for reading/writing.
+ * This class is used for conversions between FSM objects and their Text File representations for reading/writing.
  * 
  * This class is a part of the support package.
  * 
  * @author Mac Clevinger and Graeme Zinck 
  */
 
-public class ReadWrite<S extends State, E extends Event, T extends Transition> {
+public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Event> {
 
+//---  Operations   ---------------------------------------------------------------------------
+	
+	/**
+	 * This method converts the data structures configuring the provided FSM to a File format.
+	 * 
+	 * @return - Returns a boolean value representing the result of this method'ss attempt to write to the File.
+	 */
 	
 	public boolean writeToFile() {
 		
 		return false;
 	}
 	
-	public ArrayList<ArrayList<String>> readFromFile(StateMap<S> states, EventMap<E> events, TransitionFunction<S, T> transitions, File file){
+	/**
+	 * This method reads from the provided file information that is used to fill the sets of States,
+	 * Events, and Transitions that are passed to this method, returning the additional information
+	 * that each class handles separately. (Initial States, Marked States, etc.)
+	 * 
+	 * @param states - StateMap<<s>S> object that represents the empty set of States to be filled.
+	 * @param events - EventMap<<s>E> object that represents the empty set of Events to be filled.
+	 * @param transitions - TransitionFunction<s>S, T, E> object that represents the empty set of Transitions to be filled.
+	 * @param file - File object that holds the provided information instructing how to construct the FSM object.
+	 * @return - Returns an ArrayList<<s>ArrayList<<s>String>> object that contains the additional information about this FSM object based on its type.
+	 */
+	
+	public ArrayList<ArrayList<String>> readFromFile(StateMap<S> states, EventMap<E> events, TransitionFunction<S, T, E> transitions, File file){
 		try {
 		  Scanner sc = new Scanner(file);
 		  int numSpec = sc.nextInt();
@@ -41,7 +59,7 @@ public class ReadWrite<S extends State, E extends Event, T extends Transition> {
 			  S leading = states.addState(in[0]);
 			  E your = events.addEvent(in[1]);
 			  S target = states.addState(in[2]);
-			  T outbound = transitions.getTransitionFunctionClassType().newInstance();
+			  T outbound = transitions.getEmptyTransition();
 			  outbound.setTransitionEvent(your);
 			  outbound.setTransitionState(target);
 			  transitions.addTransition(leading, outbound);

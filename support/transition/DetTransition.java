@@ -15,12 +15,12 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetTransition implements Transition<State, Event> {
+public class DetTransition<S extends State, E extends Event> implements Transition<S, E> {
 
 	/** Event instance variable representing the Event associated to this object*/
-	public Event event;
+	public E event;
 	/** State instance variable representing the target State associated to this object*/
-	protected State state;
+	protected S state;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -32,7 +32,7 @@ public class DetTransition implements Transition<State, Event> {
 	 * @param inState - State object representing the State being led to by the Event of this Transition
 	 */
 	
-	public DetTransition(Event inEvent, State inState) {
+	public DetTransition(E inEvent, S inState) {
 		event = inEvent;
 		state = inState;
 	}
@@ -49,27 +49,12 @@ public class DetTransition implements Transition<State, Event> {
 	
 //---  Operations   ---------------------------------------------------------------------------
 	
-	/**
-	 * Makes a String object which has the dot representation of the transitions, which
-	 * can be used for sending an FSM to GraphViz.
-	 * 
-	 * @param firstState The State which leads to the transition. This is used to
-	 * determine the exact text for the dot representation.
-	 * @return String containing the dot representation of the transitions.
-	 */
-	
 	public String makeDotString(State firstState) {
 		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\"];";
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
-	
-	// Implementation as per the Transition interface
-	@Override
-	public Event getTransitionEvent() {
-		return event;
-	}
-	
+
 	/**
 	 * Getter method to access the State associated to the Event associated to this Transition object
 	 * 
@@ -80,47 +65,42 @@ public class DetTransition implements Transition<State, Event> {
 		return state;
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
-	public ArrayList<State> getTransitionStates() {
-		ArrayList<State> list = new ArrayList<State>();
+	public E getTransitionEvent() {
+		return event;
+	}
+	
+	@Override
+	public ArrayList<S> getTransitionStates() {
+		ArrayList<S> list = new ArrayList<S>();
 		list.add(state);
 		return list;
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
 	public boolean stateExists(String stateName) {
 		return state.equals(new State(stateName));
 	}
 	
-	// Implementation as per the Transition interface
-		@Override
-		public boolean stateExists(State inState) {
+	@Override
+	public boolean stateExists(State inState) {
 			return state.equals(inState);
 		}
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
-	// Implementation as per the Transition interface
 	@Override
-	public void setTransitionEvent(Event in) {
+	public void setTransitionEvent(E in) {
 		event = in;
 	}
 	
-	/**
-	 * Setter method to assign a new String as the State name associated to the Event associated to this Transition object
-	 * 
-	 * @param in - State object representing the Transition object's Event's new target State
-	 */
-	
-	public void setTransitionState(State in) {
+	@Override 
+	public void setTransitionState(S in) {
 		state = in;
 	}
 	
 //---  Manipulations   -----------------------------------------------------------------------
 
-	// Implementation as per the Transition interface
 	@Override
 	public boolean removeTransitionState(String stateName) {
 		if(state.getStateName().equals(stateName)) {
@@ -130,12 +110,17 @@ public class DetTransition implements Transition<State, Event> {
 		return false;
 	}
 	
-	// Implementation as per the Transition interface
 	@Override
 	public boolean removeTransitionState(State inState) {
 		if(state.equals(inState)) {
 			state = null;
 		}
 		return (state == null);
+	}
+	
+	@Override
+	public DetTransition<S, E> generateTransition(){
+		DetTransition<S, E> outbound = new DetTransition<S, E>();
+		return outbound;
 	}
 }
