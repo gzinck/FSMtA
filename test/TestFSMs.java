@@ -1,25 +1,26 @@
-package test;
-
 import fsm.*;
 import graphviz.FSMToDot;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-
-class TestFSMs {
+public class TestFSMs {
 
 	private static final String GRAEME_WORKING_FOLDER = "/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz";
 	private static final String GRAEME_CONFIG_FILE_PATH = "/Users/graemezinck/Documents/OneDrive/Documents/Personal/Eclipse Workspace/Summer Research/config.properties";
 	
+	private static final String MAC_WORKING_FOLDER = "/Users/mac/Documents/TestGraph";
+	private static final String MAC_CONFIG_FILE_PATH = "/Users/mac/Documents/FSM_Implementation-2/config.properies";
+	
+	public TestFSMs() {}
+	
 	@Test
-	void test() {
+	public void test() {
 		NonDetFSM fsm1 = new NonDetFSM();
 		fsm1.addTransition("1", "a", "2");
 		fsm1.addTransition("2", "a", "3");
 		fsm1.toggleMarkedState("3");
-		fsm1.addTransition("1", "a", "6");
-		fsm1.addTransition("4", "a", "5");
+		fsm1.addTransition("1", "d", "6");
+		fsm1.addTransition("4", "c", "5");
 		fsm1.addState("45");
 		fsm1.toggleMarkedState("45");
 		fsm1.addInitialState("1");
