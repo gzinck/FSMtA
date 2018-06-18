@@ -1,5 +1,7 @@
 import fsm.*;
 import graphviz.FSMToDot;
+import support.GenerateFSM;
+import java.io.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -8,13 +10,20 @@ public class TestFSMs {
 	private static final String GRAEME_WORKING_FOLDER = "/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz";
 	private static final String GRAEME_CONFIG_FILE_PATH = "/Users/graemezinck/Documents/OneDrive/Documents/Personal/Eclipse Workspace/Summer Research/config.properties";
 	
-	private static final String MAC_WORKING_FOLDER = "/Users/mac/Documents/TestGraph";
-	private static final String MAC_CONFIG_FILE_PATH = "/Users/mac/Documents/FSM_Implementation-2/config.properies";
+	private static final String MAC_WORKING_FOLDER = "/Users/mac/Documents/TestGraph/";
+	private static final String MAC_CONFIG_FILE_PATH = "/Users/mac/Documents/FSM-Implementation-2/config.properties";
 	
 	public TestFSMs() {}
 	
 	@Test
 	public void test() {
+		
+		File f = new File(GenerateFSM.createNewObservableFSM(15, 4, 6, 4, 3, 2, "fileName", MAC_WORKING_FOLDER));
+		NonDetObsFSM fsm = new NonDetObsFSM(f, "fsm");
+		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+	/*
+		
 		NonDetFSM fsm1 = new NonDetFSM();
 		fsm1.addTransition("1", "a", "2");
 		fsm1.addTransition("2", "a", "3");
@@ -45,6 +54,8 @@ public class TestFSMs {
 //		FSM anotherFSM = newFSM.trim();
 //		System.out.println(anotherFSM.makeDotString());
 //		FSMToDot.createImgFromFSM(anotherFSM, GRAEME_WORKING_FOLDER + "/" + "test2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+ 
+ */
 	}
 
 }

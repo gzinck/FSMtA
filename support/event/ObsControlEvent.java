@@ -76,6 +76,11 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 	@Override
 	public boolean getEventControllability() {
 		return control;
+	}	
+
+	@Override
+	public int getEventType() {
+		return control && observe ? 3 : control ? 2 : observe ? 1 : 0;
 	}
 	
 }

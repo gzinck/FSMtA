@@ -48,7 +48,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		
 		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(null);
+		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		ReadWrite<State, DetTransition<State, Event>, Event> redWrt = new ReadWrite<State, DetTransition<State, Event>, Event>();
 		
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);

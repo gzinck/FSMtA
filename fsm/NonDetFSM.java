@@ -45,7 +45,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 		
 		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(null);
+		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
 		ReadWrite<State, NonDetTransition<State, Event>, Event> redWrt = new ReadWrite<State, NonDetTransition<State, Event>, Event>();
 		
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);

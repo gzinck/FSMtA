@@ -57,8 +57,8 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 		  while(sc.hasNextLine()) {
 			  String[] in = sc.nextLine().split(" ");
 			  S leading = states.addState(in[0]);
-			  E your = events.addEvent(in[1]);
-			  S target = states.addState(in[2]);
+			  E your = events.addEvent(in[2]);
+			  S target = states.addState(in[1]);
 			  T outbound = transitions.getEmptyTransition();
 			  outbound.setTransitionEvent(your);
 			  outbound.setTransitionState(target);

@@ -50,7 +50,23 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 //---  Operations   ---------------------------------------------------------------------------
 	
 	public String makeDotString(State firstState) {
-		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\"];";
+		String eventDeal = "";
+		switch(event.getEventType()) {
+		case 0:
+			eventDeal = "color = \"black\"";
+			break;
+		case 1:
+			eventDeal = "color = \"red\"";
+			break;
+		case 2:
+			eventDeal = "color = \"yellow\"";
+			break;
+		case 3:
+			eventDeal = "color = \"orange\"";
+			break;
+		default: break;
+		}
+		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];";
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------

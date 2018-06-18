@@ -50,6 +50,40 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 		states = new ArrayList<S>();
 	}
 	
+//---  Operations   ---------------------------------------------------------------------------
+
+	@Override
+	public String makeDotString(State firstState) {
+		String eventDeal = "";
+		switch(event.getEventType()) {
+		case 0:
+			eventDeal = "color = \"black\"";
+			break;
+		case 1:
+			eventDeal = "color = \"red\"";
+			break;
+		case 2:
+			eventDeal = "color = \"yellow\"";
+			break;
+		case 3:
+			eventDeal = "color = \"orange\"";
+			break;
+		default: break;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("\"" + firstState.getStateName() + "\"->{\"");
+		for(State s : states)
+			sb.append(s.getStateName());
+		sb.append("\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];");
+		return sb.toString();
+	}
+		
+	@Override
+	public NonDetTransition<S, E> generateTransition(){
+		NonDetTransition<S, E> outbound = new NonDetTransition<S, E>();
+		return outbound;
+	}
+
 //--- Setter Methods   ------------------------------------------------------------------------
 	
 	/**
@@ -119,22 +153,5 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 		states.remove(inState);
 		return (states.size() == 0);
 	}
-	
-//---  Operations   ---------------------------------------------------------------------------
 
-	@Override
-	public String makeDotString(State firstState) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\"" + firstState.getStateName() + "\"->{\"");
-		for(State s : states)
-			sb.append(s.getStateName());
-		sb.append("\"} [label = \"" + event.getEventName() + "\"];");
-		return sb.toString();
-	}
-	
-	@Override
-	public NonDetTransition<S, E> generateTransition(){
-		NonDetTransition<S, E> outbound = new NonDetTransition<S, E>();
-		return outbound;
-	}
 }

@@ -61,4 +61,7 @@ public class ControllableEvent extends Event implements EventControllability{
 		return controllability;
 	}
 	
+	public int getEventType() {
+		return controllability ? 2 : 0;
+	}
 }

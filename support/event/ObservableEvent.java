@@ -22,6 +22,16 @@ public class ObservableEvent extends Event implements EventObservability{
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
+	 * Constructor 
+	 * 
+	 */
+	
+	public ObservableEvent() {
+		super();
+		observability = true;
+	}
+	
+	/**
 	 * Constructor for an ObservableEvent object that assigns the provided String object as its
 	 * name and defaults the status of its being Observable to true. (Can be seen.)
 	 * 
@@ -60,4 +70,8 @@ public class ObservableEvent extends Event implements EventObservability{
 		return observability;
 	}
 	
+	@Override
+	public int getEventType() {
+		return observability ? 0 : 1;
+	}
 }

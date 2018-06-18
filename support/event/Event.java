@@ -22,6 +22,7 @@ public class Event {
 	 * promptly renamed after called, it is simply used so that instantiation is possible in generic
 	 * EventMap methods. 
 	 */
+	
 	public Event() {
 		id = "";
 	}
@@ -81,6 +82,17 @@ public class Event {
 		// For use in other areas, and when Event is extended, this is
 		// necessary.
 		return (E)(new Event(this));
+	}
+
+	/**
+	 * This method returns an integer value describing the type of Event during the
+	 * creation of a visualization of an FSM.
+	 * 
+	 * @return - Returns an integer value representing the type of Event
+	 */
+	
+	public int getEventType() {
+		return 0;
 	}
 	
 }
