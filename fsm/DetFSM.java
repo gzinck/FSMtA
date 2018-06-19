@@ -102,6 +102,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 			// If the state is coaccessible, add it!
 			if(entry.getValue()) {
 				State oldState = getState(entry.getKey());
+				newFSM.states.addState(oldState);
 				if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
 					for(DetTransition<State, Event> t : transitions.getTransitions(oldState))
 						if(processedStates.get(t.getTransitionState().getStateName())) // If it is coaccessible...

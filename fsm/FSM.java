@@ -298,8 +298,8 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		else if (check != null && check == false) {
 			return false;
 		}
-		// Before recursing, say that this state is processed.
 		
+		// Before recursing, say that this state is processed.
 		processedStates.put(curr.getStateName(), false);
 		
 		// Recurse until find a marked state
