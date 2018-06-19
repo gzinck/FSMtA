@@ -111,7 +111,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		} // for processed state
 		
 		// Finally, add the initial state
-		if(processedStates.get(initialState.getStateName()))
+		if(processedStates.get(initialState.getStateName())) 
 			newFSM.addInitialState(initialState.getStateName());
 		return newFSM;
 	} // makeCoAccessible()
@@ -131,7 +131,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		
 		// Add initial states
 		newFSM.addInitialState(STATE_PREFIX_1 + initialState.getStateName());
-		for(State s : other.getInitialStates()) // Add the states from the other FSM
+		for(State s : other.getInitialStates())  // Add the states from the other FSM
 			newFSM.addInitialState(STATE_PREFIX_2 + s.getStateName());
 		
 		// Add other states as well
@@ -180,7 +180,8 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 	@Override
 	public ArrayList<State> getInitialStates() {
 		ArrayList<State> initial = new ArrayList<State>();
-		initial.add(initialState);
+		if(initialState != null)
+		  initial.add(initialState);
 		return initial;
 	} // getInitialStates()
 

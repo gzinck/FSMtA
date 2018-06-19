@@ -2,7 +2,6 @@ import fsm.*;
 import graphviz.FSMToDot;
 import support.GenerateFSM;
 import java.io.*;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class TestFSMs {
@@ -13,14 +12,20 @@ public class TestFSMs {
 	private static final String MAC_WORKING_FOLDER = "/Users/mac/Documents/TestGraph/";
 	private static final String MAC_CONFIG_FILE_PATH = "/Users/mac/Documents/FSM-Implementation-2/config.properties";
 	
-	public TestFSMs() {}
-	
 	@Test
 	public void test() {
 		
-		File f = new File(GenerateFSM.createNewObservableFSM(15, 4, 6, 4, 3, 2, "fileName", MAC_WORKING_FOLDER));
+		File f = new File(GenerateFSM.createNewObservableFSM(15, 2, 3, 2, 2, 4, "fileName", MAC_WORKING_FOLDER));
 		NonDetObsFSM fsm = new NonDetObsFSM(f, "fsm");
-		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		File f1 = new File(GenerateFSM.createNewDeterministicFSM(10, 2, 3, 2, "fil1", MAC_WORKING_FOLDER));
+		//File f2 = new File(GenerateFSM.createNewDeterministicFSM(10, 4, 3, 5, "fil2", MAC_WORKING_FOLDER));
+		DetFSM fsm1 = new DetFSM(f1, "fs1");
+		DetFSM fsm2 = fsm1.makeCoAccessible();
+		FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		System.out.println(fsm2.makeDotString());
+		NonDetFSM fsm3 = fsm1.union(fsm2);
+		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test4", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
 	/*
 		

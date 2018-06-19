@@ -73,8 +73,8 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @return - An FSM representing the trimmed version of the calling FSM.
 	 */
 	
-	public FSM<S, T, E> trim() {
-		FSM<S, T, E> newFSM = this.makeAccessible();
+	public <fsm extends FSM<S, T, E>> fsm trim() {
+		fsm newFSM = this.makeAccessible();
 		return newFSM.makeCoAccessible();
 	}
 	
@@ -91,7 +91,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * FSM. 
 	 */
 	
-	public FSM<S, T, E> makeAccessible() {
+	public <fsm extends FSM<S, T, E>> fsm makeAccessible() {
 		// Make a queue to keep track of states that are accessible and their neighbours.
 		LinkedList<String> queue = new LinkedList<String>();
 		
@@ -119,7 +119,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 				} // if not null
 			} // while
 			
-			return newFSM;
+			return (fsm)newFSM;
 		} catch(IllegalAccessException e) {
 			e.printStackTrace();
 			return null;
@@ -141,7 +141,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @return - An FSM representing the CoAccessible version of the original FSM.
 	 */
 	
-	public abstract FSM<S, T, E> makeCoAccessible();
+	public abstract <fsm extends FSM<S, T, E>> fsm makeCoAccessible();
 
 	/**
 	 * Formerly createFileFormat(), toTextFile(String, String) converts an
@@ -290,11 +290,16 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	
 	protected boolean isCoAccessible(S curr, HashMap<String, Boolean> processedStates) {
 		// If curr is marked, it is coaccessible so it's OK.
-		if(curr.getStateMarked()) {
+		Boolean check = processedStates.get(curr.getStateName());
+		if(curr.getStateMarked() || (check != null && check == true)) {
 			processedStates.put(curr.getStateName(), true);
 			return true;
 		} // if
+		else if (check != null && check == false) {
+			return false;
+		}
 		// Before recursing, say that this state is processed.
+		
 		processedStates.put(curr.getStateName(), false);
 		
 		// Recurse until find a marked state
