@@ -2,6 +2,8 @@ package fsm;
 
 import java.util.*;
 import support.*;
+import support.transition.DetTransition;
+import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -202,6 +204,57 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 */
 	
 	public abstract FSM union(FSM<S, T, E> other);
+	
+	/**
+	 * Performs a union operation on the two FSMs by dynamically adding
+	 * to an FSM passed as a parameter: newFSM.
+	 * 
+	 * @param other The FSM to add to the current FSM to build a union FSM.
+	 * @param newFSM The empty FSM to fill with all the states and transitions
+	 * of the calling FSM and the other FSM.
+	 */
+	protected <NewT extends Transition<S, E>> void unionHelper(FSM<S, T, E> other, FSM<S, NewT, E> newFSM) {
+		// Add initial states
+		for(State s : getInitialStates())  // Add the states from the this FSM
+			newFSM.addInitialState(STATE_PREFIX_1 + s.getStateName());
+		for(State s : other.getInitialStates())  // Add the states from the other FSM
+			newFSM.addInitialState(STATE_PREFIX_2 + s.getStateName());
+		
+		// Add other states as well
+		for(S s : this.states.getStates())
+			newFSM.states.addState(s, STATE_PREFIX_1);
+		for(S s : other.states.getStates())
+			newFSM.states.addState(s, STATE_PREFIX_2);
+		
+		// Add events
+		for(E e : this.events.getEvents())
+			newFSM.events.addEvent(e);
+		for(E e : other.events.getEvents())
+			newFSM.events.addEvent(e);
+		
+		// Add transitions
+		for(Map.Entry<S, ArrayList<T>> entry : this.transitions.getAllTransitions()) {
+			S currState = newFSM.states.getState(STATE_PREFIX_1 + entry .getKey().getStateName());
+			for(T t : entry.getValue()) {
+				E newEvent = newFSM.events.getEvent(t.getTransitionEvent());
+				for(S toState : t.getTransitionStates()) {
+					S newState = newFSM.states.getState(STATE_PREFIX_1 + toState.getStateName());
+					newFSM.addTransition(currState.getStateName(), newEvent.getEventName(), newState.getStateName());
+				} // for every toState in the transition
+			} // for transition
+		} // for entry
+		
+		for(Map.Entry<S, ArrayList<T>> entry : other.transitions.getAllTransitions()) {
+			S currState = newFSM.states.getState(STATE_PREFIX_2 + entry.getKey().getStateName());
+			for(T t : entry.getValue()) {
+				E newEvent = newFSM.events.getEvent(t.getTransitionEvent());
+				for(S toState : t.getTransitionStates()) {
+					S newState = newFSM.states.getState(STATE_PREFIX_2 + toState.getStateName());
+					newFSM.addTransition(currState.getStateName(), newEvent.getEventName(), newState.getStateName());
+				} // for every toState in the transition
+			} // for transition
+		} // for entry
+	} // unionHelper(FSM, FSM)
 	
 	/**
 	 * Performs a product or intersection operation on two FSMs and returns the result.

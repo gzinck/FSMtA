@@ -130,7 +130,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 				newFSM.transitions.addTransition(currState, new NonDetTransition<State, Event>(newEvent, newState));
 			} // for transition
 		} // for entry
-		
+		unionHelper(other, newFSM);
 		return newFSM;
 	}
 
