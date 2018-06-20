@@ -2,7 +2,6 @@ package fsm;
 
 import java.util.*;
 import support.*;
-import support.transition.DetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -277,47 +276,71 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * This method checks if a State leads to a marked state. In the process, the
-	 * method modifies a hashmap of processed states that says 1) if a state has been
-	 * evaluated yet, and 2) if so, whether a given state is accessible.  
+	 * This method checks gets a HashMap mapping all the states in the FSM to a boolean
+	 * representing if the given state is coaccessible or not.
 	 * 
-	 * @param curr The state to check for coaccessibility.
-	 * @param processedStates HashMap<String, Boolean> mapping string names of states
-	 * to true if the state is coaccessible, and false if the state is not. If a state
-	 * has not been processed, then the state will not exist in the HashMap.
-	 * @return True if the state is coaccessible, false otherwise.
+	 * @return HashMap mapping String state names to true if the state is coaccessible, 
+	 * and false if it is not.
 	 */
 	
-	protected boolean isCoAccessible(S curr, HashMap<String, Boolean> processedStates) {
-		// If curr is marked, it is coaccessible so it's OK.
-		Boolean check = processedStates.get(curr.getStateName());
-		if(curr.getStateMarked() || (check != null && check == true)) {
-			processedStates.put(curr.getStateName(), true);
+	protected HashMap<String, Boolean> getCoAccessibleMap() {
+		// When a state is processed, add it to the map and state if it reached a marked state.
+		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
+		
+		for(S curr : this.states.getStates()) {
+			// Recursively check for a marked state, and keep track of a HashSet of states
+			// which have already been visited to avoid loops.
+			boolean isCoaccessible = recursivelyFindMarked(curr, results, new HashSet<String>());
+			if(!isCoaccessible) results.put(curr.getStateName(), false);
+		}
+		return results;
+	} // isCoAccessible(State, HashMap<String, Boolean>)
+
+	/**
+	 * This method helps the isCoAccessible method by recursively checking
+	 * states, but avoiding loops (using the HashSet of visited states).
+	 * This will only mark results when a given state is proven coaccessible,
+	 * but will never mark results for a state which is not coaccessible.
+	 * Thus, the method must be called for every state that needs to be
+	 * evaluated.
+	 * 
+	 * @param curr The current state to evaluate if it is coaccessible.
+	 * @param results HashMap mapping the state names to true if the state
+	 * is proven coaccessible, and false if it was proven otherwise.
+	 * @param visited HashSet of states which have already been visited when
+	 * evaluating the coaccessibility of curr.
+	 * @return True if curr is coaccessible, false otherwise.
+	 */
+	private boolean recursivelyFindMarked(S curr, HashMap<String, Boolean> results, HashSet<String> visited) {
+		visited.add(curr.getStateName());
+		
+		// If the state is marked, return true
+		if(curr.getStateMarked()) {
+			results.put(curr.getStateName(), true);
 			return true;
-		} // if
-		else if (check != null && check == false) {
-			return false;
 		}
 		
-		// Before recursing, say that this state is processed.
-		processedStates.put(curr.getStateName(), false);
+		// Base cases when already checked if the state was coaccessible
+		Boolean check = results.get(curr.getStateName());
+		if(check != null && check == true) 			return true;
+		else if (check != null && check == false)		return false;
 		
-		// Recurse until find a marked state
+		// Go through each unvisited state and recurse until find a marked state
 		ArrayList<T> thisTransitions = transitions.getTransitions(curr);
-		if(thisTransitions != null) {
-			for(T t : thisTransitions) {
-				for(S next : (ArrayList<S>)t.getTransitionStates()) {
+		if(thisTransitions == null) return false;
+		for(T t : thisTransitions) {
+			for(S next : (ArrayList<S>)t.getTransitionStates()) {
+				if(!visited.contains(next.getStateName())) { // If not already visited
 					// If next is coaccessible, so is curr.
-					if(isCoAccessible(next, processedStates)) {
-						processedStates.put(curr.getStateName(), true);
+					if(recursivelyFindMarked(next, results, visited)) {
+						results.put(curr.getStateName(), true);
 						return true;
 					} // if coaccessible
-				} // for each transition state
-			} // for each transition object
-		} // if not null
-		// If none are marked
+				} // if not already visited
+			} // for each transition state
+		} // for each transition object
 		return false;
-	} // isCoAccessible(State, HashMap<String, Boolean>)
+	}
 	
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	

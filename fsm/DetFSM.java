@@ -90,12 +90,8 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 	@Override
 	public DetFSM makeCoAccessible() {
 		DetFSM newFSM = new DetFSM();
-		// First, just find what states we need to add.
-		HashMap<String, Boolean> processedStates = new HashMap<String, Boolean>(); // When a state is processed, add it to the map and state if it reached a marked state.
-		for(State curr : this.states.getStates()) {
-			if(!processedStates.containsKey(curr.getStateName()))
-				isCoAccessible(curr, processedStates);
-		} // for states
+		// First, find what states we need to add.
+		HashMap<String, Boolean> processedStates = getCoAccessibleMap();
 
 		// Secondly, create the states and add the transitions
 		for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
