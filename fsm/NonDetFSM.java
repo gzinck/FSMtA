@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import support.*;
 import support.transition.*;
 import support.event.Event;
+import support.event.ObservableEvent;
 
 /**
  * This class models a NonDeterministic FSM that expands upon the abstract FSM class to
@@ -109,8 +110,16 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 
 	@Override
 	public NonDetFSM product(FSM<State, NonDetTransition<State, Event>, Event> other) {
-		// TODO Auto-generated method stub
-		return null;
+		NonDetFSM newFSM = new NonDetFSM();
+		productHelper(other, newFSM);
+		return newFSM;
+	}
+	
+	@Override
+	public NonDetFSM parallelComposition(FSM<State, NonDetTransition<State, Event>, Event> other) {
+		NonDetFSM newFSM = new NonDetFSM();
+		parallelCompositionHelper(other, newFSM);
+		return newFSM;
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------

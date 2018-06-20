@@ -265,6 +265,15 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	
 	public abstract FSM product(FSM<S, T, E> other);
 	
+	/**
+	 * Performs a product operation on the calling FSM with the first parameter
+	 * FSM, and builds the resulting FSM in the second FSM. Has no return, does
+	 * its action by side-effect.
+	 * 
+	 * @param other FSM to perform the product operation on with the calling FSM.
+	 * @param newFSM The FSM to use for building the product.
+	 */
+	
 	protected void productHelper(FSM<S, T, E> other, FSM<S, T, E> newFSM) {
 		// Get all the events the two have in common
 		for(E thisEvent : this.events.getEvents()) {
@@ -320,6 +329,131 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 			} // for otherInitial
 		} // for thisInitial
 	} // productHelper(FSM)
+	
+	/**
+	 * Performs the parallel composition of the calling FSM with the parameter
+	 * FSM. The resulting FSM will be the same type as the calling FSM.
+	 * 
+	 * @param other FSM with which to perform the parallel composition.
+	 * @return The result of the FSM operation.
+	 */
+	public abstract FSM<S, T, E> parallelComposition(FSM<S, T, E> other);
+	
+	/**
+	 * Performs a parallel composition operation on the calling FSM with the first parameter
+	 * FSM, and builds the resulting FSM in the second FSM. Has no return, does
+	 * its action by side-effect.
+	 * 
+	 * @param other FSM to perform the parallel composition operation on with the calling FSM.
+	 * @param newFSM The FSM to use for building the parallel composition.
+	 */
+	
+	protected void parallelCompositionHelper(FSM<S, T, E> other, FSM<S, T, E> newFSM) {
+		// Get all the events the two have in common
+		HashSet<String> commonEvents = new HashSet<String>();
+		for(E thisEvent : this.events.getEvents()) {
+			for(E otherEvent : other.events.getEvents()) {
+				// If it is a common event
+				if(thisEvent.getEventName().equals(otherEvent.getEventName())) {
+					E newEvent = newFSM.events.addEvent(thisEvent, otherEvent);
+					commonEvents.add(newEvent.getEventName());
+				} // if the event is identical
+			} // for otherEvent
+		} // for thisEvent
+		
+		// Add all the events unique to each FSM
+		for(E thisEvent : this.events.getEvents())
+			if(!commonEvents.contains(thisEvent.getEventName()))
+				newFSM.events.addEvent(thisEvent);
+		for(E otherEvent : other.events.getEvents())
+			if(!commonEvents.contains(otherEvent.getEventName()))
+				newFSM.events.addEvent(otherEvent);
+		
+		// Go through all the initial states and add everything they connect to.
+		for(S thisInitial : this.getInitialStates()) {
+			for(S otherInitial : other.getInitialStates()) {
+				// Now, start going through the paths leading out from this new initial state.
+				LinkedList<S> thisNextState = new LinkedList<S>();
+				thisNextState.add(thisInitial);
+				LinkedList<S> otherNextState = new LinkedList<S>();
+				otherNextState.add(otherInitial);
+				
+				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
+					S thisState = thisNextState.poll();
+					S otherState = otherNextState.poll();
+					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
+					
+					// Go through all the transitions in each, see what they have in common
+					for(T thisTrans : this.transitions.getTransitions(thisState)) {
+						for(T otherTrans : other.transitions.getTransitions(otherState)) {
+							
+							// If they share the same event
+							E thisEvent = thisTrans.getTransitionEvent();
+							if(thisEvent.equals(otherTrans.getTransitionEvent())) {
+								
+								// Then create transitions to all the combined neighbours
+								for(S thisToState : thisTrans.getTransitionStates()) {
+									for(S otherToState : otherTrans.getTransitionStates()) {
+										
+										// If the state doesn't exist, add to queue
+										if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherToState.getStateName() + ")")) {
+											thisNextState.add(thisToState);
+											otherNextState.add(otherToState);
+										} // if state doesn't exist
+										
+										// Add the state, then add the transition
+										S newToState = newFSM.states.addState(thisToState, otherToState);
+										newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+									} // for every state in other transition
+								} // for every state in this transition
+							} // if they share the event
+						} // for other transitions
+					} // for this transitions
+					
+					// Go through all the transitions and see what is unique
+					for(T thisTrans : this.transitions.getTransitions(thisState)) {
+						// If it's NOT a common event
+						E thisEvent = thisTrans.getTransitionEvent();
+						if(!commonEvents.contains(thisTrans.getTransitionEvent().getEventName())) {
+							// Then, add all the transitions
+							for(S thisToState : thisTrans.getTransitionStates()) {
+								
+								// If it doesn't exist, add it to the queue
+								if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherState.getStateName() + ")")) {
+									thisNextState.add(thisToState);
+									otherNextState.add(otherState);
+								} // if state doesn't exist
+								
+								// Add the state, then add the transition
+								S newToState = newFSM.states.addState(thisToState, otherState);
+								newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+							} // for the toStates
+						} // if not a common event
+					} // for this transitions
+					
+					for(T otherTrans : other.transitions.getTransitions(thisState)) {
+						// If it's NOT a common event
+						E thisEvent = otherTrans.getTransitionEvent();
+						if(!commonEvents.contains(otherTrans.getTransitionEvent().getEventName())) {
+							// Then, add all the transitions
+							for(S otherToState : otherTrans.getTransitionStates()) {
+								
+								// If it doesn't exist, add it to the queue
+								if(!newFSM.stateExists("(" + thisState.getStateName() + ", " + otherToState.getStateName() + ")")) {
+									thisNextState.add(thisState);
+									otherNextState.add(otherToState);
+								} // if state doesn't exist
+								
+								// Add the state, then add the transition
+								S newToState = newFSM.states.addState(thisState, otherToState);
+								newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+							} // for the toStates
+						} // if not a common event
+					} // for other transitions
+				} // while there are more states connected to the 2-tuple of initial states
+			} // for otherInitial
+		} // for thisInitial
+	} // parallelCompositionHelper(FSM)
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	

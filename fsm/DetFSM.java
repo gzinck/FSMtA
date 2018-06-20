@@ -139,6 +139,13 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		productHelper(other, newFSM);
 		return newFSM;
 	}
+	
+	@Override
+	public DetFSM parallelComposition(FSM<State, DetTransition<State, Event>, Event> other) {
+		DetFSM newFSM = new DetFSM();
+		parallelCompositionHelper(other, newFSM);
+		return newFSM;
+	}
 
 //---  Getter Methods   -----------------------------------------------------------------------
 	
