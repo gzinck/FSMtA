@@ -88,32 +88,6 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public DetFSM makeCoAccessible() {
-		DetFSM newFSM = new DetFSM();
-		// First, find what states we need to add.
-		HashMap<String, Boolean> processedStates = getCoAccessibleMap();
-
-		// Secondly, create the states and add the transitions
-		for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
-			// If the state is coaccessible, add it!
-			if(entry.getValue()) {
-				State oldState = getState(entry.getKey());
-				newFSM.states.addState(oldState);
-				if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
-					for(DetTransition<State, Event> t : transitions.getTransitions(oldState))
-						if(processedStates.get(t.getTransitionState().getStateName())) // If it is coaccessible...
-							newFSM.addTransition(oldState, t); // Add the transition (using copies in the newFSM)
-				} // if not null
-			} // if coaccessible
-		} // for processed state
-		
-		// Finally, add the initial state
-		if(processedStates.get(initialState.getStateName())) 
-			newFSM.addInitialState(initialState.getStateName());
-		return newFSM;
-	} // makeCoAccessible()
-	
-	@Override
 	public void toTextFile(String filePath, String name) {
 		if(name == null)
 			name = id;
@@ -125,26 +99,21 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 	@Override
 	public NonDetFSM union(FSM<State, DetTransition<State, Event>, Event> other) {
 		NonDetFSM newFSM = new NonDetFSM();
-		
 		// Add initial states
 		newFSM.addInitialState(STATE_PREFIX_1 + initialState.getStateName());
 		for(State s : other.getInitialStates())  // Add the states from the other FSM
 			newFSM.addInitialState(STATE_PREFIX_2 + s.getStateName());
-		
 		// Add other states as well
 		for(State s : this.states.getStates())
 			newFSM.states.addState(s, STATE_PREFIX_1);
 		for(State s : other.states.getStates())
 			newFSM.states.addState(s, STATE_PREFIX_2);
-		
 		// Add events
 		for(Event e : this.events.getEvents())
 			newFSM.events.addEvent(e);
 		for(Event e : other.events.getEvents())
 			newFSM.events.addEvent(e);
-		
 		// Add transitions
-		
 		for(Map.Entry<State, ArrayList<DetTransition<State, Event>>> entry : this.transitions.getAllTransitions()) {
 			State currState = newFSM.states.getState(STATE_PREFIX_1 + entry .getKey().getStateName());
 			for(DetTransition<State, Event> t : entry.getValue()) {
@@ -153,7 +122,6 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 				newFSM.transitions.addTransition(currState, new NonDetTransition<State, Event>(newEvent, newState));
 			} // for transition
 		} // for entry
-		
 		for(Map.Entry<State, ArrayList<DetTransition<State, Event>>> entry : other.transitions.getAllTransitions()) {
 			State currState = newFSM.states.getState(STATE_PREFIX_2 + entry.getKey().getStateName());
 			for(DetTransition<State, Event> t : entry.getValue()) {
@@ -193,6 +161,14 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		initialState = theState;
 	}
 
+	@Override
+	public void addInitialState(State newState) {
+		State obt = states.addState(newState);
+		obt.setStateInitial(true);
+		if(initialState != null) initialState.setStateInitial(false);
+		initialState = obt;
+	}
+	
 //---  Remove Setter Methods   ------------------------------------------------------------------------
 
 	@Override

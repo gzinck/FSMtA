@@ -98,7 +98,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		try {
 			FSM<S, T, E> newFSM = this.getClass().newInstance();
 			for(S initial : getInitialStates()) {
-				newFSM.addInitialState(initial.getStateName());
+				newFSM.addInitialState(initial);
 				queue.add(initial.getStateName());
 			} // for initial state
 			
@@ -140,7 +140,48 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @return - An FSM representing the CoAccessible version of the original FSM.
 	 */
 	
-	public abstract <fsm extends FSM<S, T, E>> fsm makeCoAccessible();
+	public <fsm extends FSM<S, T, E>> fsm makeCoAccessible() {
+		try {
+			FSM<S, T, E> newFSM = this.getClass().newInstance();
+			// First, find what states we need to add.
+			HashMap<String, Boolean> processedStates = getCoAccessibleMap();
+
+			// Secondly, create the states and add the transitions
+			for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
+				// If the state is coaccessible, add it!
+				if(entry.getValue()) {
+					S oldState = getState(entry.getKey());
+					newFSM.addState(oldState);
+					if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
+						for(T t : transitions.getTransitions(oldState)) {
+							T trans = t.generateTransition();
+							trans.setTransitionEvent(t.getTransitionEvent());
+							for(S state : t.getTransitionStates()) {
+								if(processedStates.get(state.getStateName()))
+									trans.setTransitionState(state);
+							}
+							newFSM.addTransition(oldState, trans);
+						}
+					} // if not null
+				} // if coaccessible
+			} // for processed state
+		
+			// Finally, add the initial state
+			for(S state : this.getInitialStates()) {
+				if(processedStates.get(state.getStateName()))
+					newFSM.addInitialState(state.getStateName());
+			}
+			return (fsm)newFSM;
+		}
+		catch(IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch(InstantiationException e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
 
 	/**
 	 * Formerly createFileFormat(), toTextFile(String, String) converts an
@@ -309,8 +350,9 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * is proven coaccessible, and false if it was proven otherwise.
 	 * @param visited HashSet of states which have already been visited when
 	 * evaluating the coaccessibility of curr.
-	 * @return True if curr is coaccessible, false otherwise.
+	 * @return - Returns a boolean value: true if the State extending object curr is coaccessible, false otherwise.
 	 */
+	
 	private boolean recursivelyFindMarked(S curr, HashMap<String, Boolean> results, HashSet<String> visited) {
 		visited.add(curr.getStateName());
 		
@@ -360,6 +402,17 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
+	 * 
+	 * 
+	 * @param state
+	 * @return
+	 */
+	
+	public boolean addState(S state) {
+		return addState(state.getStateName());
+	}
+	
+	/**
 	 * Adds transitions leaving a given state to the FSM.
 	 * 
 	 * @param state - The State object to start from.
@@ -380,6 +433,13 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	
 	public abstract void addInitialState(String newInitial);
 
+	/**
+	 * 
+	 * @param newState
+	 */
+	
+	public abstract void addInitialState(State newState);
+	
 	/**
 	 * Adds a transition from one state to another state.
 	 * 

@@ -146,7 +146,7 @@ public class State implements Comparator<State>{
 			sb.append("\"" + id + "\"[shape = doublecircle];");
 		// Else, just make the normal state.
 		else
-			sb.append("\"" + id + "\";");
+			sb.append("\"" + id + "\"[shape = circle];");
 		// If initial, make the state have a line going into it.
 		if(initial) {
 			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point];");

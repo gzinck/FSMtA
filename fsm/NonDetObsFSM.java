@@ -126,6 +126,10 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void addInitialState(State newState) {
+		
+	}
 
 	@Override
 	public boolean removeInitialState(String stateName) {
