@@ -89,7 +89,8 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 	@Override
 	public ArrayList<S> getTransitionStates() {
 		ArrayList<S> list = new ArrayList<S>();
-		list.add(state);
+		if(state != null)
+			list.add(state);
 		return list;
 	}
 	

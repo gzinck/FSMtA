@@ -121,6 +121,10 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 		// TODO Auto-generated method stub
 	}
 
+	public void addInitialState(State newState) {
+		
+	}
+	
 	@Override
 	public boolean removeInitialState(String stateName) {
 		// TODO Auto-generated method stub

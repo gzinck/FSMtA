@@ -1,4 +1,3 @@
-package test;
 
 import fsm.*;
 import graphviz.FSMToDot;
@@ -22,9 +21,10 @@ public class TestFSMs {
 		File f1 = new File(GenerateFSM.createNewDeterministicFSM(10, 2, 3, 2, "fil1", MAC_WORKING_FOLDER));
 		//File f2 = new File(GenerateFSM.createNewDeterministicFSM(10, 4, 3, 5, "fil2", MAC_WORKING_FOLDER));
 		DetFSM fsm1 = new DetFSM(f1, "fs1");
-		DetFSM fsm2 = fsm1.makeCoAccessible();
+		DetFSM fsm2 = fsm1.trim();
 		FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		System.out.println(fsm1.makeDotString());
 		System.out.println(fsm2.makeDotString());
 		NonDetFSM fsm3 = fsm1.union(fsm2);
 		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test4", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
