@@ -2,6 +2,7 @@ package support.event;
 
 import support.event.Event;
 import support.attribute.EventControllability;
+import support.attribute.EventObservability;
 
 /**
  * This class models a Controllable Event in an FSM, building on the base Event class
@@ -47,6 +48,17 @@ public class ControllableEvent extends Event implements EventControllability{
 		controllability = control;
 	}
 	
+	/**
+	 * Constructor for an ControllableEvent object that uses the parameter Event object's information
+	 * to construct a new event object.
+	 * 
+	 * @param oldEvent - Event object to be copied.
+	 */
+	public ControllableEvent(ControllableEvent oldEvent) {
+		super(oldEvent);
+		controllability = oldEvent.controllability;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
@@ -56,6 +68,23 @@ public class ControllableEvent extends Event implements EventControllability{
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 
+	@Override
+	public <E extends Event> E copy() {
+		// For use in other areas, and when Event is extended, this is
+		// necessary.
+		return (E)(new ControllableEvent(this));
+	}
+	
+	@Override
+	public <E extends Event> E makeEventWith(E other) {
+		ControllableEvent newEvent = new ControllableEvent(this);
+		if(other instanceof EventControllability) {
+			EventControllability obsOther = (EventControllability)other;
+			newEvent.controllability = (this.controllability && obsOther.getEventControllability());
+		}
+		return (E)newEvent;
+	}
+	
 	@Override
 	public boolean getEventControllability() {
 		return controllability;

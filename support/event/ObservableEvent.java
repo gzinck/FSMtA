@@ -56,6 +56,17 @@ public class ObservableEvent extends Event implements EventObservability{
 		observability = obs;
 	}
 	
+	/**
+	 * Constructor for an ObservableEvent object that uses the parameter Event object's information
+	 * to construct a new event object.
+	 * 
+	 * @param oldEvent - Event object to be copied.
+	 */
+	public ObservableEvent(ObservableEvent oldEvent) {
+		super(oldEvent);
+		observability = oldEvent.observability;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
@@ -64,6 +75,23 @@ public class ObservableEvent extends Event implements EventObservability{
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
+	
+	@Override
+	public <E extends Event> E copy() {
+		// For use in other areas, and when Event is extended, this is
+		// necessary.
+		return (E)(new ObservableEvent(this));
+	}
+	
+	@Override
+	public <E extends Event> E makeEventWith(E other) {
+		ObservableEvent newEvent = new ObservableEvent(this);
+		if(other instanceof EventObservability) {
+			EventObservability obsOther = (EventObservability)other;
+			newEvent.observability = (this.observability && obsOther.getEventObservability());
+		}
+		return (E)newEvent;
+	}
 	
 	@Override
 	public boolean getEventObservability() {

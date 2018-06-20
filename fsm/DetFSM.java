@@ -131,8 +131,9 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 
 	@Override
 	public DetFSM product(FSM<State, DetTransition<State, Event>, Event> other) {
-		// TODO Auto-generated method stub
-		return null;
+		DetFSM newFSM = new DetFSM();
+		productHelper(other, newFSM);
+		return newFSM;
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------

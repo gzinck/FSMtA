@@ -217,11 +217,68 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	
 	/**
 	 * Performs a product or intersection operation on two FSMs and returns the result.
+	 * 
 	 * @param other - The FSM to perform the product operation on with the current FSM.
 	 * @return - The resulting FSM from the product operation.
 	 */
 	
 	public abstract FSM product(FSM<S, T, E> other);
+	
+	protected void productHelper(FSM<S, T, E> other, FSM<S, T, E> newFSM) {
+		// Get all the events the two have in common
+		for(E thisEvent : this.events.getEvents()) {
+			for(E otherEvent : other.events.getEvents()) {
+				// All common events are added
+				if(thisEvent.getEventName().equals(otherEvent.getEventName())) {
+					newFSM.events.addEvent(thisEvent, otherEvent);
+				} // if the event is identical
+			} // for otherEvent
+		} // for thisEvent
+		
+		// Go through all the initial states and add everything they connect to with shared events.
+		for(S thisInitial : this.getInitialStates()) {
+			for(S otherInitial : other.getInitialStates()) {
+				// Now, start going through the paths leading out from this new initial state.
+				LinkedList<S> thisNextState = new LinkedList<S>();
+				thisNextState.add(thisInitial);
+				LinkedList<S> otherNextState = new LinkedList<S>();
+				otherNextState.add(otherInitial);
+				
+				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
+					S thisState = thisNextState.poll();
+					S otherState = otherNextState.poll();
+					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
+					
+					// Go through all the transitions in each, see what they have in common
+					for(T thisTrans : this.transitions.getTransitions(thisState)) {
+						for(T otherTrans : other.transitions.getTransitions(otherState)) {
+							
+							// If they share the same event
+							E thisEvent = thisTrans.getTransitionEvent();
+							if(thisEvent.equals(otherTrans.getTransitionEvent())) {
+								
+								// Then create transitions to all the combined neighbours
+								for(S thisToState : thisTrans.getTransitionStates()) {
+									for(S otherToState : otherTrans.getTransitionStates()) {
+										
+										// If the state doesn't exist, add to queue
+										if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherToState.getStateName() + ")")) {
+											thisNextState.add(thisToState);
+											otherNextState.add(otherToState);
+										} // if state doesn't exist
+										
+										// Add the state, then add the transition
+										S newToState = newFSM.states.addState(thisToState, otherToState);
+										newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+									} // for every state in other transition
+								} // for every state in this transition
+							} // if they share the event
+						} // for other transitions
+					} // for this transitions
+				} // while there are more states connected to the 2-tuple of initial states
+			} // for otherInitial
+		} // for thisInitial
+	} // productHelper(FSM)
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	

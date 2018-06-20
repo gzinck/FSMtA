@@ -92,6 +92,20 @@ public class State implements Comparator<State>{
 	}
 	
 	/**
+	 * Constructor for a State object which creates a new id by combining the two parameter
+	 * States. It has the initial/marked properties only if both state1 and state2 have the
+	 * property. This is useful when creating states during product operations, etc.
+	 * 
+	 * @param state1 The first state to inherit from.
+	 * @param state2 The second state to inherit from.
+	 */
+	public State(State state1, State state2) {
+		id = "(" + state1.getStateName() + ", " + state2.getStateName() + ")";
+		initial = (state1.initial && state2.initial);
+		marked = (state1.marked && state2.marked);
+	}
+	
+	/**
 	 * Constructor for a State object that assigns a name to this object as defined by
 	 * the input and defaults the initial and marked values to false.
 	 * 
@@ -123,13 +137,27 @@ public class State implements Comparator<State>{
 	 * Getter method to acquire a copy of the state via a Constructor that takes in a State and
 	 * copies its contents.
 	 * 
-	 * @return - Returns an object extending State that represents a disjoint object identical to the original State extending object.
+	 * @return - Returns an object extending State that represents a disjoint object identical
+	 * to the original State extending object.
 	 */
 	
 	public <S extends State> S copy() {
 		// For use in other areas, and when State is extended, this is
 		// necessary.
 		return (S)(new State(this));
+	}
+	
+	/**
+	 * Makes a new state that performs the AND operation on all the properties
+	 * and adopts the name of the calling state combined with the other state,
+	 * like (1, 2) if the the two states are 1 and 2.
+	 * 
+	 * @param other The State to combine with.
+	 * @return State representing the merge of the calling state and the parameter
+	 * state, where the AND logical operator is performed on all the properties.
+	 */
+	public <S extends State> S makeStateWith(State other) {
+		return (S)new State(this, other);
 	}
 	
 	/**

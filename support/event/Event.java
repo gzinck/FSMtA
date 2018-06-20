@@ -1,5 +1,7 @@
 package support.event;
 
+import support.State;
+
 /**
  * This class models an Event in an FSM, storing information about the Event's name.
  * 
@@ -83,6 +85,17 @@ public class Event {
 		// necessary.
 		return (E)(new Event(this));
 	}
+	
+	/**
+	 * Makes a new event that performs the AND operation on all the properties.
+	 * If the current class is just Event, then there are no properties to copy anyways.
+	 * 
+	 * @param other The Event to combine with.
+	 * @return New Event object which has the AND of the properties.
+	 */
+	public <E extends Event> E makeEventWith(E other) {
+		return (E)new Event(this);
+	}
 
 	/**
 	 * This method returns an integer value describing the type of Event during the
@@ -95,4 +108,11 @@ public class Event {
 		return 0;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if(other == null) return false;
+		if(other instanceof Event)
+		    if (this.id.equals(((Event)other).id)) return true;
+		return false;
+	}
 }

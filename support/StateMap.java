@@ -138,9 +138,9 @@ public class StateMap<S extends State> {
 //---  Setter Methods   -----------------------------------------------------------------------
 
 	/**
-	 * Setter method that assigns the provided HashMap<<s>String, S> object to this object's corresponding instance variable.
+	 * Setter method that assigns the provided HashMap<<r>String, S> object to this object's corresponding instance variable.
 	 * 
-	 * @param inHash - HashMap<<s>String, S> object that represents a matched set of Strings leading to State objects.
+	 * @param inHash - HashMap<<r>String, S> object that represents a matched set of Strings leading to State objects.
 	 */
 	
 	public void setStateMapStates(HashMap<String, S> inHash) {
@@ -148,9 +148,9 @@ public class StateMap<S extends State> {
 	}
 	
 	/**
-	 * Setter method that assigns a new Class<<s>S> object to this object's corresponding instance variable.
+	 * Setter method that assigns a new Class<<r>S> object to this object's corresponding instance variable.
 	 * 
-	 * @param inClass - Class<<s>S> object that represents a Class type corresponding to the type of State stored by this StateMap.
+	 * @param inClass - Class<<r>S> object that represents a Class type corresponding to the type of State stored by this StateMap.
 	 */
 	
 	public void setStateMapClass(Class<S> inClass) {
@@ -196,6 +196,15 @@ public class StateMap<S extends State> {
 		S newState = state.copy();
 		newState.setStateName(stateName);
 		states.put(stateName, newState);
+		return newState;
+	}
+	
+	public S addState(S state1, S state2) {
+		String stateName = "(" + state1.getStateName() + ", " + state2.getStateName() + ")";
+		if(states.containsKey(stateName))
+			return states.get(stateName);
+		S newState = state1.makeStateWith(state2);
+		states.put(newState.getStateName(), newState);
 		return newState;
 	}
 	
