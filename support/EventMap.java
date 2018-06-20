@@ -120,6 +120,15 @@ public class EventMap<E extends Event> {
 		return newEvent;
 	}
 	
+	public E addEvent(E event1, E event2) {
+		String eventName = event1.getEventName();
+		if(events.containsKey(eventName))
+			return events.get(eventName);
+		E newEvent = event1.makeEventWith(event2);
+		events.put(eventName, newEvent);
+		return newEvent;
+	}
+	
 	/**
 	 * Adds an event to the map which is mapped to the name indicated. The new event initializes with
 	 * the default settings for the given Event class. If the event already existed, no new object is

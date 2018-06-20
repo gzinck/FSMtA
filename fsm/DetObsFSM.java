@@ -6,6 +6,7 @@ import support.ReadWrite;
 import support.State;
 import support.StateMap;
 import support.TransitionFunction;
+import support.event.Event;
 import support.event.ObservableEvent;
 import support.transition.DetTransition;
 import java.io.*;
@@ -62,6 +63,19 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 	}
 	
+	/**
+	 * Constructor for an FSM object that contains no transitions or states, allowing the
+	 * user to add those elements him/herself. It has no id, either.
+	 */
+	
+	public DetObsFSM() {
+		id = "";
+		states = new StateMap<State>(State.class);
+		events = new EventMap<ObservableEvent>(ObservableEvent.class);
+		transitions = new TransitionFunction<State, DetTransition<State, ObservableEvent>, ObservableEvent>(new DetTransition<State, ObservableEvent>());
+		initialState = null;
+	}
+	
 //---  Operations   ---------------------------------------------------------------------------
 	
 	@Override
@@ -83,9 +97,17 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	}
 
 	@Override
-	public FSM product(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
-		// TODO Auto-generated method stub
-		return null;
+	public DetObsFSM product(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
+		DetObsFSM newFSM = new DetObsFSM();
+		productHelper(other, newFSM);
+		return newFSM;
+	}
+	
+	@Override
+	public DetObsFSM parallelComposition(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
+		DetObsFSM newFSM = new DetObsFSM();
+		parallelCompositionHelper(other, newFSM);
+		return newFSM;
 	}
 
 	@Override

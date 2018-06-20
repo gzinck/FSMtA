@@ -20,9 +20,9 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** boolean instance variable representing the status of this Event's being Controllable*/
-	private boolean control;
+	private boolean controllability;
 	/** boolean instance variable representing the status of this Observable Event obejct's being Observable*/
-	private boolean observe;
+	private boolean observability;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -35,8 +35,8 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 	
 	public ObsControlEvent(String eventName) {
 		super(eventName);
-		control = true;
-		observe = true;
+		controllability = true;
+		observability = true;
 	}
 	
 	/**
@@ -50,37 +50,70 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 	
 	public ObsControlEvent(String eventName, boolean cont, boolean obs) {
 		super(eventName);
-		control = cont;
-		observe = obs;
+		controllability = cont;
+		observability = obs;
+	}
+	
+	/**
+	 * Constructor for an ObservableEvent object that uses the parameter Event object's information
+	 * to construct a new event object.
+	 * 
+	 * @param oldEvent - Event object to be copied.
+	 */
+	public ObsControlEvent(ObsControlEvent oldEvent) {
+		super(oldEvent);
+		controllability = oldEvent.controllability;
+		observability = oldEvent.observability;
 	}
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
 	public void setEventObservability(boolean obs) {
-		observe = obs;
+		observability = obs;
 	}
 	
 	@Override
 	public void setEventControllability(boolean con) {
-		control = con;
+		controllability = con;
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	@Override
+	public <E extends Event> E copy() {
+		// For use in other areas, and when Event is extended, this is
+		// necessary.
+		return (E)(new ObsControlEvent(this));
+	}
+	
+	@Override
+	public <E extends Event> E makeEventWith(E other) {
+		ObsControlEvent newEvent = new ObsControlEvent(this);
+		if(other instanceof EventControllability) {
+			EventControllability obsOther = (EventControllability)other;
+			newEvent.controllability = (this.controllability && obsOther.getEventControllability());
+		}
+		if(other instanceof EventObservability) {
+			EventObservability obsOther = (EventObservability)other;
+			newEvent.observability = (this.observability && obsOther.getEventObservability());
+		}
+		return (E)newEvent;
+	}
+	
+	@Override
 	public boolean getEventObservability() {
-		return observe;
+		return observability;
 	}
 	
 	@Override
 	public boolean getEventControllability() {
-		return control;
+		return controllability;
 	}	
 
 	@Override
 	public int getEventType() {
-		return control && observe ? 3 : control ? 2 : observe ? 1 : 0;
+		return controllability && observability ? 3 : controllability ? 2 : observability ? 1 : 0;
 	}
 	
 }
