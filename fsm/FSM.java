@@ -2,8 +2,6 @@ package fsm;
 
 import java.util.*;
 import support.*;
-import support.transition.DetTransition;
-import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -162,7 +160,8 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 								if(processedStates.get(state.getStateName()))
 									trans.setTransitionState(state);
 							}
-							newFSM.addTransition(oldState, trans);
+							if(trans.getTransitionStates().size() != 0)
+								newFSM.addTransition(oldState, trans);
 						}
 					} // if not null
 				} // if coaccessible
@@ -213,6 +212,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @param newFSM The empty FSM to fill with all the states and transitions
 	 * of the calling FSM and the other FSM.
 	 */
+	
 	protected <NewT extends Transition<S, E>> void unionHelper(FSM<S, T, E> other, FSM<S, NewT, E> newFSM) {
 		// Add initial states
 		for(State s : getInitialStates())  // Add the states from the this FSM

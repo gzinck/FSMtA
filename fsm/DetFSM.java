@@ -3,7 +3,6 @@ package fsm;
 import java.io.File;
 import java.util.*;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 
 import support.*;
 import support.transition.*;
@@ -157,7 +156,8 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		// Get the state, or add it if not yet present
 		State theState = states.addState(newInitial);
 		theState.setStateInitial(true);
-		if(initialState != null) initialState.setStateInitial(false);
+		if(initialState != null) 
+			initialState.setStateInitial(false);
 		initialState = theState;
 	}
 
@@ -165,7 +165,8 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 	public void addInitialState(State newState) {
 		State obt = states.addState(newState);
 		obt.setStateInitial(true);
-		if(initialState != null) initialState.setStateInitial(false);
+		if(initialState != null) 
+			initialState.setStateInitial(false);
 		initialState = obt;
 	}
 	
