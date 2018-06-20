@@ -11,7 +11,7 @@ import java.util.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class State implements Comparator<State>{
+public class State implements Comparator<State>, Comparable<State>{
 	
 //--- Constants   --------------------------------------------------------------------
 	
@@ -232,5 +232,10 @@ public class State implements Comparator<State>{
 	public int compare(State st1, State st2) {
 		return st1.getStateName().compareTo(st2.getStateName());
 	}
+
+	@Override
+	public int compareTo(State o) {
+		return this.getStateName().compareTo(o.getStateName());
+}
 
 }

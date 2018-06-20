@@ -66,7 +66,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @return - Returns an ArrayList<T> of Transition objects that are associated to a defined State in an FSM
 	 */
 	
-	public ArrayList<T> getTransitions(State state) {
+	public ArrayList<T> getTransitions(S state) {
 		return transitions.get(state);
 	}
 	

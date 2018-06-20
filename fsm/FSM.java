@@ -314,6 +314,15 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
+	 * 
+	 * @return
+	 */
+	
+	public String getId() {
+		return id;
+	}
+	
+	/**
 	 * Gets the specified state object from the FSM with the same
 	 * state name as the parameter (but it might not be the same
 	 * object, if the input state was associated with a different

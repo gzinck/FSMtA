@@ -2,10 +2,14 @@ package fsm;
 
 import java.io.File;
 import java.util.ArrayList;
-
+import java.util.Collections;
+import java.util.LinkedList;
 import support.*;
 import support.transition.*;
 import support.event.Event;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * This class models a NonDeterministic FSM that expands upon the abstract FSM class to
@@ -99,6 +103,73 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 		
 	}
 
+	public DetFSM determinize(){
+		/*
+		 * Create newFSM
+		 * Create queue to process states
+		 * First entry in queue is aggregate of initial states
+		 * For queue:
+		 *   Break the entry apart into composite States
+		 *   Process States and aggregate their Transitions
+		 *   For each event in these Transitions:
+		 *     Aggregate target States into new entities, add to queue
+		 *     Set that aggregate as the single target State for the associated Event
+		 *   If all composite States are Marked, set conglomerate as Marked
+		 * Return newFSM 
+		 * 
+		 */
+		
+		DetFSM fsmOut = new DetFSM("Determinized " + this.getId());
+		LinkedList<String> queue = new LinkedList<String>();
+		String init = "";
+		Collections.sort(getInitialStates());
+		for(State state : getInitialStates()) {
+			init += state.getStateName() + ",";
+		}
+		init = init.substring(0, init.length()-1);
+		queue.add(init);
+		fsmOut.addInitialState(init);
+		HashSet<String> processed = new HashSet<String>();
+		
+		while(!queue.isEmpty()) {
+			String aggregate = queue.poll();
+			if(processed.contains(aggregate))
+				continue;
+			processed.add(aggregate);
+			String[] states = aggregate.split(",");
+			HashMap<String, HashSet<String>> eventStates = new HashMap<String, HashSet<String>>();
+			TransitionFunction<State, NonDetTransition<State, Event>, Event> allTrans = this.getTransitions();
+			for(String targetState : states) {
+				ArrayList<NonDetTransition<State, Event>> transitions = allTrans.getTransitions(new State(targetState));
+				for(NonDetTransition<State, Event> oneTransition : transitions) {
+					if(eventStates.get(oneTransition.getTransitionEvent().getEventName()) == null) {
+						eventStates.put(oneTransition.getTransitionEvent().getEventName(), new HashSet<String>());
+					}
+					for(State outState : oneTransition.getTransitionStates())
+						eventStates.get(oneTransition.getTransitionEvent().getEventName()).add(outState.getStateName());
+				}
+			}
+			for(String event : eventStates.keySet()) {
+				ArrayList<String> outboundStates = new ArrayList<String>();
+				Iterator<String> iter = eventStates.get(event).iterator();
+				while(iter.hasNext()) {
+					outboundStates.add(iter.next());
+				}
+				Collections.sort(outboundStates);
+				String collec = "";
+				for(String s : outboundStates)
+					collec += s + ",";
+				collec = collec.substring(0, collec.length() - 1);
+				queue.add(collec);
+				fsmOut.addTransition("{"+aggregate+"}", event, "{"+collec+"}");
+			}
+			
+			
+		}
+		
+		return fsmOut;
+	}
+	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override

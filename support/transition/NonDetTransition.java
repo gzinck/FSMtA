@@ -139,7 +139,8 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 */
 	
 	public void addTransitionState(S stateNew) {
-		states.add(stateNew);
+		if(states.indexOf(stateNew) == -1)
+			states.add(stateNew);
 	}
 	
 	@Override
