@@ -118,7 +118,7 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 //---  Getter Methods   -----------------------------------------------------------------------
 
 	@Override
-	public Boolean getEventObservability(ObservableEvent event) {
+	public Boolean getEventObservability(String eventName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -132,7 +132,7 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 //---  Setter Methods   -----------------------------------------------------------------------
 
 	@Override
-	public void setEventObservability(ObservableEvent event, boolean status) {
+	public void setEventObservability(String eventName, boolean status) {
 		// TODO Auto-generated method stub	
 	}
 

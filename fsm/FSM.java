@@ -188,6 +188,9 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * Formerly createFileFormat(), toTextFile(String, String) converts an
 	 * FSM into a text file which can be read back in and used to recreate
 	 * an FSM later.
+	 * 
+	 * @param filePath The path of the folder to place the text file.
+	 * @param name The name of the text file to create.
 	 */
 	
 	public abstract void toTextFile(String filePath, String name);
@@ -469,6 +472,16 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
+	 * Setter method that assigns the parameter inId as the id for the FSM, which is used by
+	 * the UI to identify the FSM.
+	 * 
+	 * @param inId String representing the desired name for the FSM.
+	 */
+	public void setId(String inId) {
+		id = inId;
+	}
+	
+	/**
 	 * Setter method that assigns a new StateMap<<s>S> to replace the previously assigned set of States.
 	 * 
 	 * @param inState - StateMap<<s>S> object that assigns a new set of Events to this FSM object
@@ -516,8 +529,9 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
+	 * Gets the ID for the FSM which is used to identify it in the UI.
 	 * 
-	 * @return
+	 * @return String representing the ID for the FSM.
 	 */
 	
 	public String getId() {
@@ -578,6 +592,17 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	
 	public TransitionFunction<S, T, E> getTransitions() {
 		return transitions;
+	}
+	
+	/**
+	 * Gets if a State with a given stateName String is a marked state.
+	 * 
+	 * @param stateName String representing the name of the state.
+	 * @return True if the state is marked, false otherwise.
+	 */
+	
+	public boolean isMarked(String stateName) {
+		return states.getState(stateName).getStateMarked();
 	}
 	
 	/**
@@ -646,7 +671,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 			} // for each transition state
 		} // for each transition object
 		return false;
-	}
+	} // recursivelyFindMarked(S, HashMap<String, Boolean>, HashSet<String>)
 	
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
@@ -666,10 +691,12 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
+	 * Adds a new state using the state object passed in, which may be from another FSM.
+	 * It copies over the same state name.
 	 * 
-	 * 
-	 * @param state
-	 * @return
+	 * @param state State object to be used as a template for the new one to add to the
+	 * FSM.
+	 * @return True if the state was added successfully, false otherwise.
 	 */
 	
 	public boolean addState(S state) {

@@ -70,6 +70,21 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 	}
 	
 	/**
+	 * Constructor for an FSM object that has an ID.
+	 * It contains no transitions or states, allowing the user to add those elements him/herself.
+	 * 
+	 * @param inID String representing the id for the FSM.
+	 */
+	
+	public NonDetObsFSM(String inID) {
+		id = inID;
+		states = new StateMap<State>(State.class);
+		events = new EventMap<ObservableEvent>(ObservableEvent.class);
+		transitions = new TransitionFunction<State, NonDetTransition<State, ObservableEvent>, ObservableEvent>(new NonDetTransition<State, ObservableEvent>());
+		initialStates = new ArrayList<State>();
+	}
+	
+	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
 	 * user to add those elements him/herself. It has no id, either.
 	 */
@@ -93,7 +108,7 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 //---  Getter Methods   -----------------------------------------------------------------------
 
 	@Override
-	public Boolean getEventObservability(ObservableEvent event) {
+	public Boolean getEventObservability(String eventName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -101,7 +116,7 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 //---  Setter Methods   -----------------------------------------------------------------------
 
 	@Override
-	public void setEventObservability(ObservableEvent event, boolean status) {
+	public void setEventObservability(String eventName, boolean status) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -38,11 +38,11 @@ public interface Observability<S extends State, T extends Transition<S, E>, E ex
 	 * 
 	 * Getter method that requests the state of a given Event's being Observable or not.
 	 * 
-	 * @param event - <E extends Event> object representing the Event to request the status of.
+	 * @param eventName - String name representing the Event to request the status of.
 	 * @return - Returns a Boolean object; True if the event is Observable, False if it is not, null if it does not exist.
 	 */
 	
-	public abstract Boolean getEventObservability(E event);
+	public abstract Boolean getEventObservability(String eventName);
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
@@ -52,10 +52,10 @@ public interface Observability<S extends State, T extends Transition<S, E>, E ex
 	 * Setter method that assigns the status of an Event's being Observable according to the provided boolean value and
 	 * Event object.
 	 * 
-	 * @param event - <E extends Event> object provided as the Event to adjust's status of Observability.
+	 * @param eventName - String name representing the Event of which to change the Observability.
 	 * @param status - boolean value describing the new status of the Event to be adjusted in regards to Observability.
 	 */
 	
-	public abstract void setEventObservability(E event, boolean status);
+	public abstract void setEventObservability(String eventName, boolean status);
 	
 }
