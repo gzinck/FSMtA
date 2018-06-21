@@ -231,7 +231,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 
 	@Override
 	public boolean removeInitialState(String stateName) {
-		if(stateName.equals(initialState.getStateName())) {
+		if(initialState != null && stateName.equals(initialState.getStateName())) {
 			initialState.setStateInitial(false);
 			initialState = null;
 			return true;

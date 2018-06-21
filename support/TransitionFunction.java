@@ -133,11 +133,13 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	
 	public void removeState(State state) {
 		transitions.remove(state);
+		ArrayList<T> tToRemove = new ArrayList<T>();
 		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
-			for(T transition : entry.getValue())
+			for(T transition : entry.getValue()) {
 				if(transition.removeTransitionState(state))
-					// Then remove the transition from existence
-					entry.getValue().remove(transition);
+					tToRemove.add(transition);
+			}
+			entry.getValue().removeAll(tToRemove);
 		} // for every entry
 	}
 	
@@ -154,7 +156,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	public boolean removeTransition(State stateFrom, Event event, State stateTo) {
 		ArrayList<T> thisTransitions = transitions.get(stateFrom);
 		for(T transition : thisTransitions) {
-			if(transition.getTransitionEvent() == event) {
+			if(transition.getTransitionEvent().equals(event)) {
 				if(transition.stateExists(stateTo)) {
 					boolean shouldDeleteTransition = transition.removeTransitionState(stateTo);
 					if(shouldDeleteTransition) thisTransitions.remove(transition);
