@@ -65,6 +65,8 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 			states.getState(special.get(1).get(i)).setStateMarked(true);
 		}
 		for(int i = 0; i < special.get(2).size(); i++) {
+			if(events.getEvent(special.get(2).get(i)) == null)
+				events.addEvent(special.get(2).get(i));
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 		}
 	}
@@ -144,7 +146,7 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 				init.add(s.getStateName());
 		}
 		for(ObservableEvent e : this.getEvents()) {
-			if(e.getEventObservability())
+			if(!e.getEventObservability())
 				unob.add(e.getEventName());
 		}
 		special += init.size() + "\n";

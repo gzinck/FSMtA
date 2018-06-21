@@ -21,15 +21,14 @@ public class TestFSMs {
 		File f = new File(GenerateFSM.createNewObservableFSM(15, 2, 3, 2, 2, 4, "fileName", MAC_WORKING_FOLDER));
 		NonDetObsFSM fsm = new NonDetObsFSM(f, "fsm");
 		while(true) {
-		File f1 = new File(GenerateFSM.createNewDeterministicFSM(16, 3, 5, 3, "fil1", MAC_WORKING_FOLDER));
-		//File f2 = new File(GenerateFSM.createNewDeterministicFSM(10, 4, 3, 5, "fil2", MAC_WORKING_FOLDER));
-		DetFSM fsm1 = new DetFSM(f1, "fs1");
-		fsm1.toTextFile(MAC_WORKING_FOLDER, "outText");
-		DetFSM fsm2 = new DetFSM(new File(MAC_WORKING_FOLDER + "outText.fsm"), "fs2");
-
-		FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "testCopy", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "testCop2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			File f1 = new File(GenerateFSM.createNewObservableFSM(16, 3, 5, 3, 2, 2, "fil1", MAC_WORKING_FOLDER));
+			NonDetObsFSM fsm1 = new NonDetObsFSM(f1, "fs1");
+			fsm1.toTextFile(MAC_WORKING_FOLDER, "outText");
+			NonDetObsFSM fsm2 = new NonDetObsFSM(new File(MAC_WORKING_FOLDER + "outText.fsm"), "fs2");
+			FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "testCopy", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "testCop2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		}
+		
 	/*
 		FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		DetFSM fsm2 = fsm1.determinize();

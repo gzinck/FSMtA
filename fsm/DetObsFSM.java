@@ -117,7 +117,7 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 			if(s.getStateMarked())
 				mark.add(s.getStateName());
 		for(ObservableEvent e : this.getEvents())
-			if(e.getEventObservability())
+			if(!e.getEventObservability())
 				unob.add(e.getEventName());
 		special += mark.size() + "\n";
 		for(String s : mark)
