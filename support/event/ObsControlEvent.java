@@ -81,10 +81,21 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	@Override
-	public <E extends Event> E copy() {
-		// For use in other areas, and when Event is extended, this is
-		// necessary.
-		return (E)(new ObsControlEvent(this));
+	public void copyDataFrom(Event other) {
+		id = other.id;
+		observability = ((other instanceof EventObservability) ? ((EventObservability)other).getEventObservability() : true);
+		controllability = ((other instanceof EventControllability) ? ((EventControllability)other).getEventControllability() : true);
+	}
+	
+	@Override
+	public void copyDataFrom(Event other1, Event other2) {
+		id = other1.id;
+		boolean firstIsControllable = ((other1 instanceof EventControllability) ? ((EventControllability)other1).getEventControllability() : true);
+		boolean secondIsControllable = ((other2 instanceof EventControllability) ? ((EventControllability)other2).getEventControllability() : true);
+		controllability = (firstIsControllable && secondIsControllable);
+		boolean firstIsObservable = ((other1 instanceof EventObservability) ? ((EventObservability)other1).getEventObservability() : true);
+		boolean secondIsObservable = ((other2 instanceof EventObservability) ? ((EventObservability)other2).getEventObservability() : true);
+		observability = (firstIsObservable && secondIsObservable);
 	}
 	
 	@Override

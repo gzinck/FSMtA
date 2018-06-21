@@ -148,6 +148,18 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
+	 * Copies the data from another state into this state. Useful when creating a copy of only
+	 * the information visible to a given (perhaps less sophisticated) State.
+	 * @param other
+	 */
+	
+	public void copyDataFrom(State other) {
+		id = other.id;
+		initial = other.initial;
+		marked = other.marked;
+	}
+	
+	/**
 	 * Makes a new state that performs the AND operation on all the properties
 	 * and adopts the name of the calling state combined with the other state,
 	 * like (1, 2) if the the two states are 1 and 2.

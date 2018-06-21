@@ -1,6 +1,7 @@
 package support.event;
 
 import support.event.Event;
+import support.attribute.EventControllability;
 import support.attribute.EventObservability;
 
 /**
@@ -77,10 +78,17 @@ public class ObservableEvent extends Event implements EventObservability{
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	@Override
-	public <E extends Event> E copy() {
-		// For use in other areas, and when Event is extended, this is
-		// necessary.
-		return (E)(new ObservableEvent(this));
+	public void copyDataFrom(Event other) {
+		id = other.id;
+		observability = ((other instanceof EventObservability) ? ((EventObservability)other).getEventObservability() : true);
+	}
+	
+	@Override
+	public void copyDataFrom(Event other1, Event other2) {
+		id = other1.id;
+		boolean firstIsObservable = ((other1 instanceof EventObservability) ? ((EventObservability)other1).getEventObservability() : true);
+		boolean secondIsObservable = ((other2 instanceof EventObservability) ? ((EventObservability)other2).getEventObservability() : true);
+		observability = (firstIsObservable && secondIsObservable);
 	}
 	
 	@Override

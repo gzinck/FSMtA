@@ -155,8 +155,7 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 
 	@Override
 	public ArrayList<State> getInitialStates() {
-		// TODO Auto-generated method stub
-		return null;
+		return initialStates;
 	}
 
 	@Override

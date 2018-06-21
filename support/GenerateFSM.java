@@ -3,6 +3,8 @@ package support;
 import java.io.*;
 import java.util.*;
 
+import fsmtaui.popups.GenerateFSMDialog;
+
 /**
  * This class is used to generate files readable as Finite State Machines to the constructors
  * that accept file input from the classes in the fsm package. It does so randomly with no

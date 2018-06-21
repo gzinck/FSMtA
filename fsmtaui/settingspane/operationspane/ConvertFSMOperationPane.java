@@ -4,8 +4,10 @@ import fsm.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
 import fsmtaui.settingspane.FileSettingsPane;
-
+import fsmtaui.settingspane.FileSettingsPane.FSM_TYPE;
+import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -18,8 +20,12 @@ public class ConvertFSMOperationPane extends VBox {
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
-	/** ChoiceBox of Strings allowing the user to choose which type of FSM to convert to. */
-	private ChoiceBox<String> conversionChoiceBox;
+	/** Box with the possible types of FSMs to convert to. */
+	private ChoiceBox<String> fsmTypeChoiceBox;
+	/** CheckBox for whether the converted FSM should have observability properties. */
+	private CheckBox fsmObserveCheck;
+	/** CheckBox for whether the converted FSM should have controllability properties. */
+	private CheckBox fsmControlCheck;
 	/** Field for the name of the new FSM to create. */
 	private TextField fsmNameField;
 	/** Button allowing the user to perform the conversion on the selected FSM. */
@@ -33,7 +39,7 @@ public class ConvertFSMOperationPane extends VBox {
 		model = inModel;
 		
 		Label sectionTitle = new Label(TITLE_MSG);
-		HBox operationSelector = makeConversionSelector();
+		VBox operationSelector = makeConversionSelector();
 		HBox nameField = makeFSMNameField();
 		convertBtn = new Button("Perform Conversion");
 		
@@ -43,15 +49,17 @@ public class ConvertFSMOperationPane extends VBox {
 	} // ConvertFSMOperationPane()
 	
 	/**
-	 * Makes a ChoiceBox for the user to select what conversion s/he
-	 * wishes to perform.
+	 * Makes a VBox with options for the type of FSM the user wishes to convert to.
 	 * 
-	 * @return - HBox with the ChoiceBox and its Label.
+	 * @return - VBox with a ChoiceBox (for determinism properties) and two CheckBoxes
+	 * for enabling unobservable/uncontrollable events.
 	 */
-	private HBox makeConversionSelector() {
+	private VBox makeConversionSelector() {
 		Label operationLabel = new Label("Type to convert to:");
-		conversionChoiceBox = new ChoiceBox<String>(FileSettingsPane.FSM_TYPES);
-		return new HBox(operationLabel, conversionChoiceBox);
+		fsmTypeChoiceBox = new ChoiceBox<String>(FXCollections.observableArrayList("Deterministic", "Non-Deterministic"));
+		fsmObserveCheck = new CheckBox("Enable Unobservable Events");
+		fsmControlCheck = new CheckBox("Enable Uncontrollable Events");
+		return new VBox(operationLabel, fsmTypeChoiceBox, fsmObserveCheck, fsmControlCheck);
 	} // makeConversionSelector()
 	
 	/**
@@ -79,7 +87,7 @@ public class ConvertFSMOperationPane extends VBox {
 		convertBtn.setOnAction(e -> {
 			String id = fsmNameField.getText();
 			FSM currFSM = model.getCurrFSM();
-			String operation = conversionChoiceBox.getSelectionModel().getSelectedItem();
+			String type = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
 			if(id.equals("") || model.fsmExists(id)) {
 				// Then must force the user to name the FSM
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
@@ -87,14 +95,14 @@ public class ConvertFSMOperationPane extends VBox {
 				// Then cannot perform operation
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_FSM);
 			} else {
-				if(operation.equals(FileSettingsPane.FSM_TYPES.get(0))) {
+				if(type.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 					// Deterministic conversion
 					DetFSM newFSM = new DetFSM(currFSM, id);
 					addFSM(newFSM);
-				} else if(operation.equals(FileSettingsPane.FSM_TYPES.get(1))) {
+				} else if(type.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 					// Non-deterministic conversion
 					// TODO: perform the conversion
-				} else if(operation.equals(FileSettingsPane.FSM_TYPES.get(2))) {
+				} else if(type.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 					// Observable conversion
 					// TODO: perform the conversion
 				} else {

@@ -170,12 +170,18 @@ public class StateMap<S extends State> {
 	 */
 	
 	public S addState(S state) {
-		String stateName = state.getStateName();
-		if(states.containsKey(stateName))
-			return states.get(stateName);
-		S newState = state.copy();
-		states.put(stateName, newState);
-		return newState;
+		try {
+			String stateName = state.getStateName();
+			if(states.containsKey(stateName))
+				return states.get(stateName);
+			S newState = stateClass.newInstance();
+			newState.copyDataFrom(state);
+			states.put(stateName, newState);
+			return newState;
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**

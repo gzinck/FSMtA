@@ -22,12 +22,7 @@ public class MultiFSMOperationPane extends VBox {
 	private static final String TITLE_MSG = "Perform Operations with Multiple FSMs";
 	/** ObservableList of Strings with all the possible operations involving
 	 * multiple FSMs that a user can choose. */
-	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Union", "Intersection");
-	
-	/** Internal way to reference operation types. */
-	private enum OperationType {
-		UNION, INTERSECTION
-	}
+	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Union", "Product", "Parallel Composition");
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -128,13 +123,19 @@ public class MultiFSMOperationPane extends VBox {
 				FSM fsm2 = model.getFSM(fsm2String);
 				if(operation.equals(MULTI_FSM_OPERATIONS.get(0))) {
 					// Perform union
-					FSM newFSM = performOperation(OperationType.UNION, fsm1, fsm2);
+					FSM newFSM = fsm1.union(fsm2);
 					newFSM.setId(id);
 					model.addFSM(newFSM);
 					model.addViewport(newFSM, id);
 				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(1))) {
-					// Perform intersection
-					FSM newFSM = performOperation(OperationType.INTERSECTION, fsm1, fsm2);
+					// Perform product
+					FSM newFSM = fsm1.product(fsm2);
+					newFSM.setId(id);
+					model.addFSM(newFSM);
+					model.addViewport(newFSM, id);
+				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(2))) {
+					// Perform parallel composition
+					FSM newFSM = fsm1.parallelComposition(fsm2);
 					newFSM.setId(id);
 					model.addFSM(newFSM);
 					model.addViewport(newFSM, id);
@@ -145,25 +146,4 @@ public class MultiFSMOperationPane extends VBox {
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makePerformOperationEventHandler()
-	
-	/**
-	 * Casts the parameters into their more specific types,
-	 * and then sends them through to perform an operation.
-	 * This is required to make sure the right overloaded
-	 * performOperation method is called depending on the
-	 * precise type of FSM.
-	 * 
-	 * @param opType - Type of operation to perform.
-	 * @param fsm1 - First FSM to perform the operation on.
-	 * @param fsm2 - Second FSM to perform the operation on.
-	 * @return - FSM of some type representing the operation's result.
-	 */
-	private	FSM performOperation(OperationType opType, FSM fsm1, FSM fsm2) {
-		switch(opType) {
-		case UNION: return fsm1.union(fsm2);
-		case INTERSECTION: return fsm1.product(fsm2);
-		default: break;
-		}
-		return null;
-	} // performOperation()
 } // class MultiFSMOperationPane

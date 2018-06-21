@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import fsmtaui.settingspane.FileSettingsPane;
+import fsmtaui.settingspane.FileSettingsPane.FSM_TYPE;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -29,7 +30,7 @@ public class GenerateFSMDialog {
 	 * @return - FSMParameters object representing the selected parameters,
 	 * or null if some parameters given were illegal.
 	 */
-	public static FSMParameters getFSMParametersFromUser(String type) {
+	public static FSMParameters getFSMParametersFromUser(FileSettingsPane.FSM_TYPE type, boolean hasObservability) {
 		// Create the dialog box
 		Dialog<FSMParameters> dialog = new Dialog<FSMParameters>();
 		dialog.setTitle("Select FSM Parameters");
@@ -51,14 +52,14 @@ public class GenerateFSMDialog {
 		// Add options if the type is non-deterministic:
 		Label sizeInitialLabel = new Label("Number of Initial States");
 		TextField sizeInitial = new TextField();
-		if(type.equals(FileSettingsPane.FSM_TYPES_STR[1]) || type.equals(FileSettingsPane.FSM_TYPES_STR[2])) {
+		if(type.equals(FSM_TYPE.NON_DETERMINISTIC)) {
 			dGrid.addRow(4, sizeInitialLabel, sizeInitial);
 		} // if non-deterministic
 		
 		// Add options if the type is observable
 		Label sizeUnobservLabel = new Label("Number of unobservable events");
 		TextField sizeUnobserv = new TextField();
-		if(type.equals(FileSettingsPane.FSM_TYPES_STR[2])) {
+		if(hasObservability) {
 			dGrid.addRow(5, sizeUnobservLabel, sizeUnobserv);
 		} // if non-deterministic
 		
@@ -71,16 +72,16 @@ public class GenerateFSMDialog {
 		dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
             		try {
-            			if(type.equals(FileSettingsPane.FSM_TYPES_STR[0])) {
+            			if(type.equals(FSM_TYPE.DETERMINISTIC) && !hasObservability) {
 	            			return new FSMParameters(sizeStates.getText(),
 	            					sizeMarked.getText(), sizeEvents.getText(),
 	            					sizePaths.getText());
-            			} else if(type.equals(FileSettingsPane.FSM_TYPES_STR[1])) {
+            			} else if(type.equals(FSM_TYPE.NON_DETERMINISTIC) && !hasObservability) {
             				return new NonDeterministicFSMParameters(sizeStates.getText(),
             						sizeMarked.getText(), sizeEvents.getText(),
             						sizePaths.getText(), sizeInitial.getText());
-            			} else if(type.equals(FileSettingsPane.FSM_TYPES_STR[2])) {
-            				return new ObservableFSMParameters(sizeStates.getText(),
+            			} else if(type.equals(FSM_TYPE.NON_DETERMINISTIC) && hasObservability) {
+            				return new NonDetObsFSMParameters(sizeStates.getText(),
             						sizeMarked.getText(), sizeEvents.getText(),
             						sizePaths.getText(), sizeInitial.getText(),
             						sizeUnobserv.getText());
@@ -146,10 +147,10 @@ public class GenerateFSMDialog {
 	 * @author Mac Clevinger and Graeme Zinck
 	 *
 	 */
-	public static class ObservableFSMParameters extends NonDeterministicFSMParameters {
+	public static class NonDetObsFSMParameters extends NonDeterministicFSMParameters {
 		public int sizeUnobserv;
 		
-		ObservableFSMParameters(String states, String marked, String events, String paths, String initial, String unobservable) {
+		NonDetObsFSMParameters(String states, String marked, String events, String paths, String initial, String unobservable) {
 			super(states, marked, events, paths, initial);
 			sizeUnobserv = Integer.parseInt(unobservable);
 		} // NonDeterministicFSMParameters(String, String, String, String, String)

@@ -15,7 +15,7 @@ public class Event {
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** String instance variable representing the name of the Event*/
-	private String id;
+	protected String id;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -75,15 +75,27 @@ public class Event {
 	}
 	
 	/**
-	 * Gets a copy of the event.
+	 * Copies the data from another Event into this Event. Useful when creating a copy of only
+	 * the information visible to a given (perhaps less sophisticated) Event.
 	 * 
-	 * @return Copied Event object.
+	 * @param other Event to copy data from.
 	 */
 	
-	public <E extends Event> E copy() {
-		// For use in other areas, and when Event is extended, this is
-		// necessary.
-		return (E)(new Event(this));
+	public void copyDataFrom(Event other) {
+		id = other.id;
+	}
+	
+	/**
+	 * Copies the data from another Event into this Event. Useful when creating a copy of only
+	 * the information visible to a given (perhaps less sophisticated) Event.
+	 * Performs the AND operation on all the properties for the two events put in as parameters.
+	 * 
+	 * @param other1 First event to copy data from.
+	 * @param other2 Second event to copy data from.
+	 */
+	
+	public void copyDataFrom(Event other1, Event other2) {
+		id = other1.id;
 	}
 	
 	/**

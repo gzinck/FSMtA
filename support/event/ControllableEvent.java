@@ -67,12 +67,19 @@ public class ControllableEvent extends Event implements EventControllability{
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
-
+	
 	@Override
-	public <E extends Event> E copy() {
-		// For use in other areas, and when Event is extended, this is
-		// necessary.
-		return (E)(new ControllableEvent(this));
+	public void copyDataFrom(Event other) {
+		id = other.id;
+		controllability = ((other instanceof EventControllability) ? ((EventControllability)other).getEventControllability() : true);
+	}
+	
+	@Override
+	public void copyDataFrom(Event other1, Event other2) {
+		id = other1.id;
+		boolean firstIsControllable = ((other1 instanceof EventControllability) ? ((EventControllability)other1).getEventControllability() : true);
+		boolean secondIsControllable = ((other2 instanceof EventControllability) ? ((EventControllability)other2).getEventControllability() : true);
+		controllability = (firstIsControllable && secondIsControllable);
 	}
 	
 	@Override

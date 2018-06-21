@@ -27,10 +27,10 @@ import javafx.stage.FileChooser;
 public class FileSettingsPane extends VBox {
 	/** String for requesting an FSM text file. */
 	private static final String CHOOSE_FSM_FILE_MSG = "Choose a FSM text file";
-	/** List of possible FSM types, used in the GUI, as strings. */
-	public static final String[] FSM_TYPES_STR = {"Deterministic", "Non-Deterministic", "Non-Deterministic Observable"};
-	/** List of possible FSM types, used in the GUI. */
-	public static final ObservableList<String> FSM_TYPES = FXCollections.observableArrayList(FSM_TYPES_STR);
+	/** List of possible FSM types, which is passed to other methods. */
+	public static enum FSM_TYPE {
+		DETERMINISTIC, NON_DETERMINISTIC
+	}
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -38,6 +38,10 @@ public class FileSettingsPane extends VBox {
 	private TextField fsmNameField;
 	/** Box with the possible types of FSMs. */
 	private ChoiceBox<String> fsmTypeChoiceBox;
+	/** CheckBox for whether the FSM should have observability properties. */
+	private CheckBox fsmObserveCheck;
+	/** CheckBox for whether the FSM should have controllability properties. */
+	private CheckBox fsmControlCheck;
 	/** Button for reading in a file. */
 	private Button readInFileBtn;
 	/** Button for creating a new FSM. */
@@ -106,8 +110,10 @@ public class FileSettingsPane extends VBox {
 		
 		// Type of new FSM
 		Label fsmTypeLabel = new Label("FSM Type:");
-		fsmTypeChoiceBox = new ChoiceBox<String>(FSM_TYPES);
-		HBox fsmType = new HBox(fsmTypeLabel, fsmTypeChoiceBox);
+		fsmTypeChoiceBox = new ChoiceBox<String>(FXCollections.observableArrayList("Deterministic", "Non-Deterministic"));
+		fsmObserveCheck = new CheckBox("Enable Unobservable Events");
+		fsmControlCheck = new CheckBox("Enable Uncontrollable Events");
+		VBox fsmType = new VBox(fsmTypeLabel, fsmTypeChoiceBox, fsmObserveCheck, fsmControlCheck);
 		
 		// Buttons to pull in new FSM
 		readInFileBtn = new Button("Read In File");
@@ -117,6 +123,7 @@ public class FileSettingsPane extends VBox {
 		
 		return new VBox(fsmName, fsmType, fileBtns);
 	} // makeMainFileOptions()
+	
 	/**
 	 * Makes the box containing all the FSMs that are currently open.
 	 * 
@@ -200,12 +207,10 @@ public class FileSettingsPane extends VBox {
 						FSM newFSM = null;
 						
 						String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-						if(fsmClass.equals(FSM_TYPES_STR[0])) {
+						if(fsmClass.equals("Deterministic")) {
 							newFSM = new DetFSM(file, newFSMName);
-						} else if(fsmClass.equals(FSM_TYPES_STR[1])) {
+						} else if(fsmClass.equals("Non-Deterministic")) {
 							newFSM = new NonDetFSM(file, newFSMName);
-						} else if(fsmClass.equals(FSM_TYPES_STR[2])) {
-							newFSM = new NonDetObsFSM(file, newFSMName);
 						} // if/else if
 						model.addFSM(newFSM);
 						fsmNameField.setText("");
@@ -234,12 +239,10 @@ public class FileSettingsPane extends VBox {
 					FSM newFSM = null;
 					
 					String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-					if(fsmClass.equals(FSM_TYPES_STR[0])) {
+					if(fsmClass.equals("Deterministic")) {
 						newFSM = new DetFSM(newFSMName);
-					} else if(fsmClass.equals(FSM_TYPES_STR[1])) {
+					} else if(fsmClass.equals("Non-Deterministic")) {
 						newFSM = new NonDetFSM(newFSMName);
-					} else if(fsmClass.equals(FSM_TYPES_STR[2])) {
-						newFSM = new NonDetObsFSM(newFSMName);
 					} // if/else if
 					model.addFSM(newFSM);
 					fsmNameField.setText("");
@@ -261,28 +264,30 @@ public class FileSettingsPane extends VBox {
 				if(model.checkIfValidFSMId(newFSMName) && checkIfValidFSMType()) {
 					FSM newFSM = null;
 					
-					// Make either a deterministic or nondeterministic FSM
-					String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-					if(fsmClass.equals(FSM_TYPES_STR[0])) {
-						GenerateFSMDialog.FSMParameters parameters = GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPES_STR[0]);
+					String determinism = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
+					if(determinism.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+						// Deterministic, basic FSM
+						GenerateFSMDialog.FSMParameters parameters = GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.DETERMINISTIC, false);
 						if(parameters != null) {
 							File fsmFile = new File(GenerateFSM.createNewDeterministicFSM(
 									parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
 									parameters.sizePaths, newFSMName, model.getWorkingDirectoryString() + "/"));
 							newFSM = new DetFSM(fsmFile, newFSMName);
 						} // if
-					} else if(fsmClass.equals(FSM_TYPES_STR[1])) {
+					} else if(determinism.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+						// NonDeterministic, basic FSM
 						GenerateFSMDialog.NonDeterministicFSMParameters parameters =
-								(GenerateFSMDialog.NonDeterministicFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPES_STR[1]);
+								(GenerateFSMDialog.NonDeterministicFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, false);
 						if(parameters != null) {
 							File fsmFile = new File(GenerateFSM.createNewNonDeterministicFSM(
 									parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
 									parameters.sizePaths, parameters.sizeInitial, newFSMName, model.getWorkingDirectoryString() + "/"));
 							newFSM = new NonDetFSM(fsmFile, newFSMName);
 						} // if
-					} else if(fsmClass.equals(FSM_TYPES_STR[2])) {
-						GenerateFSMDialog.ObservableFSMParameters parameters =
-								(GenerateFSMDialog.ObservableFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPES_STR[2]);
+					} else if(determinism.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+						// NonDeterministic with observability
+						GenerateFSMDialog.NonDetObsFSMParameters parameters =
+								(GenerateFSMDialog.NonDetObsFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, true);
 						if(parameters != null) {
 							File fsmFile = new File(GenerateFSM.createNewObservableFSM(
 									parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,

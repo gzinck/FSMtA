@@ -111,21 +111,43 @@ public class EventMap<E extends Event> {
 	 * stored in the EventMap.
 	 */
 	
-	public E addEvent(E oldEvent) {
-		String eventName = oldEvent.getEventName();
-		if(events.containsKey(eventName))
-			return events.get(eventName);
-		E newEvent = oldEvent.copy();
-		events.put(eventName, newEvent);
+	public E addEvent(Event oldEvent) {
+		E newEvent = null;
+		try {
+			String eventName = oldEvent.getEventName();
+			if(events.containsKey(eventName))
+				return events.get(eventName);
+			newEvent = eventClass.newInstance();
+			newEvent.copyDataFrom(oldEvent);
+			events.put(eventName, newEvent);
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		return newEvent;
 	}
 	
-	public E addEvent(E event1, E event2) {
-		String eventName = event1.getEventName();
-		if(events.containsKey(eventName))
-			return events.get(eventName);
-		E newEvent = event1.makeEventWith(event2);
-		events.put(eventName, newEvent);
+	/**
+	 * Adds an event to the map which takes its information from two other events, deciding on
+	 * the property values by taking the AND operation of the two events. This is done whenever
+	 * two FSMs are combined in some operation and their set of events is amalgamated.
+	 * 
+	 * @param event1 Event object from some other FSM to use for creating the new Event.
+	 * @param event2 Another Event object from yet another FSM to use for creating the new Event.
+	 * @return
+	 */
+	
+	public E addEvent(Event event1, Event event2) {
+		E newEvent = null;
+		try {
+			String eventName = event1.getEventName();
+			if(events.containsKey(eventName))
+				return events.get(eventName);
+			newEvent = eventClass.newInstance();
+			newEvent.copyDataFrom(event1, event2);
+			events.put(eventName, newEvent);
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		return newEvent;
 	}
 	
