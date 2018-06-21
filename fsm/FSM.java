@@ -803,9 +803,9 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		if(states.stateExists(stateName)) {
 			// If it is the initial state, it shouldn't be anymore
 			removeInitialState(stateName);
-			states.removeState(stateName);
 			// Then, we need to remove the state from every reference to it in the transitions.
 			transitions.removeState(states.getState(stateName));
+			states.removeState(stateName);
 			return true;
 		}
 		return false;
@@ -834,7 +834,15 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		S s1 = getState(state1);
 		S s2 = getState(state2);
 		E e = events.getEvent(eventName);
-		if(s1 == null || s2 == null || e == null) return false;
+		if(s1 == null) {
+			System.out.println("First state failed");
+		}
+		if(e == null) {
+			System.out.println("Event failed");
+		}
+		if(s1 == null || s2 == null || e == null) {
+			return false;
+		}
 		if(transitions.removeTransition(s1, e, s2)) return true;
 		return false;
 	}

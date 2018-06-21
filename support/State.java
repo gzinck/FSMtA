@@ -264,6 +264,5 @@ public class State implements Comparator<State>, Comparable<State>{
 	@Override
 	public int compareTo(State o) {
 		return this.getStateName().compareTo(o.getStateName());
-}
-
+	}
 }

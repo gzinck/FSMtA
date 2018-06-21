@@ -101,7 +101,7 @@ public class ModifyFSMEventsPane extends VBox {
 							Alerts.makeError(Alerts.ERROR_ADD_EVENT_NO_FSM);
 						} else {
 							// Then create the event
-							currFSM.addTransition(stateFromField.getText(), stateToField.getText(), eventNameField.getText());
+							currFSM.addTransition(stateFromField.getText(), eventNameField.getText(), stateToField.getText());
 							stateFromField.setText("");
 							stateFromField.requestFocus();
 							stateToField.setText("");
@@ -137,7 +137,7 @@ public class ModifyFSMEventsPane extends VBox {
 							Alerts.makeError(Alerts.ERROR_REMOVE_EVENT_NO_FSM);
 						} else {
 							// Then remove the event
-							currFSM.removeTransition(stateFromField.getText(), stateToField.getText(), eventNameField.getText());
+							currFSM.removeTransition(stateFromField.getText(), eventNameField.getText(), stateToField.getText());
 							stateFromField.setText("");
 							stateFromField.requestFocus();
 							stateToField.setText("");

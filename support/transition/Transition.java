@@ -113,5 +113,4 @@ public interface Transition<S extends State, E extends Event> {
 	 */
 	
 	public boolean removeTransitionState(State inState);
-
 }
