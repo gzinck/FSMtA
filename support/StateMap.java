@@ -38,17 +38,15 @@ public class StateMap<S extends State> {
 	/**
 	 * This method renames a state from its former String oldName to a provided String newName.
 	 * 
-	 * @param oldName - String object representing the State's former name.
-	 * @param newName - String object representing the State's new name.
-	 * @return - Returns true if the state was successfully renamed; false otherwise.
+	 * @param state State which needs to be renamed.
+	 * @param newName String object representing the State's new name.
+	 * @return Returns true if the state was successfully renamed; false otherwise.
 	 */
 	
-	public boolean renameState(String oldName, String newName) {
-		if(oldName == null || newName == null)
+	public boolean renameState(S state, String newName) {
+		String oldName = state.getStateName();
+		if(state == null || newName == null)
 			return false;
-		S state = states.get(oldName);
-		if(state == null) 
-			return false; 
 		state.setStateName(newName);
 		states.remove(oldName);
 		states.put(newName, state);
@@ -61,8 +59,10 @@ public class StateMap<S extends State> {
 	
 	public void renameStates() {
 		int index = 0;
-		for(State state : states.values())
-			renameState(state.getStateName(), index + "");
+		State[] stateArr = new State[states.size()];
+		states.values().toArray(stateArr);
+		for(int i = 0; i < states.size(); i++)
+			renameState((S)stateArr[i], i + "");
 	}
 	
 	/**
