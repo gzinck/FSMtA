@@ -85,12 +85,6 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	}
 
 	@Override
-	public FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> makeCoAccessible() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public FSM union(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
 		// T	ODO Auto-generated method stub
 		return null;
@@ -112,7 +106,27 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-		// TODO Auto-generated method stub
+		if(name == null)
+			name = id;
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "3\n1\n" + this.getInitialState().getStateName() + "\n";
+		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> unob = new ArrayList<String>();
+		for(State s : this.getStates())
+			if(s.getStateMarked())
+				mark.add(s.getStateName());
+		for(ObservableEvent e : this.getEvents())
+			if(e.getEventObservability())
+				unob.add(e.getEventName());
+		special += mark.size() + "\n";
+		for(String s : mark)
+			special += s + "\n";
+		special += unob.size() + "\n";
+		for(String s : unob)
+			special += s + "\n";
+		ReadWrite<State, DetTransition<State, ObservableEvent>, ObservableEvent> rdWrt = new ReadWrite<State, DetTransition<State, ObservableEvent>, ObservableEvent>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------
@@ -129,6 +143,15 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	
+	public State getInitialState() {
+		return initialState;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 
 	@Override

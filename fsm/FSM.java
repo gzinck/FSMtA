@@ -4,6 +4,7 @@ import java.util.*;
 import support.*;
 import support.transition.Transition;
 import support.event.Event;
+import java.io.*;
 
 /**
  * This class models a Finite State Machine with some of the essential elements.
@@ -344,6 +345,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @param other FSM with which to perform the parallel composition.
 	 * @return The result of the FSM operation.
 	 */
+	
 	public abstract FSM<S, T, E> parallelComposition(FSM<S, T, E> other);
 	
 	/**
@@ -551,6 +553,24 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	
 	public S getState(S state) {
 		return states.getState(state);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	
+	public Collection<S> getStates() {
+		return states.getStates();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	
+	public Collection<E> getEvents(){
+		return events.getEvents();
 	}
 	
 	/**

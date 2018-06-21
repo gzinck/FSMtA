@@ -89,8 +89,13 @@ public class GenerateFSM {
 		  raf.write(10);										//Again, redundancy!
 		  raf.writeBytes((""+sizeMarked));		//Strings are basically arrays of characters, which can trivially convert
 		  raf.write(10);					//to bytes, so pass a String to the writeBytes command to write to file. (write 10 for line return)
+		  HashSet<Integer> marked = new HashSet<Integer>();
 		  for(int i = 0; i < sizeMarked; i++) {		//Now to decide the marked states, again randomly
-			  raf.writeBytes(rand.nextInt(sizeStates)+"");		//Pick states at random to be marked
+			  int rand1 = rand.nextInt(sizeStates);
+			  while(marked.contains(rand1) && sizeMarked <= sizeStates)
+				  rand1 = rand.nextInt(sizeStates);
+			  marked.add(rand1);
+			  raf.writeBytes(rand1+"");		//Pick states at random to be marked
 			  raf.write(10);										//This does allow for redundancies, which do nothing but waste space.
 		  }
 		  for(int i = 0; i < sizeStates; i++) {		//Each state as defined by sizeStates is processed herein
@@ -170,14 +175,24 @@ public class GenerateFSM {
 		  raf.write(10);
 		  raf.writeBytes(sizeInitial+"");						//How many initial
 		  raf.write(10);										//Again, redundancy!
+		  HashSet<Integer> initial = new HashSet<Integer>();
 		  for(int i = 0; i < sizeInitial; i++) {
-			  raf.writeBytes(rand.nextInt(sizeStates)+"");		//Pick a state at random to be initial states
+			  int rand1 = rand.nextInt(sizeStates);
+			  while(initial.contains(rand1) && sizeInitial <= sizeStates)
+				  rand1 = rand.nextInt(sizeStates);
+			  raf.writeBytes(rand1+"");		//Pick a state at random to be initial states
 			  raf.write(10);										//Again, redundancy!
 		  }
 		  raf.writeBytes(("" + sizeMarked));		//Strings are basically arrays of characters, which can trivially convert
 		  raf.write(10);					//to bytes, so pass a String to the writeBytes command to write to file. (write 10 for line return)							
+		  HashSet<Integer> marked = new HashSet<Integer>();
 		  for(int i = 0; i < sizeMarked; i++) {		//Now to decide the marked states, again randomly
-			  raf.writeBytes(rand.nextInt(sizeStates)+"");		//Pick states at random to be marked
+			  int rand1 = rand.nextInt(sizeStates);
+			  while(marked.contains(rand1) && sizeMarked <= sizeStates)
+				  rand1 = rand.nextInt(sizeStates);
+			  initial.add(rand1);
+			  marked.add(rand1);
+			  raf.writeBytes(rand1+"");		//Pick states at random to be marked
 			  raf.write(10);										//This does allow for redundancies, which do nothing but waste space.
 		  }
 		  for(int i = 0; i < sizeStates; i++) {		//Each state as defined by sizeStates is processed herein
@@ -252,14 +267,24 @@ public class GenerateFSM {
 		  raf.write(10);
 		  raf.writeBytes(("" + sizeInitial));
 		  raf.write(10);
+		  HashSet<Integer> initial = new HashSet<Integer>();
 		  for(int i = 0; i < sizeInitial; i++) {
-			  raf.writeBytes(rand.nextInt(sizeStates) + "");		//Pick a state at random to be initial states
+			  int rand1 = rand.nextInt(sizeStates);
+			  while(initial.contains(rand1) && sizeInitial <= sizeStates)
+				  rand1 = rand.nextInt(sizeStates);
+			  initial.add(rand1);
+			  raf.writeBytes(rand1+"");		//Pick a state at random to be initial states
 			  raf.write(10);										//Again, redundancy!
 		  }
 		  raf.writeBytes(("" + sizeMarked));		//Strings are basically arrays of characters, which can trivially convert
 		  raf.write(10);					//to bytes, so pass a String to the writeBytes command to write to file. (write 10 for line return)
+		  HashSet<Integer> marked = new HashSet<Integer>();
 		  for(int i = 0; i < sizeMarked; i++) {		//Now to decide the marked states, again randomly
-			  raf.writeBytes(rand.nextInt(sizeStates) + "");		//Pick states at random to be marked
+			  int rand1 = rand.nextInt(sizeStates);
+			  while(marked.contains(rand1) && sizeMarked <= sizeStates)
+				  rand1 = rand.nextInt(sizeStates);
+			  marked.add(rand1);
+			  raf.writeBytes(rand1+"");		//Pick states at random to be marked
 			  raf.write(10);										//This does allow for redundancies, which do nothing but waste space.
 		  }
 		  raf.writeBytes(("" + sizeUnobserv));
