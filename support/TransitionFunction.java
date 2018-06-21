@@ -19,16 +19,16 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	
 	/** HashMap<String, ArrayList<Transition>> object containing all the transitions from a given state with various events that are possible. */
 	protected HashMap<S, ArrayList<T>> transitions;
-	/** T object extending Transition<<s>S, E> used for reference to the object's methods in a non-static way.*/
+	/** T object extending Transition<<r>S, E> used for reference to the object's methods in a non-static way.*/
 	private T dummyTransition;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
 	 * Constructor for TransitionFunction objects that initializes the HashMap<State, ArrayList<T>> for this object, and
-	 * accepts an object extending Transition<<s>S, E> for use as an instance variable.
+	 * accepts an object extending Transition<<r>S, E> for use as an instance variable.
 	 * 
-	 * @param obj - Object of the type T that extends Transition<<s>S, E> to provide to the TransitionFunction object.
+	 * @param obj - Object of the type T that extends Transition<<r>S, E> to provide to the TransitionFunction object.
 	 */
 	
 	public TransitionFunction(T obj) {
@@ -56,7 +56,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 		} // for entry
 		return sb.toString();
 	}
-
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**

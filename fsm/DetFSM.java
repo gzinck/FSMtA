@@ -123,7 +123,19 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 	public void toTextFile(String filePath, String name) {
 		if(name == null)
 			name = id;
-		// TODO Actually deal with this.
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "2\n1\n" + this.getInitialState().getStateName() + "\n?\n";
+		int counter = 0;
+		for(State s : this.getStates()) {
+			if(s.getStateMarked()) {
+				counter++;
+				special += s.getStateName() + "\n";
+			}
+		}
+		special = special.replace("?", counter+"");
+		ReadWrite<State, DetTransition<State, Event>, Event> rdWrt = new ReadWrite<State, DetTransition<State, Event>, Event>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());
 	}
 	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
@@ -189,6 +201,10 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		  initial.add(initialState);
 		return initial;
 	} // getInitialStates()
+	
+	public State getInitialState() {
+		return initialState;
+	}
 
 //---  Add Setter Methods   -----------------------------------------------------------------------
 	

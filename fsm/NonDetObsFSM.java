@@ -65,6 +65,8 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 			states.getState(special.get(1).get(i)).setStateMarked(true);
 		}
 		for(int i = 0; i < special.get(2).size(); i++) {
+			if(events.getEvent(special.get(2).get(i)) == null)
+				events.addEvent(special.get(2).get(i));
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 		}
 	}
@@ -129,7 +131,35 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-		// TODO Auto-generated method stub
+		if(name == null)
+			name = id;
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "3\n";
+		ArrayList<String> init = new ArrayList<String>();
+		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> unob = new ArrayList<String>();
+		for(State s : this.getStates()) {
+			if(s.getStateMarked()) 
+				mark.add(s.getStateName());
+			if(s.getStateInitial()) 
+				init.add(s.getStateName());
+		}
+		for(ObservableEvent e : this.getEvents()) {
+			if(!e.getEventObservability())
+				unob.add(e.getEventName());
+		}
+		special += init.size() + "\n";
+		for(String s : init)
+			special += s + "\n";
+		special += mark.size() + "\n";
+		for(String s : mark)
+			special += s + "\n";
+		special += unob.size() + "\n";
+		for(String s : unob)
+			special += s + "\n";
+		ReadWrite<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> rdWrt = new ReadWrite<State, NonDetTransition<State, ObservableEvent>, ObservableEvent>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());
 		
 	}
 

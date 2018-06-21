@@ -10,7 +10,6 @@ import support.event.Event;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import support.event.ObservableEvent;
 
 /**
  * This class models a NonDeterministic FSM that expands upon the abstract FSM class to
@@ -100,8 +99,27 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-		// TODO Auto-generated method stub
-		
+		if(name == null)
+			name = id;
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "2\n";
+		ArrayList<String> init = new ArrayList<String>();
+		ArrayList<String> mark = new ArrayList<String>();
+		for(State s : this.getStates()) {
+			if(s.getStateMarked()) 
+				mark.add(s.getStateName());
+			if(s.getStateInitial()) 
+				init.add(s.getStateName());
+		}
+		special += init.size() + "\n";
+		for(String s : init)
+			special += s + "\n";
+		special += mark.size() + "\n";
+		for(String s : mark)
+			special += s + "\n";
+		ReadWrite<State, NonDetTransition<State, Event>, Event> rdWrt = new ReadWrite<State, NonDetTransition<State, Event>, Event>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());
 	}
 
 	public DetFSM determinize(){
@@ -124,12 +142,16 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 		LinkedList<String> queue = new LinkedList<String>();
 		String init = "";
 		Collections.sort(getInitialStates());
+		boolean mark1 = true;
 		for(State state : getInitialStates()) {
 			init += state.getStateName() + ",";
+			mark1 = state.getStateMarked() ? mark1 : false;
 		}
 		init = init.substring(0, init.length()-1);
 		queue.add(init);
-		fsmOut.addInitialState(init);
+		fsmOut.addInitialState("{" + init + "}");
+		if(mark1)
+			fsmOut.getState("{"+init+"}").setStateMarked(true);
 		HashSet<String> processed = new HashSet<String>();
 		
 		while(!queue.isEmpty()) {
@@ -141,7 +163,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 			HashMap<String, HashSet<String>> eventStates = new HashMap<String, HashSet<String>>();
 			TransitionFunction<State, NonDetTransition<State, Event>, Event> allTrans = this.getTransitions();
 			for(String targetState : states) {
-				ArrayList<NonDetTransition<State, Event>> transitions = allTrans.getTransitions(new State(targetState));
+				ArrayList<NonDetTransition<State, Event>> transitions = allTrans.getTransitions(getState(targetState));
 				for(NonDetTransition<State, Event> oneTransition : transitions) {
 					if(eventStates.get(oneTransition.getTransitionEvent().getEventName()) == null) {
 						eventStates.put(oneTransition.getTransitionEvent().getEventName(), new HashSet<String>());
@@ -152,9 +174,12 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 			}
 			for(String event : eventStates.keySet()) {
 				ArrayList<String> outboundStates = new ArrayList<String>();
+				boolean mark = true;
 				Iterator<String> iter = eventStates.get(event).iterator();
 				while(iter.hasNext()) {
-					outboundStates.add(iter.next());
+					String markCheck = iter.next();
+					mark = this.getState(markCheck).getStateMarked() ? mark : false;
+					outboundStates.add(markCheck);
 				}
 				Collections.sort(outboundStates);
 				String collec = "";
@@ -163,6 +188,8 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 				collec = collec.substring(0, collec.length() - 1);
 				queue.add(collec);
 				fsmOut.addTransition("{"+aggregate+"}", event, "{"+collec+"}");
+				if(mark)
+					fsmOut.getState("{"+collec+"}").setStateMarked(true);
 			}
 			
 			

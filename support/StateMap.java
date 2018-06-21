@@ -205,6 +205,13 @@ public class StateMap<S extends State> {
 		return newState;
 	}
 	
+	/**
+	 * 
+	 * @param state1
+	 * @param state2
+	 * @return
+	 */
+	
 	public S addState(S state1, S state2) {
 		String stateName = "(" + state1.getStateName() + ", " + state2.getStateName() + ")";
 		if(states.containsKey(stateName))

@@ -24,9 +24,35 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 	 * @return - Returns a boolean value representing the result of this method'ss attempt to write to the File.
 	 */
 	
-	public boolean writeToFile() {
-		
-		return false;
+	public boolean writeToFile(String filePath, String special, TransitionFunction<S, T, E> transF) {
+		try {
+			File f = new File(filePath + ".fsm");
+			f.delete();
+			RandomAccessFile raf = new RandomAccessFile(f, "rw");
+			try {
+			  raf.writeBytes(special);
+			  String build = "";
+			  for(S state1 : transF.transitions.keySet()) {
+				for(T trans : transF.getTransitions(state1)) {
+					for(S state2 : trans.getTransitionStates()) {
+						build += state1.getStateName() + " " + state2.getStateName() + " " + trans.getTransitionEvent().getEventName() + "\n";
+				  }
+				}
+			  }
+			  build = build.substring(0, build.length()-1);
+			  raf.writeBytes(build);
+			  raf.close();
+			}
+			catch(IOException e1) {
+				e1.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		catch(FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	/**
@@ -57,8 +83,8 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 		  while(sc.hasNextLine()) {
 			  String[] in = sc.nextLine().split(" ");
 			  S leading = states.addState(in[0]);
-			  E your = events.addEvent(in[2]);
 			  S target = states.addState(in[1]);
+			  E your = events.addEvent(in[2]);
 			  T outbound = transitions.getEmptyTransition();
 			  outbound.setTransitionEvent(your);
 			  outbound.setTransitionState(target);
