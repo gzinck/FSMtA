@@ -186,6 +186,26 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 			return null;
 		}	
 	}
+	
+	/**
+	 * Helper method that processes the calling FSM object to generate a list of States for that
+	 * object describing their status as CoAccessible, or able to reach a Marked State.
+	 * 
+	 * @return - Returns a HashMap mapping String state names to true if the state is coaccessible, and false if it is not.
+	 */
+	
+	protected HashMap<String, Boolean> getCoAccessibleMap() {
+		// When a state is processed, add it to the map and state if it reached a marked state.
+		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
+		
+		for(S curr : this.states.getStates()) {
+			// Recursively check for a marked state, and keep track of a HashSet of states
+			// which have already been visited to avoid loops.
+			boolean isCoaccessible = recursivelyFindMarked(curr, results, new HashSet<String>());
+			if(!isCoaccessible) results.put(curr.getStateName(), false);
+		}
+		return results;
+	} // isCoAccessible(State, HashMap<String, Boolean>)
 
 	/**
 	 * This method converts an FSM object into a text file which can be read back in and used to recreate
@@ -211,12 +231,15 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	public abstract FSM union(FSM<S, T, E> other);
 	
 	/**
-	 * Performs a union operation on the two FSMs by dynamically adding
-	 * to an FSM passed as a parameter: newFSM.
+	 * Helper method that performs the brunt of the operations involved with a single Union operation
+	 * between two FSM objects, leaving the specialized features in more advanced FSM types to their
+	 * own interpretations after this function has occurred.
 	 * 
-	 * @param other - FSM<<r>S, T, E> extending object that is denoted
-	 * @param newFSM The empty FSM to fill with all the states and transitions
-	 * of the calling FSM and the other FSM.
+	 * Performs a Union operation on the two provided FSM objects by dynamically adding
+	 * to the provided generic FSM, newFSM.
+	 * 
+	 * @param other - FSM<<r>S, T, E> extending object that is provided as one of two FSM object's being adjoined via Union
+	 * @param newFSM - FSM<<r>S, T, E> extending object that is provided as the holding place for the product of the two FSM object's being adjoined via Union
 	 */
 	
 	protected <NewT extends Transition<S, E>> void unionHelper(FSM<S, T, E> other, FSM<S, NewT, E> newFSM) {
@@ -263,21 +286,25 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	} // unionHelper(FSM, FSM)
 	
 	/**
-	 * Performs a product or intersection operation on two FSMs and returns the result.
+	 * This method performs a Product(or Intersection) operation on two FSM objects, one provided as an
+	 * argument and the other being the FSM object calling this method, and returns the resulting FSM object.
 	 * 
-	 * @param other - The FSM to perform the product operation on with the current FSM.
-	 * @return - The resulting FSM from the product operation.
+	 * @param other - FSM<<r>S, T, E> extending object that performs the product operation on with the current FSM.
+	 * @return - Returns a FSM<<r>S, T, E> extending object representing the FSM object resulting from the Product operation.
 	 */
 	
 	public abstract FSM product(FSM<S, T, E> other);
 	
 	/**
-	 * Performs a product operation on the calling FSM with the first parameter
-	 * FSM, and builds the resulting FSM in the second FSM. Has no return, does
-	 * its action by side-effect.
+	 * Helper method that performs the brunt of the operations involved with a single Product operation
+	 * between two FSM objects, leaving the specialized features in more advanced FSM types to their
+	 * own interpretations after this function has occurred.
 	 * 
-	 * @param other FSM to perform the product operation on with the calling FSM.
-	 * @param newFSM The FSM to use for building the product.
+	 * Performs a product operation on the calling FSM with the first parameter FSM, and builds the
+	 * resulting FSM in the second FSM. Has no return, does its action by side-effect.
+	 * 
+	 * @param other - FSM<<r>S, T, E> object representing the FSM object performing the Product operation with the calling FSM object.
+	 * @param newFSM - FSM<<r>S, T, E> object representing the FSM holding the contents of the product of the Product operation.
 	 */
 	
 	protected void productHelper(FSM<S, T, E> other, FSM<S, T, E> newFSM) {
@@ -341,22 +368,25 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	} // productHelper(FSM)
 	
 	/**
-	 * Performs the parallel composition of the calling FSM with the parameter
-	 * FSM. The resulting FSM will be the same type as the calling FSM.
+	 * This method performs the Parallel Composition of two FSMs: the FSM calling this method and the FSM
+	 * provided as an argument. The resulting, returned, FSM will be the same type as the calling FSM.
 	 * 
-	 * @param other FSM with which to perform the parallel composition.
-	 * @return The result of the FSM operation.
+	 * @param other - FSM<<r>S, T, E> extending object provided to perform Parallel Composition with the calling FSM object.
+	 * @return - Returns a FSM<<r>S, T, E> extending object representing the result of the Parallel Composition operation.
 	 */
 	
 	public abstract FSM<S, T, E> parallelComposition(FSM<S, T, E> other);
 	
 	/**
-	 * Performs a parallel composition operation on the calling FSM with the first parameter
-	 * FSM, and builds the resulting FSM in the second FSM. Has no return, does
-	 * its action by side-effect.
+	 * Helper method that performs the brunt of the operations involved with a single Parallel Composition
+	 * operation between two FSM objects, leaving the specialized features in more advanced FSM types to
+	 * their own interpretations after this function has occurred.
 	 * 
-	 * @param other FSM to perform the parallel composition operation on with the calling FSM.
-	 * @param newFSM The FSM to use for building the parallel composition.
+	 * Performs a Parallel Composition operation on the FSM object calling this method with the FSM object provided as
+	 * an argument (other), and places the results of this operation into the provided FSM object (newFSM).
+	 * 
+	 * @param other - FSM<<r>S, T, E> extending object that performs the Parallel Composition operation with FSM object calling this method.
+	 * @param newFSM - FSM<<r>S, T, E> extending object that is provided to contain the results of this Parallel Composition operation.
 	 */
 	
 	protected void parallelCompositionHelper(FSM<S, T, E> other, FSM<S, T, E> newFSM) {
@@ -476,11 +506,11 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Setter method that assigns the parameter inId as the id for the FSM, which is used by
-	 * the UI to identify the FSM.
+	 * Setter method that assigns the parameter inId as the id for the FSM, which is used to identify the FSM.
 	 * 
-	 * @param inId String representing the desired name for the FSM.
+	 * @param inId - String object representing the new name associated to this FSM object.
 	 */
+	
 	public void setId(String inId) {
 		id = inId;
 	}
@@ -533,9 +563,9 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Gets the ID for the FSM which is used to identify it in the UI.
+	 * Getter method that is used to acquire the ID (represented as a String object) associated to this FSM object.
 	 * 
-	 * @return String representing the ID for the FSM.
+	 * @return - Returns a String object representing the ID associated to this FSM object.
 	 */
 	
 	public String getId() {
@@ -543,14 +573,12 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Gets the specified state object from the FSM with the same
-	 * state name as the parameter (but it might not be the same
-	 * object, if the input state was associated with a different
-	 * fsm).
+	 * Getter method that searches within the FSM object's StateMap for a State extending object which corresponds
+	 * to the provided State extending object; it searches by the name associated to the State extending object, which
+	 * may find a match while being distinctly separate objects.
 	 * 
-	 * @param state - State object from another FSM to find the
-	 * corresponding one in the current FSM.
-	 * @return - The corresponding State in the current FSM.
+	 * @param state - State extending object provided as a search reference for a matching State in the FSM object's StateMap.
+	 * @return - Returns a State extending object that corresponds to the provided State extending object's name in the current FSM.
 	 */
 	
 	public S getState(S state) {
@@ -558,8 +586,9 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
+	 * Getter method that obtains the Collection of State extending objects stored within this FSM object's StateMap.
 	 * 
-	 * @return
+	 * @return - Returns a Collection<<r>S> object representing the State extending objects associated to this FSM object.
 	 */
 	
 	public Collection<S> getStates() {
@@ -567,8 +596,9 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
+	 * Getter method that obtains the Collection of Event extending objects stored within this FSM object's EventMap.
 	 * 
-	 * @return
+	 * @return - Returns a Collection<<r>E> object representing the Event extending objects associated to this FSM object.
 	 */
 	
 	public Collection<E> getEvents(){
@@ -576,10 +606,10 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Gets the State object with the specified name.
+	 * Getter method that obtains the State extending object associated to the provided String representing a State's name.
 	 * 
-	 * @param stateName - String name of the state to get.
-	 * @return - The corresponding State in the current FSM.
+	 * @param stateName - String object representing the name of the State extending object to search for.
+	 * @return - Returns the State extending object in this FSM object's StateMap corresponding to the provided String name.
 	 */
 	
 	public S getState(String stateName) {
@@ -587,18 +617,19 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Gets all initial states in the object as an ArrayList.
+	 * Getter method that returns all of the Initial States in the FSM object as an ArrayList of State extending objects.
 	 * 
-	 * @return An ArrayList of States which are all initial states.
+	 * @return - Returns an ArrayList<<r>S> of State extending objects which are the Initial States associated to this FSM object.
 	 */
 	
 	public abstract ArrayList<S> getInitialStates();
 	
 	/**
-	 * Returns if a state exists in the FSM.
+	 * Getter method that requests whether or not a State extending object exists in the calling FSM object's
+	 * StateMap, a supplied String object representing the State extending object.
 	 * 
-	 * @param stateName - String representing the state to check for existence.
-	 * @return - True if the state exists in the FSM, false otherwise.
+	 * @param stateName - String object representing the State extending object to query the FSM object's StateMap for; represents its name.
+	 * @return - Returns a boolean value; true if the State extending object exists in the FSM, false otherwise.
 	 */
 	
 	public boolean stateExists(String stateName) {
@@ -606,7 +637,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Getter method that returns the TransitionFunction<T> object containing all
+	 * Getter method that returns the TransitionFunction<<r>T> object containing all
 	 * the Transitions associated to this FSM object.
 	 * 
 	 * @return - Returns a TransitionFunction<T> object containing all the Transitions associated to this FSM object.
@@ -617,36 +648,15 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Gets if a State with a given stateName String is a marked state.
+	 * Getter method that requests whether a specified State extending object is a Marked State.
 	 * 
-	 * @param stateName String representing the name of the state.
-	 * @return True if the state is marked, false otherwise.
+	 * @param stateName - String object representing the name of the State extending object being queried for its status as Marked.
+	 * @return - Returns a boolean value; true if the state is Marked, false otherwise.
 	 */
 	
 	public boolean isMarked(String stateName) {
 		return states.getState(stateName).getStateMarked();
 	}
-	
-	/**
-	 * This method checks gets a HashMap mapping all the states in the FSM to a boolean
-	 * representing if the given state is coaccessible or not.
-	 * 
-	 * @return HashMap mapping String state names to true if the state is coaccessible, 
-	 * and false if it is not.
-	 */
-	
-	protected HashMap<String, Boolean> getCoAccessibleMap() {
-		// When a state is processed, add it to the map and state if it reached a marked state.
-		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
-		
-		for(S curr : this.states.getStates()) {
-			// Recursively check for a marked state, and keep track of a HashSet of states
-			// which have already been visited to avoid loops.
-			boolean isCoaccessible = recursivelyFindMarked(curr, results, new HashSet<String>());
-			if(!isCoaccessible) results.put(curr.getStateName(), false);
-		}
-		return results;
-	} // isCoAccessible(State, HashMap<String, Boolean>)
 
 	/**
 	 * This method helps the isCoAccessible method by recursively checking

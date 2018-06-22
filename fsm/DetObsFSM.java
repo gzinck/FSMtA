@@ -72,18 +72,12 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	}
 	
 	/**
-<<<<<<< HEAD
-	 * Constructor for a DetObsFSM object that initializes its instance variables, leaving
-	 * them empty for later usage, and assigns a provided String as this object's id.
-	 * 
-	 * @param inId - String object representing the id associated to this DetObsFSM object.
-=======
 	 * Constructor for a DetObsFSM that takes any FSM as a parameter and creates a new
 	 * DetObsFSM using that as the basis. Any information which is not permissible in a
 	 * DetObsFSM is thrown away, because it does not have any means to handle it.
 	 * 
-	 * @param other FSM to copy as a DetObsFSM (can be any kind of FSM).
-	 * @param inId Id for the new FSM to carry.
+	 * @param other - FSM<<r>S, T, E> object that is provided to be copied into the DetObsFSM object being constructed.
+	 * @param inId - String object representing the id for the new FSM object to carry.
 	 */
 	
 	public DetObsFSM(FSM<State, Transition<State, Event>, Event> other, String inId) {
@@ -112,11 +106,10 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	} // DetObsFSM(FSM, String)
 	
 	/**
-	 * Constructor for a DetObsFSM object that contains no transitions or states, allowing the
-	 * user to add those elements their-self. It also assigns the provided String object representing
-	 * this DetObsFSM
+	 * Constructor for a DetObsFSM object that initializes its instance variables, leaving
+	 * them empty for later usage, and assigns a provided String as this object's id.
 	 * 
-	 * @param inId
+	 * @param inId - String object representing the id associated to this DetObsFSM object.
 	 */
 	
 	public DetObsFSM(String inId) {
