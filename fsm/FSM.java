@@ -7,7 +7,7 @@ import support.event.Event;
 import java.io.*;
 
 /**
- * This class models a Finite State Machine with some of the essential elements.
+ * This abstract class models a Finite State Machine with some of the essential elements.
  * It must be extended to be used (eg. by NonDeterministic or Deterministic to
  * determine how transitions and initial states are handled).
  * 
@@ -25,17 +25,17 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	/** String constant designating the file extension to append to the file name when writing to the system*/
 	public static final String FSM_EXTENSION = ".fsm";
 	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
-	public final static String STATE_PREFIX_1 = "a";
+	public static final String STATE_PREFIX_1 = "a";
 	/** String value describing the prefix assigned to all States in an FSM to differentiate it from another FSM*/
-	public final static String STATE_PREFIX_2 = "b";
+	public static final String STATE_PREFIX_2 = "b";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** HashMap<String, <S extends State>> mapping state names to state objects, which all contain attributes of the given state. */
+	/** StateMap<<r>S> object possessing all the States associated to this FSM object */
 	protected StateMap<S> states;
-	/** HashMap<String, <E extends Event>> mapping event names to event objects, which all contain attributes of the given event. */
+	/** EventMap<<r>E> object possessing all the Events associated to this FSM object */
 	protected EventMap<E> events;
-	/** TransitionFunction mapping states to sets of transitions (which contain the state names). */
+	/** TransitionFunction<<r>S, T, E> object mapping states to sets of transitions (which contain the state names). */
 	protected TransitionFunction<S, T, E> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
@@ -52,25 +52,26 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	} // renameStates()
 	
 	/**
-	 * Makes a String object which has the dot representation of the FSM, which
-	 * can be pulled into GraphViz.
+	 * This method processes the information stored by the FSM object to generate a
+	 * String in the dot-form format for consumption by the GraphViz program to
+	 * create a visual representation of the FSM.
 	 * 
-	 * @return String containing the dot representation of the FSM.
+	 * @return - Returns a String containing the dot-form representation of this FSM object.
 	 */
 	
 	public String makeDotString() {
-		String statesInDot = states.makeDotString();
-		String transitionsInDot = transitions.makeDotString();
-		return statesInDot + transitionsInDot;
+		String statesInDot = states.makeDotString();	//Have the StateMap do its thing
+		String transitionsInDot = transitions.makeDotString();	//Have the TransitionFunction do its thing
+		return statesInDot + transitionsInDot;	//Return 'em all
 	}
 	
 	/**
 	 * This method performs a trim operation on the calling FSM (performing the
 	 * makeAccessible() and makeCoAccessible() methods) to make sure only states
-	 * that are reachable from initial states and can reach marked states are
+	 * that are reachable from Initial States and can reach Marked States are
 	 * included.
 	 * 
-	 * @return - An FSM representing the trimmed version of the calling FSM.
+	 * @return - Returns an FSM<<r>S, T, E> extending object representing the trimmed version of the calling FSM object.
 	 */
 	
 	public <fsm extends FSM<S, T, E>> fsm trim() {
@@ -79,16 +80,17 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Searches through the graph represented by the transitions hashmap, and removes
+	 * Searches through the graph represented by the TransitionFunction object, and removes
 	 * disjoint elements.
 	 * 
 	 * Algorithm starts from all initial States, and adds them to a queue. They are
-	 * then placed into the new transitions HashMap, and all States reachable by these
-	 * initial states are placed in a queue for processing. Once dealt with, a State is
-	 * added to a HashSet to keep track of what has already been seen.
+	 * then placed into the new TransitionFunction object, and all States reachable by these
+	 * initial states are placed in a queue for processing. States are checked against being
+	 * already present in the newFSM object, not being added to the queue if already handled.
 	 * 
-	 * @return - Returns an FSM object representing the accessible version of the current
-	 * FSM. 
+	 * Some post-processing may be required by more advanced types of FSM.
+	 * 
+	 * @return - Returns an FSM<<r>S, T, E> extending object representing the accessible version of the calling FSM object. 
 	 */
 	
 	public <fsm extends FSM<S, T, E>> fsm makeAccessible() {
@@ -109,7 +111,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 				ArrayList<T> currTransitions = this.transitions.getTransitions(getState(stateName));
 				if(currTransitions != null) {
 					for(T t : currTransitions) {
-						// Add the states it goes to to the queue if not already present
+						// Add the states; it goes to to the queue if not already present in the newFSM
 						for(S s : t.getTransitionStates())
 							if(!newFSM.stateExists(s.getStateName()))
 								queue.add(s.getStateName());
@@ -130,22 +132,21 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	} // makeAccessible()
 	
 	/**
-	 * Searches through the graph represented by the transitions hashmap, and removes any
+	 * Searches through the graph represented by the TransitionFunction object, and removes any
 	 * states that cannot reach a marked state.
 	 * 
-	 * Every state is added to a queue to search through its neighbors via a recursive
-	 * depth-first search. In this search, once a Marked State is found, all States
-	 * along that path are considered 'in' the new FSM which will be returned. Otherwise,
-	 * those states are left out.
+	 * A helper method is utilized to generate a list of States and their legality in the new FSM object,
+	 * after which the contents of the old FSM object are processed with respect to this list as they construct
+	 * the new FSM object.
 	 * 
-	 * @return - An FSM representing the CoAccessible version of the original FSM.
+	 * @return - Returns an FSM<<r>S, T, E> extending object representing the CoAccessible version of the original FSM.
 	 */
 	
 	public <fsm extends FSM<S, T, E>> fsm makeCoAccessible() {
 		try {
 			FSM<S, T, E> newFSM = this.getClass().newInstance();
 			// First, find what states we need to add.
-			HashMap<String, Boolean> processedStates = getCoAccessibleMap();
+			HashMap<String, Boolean> processedStates = getCoAccessibleMap();	//Use helper method to generate list of legal/illegal States
 
 			// Secondly, create the states and add the transitions
 			for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
@@ -186,12 +187,13 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 
 	/**
-	 * Formerly createFileFormat(), toTextFile(String, String) converts an
-	 * FSM into a text file which can be read back in and used to recreate
-	 * an FSM later.
+	 * This method converts an FSM object into a text file which can be read back in and used to recreate
+	 * an FSM later, or used for analytical purposes. A helper class, ReadWrite, manages the brunt
+	 * of this process, but for the various special features of FSM objects, each has to handle
+	 * itself separately.
 	 * 
-	 * @param filePath The path of the folder to place the text file.
-	 * @param name The name of the text file to create.
+	 * @param filePath - String object representing the path to the folder to place the text file.
+	 * @param name - String object representing the name of the text file to create.
 	 */
 	
 	public abstract void toTextFile(String filePath, String name);
@@ -199,11 +201,10 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	/**
-	 * Performs a union operation on two FSMs and returns the result.
+	 * This method performs a union operation on two FSM objects and returns the result.
 	 * 
-	 * @param other - The FSM to add to the current FSM in order to create a unioned
-	 * FSM.
-	 * @return - The result of the union.
+	 * @param other - FSM<<r>S, T, E> extending object that is added to the calling FSM object in order to create a unioned FSM<<r>S, T, E> extending object.
+	 * @return - Returns a FSM<<r>S, T, E> extending object representing the result of this union operation.
 	 */
 	
 	public abstract FSM union(FSM<S, T, E> other);
@@ -212,7 +213,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * Performs a union operation on the two FSMs by dynamically adding
 	 * to an FSM passed as a parameter: newFSM.
 	 * 
-	 * @param other The FSM to add to the current FSM to build a union FSM.
+	 * @param other - FSM<<r>S, T, E> extending object that is denoted
 	 * @param newFSM The empty FSM to fill with all the states and transitions
 	 * of the calling FSM and the other FSM.
 	 */

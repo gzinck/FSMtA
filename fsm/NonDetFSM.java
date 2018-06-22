@@ -19,6 +19,9 @@ import java.util.Iterator;
  * 
  * This class is a part of the fsm package.
  * 
+ * Implements the Interface(s): NonDeterministic
+ * 
+ * 
  * @author Mac Clevinger and Graeme Zinck
  */
 

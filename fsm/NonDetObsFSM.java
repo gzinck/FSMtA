@@ -7,9 +7,7 @@ import support.ReadWrite;
 import support.State;
 import support.StateMap;
 import support.TransitionFunction;
-import support.transition.DetTransition;
 import support.transition.NonDetTransition;
-import support.event.Event;
 import support.event.ObservableEvent;
 import java.io.*;
 import java.util.ArrayList;
@@ -20,6 +18,9 @@ import java.util.ArrayList;
  * Observability, and some operations being made available to interact with such information.
  * 
  * This class is a part of the fsm packge.
+ * 
+ * Implements the Interface(s): NonDeterministic, Observability
+ * 
  * 
  * @author Mac Clevinger and Graeme Zinck
  */
@@ -114,16 +115,20 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 
 	@Override
 	public Boolean getEventObservability(String eventName) {
-		// TODO Auto-generated method stub
-		return null;
+		if(events.getEvent(eventName) == null)
+			return null;
+		return events.getEvent(eventName).getEventObservability();
 	}
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 
 	@Override
-	public void setEventObservability(String eventName, boolean status) {
-		// TODO Auto-generated method stub
-		
+	public boolean setEventObservability(String eventName, boolean status) {
+		if(events.getEvent(eventName) != null) {
+			events.getEvent(eventName).setEventObservability(status);
+			return true;
+		}
+		return false;
 	}
 
 	@Override

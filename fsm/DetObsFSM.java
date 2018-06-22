@@ -19,6 +19,9 @@ import java.util.*;
  * 
  * This class is a part of the fsm package
  * 
+ * Implements the Interface(s): Deterministic, Observability
+ * 
+ * 
  * @author Mac Clevinger and Graeme Zinck
  */
 
@@ -58,17 +61,33 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 		
 		ReadWrite<State, DetTransition<State, ObservableEvent>, ObservableEvent> redWrt = new ReadWrite<State, DetTransition<State, ObservableEvent>, ObservableEvent>();
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
-		initialState = states.getState(special.get(0).get(0));
+		initialState = states.getState(special.get(0).get(0));	//Special ArrayList 0-entry is InitialState
 		states.getState(initialState).setStateInitial(true);
-		for(int i = 0; i < special.get(1).size(); i++)
+		for(int i = 0; i < special.get(1).size(); i++)			//Special ArrayList 1-entry is MarkedState
 			states.getState(special.get(1).get(i)).setStateMarked(true);
-		for(int i = 0; i < special.get(2).size(); i++)
+		for(int i = 0; i < special.get(2).size(); i++)			//Special ArrayList 2-entry is ObservableEvent
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 	}
 	
 	/**
-	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself. It has no id, either.
+	 * Constructor for a DetObsFSM object that initializes its instance variables, leaving
+	 * them empty for later usage, and assigns a provided String as this object's id.
+	 * 
+	 * @param inId - String object representing the id associated to this DetObsFSM object.
+	 */
+	
+	public DetObsFSM(String inId) {
+		id = inId;
+		states = new StateMap<State>(State.class);
+		events = new EventMap<ObservableEvent>(ObservableEvent.class);
+		transitions = new TransitionFunction<State, DetTransition<State, ObservableEvent>, ObservableEvent>(new DetTransition<State, ObservableEvent>());
+		initialState = null;
+	}
+	
+	/**
+	 * Constructor for a DetObsFSM object that contains no transitions or states, allowing the
+	 * user to add those elements their-self. It has no id, either, initializing the
+	 * instance variables and assigning the id the empty String.
 	 */
 	
 	public DetObsFSM() {
@@ -91,6 +110,7 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	public NonDetObsFSM union(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
 		NonDetObsFSM newFSM = new NonDetObsFSM();
 		unionHelper(other, newFSM);
+		// TODO Finish the special aspects
 		return newFSM;
 	}
 
@@ -98,6 +118,7 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	public DetObsFSM product(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
 		DetObsFSM newFSM = new DetObsFSM();
 		productHelper(other, newFSM);
+		// TODO Finish the special aspects
 		return newFSM;
 	}
 	
@@ -105,46 +126,48 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	public DetObsFSM parallelComposition(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
 		DetObsFSM newFSM = new DetObsFSM();
 		parallelCompositionHelper(other, newFSM);
+		// TODO Finish the special aspects
 		return newFSM;
 	}
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-		if(name == null)
+		if(name == null)		//If no provided name, use FSM object's id
 			name = id;
-		String truePath = "";
-		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
-		String special = "3\n1\n" + this.getInitialState().getStateName() + "\n";
-		ArrayList<String> mark = new ArrayList<String>();
+		String truePath = "";		//Need to develop the actual filePath w/ respect to file name
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;	//Handle awkward '/' cases
+		String special = "3\n1\n" + this.getInitialState().getStateName() + "\n";		//3 Special types at head of File, first is Initial
+		ArrayList<String> mark = new ArrayList<String>();		//Need to process States and Events to find how many for notation and scripture
 		ArrayList<String> unob = new ArrayList<String>();
-		for(State s : this.getStates())
+		for(State s : this.getStates())					//If a State is marked, add to list
 			if(s.getStateMarked())
 				mark.add(s.getStateName());
-		for(ObservableEvent e : this.getEvents())
+		for(ObservableEvent e : this.getEvents())		//If an Event is found Unobservable, add to list
 			if(!e.getEventObservability())
 				unob.add(e.getEventName());
-		special += mark.size() + "\n";
+		special += mark.size() + "\n";					//Lead section with number of entries to follow, then fill in entries
 		for(String s : mark)
 			special += s + "\n";
-		special += unob.size() + "\n";
+		special += unob.size() + "\n";					//Follow with number of Unobservable Events, fill in entries
 		for(String s : unob)
 			special += s + "\n";
 		ReadWrite<State, DetTransition<State, ObservableEvent>, ObservableEvent> rdWrt = new ReadWrite<State, DetTransition<State, ObservableEvent>, ObservableEvent>();
-		rdWrt.writeToFile(truePath,  special, this.getTransitions());
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());		//Let ReadWrite handle Transition scripture, supply filePath and precomputed
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------
 
 	@Override
 	public Boolean getEventObservability(String eventName) {
-		// TODO Auto-generated method stub
-		return null;
+		if(events.getEvent(eventName) == null)		//If the Event is not found, null
+			return null;
+		return events.getEvent(eventName).getEventObservability();		//Otherwise, result of the query
 	}
 
 	@Override
 	public ArrayList<State> getInitialStates() {
 		ArrayList<State> initial = new ArrayList<State>();
-		if(initialState != null)
+		if(initialState != null)				//Single entry ArrayList if initialState exists, otherwise don't add null; compatibility
 		  initial.add(initialState);
 		return initial;
 	}
@@ -157,8 +180,12 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 //---  Setter Methods   -----------------------------------------------------------------------
 
 	@Override
-	public void setEventObservability(String eventName, boolean status) {
-		// TODO Auto-generated method stub	
+	public boolean setEventObservability(String eventName, boolean status) {
+		if(events.getEvent(eventName) != null) {		//Ensure it exists
+			events.getEvent(eventName).setEventObservability(status);		//Apply the change
+			return true;			//Success
+		}
+		return false;		//Fail, no such Event exists
 	}
 
 //---  Manipulations   ------------------------------------------------------------------------
@@ -173,6 +200,7 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 		initialState = theState;
 	}
 
+	@Override
 	public void addInitialState(State newState) {
 		State obt = states.addState(newState);
 		obt.setStateInitial(true);

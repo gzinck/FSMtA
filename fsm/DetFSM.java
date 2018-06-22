@@ -16,6 +16,8 @@ import support.ReadWrite;
  * 
  * This class is a part of the fsm package.
  * 
+ * Implements the Interface(s): Deterministic
+ * 
  * @author Mac Clevinger and Graeme Zinck
  */
 
@@ -35,27 +37,27 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 //---  Constructors   -------------------------------------------------------------------------
 
 	/**
-	 * Constructor for an DetFSM object that takes in a file encoding the contents of the FSM.
+	 * Constructor for a DetFSM object that takes in a file encoding the contents of the FSM.
 	 * 
 	 * DetFSM File Order for Special: Initial, Marked.
 	 * 
-	 * @param in - File read in order to create the FSM.
-	 * @param id - The id for the FSM (can be any String).
+	 * @param in - File object whose contents are read in order to create the FSM.
+	 * @param id - String object representing the id for this DetFSM object.
 	 */
 	
 	public DetFSM(File in, String inId) {
-		id = inId;
-		
-		states = new StateMap<State>(State.class);
-		events = new EventMap<Event>(Event.class);
+		id = inId;									//Assign id
+		states = new StateMap<State>(State.class);	//Initialize the storage for States, Event, and Transitions
+		events = new EventMap<Event>(Event.class);	//51: Create a ReadWrite object for file reading/writing (reading in this case), denote generics
 		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
-		ReadWrite<State, DetTransition<State, Event>, Event> redWrt = new ReadWrite<State, DetTransition<State, Event>, Event>();
 		
-		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
-		initialState = states.getState(special.get(0).get(0));
-		states.getState(initialState).setStateInitial(true);
-		for(int i = 0; i < special.get(1).size(); i++) {
-			states.getState(special.get(1).get(i)).setStateMarked(true);
+		ReadWrite<State, DetTransition<State, Event>, Event> redWrt = new ReadWrite<State, DetTransition<State, Event>, Event>();
+		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);	//Process input file, assigns values to States,
+																	//(con't) Events, and Transitions, returning package of info 	for other features
+		initialState = states.getState(special.get(0).get(0));		//First portion of Special ArrayList are the Initial State(s) 
+		states.getState(initialState).setStateInitial(true);			//Deterministic, only one Initial
+		for(int i = 0; i < special.get(1).size(); i++) {				//Second portion are the Marked States
+			states.getState(special.get(1).get(i)).setStateMarked(true);	
 		}
 	} // DetFSM(File)
 	
@@ -64,8 +66,8 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	 * DetFSM using that as the basis. Any information which is not permissible in a
 	 * DetFSM is thrown away, because it does not have any means to handle it.
 	 * 
-	 * @param other FSM to copy as a DetFSM (can be any kind of FSM).
-	 * @param inId Id for the new FSM to carry.
+	 * @param other - FSM object to copy as a DetFSM (can be any kind of FSM).
+	 * @param inId - String object representing the id for the new FSM.
 	 */
 	
 	public DetFSM(FSM<State, Transition<State, Event>, Event> other, String inId) {
@@ -94,7 +96,9 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements their-self.
+	 * user to add those elements their-self. Only initializes all instance variables.
+	 * 
+	 * @param - String object representing the id for the new FSM.
 	 */
 	
 	public DetFSM(String inId) {
@@ -107,7 +111,8 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements their-self. It has no id, either.
+	 * user to add those elements their-self. It has no id, either. Initializes all instance
+	 * variables and defaults the id to an empty String.
 	 */
 	
 	public DetFSM() {
@@ -122,21 +127,22 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	
 	@Override
 	public void toTextFile(String filePath, String name) {
-		if(name == null)
+		if(name == null)					//File is named after the FSM if no name is given
 			name = id;
-		String truePath = "";
+		String truePath = "";			//Creates the full file path, name included, and handles questionable '/' cases
 		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
-		String special = "2\n1\n" + this.getInitialState().getStateName() + "\n?\n";
-		int counter = 0;
-		for(State s : this.getStates()) {
+										//The String special will be written to the file as the first portion describing special cases in the FSM.
+		String special = "2\n1\n" + this.getInitialState().getStateName() + "\n?\n";	//Denote 2 kinds of special, 1 Initial State (and add it), ? Marked States
+		int counter = 0;							//To count how many Marked States there are
+		for(State s : this.getStates()) {		//Process all States and check if they're Marked or not; if so, increment and add to 'special'
 			if(s.getStateMarked()) {
 				counter++;
-				special += s.getStateName() + "\n";
+				special += s.getStateName() + "\n";	//Line skips for consistent file-formatting
 			}
 		}
-		special = special.replace("?", counter+"");
-		ReadWrite<State, DetTransition<State, Event>, Event> rdWrt = new ReadWrite<State, DetTransition<State, Event>, Event>();
-		rdWrt.writeToFile(truePath,  special, this.getTransitions());
+		special = special.replace("?", counter+"");	//Now replace the planted '?' character with the actual size of the Marked States
+		ReadWrite<State, DetTransition<State, Event>, Event> rdWrt = new ReadWrite<State, DetTransition<State, Event>, Event>();	//Prep a ReadWrite
+		rdWrt.writeToFile(truePath, special, this.getTransitions());		//Pass the filePath, pre-computed Special states section, and the Transitions to be written for us 
 	}
 	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
@@ -144,21 +150,21 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	@Override
 	public NonDetFSM union(FSM<State, DetTransition<State, Event>, Event> other) {
 		NonDetFSM newFSM = new NonDetFSM();
-		unionHelper(other, newFSM);
+		unionHelper(other, newFSM);			//Trivial case permits just using the unionHelper, no extra work.
 		return newFSM;
 	}
 
 	@Override
 	public DetFSM product(FSM<State, DetTransition<State, Event>, Event> other) {
 		DetFSM newFSM = new DetFSM();
-		productHelper(other, newFSM);
+		productHelper(other, newFSM);		//Trivial case permits just using the productHelper, no extra work.
 		return newFSM;
 	}
 	
 	@Override
 	public DetFSM parallelComposition(FSM<State, DetTransition<State, Event>, Event> other) {
 		DetFSM newFSM = new DetFSM();
-		parallelCompositionHelper(other, newFSM);
+		parallelCompositionHelper(other, newFSM);	//Trivial case permits just using the parallelCompositionHelper, no extra work.
 		return newFSM;
 	}
 
@@ -166,8 +172,8 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	
 	@Override
 	public ArrayList<State> getInitialStates() {
-		ArrayList<State> initial = new ArrayList<State>();
-		if(initialState != null)
+		ArrayList<State> initial = new ArrayList<State>();	//For compatability with certain functions, take one Initial as ArrayList
+		if(initialState != null)								//Only append a State if it exists, no null entries
 		  initial.add(initialState);
 		return initial;
 	} // getInitialStates()
@@ -181,12 +187,11 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	
 	@Override
 	public void addInitialState(String newInitial) {
-		// Get the state, or add it if not yet present
-		State theState = states.addState(newInitial);
-		theState.setStateInitial(true);
-		if(initialState != null) 
+		State theState = states.addState(newInitial); // Attempt to add the State to StateMap; if new, will generate, and always returns that State
+		theState.setStateInitial(true);				
+		if(initialState != null) 					//If replacing the InitialState, remove its previous status as Initial
 			initialState.setStateInitial(false);
-		initialState = theState;
+		initialState = theState;						//Reassign
 	}
 
 	@Override
