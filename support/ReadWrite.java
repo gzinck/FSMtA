@@ -69,29 +69,45 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 	
 	public ArrayList<ArrayList<String>> readFromFile(StateMap<S> states, EventMap<E> events, TransitionFunction<S, T, E> transitions, File file){
 		try {
-		  Scanner sc = new Scanner(file);
-		  int numSpec = sc.nextInt();
-		  ArrayList<ArrayList<String>> specialInfo = new ArrayList<ArrayList<String>>();
-		  for(int i = 0; i < numSpec; i++) {
-			  int numIndSpec = sc.nextInt(); sc.nextLine();
-			  ArrayList<String> oneBatch = new ArrayList<String>();
-			  for(int j = 0; j < numIndSpec; j++) {
-				  oneBatch.add(sc.nextLine());
-			  }
-			  specialInfo.add(oneBatch);
-		  }
-		  while(sc.hasNextLine()) {
-			  String[] in = sc.nextLine().split(" ");
-			  S leading = states.addState(in[0]);
-			  S target = states.addState(in[1]);
-			  E your = events.addEvent(in[2]);
-			  T outbound = transitions.getEmptyTransition();
-			  outbound.setTransitionEvent(your);
-			  outbound.setTransitionState(target);
-			  transitions.addTransition(leading, outbound);
-		  }
-		  sc.close();
-		  return specialInfo;
+			Scanner sc = new Scanner(file);
+			int numSpec = sc.nextInt();
+			ArrayList<ArrayList<String>> specialInfo = new ArrayList<ArrayList<String>>();
+			for(int i = 0; i < numSpec; i++) {
+				int numIndSpec = sc.nextInt(); sc.nextLine();
+				ArrayList<String> oneBatch = new ArrayList<String>();
+				for(int j = 0; j < numIndSpec; j++) {
+					oneBatch.add(sc.nextLine());
+				}
+				specialInfo.add(oneBatch);
+			}
+			while(sc.hasNextLine()) {
+				String[] in = sc.nextLine().split(" ");
+				S fromState = states.addState(in[0]);
+				S toState = states.addState(in[1]);
+				E event = events.addEvent(in[2]);
+				
+				// See if there is already a transition with the event...
+				ArrayList<T> thisTransitions = transitions.getTransitions(fromState);
+				boolean foundTransition = false;
+				if(thisTransitions != null) {
+					Iterator<T> itr = thisTransitions.iterator();
+					while(!foundTransition && itr.hasNext()) {
+						T t = itr.next();
+						if(t.getTransitionEvent().equals(event)) {
+							t.setTransitionState(toState);
+							foundTransition = true;
+						} // if equal
+					} // for every transition
+				} // if not null
+				if(!foundTransition) {
+					T outbound = transitions.getEmptyTransition();
+					outbound.setTransitionEvent(event);
+					outbound.setTransitionState(toState);
+					transitions.addTransition(fromState, outbound);
+				} // if did not find transition
+			} // while sc has next line
+			sc.close();
+			return specialInfo;
 		}
 		catch(Exception e) {
 			e.printStackTrace();

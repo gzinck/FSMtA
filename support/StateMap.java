@@ -169,7 +169,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public S addState(S state) {
+	public S addState(State state) {
 		try {
 			String stateName = state.getStateName();
 			if(states.containsKey(stateName))

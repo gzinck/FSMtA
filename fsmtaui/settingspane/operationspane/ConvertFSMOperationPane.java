@@ -99,13 +99,20 @@ public class ConvertFSMOperationPane extends VBox {
 					// Deterministic conversion
 					DetFSM newFSM = new DetFSM(currFSM, id);
 					addFSM(newFSM);
+				} else if(type.equals("Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+					// Observable deterministic conversion
+					DetObsFSM newFSM = new DetObsFSM(currFSM, id);
+					addFSM(newFSM);
 				} else if(type.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 					// Non-deterministic conversion
-					// TODO: perform the conversion
+					NonDetFSM newFSM = new NonDetFSM(currFSM, id);
+					addFSM(newFSM);
 				} else if(type.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-					// Observable conversion
-					// TODO: perform the conversion
+					// Observable non-deterministic conversion
+					NonDetObsFSM newFSM = new NonDetObsFSM(currFSM, id);
+					addFSM(newFSM);
 				} else {
+					// TODO: add the other kinds of FSMs we need to convert
 					// No option chosen
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);
 				} // if/else if/else

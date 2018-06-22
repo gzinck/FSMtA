@@ -78,7 +78,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 		
 		// Add in all the states
 		for(State s : other.states.getStates())
-			this.states.addState(s);
+			this.states.addState(s).setStateInitial(false);
 		// Add in all the events
 		for(Event e : other.events.getEvents())
 			this.events.addEvent(e);
@@ -91,8 +91,9 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 		} // for every state
 		// Add in the initial state
 		ArrayList<State> initial = other.getInitialStates();
-		initialState = initial.get(0);
-	} // DetFSM()
+		initialState = this.getState(initial.get(0));
+		initialState.setStateInitial(true);
+	} // DetFSM(FSM, String)
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
@@ -107,7 +108,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 		events = new EventMap<Event>(Event.class);
 		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		initialState = null;
-	} // DetFSM()
+	} // DetFSM(String)
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the

@@ -207,11 +207,16 @@ public class FileSettingsPane extends VBox {
 						FSM newFSM = null;
 						
 						String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-						if(fsmClass.equals("Deterministic")) {
+						if(fsmClass.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 							newFSM = new DetFSM(file, newFSMName);
-						} else if(fsmClass.equals("Non-Deterministic")) {
+						} else if(fsmClass.equals("Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+							newFSM = new DetObsFSM(file, newFSMName);
+						} else if(fsmClass.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 							newFSM = new NonDetFSM(file, newFSMName);
-						} // if/else if
+						} else if(fsmClass.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+							newFSM = new NonDetObsFSM(file, newFSMName);
+						}
+						// TODO: add the other kinds of FSMs we need to create
 						model.addFSM(newFSM);
 						fsmNameField.setText("");
 					} catch(FileNotFoundException exception) {
@@ -239,11 +244,16 @@ public class FileSettingsPane extends VBox {
 					FSM newFSM = null;
 					
 					String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-					if(fsmClass.equals("Deterministic")) {
+					if(fsmClass.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 						newFSM = new DetFSM(newFSMName);
-					} else if(fsmClass.equals("Non-Deterministic")) {
+					} else if(fsmClass.equals("Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+						newFSM = new DetObsFSM(newFSMName);
+					} else if(fsmClass.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 						newFSM = new NonDetFSM(newFSMName);
-					} // if/else if
+					} else if(fsmClass.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+						newFSM = new NonDetObsFSM(newFSMName);
+					}
+					// TODO: add the other kinds of FSMs we need to create
 					model.addFSM(newFSM);
 					fsmNameField.setText("");
 				} // if
@@ -296,6 +306,7 @@ public class FileSettingsPane extends VBox {
 							newFSM = new NonDetObsFSM(fsmFile, newFSMName);
 						} // if
 					} // if/else if
+					// TODO: add the other kinds of FSMs we need to generate
 					
 					if(newFSM != null) {
 						model.addFSM(newFSM);

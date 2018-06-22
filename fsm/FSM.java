@@ -2,6 +2,7 @@ package fsm;
 
 import java.util.*;
 import support.*;
+import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
 import java.io.*;
@@ -767,20 +768,23 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		
 		// Get the event or make it
 		E e = events.addEvent(eventName);
-		try {
-			// TODO Make sure that we check if the transition's event already exists
-			// for the from state in the transition, because if it exists, then we
-			// have to add the state to that object instead...
-			// TODO Also make sure you CANNOT add a new state to the transition object
-			// elsewhere...
-			T outbound = transitions.getEmptyTransition();
-			outbound.setTransitionEvent(e);
-			outbound.setTransitionState(s2);
-			transitions.addTransition(s1, outbound);
-		}
-		catch(Exception e1) {
-			e1.printStackTrace();
-		}
+		
+		// See if there is already a transition with the event...
+		ArrayList<T> thisTransitions = transitions.getTransitions(s1);
+		if(thisTransitions != null) {
+			for(T t : thisTransitions) {
+				if(t.getTransitionEvent().equals(e)) {
+					t.setTransitionState(s2);
+					return;
+				} // if equal
+			} // for every transition
+		} // if not null
+		
+		// Otherwise, make a new Transition object
+		T outbound = transitions.getEmptyTransition();
+		outbound.setTransitionEvent(e);
+		outbound.setTransitionState(s2);
+		transitions.addTransition(s1, outbound);
 	}
 	
 	/**
