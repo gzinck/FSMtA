@@ -625,8 +625,18 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	public abstract ArrayList<S> getInitialStates();
 	
 	/**
+	 * Getter method that requests whether the calling FSM object possesses an Initial State with
+	 * the provided String name or not.
+	 * 
+	 * @param stateName - String object representing the name of the State extending object.
+	 * @return - Returns a boolean value, true if the State extending object is an Initial State, false otherwise.
+	 */
+	
+	public abstract boolean hasInitialState(String stateName);
+	
+	/**
 	 * Getter method that requests whether or not a State extending object exists in the calling FSM object's
-	 * StateMap, a supplied String object representing the State extending object.
+	 * StateMap, the supplied String object representing the State extending object.
 	 * 
 	 * @param stateName - String object representing the State extending object to query the FSM object's StateMap for; represents its name.
 	 * @return - Returns a boolean value; true if the State extending object exists in the FSM, false otherwise.

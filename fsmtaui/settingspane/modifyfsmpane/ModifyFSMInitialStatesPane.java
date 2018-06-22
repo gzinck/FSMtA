@@ -1,6 +1,7 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
 import fsm.*;
+import fsm.attribute.*;
 import fsmtaui.FSMViewport;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
@@ -72,33 +73,32 @@ public class ModifyFSMInitialStatesPane extends VBox {
 			if(e.getCode() == KeyCode.ENTER) toggleInitialStateBtn.fire();
 		});
 		toggleInitialStateBtn.setOnAction(e -> {
-			// TODO: Fix this when we have figured out NonDeterministic stuff
-//			String state = initialStateNameField.getText();
-//			if(state.equals("")) {
-//				Alerts.makeError(Alerts.ERROR_TOGGLE_INITIAL_NO_NAME);
-//			} else {
-//				// Then no errors
-//				NonDeterministicFSM currFSM = (NonDeterministicFSM) model.getCurrFSM();
-//				if(currFSM == null) {
-//					// Then cannot add an event
-//					Alerts.makeError(Alerts.ERROR_TOGGLE_INITIAL_NO_FSM);
-//				} else {
-//					// If nondeterministic, then add/remove the initial state;
-//					// otherwise, replace the pre-existing initial state.
-//					if(currFSM instanceof NonDeterministicFSM) {
-//						if(currFSM.isInitialState(state)) {
-//							currFSM.removeInitialState(state);
-//						} else {
-//							currFSM.addInitialState(state);
-//						} // if/else
-//					} else {
-//						currFSM.setInitialState(state);
-//					} // if/else
-//					initialStateNameField.setText("");
-//					initialStateNameField.requestFocus();
-//					model.refreshViewport();
-//				} // if/else
-//			} // if/else
+			String state = initialStateNameField.getText();
+			if(state.equals("")) {
+				Alerts.makeError(Alerts.ERROR_TOGGLE_INITIAL_NO_NAME);
+			} else {
+				// Then no errors
+				FSM currFSM = model.getCurrFSM();
+				if(currFSM == null) {
+					// Then cannot add an event
+					Alerts.makeError(Alerts.ERROR_TOGGLE_INITIAL_NO_FSM);
+				} else {
+					// If nondeterministic, then add/remove the initial state;
+					// otherwise, replace the pre-existing initial state.
+					if(currFSM instanceof NonDeterministic) {
+						if(currFSM.hasInitialState(state)) {
+							currFSM.removeInitialState(state);
+						} else {
+							currFSM.addInitialState(state);
+						} // if/else
+					} else {
+						currFSM.addInitialState(state);
+					} // if/else
+					initialStateNameField.setText("");
+					initialStateNameField.requestFocus();
+					model.refreshViewport();
+				} // if/else
+			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeToggleInitialStateEventHandler()
 	
@@ -123,17 +123,16 @@ public class ModifyFSMInitialStatesPane extends VBox {
 	private void refreshOptions() {
 		model.getOpenFSMTabs().getSelectionModel().selectedItemProperty().addListener(
 			(ObservableValue<? extends Tab> value, Tab oldTab, Tab newTab) -> {
-				// TODO: Fix this when we have figured out NonDeterministic stuff
-//				if(newTab != null) {
-//					// Only show add/remove initial state if the FSM is nondeterministic;
-//					// otherwise, it should show change initial state instead.
-//					DeterministicFSM fsm = ((FSMViewport) newTab.getContent()).getFSM();
-//					if(fsm instanceof NonDeterministicFSM) {
-//						showNonDeterministicOptions();
-//					} else {
-//						showDeterministicOptions();
-//					} // if/else
-//				} // if
+				if(newTab != null) {
+					// Only show add/remove initial state if the FSM is nondeterministic;
+					// otherwise, it should show change initial state instead.
+					FSM fsm = ((FSMViewport) newTab.getContent()).getFSM();
+					if(fsm instanceof NonDeterministic) {
+						showNonDeterministicOptions();
+					} else {
+						showDeterministicOptions();
+					} // if/else
+				} // if
 			});
 	} // refreshOptions()
 } // class ModifyFSMInitialStatesPane
