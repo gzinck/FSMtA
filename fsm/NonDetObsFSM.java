@@ -73,7 +73,6 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 				events.addEvent(special.get(2).get(i));
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 		}
-		System.out.println(makeDotString());
 	}
 	
 	/**
@@ -221,6 +220,13 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 	@Override
 	public ArrayList<State> getInitialStates() {
 		return initialStates;
+	}
+	
+	@Override
+	public boolean hasInitialState(String stateName) {
+		for(State s : initialStates)
+			if(s.getStateName().equals(stateName)) return true;
+		return false;
 	}
 
 	@Override

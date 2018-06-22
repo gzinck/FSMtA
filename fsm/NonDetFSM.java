@@ -257,6 +257,13 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 		return initialStates;
 	}
 	
+	@Override
+	public boolean hasInitialState(String stateName) {
+		for(State s : initialStates)
+			if(s.getStateName().equals(stateName)) return true;
+		return false;
+	}
+	
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	@Override

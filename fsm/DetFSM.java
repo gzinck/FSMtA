@@ -174,6 +174,11 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 	} // getInitialStates()
 	
 	@Override
+	public boolean hasInitialState(String stateName) {
+		return initialState.getStateName().equals(stateName);
+	}
+	
+	@Override
 	public State getInitialState() {
 		return initialState;
 	}

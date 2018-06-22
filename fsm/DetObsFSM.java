@@ -197,6 +197,11 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 		  initial.add(initialState);
 		return initial;
 	}
+	
+	@Override
+	public boolean hasInitialState(String stateName) {
+		return initialState.getStateName().equals(stateName);
+	}
 
 	@Override
 	public State getInitialState() {

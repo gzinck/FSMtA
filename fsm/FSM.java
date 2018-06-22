@@ -594,6 +594,15 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	public abstract ArrayList<S> getInitialStates();
 	
 	/**
+	 * Gets whether the FSM has an initial state with the input name.
+	 * 
+	 * @param stateName String representing the name of the state.
+	 * @return True if the state is an initial state, false otherwise.
+	 */
+	
+	public abstract boolean hasInitialState(String stateName);
+	
+	/**
 	 * Returns if a state exists in the FSM.
 	 * 
 	 * @param stateName - String representing the state to check for existence.
