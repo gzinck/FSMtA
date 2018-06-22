@@ -78,6 +78,7 @@ class ContentPane extends VBox {
 		zoomInBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				e.consume();
 				model.getCurrViewport().zoomIn();
 			} // handle(ActionEvent)
 		}); // setOnAction(EventHandler<ActionEvent>)
@@ -85,6 +86,7 @@ class ContentPane extends VBox {
 		zoomOutBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				e.consume();
 				model.getCurrViewport().zoomOut();
 			} // handle(ActionEvent)
 		}); // setOnAction(EventHandler<ActionEvent>)

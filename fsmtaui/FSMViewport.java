@@ -2,6 +2,7 @@ package fsmtaui;
 
 import fsm.FSM;
 import graphviz.FSMToDot;
+import javafx.geometry.Bounds;
 import javafx.scene.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -56,10 +57,8 @@ public class FSMViewport extends Parent {
 		imageView = new ImageView(image);
 		imageView.setPreserveRatio(true);
 		
-		StackPane imageHolder = new StackPane(imageView);
-		imageHolder.setPrefSize(WIDTH, HEIGHT);
-		
-		scrollPane = new ScrollPane(imageHolder);
+		scrollPane = new ScrollPane(imageView);
+		scrollPane.setPannable(true);
 		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollPane.setPrefSize(WIDTH, HEIGHT);
@@ -104,21 +103,39 @@ public class FSMViewport extends Parent {
 	 * Zooms into the image shown using the ratio.
 	 */
 	public void zoomIn() {
-		double h = image.getHeight();
-		double w = image.getWidth();
+		Bounds viewportSize = scrollPane.getViewportBounds();
+		Bounds contentSize = imageView.getBoundsInParent();
+		double centerX = (contentSize.getWidth() - viewportSize.getWidth()) * scrollPane.getHvalue() + viewportSize.getWidth() / 2.0;
+		double centerY = (contentSize.getHeight() - viewportSize.getHeight()) * scrollPane.getVvalue() + viewportSize.getHeight() / 2.0;
+		
+		// Zoom in the image
 		ratio *= ZOOM_SPEED;
-		imageView.setFitWidth(w * ratio);
-		imageView.setFitHeight(h * ratio);
+		imageView.setFitWidth(ratio * image.getWidth());
+		imageView.setFitHeight(ratio * image.getHeight());
+		// Recenter
+		double newCenterX = centerX * ZOOM_SPEED;
+		double newCenterY = centerY * ZOOM_SPEED;
+		scrollPane.setVvalue((newCenterY - viewportSize.getHeight()/2.0) / (contentSize.getHeight() * ZOOM_SPEED - viewportSize.getHeight()));
+		scrollPane.setHvalue((newCenterX - viewportSize.getWidth()/2.0) / (contentSize.getWidth() * ZOOM_SPEED - viewportSize.getWidth()));
 	} // zoomImage(double)
 	
 	/**
 	 * Zooms out of the image shown using the ratio.
 	 */
 	public void zoomOut() {
-		double h = image.getHeight();
-		double w = image.getWidth();
+		Bounds viewportSize = scrollPane.getViewportBounds();
+		Bounds contentSize = imageView.getBoundsInParent();
+		double centerX = (contentSize.getWidth() - viewportSize.getWidth()) * scrollPane.getHvalue() + viewportSize.getWidth() / 2.0;
+		double centerY = (contentSize.getHeight() - viewportSize.getHeight()) * scrollPane.getVvalue() + viewportSize.getHeight() / 2.0;
+		
+		// Zoom out from the image
 		ratio /= ZOOM_SPEED;
-		imageView.setFitWidth(w * ratio);
-		imageView.setFitHeight(h * ratio);
+		imageView.setFitWidth(ratio * image.getWidth());
+		imageView.setFitHeight(ratio * image.getHeight());
+		// Recenter
+		double newCenterX = centerX * ZOOM_SPEED;
+		double newCenterY = centerY * ZOOM_SPEED;
+		scrollPane.setVvalue((newCenterY - viewportSize.getHeight()/2.0) / (contentSize.getHeight() * ZOOM_SPEED - viewportSize.getHeight()));
+		scrollPane.setHvalue((newCenterX - viewportSize.getWidth()/2.0) / (contentSize.getWidth() * ZOOM_SPEED - viewportSize.getWidth()));
 	} // zoomImage(double)
 } // class FSMViewport

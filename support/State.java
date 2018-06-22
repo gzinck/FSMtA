@@ -26,6 +26,8 @@ public class State implements Comparator<State>, Comparable<State>{
 	private boolean initial;
 	/** boolean instance variable representing the status of this State's being marked*/
 	private boolean marked;
+	/** boolean instance variable representing if the state is marked as a bad state*/
+	private boolean badState;
 
 //--- Constructors   --------------------------------------------------------------------------
 	
@@ -42,6 +44,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = name;
 		initial = init;
 		marked = mark;
+		badState = false;
 	}
 	
 	/**
@@ -60,6 +63,7 @@ public class State implements Comparator<State>, Comparable<State>{
 	
 	public State(String name, int code) {
 		id = name;
+		badState = false;
 		switch(code) {
 		  case 0: initial = false;
 		  		  marked = false;
@@ -89,6 +93,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = replace.getStateName();
 		initial = replace.getStateInitial();
 		marked = replace.getStateMarked();
+		badState = false;
 	}
 	
 	/**
@@ -103,6 +108,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = "(" + state1.getStateName() + ", " + state2.getStateName() + ")";
 		initial = (state1.initial && state2.initial);
 		marked = (state1.marked && state2.marked);
+		badState = false;
 	}
 	
 	/**
@@ -116,6 +122,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = name;
 		initial = false;
 		marked = false;
+		badState = false;
 	}
 	
 	/**
@@ -129,6 +136,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = "";
 		initial = false;
 		marked = false;
+		badState = false;
 	}
 
 //---  Operations   ---------------------------------------------------------------------------
@@ -183,10 +191,17 @@ public class State implements Comparator<State>, Comparable<State>{
 		StringBuilder sb = new StringBuilder();
 		// If marked, make the state have a double circle.
 		if(marked)
-			sb.append("\"" + id + "\"[shape = doublecircle];");
+			sb.append("\"" + id + "\"[shape = doublecircle");
 		// Else, just make the normal state.
 		else
-			sb.append("\"" + id + "\"[shape = circle];");
+			sb.append("\"" + id + "\"[shape = circle");
+		
+		// If bad, make it a different colour.
+		if(badState)
+			sb.append(" color = \"orange\"];");
+		else
+			sb.append(" color = \"black\"];");
+		
 		// If initial, make the state have a line going into it.
 		if(initial) {
 			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point];");
@@ -227,6 +242,15 @@ public class State implements Comparator<State>, Comparable<State>{
 		return marked;
 	}
 	
+	/**
+	 * Getter method to request if the State is marked as a bad state.
+	 * 
+	 * @return True if the State has been marked as a bad state.
+	 */
+	public boolean stateIsBad() {
+		return badState;
+	}
+	
 //--- Setter Methods   ------------------------------------------------------------------------
 	
 	/**
@@ -257,6 +281,16 @@ public class State implements Comparator<State>, Comparable<State>{
 	
 	public void setStateMarked(boolean init) {
 		marked = init;
+	}
+	
+	/**
+	 * Setter method to set if the State should be marked as a bad state.
+	 * 
+	 * @param Boolean representing if the state should be marked as bad or not.
+	 */
+	
+	public void setStateBad(boolean badness) {
+		badState = badness;
 	}
 
 //---  Miscellaneous   ------------------------------------------------------------------------

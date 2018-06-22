@@ -74,21 +74,25 @@ public class ModifyFSMObservablePane extends VBox {
 				Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
 			} else {
 				// Then no errors
-				Observability currFSM = (Observability) model.getCurrFSM();
-				if(currFSM == null) {
-					// Then cannot add an event
-					Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
-				} else {
-					// Toggle the observability of the event.
-					if(currFSM.getEventObservability(event)) {
-						currFSM.setEventObservability(event, false);
+				try {
+					Observability currFSM = (Observability) model.getCurrFSM();
+					if(currFSM == null) {
+						// Then cannot add an event
+						Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
 					} else {
-						currFSM.setEventObservability(event, true);
+						// Toggle the observability of the event.
+						if(currFSM.getEventObservability(event)) {
+							currFSM.setEventObservability(event, false);
+						} else {
+							currFSM.setEventObservability(event, true);
+						} // if/else
+						eventObservabilityField.setText("");
+						eventObservabilityField.requestFocus();
+						model.refreshViewport();
 					} // if/else
-					eventObservabilityField.setText("");
-					eventObservabilityField.requestFocus();
-					model.refreshViewport();
-				} // if/else
+				} catch(NullPointerException err) {
+					Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
+				}
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeToggleObservableEventHandler()
