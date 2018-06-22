@@ -1,5 +1,6 @@
 package fsm;
 
+import fsm.attribute.NonDeterministic;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,8 @@ import java.util.Iterator;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>{
+public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
+		implements NonDeterministic<State, NonDetTransition<State, Event>, Event> {
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -30,7 +32,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 			
 //--- Instance Variables  ----------------------------------------------------------------------
 			
-	/** ArrayList<<s>State> object that holds a list of Initial States for this Non Deterministic FSM object. */
+	/** ArrayList<<j>State> object that holds a list of Initial States for this Non Deterministic FSM object. */
 	protected ArrayList<State> initialStates;
 		
 //---  Constructors  --------------------------------------------------------------------------
@@ -90,12 +92,6 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 	} // DetFSM()
 
 //---  Single-FSM Operations   ----------------------------------------------------------------
-	
-	@Override
-	public FSM<State, NonDetTransition<State, Event>, Event> makeCoAccessible() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void toTextFile(String filePath, String name) {
@@ -121,7 +117,8 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 		ReadWrite<State, NonDetTransition<State, Event>, Event> rdWrt = new ReadWrite<State, NonDetTransition<State, Event>, Event>();
 		rdWrt.writeToFile(truePath,  special, this.getTransitions());
 	}
-
+	
+	@Override
 	public DetFSM determinize(){
 		/*
 		 * Create newFSM
@@ -191,10 +188,7 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 				if(mark)
 					fsmOut.getState("{"+collec+"}").setStateMarked(true);
 			}
-			
-			
 		}
-		
 		return fsmOut;
 	}
 	
@@ -202,8 +196,9 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 	
 	@Override
 	public NonDetFSM union(FSM<State, NonDetTransition<State, Event>, Event> other) {
-		// TODO Auto-generated method stub
-		return null;
+		NonDetFSM newFSM = new NonDetFSM();
+		unionHelper(other, newFSM);
+		return newFSM;
 	}
 
 	@Override

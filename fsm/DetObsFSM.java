@@ -1,5 +1,6 @@
 package fsm;
 
+import fsm.attribute.Deterministic;
 import fsm.attribute.Observability;
 import support.EventMap;
 import support.ReadWrite;
@@ -21,7 +22,9 @@ import java.util.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> implements Observability<State, DetTransition<State, ObservableEvent>, ObservableEvent>{
+public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent>
+		implements	Observability<State, DetTransition<State, ObservableEvent>, ObservableEvent>,
+					Deterministic<State, DetTransition<State, ObservableEvent>, ObservableEvent> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 
@@ -85,9 +88,10 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	}
 
 	@Override
-	public FSM union(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
-		// T	ODO Auto-generated method stub
-		return null;
+	public NonDetObsFSM union(FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> other) {
+		NonDetObsFSM newFSM = new NonDetObsFSM();
+		unionHelper(other, newFSM);
+		return newFSM;
 	}
 
 	@Override
@@ -139,15 +143,13 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 
 	@Override
 	public ArrayList<State> getInitialStates() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<State> initial = new ArrayList<State>();
+		if(initialState != null)
+		  initial.add(initialState);
+		return initial;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	
+	@Override
 	public State getInitialState() {
 		return initialState;
 	}
@@ -163,16 +165,29 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 	
 	@Override
 	public void addInitialState(String newInitial) {
-		// TODO Auto-generated method stub
+		// Get the state, or add it if not yet present
+		State theState = states.addState(newInitial);
+		theState.setStateInitial(true);
+		if(initialState != null) 
+			initialState.setStateInitial(false);
+		initialState = theState;
 	}
 
 	public void addInitialState(State newState) {
-		
+		State obt = states.addState(newState);
+		obt.setStateInitial(true);
+		if(initialState != null) 
+			initialState.setStateInitial(false);
+		initialState = obt;
 	}
 	
 	@Override
 	public boolean removeInitialState(String stateName) {
-		// TODO Auto-generated method stub
+		if(initialState != null && stateName.equals(initialState.getStateName())) {
+			initialState.setStateInitial(false);
+			initialState = null;
+			return true;
+		}
 		return false;
 	}
 	

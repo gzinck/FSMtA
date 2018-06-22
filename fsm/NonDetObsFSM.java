@@ -1,6 +1,7 @@
 package fsm;
 
 import fsm.attribute.Observability;
+import fsm.attribute.NonDeterministic;
 import support.EventMap;
 import support.ReadWrite;
 import support.State;
@@ -23,7 +24,9 @@ import java.util.ArrayList;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> implements Observability<State, NonDetTransition<State, ObservableEvent>, ObservableEvent>{
+public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableEvent>, ObservableEvent>
+		implements	NonDeterministic<State, NonDetTransition<State, ObservableEvent>, ObservableEvent>,
+					Observability<State, NonDetTransition<State, ObservableEvent>, ObservableEvent>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -32,7 +35,7 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 	
 //--- Instance Variables  ----------------------------------------------------------------------
 	
-	/** ArrayList<<s>State> object that holds a list of Initial States for this Non Deterministic FSM object. */
+	/** ArrayList<<j>State> object that holds a list of Initial States for this Non Deterministic FSM object. */
 	protected ArrayList<State> initialStates;
 	
 //---  Constructors  --------------------------------------------------------------------------
@@ -124,12 +127,6 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 	}
 
 	@Override
-	public FSM<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> makeCoAccessible() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void toTextFile(String filePath, String name) {
 		if(name == null)
 			name = id;
@@ -164,9 +161,10 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 	}
 
 	@Override
-	public FSM union(FSM<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> other) {
-		// TODO Auto-generated method stub
-		return null;
+	public NonDetObsFSM union(FSM<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> other) {
+		NonDetObsFSM newFSM = new NonDetObsFSM();
+		unionHelper(other, newFSM);
+		return newFSM;
 	}
 
 	@Override
@@ -190,18 +188,29 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 
 	@Override
 	public void addInitialState(String newInitial) {
-		// TODO Auto-generated method stub
-		
+		State theState = states.addState(newInitial);
+		theState.setStateInitial(true);
+		initialStates.add(theState);
 	}
 	
 	public void addInitialState(State newState) {
-		
+		State theState = states.addState(newState);
+		theState.setStateInitial(true);
+		initialStates.add(theState);
 	}
 
 	@Override
 	public boolean removeInitialState(String stateName) {
-		// TODO Auto-generated method stub
+		State theState = states.getState(stateName);
+		theState.setStateInitial(false);
+		if(initialStates.remove(theState)) return true;
 		return false;
+	}
+
+	@Override
+	public FSM determinize() {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 	
 }

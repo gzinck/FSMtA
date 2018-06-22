@@ -1,9 +1,9 @@
 package fsm;
 
 import java.io.File;
-import java.util.*;
 import java.util.ArrayList;
 
+import fsm.attribute.Deterministic;
 import support.*;
 import support.transition.*;
 import support.event.Event;
@@ -19,7 +19,8 @@ import support.ReadWrite;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
+public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
+		implements Deterministic<State, DetTransition<State, Event>, Event> {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 
@@ -143,37 +144,6 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 	@Override
 	public NonDetFSM union(FSM<State, DetTransition<State, Event>, Event> other) {
 		NonDetFSM newFSM = new NonDetFSM();
-		// Add initial states
-		newFSM.addInitialState(STATE_PREFIX_1 + initialState.getStateName());
-		for(State s : other.getInitialStates())  // Add the states from the other FSM
-			newFSM.addInitialState(STATE_PREFIX_2 + s.getStateName());
-		// Add other states as well
-		for(State s : this.states.getStates())
-			newFSM.states.addState(s, STATE_PREFIX_1);
-		for(State s : other.states.getStates())
-			newFSM.states.addState(s, STATE_PREFIX_2);
-		// Add events
-		for(Event e : this.events.getEvents())
-			newFSM.events.addEvent(e);
-		for(Event e : other.events.getEvents())
-			newFSM.events.addEvent(e);
-		// Add transitions
-		for(Map.Entry<State, ArrayList<DetTransition<State, Event>>> entry : this.transitions.getAllTransitions()) {
-			State currState = newFSM.states.getState(STATE_PREFIX_1 + entry .getKey().getStateName());
-			for(DetTransition<State, Event> t : entry.getValue()) {
-				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
-				State newState = newFSM.states.getState(STATE_PREFIX_1 + t.getTransitionState().getStateName());
-				newFSM.transitions.addTransition(currState, new NonDetTransition<State, Event>(newEvent, newState));
-			} // for transition
-		} // for entry
-		for(Map.Entry<State, ArrayList<DetTransition<State, Event>>> entry : other.transitions.getAllTransitions()) {
-			State currState = newFSM.states.getState(STATE_PREFIX_2 + entry.getKey().getStateName());
-			for(DetTransition<State, Event> t : entry.getValue()) {
-				Event newEvent = newFSM.events.getEvent(t.getTransitionEvent());
-				State newState = newFSM.states.getState(STATE_PREFIX_2 + t.getTransitionState().getStateName());
-				newFSM.transitions.addTransition(currState, new NonDetTransition<State, Event>(newEvent, newState));
-			} // for transition
-		} // for entry
 		unionHelper(other, newFSM);
 		return newFSM;
 	}
@@ -202,6 +172,7 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event> {
 		return initial;
 	} // getInitialStates()
 	
+	@Override
 	public State getInitialState() {
 		return initialState;
 	}
