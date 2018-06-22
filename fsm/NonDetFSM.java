@@ -66,6 +66,41 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 	} // DetFSM(File)
 	
 	/**
+	 * Constructor for a NonDetFSM that takes any FSM as a parameter and creates a new
+	 * NonDetFSM using that as the basis. Any information which is not permissible in a
+	 * NonDetFSM is thrown away, because it does not have any means to handle it.
+	 * 
+	 * @param other FSM to copy as a NonDetFSM (can be any kind of FSM).
+	 * @param inId Id for the new FSM to carry.
+	 */
+	
+	public NonDetFSM(FSM<State, Transition<State, Event>, Event> other, String inId) {
+		id = inId;
+		states = new StateMap<State>(State.class);
+		events = new EventMap<Event>(Event.class);
+		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
+		
+		// Add in all the states
+		for(State s : other.states.getStates())
+			this.states.addState(s);
+		// Add in all the events
+		for(Event e : other.events.getEvents())
+			this.events.addEvent(e);
+		// Add in all the transitions
+		for(State s : other.states.getStates()) {
+			for(Transition<State, Event> t : other.transitions.getTransitions(s)) {
+				// Add every state the transition leads to
+				for(State toState : t.getTransitionStates())
+					this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toState.getStateName());
+			} // for every transition
+		} // for every state
+		// Add in the initial states
+		initialStates = new ArrayList<State>();
+		for(State s: other.getInitialStates())
+			initialStates.add(this.getState(s));
+	} // NonDetFSM(FSM, String)
+	
+	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
 	 * user to add those elements him/herself.
 	 */

@@ -10,6 +10,8 @@ import support.TransitionFunction;
 import support.event.Event;
 import support.event.ObservableEvent;
 import support.transition.DetTransition;
+import support.transition.Transition;
+
 import java.io.*;
 import java.util.*;
 
@@ -65,6 +67,53 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 		for(int i = 0; i < special.get(2).size(); i++)
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 	}
+	
+	/**
+	 * Constructor for a DetObsFSM that takes any FSM as a parameter and creates a new
+	 * DetObsFSM using that as the basis. Any information which is not permissible in a
+	 * DetObsFSM is thrown away, because it does not have any means to handle it.
+	 * 
+	 * @param other FSM to copy as a DetObsFSM (can be any kind of FSM).
+	 * @param inId Id for the new FSM to carry.
+	 */
+	
+	public DetObsFSM(FSM<State, Transition<State, Event>, Event> other, String inId) {
+		id = inId;
+		states = new StateMap<State>(State.class);
+		events = new EventMap<ObservableEvent>(ObservableEvent.class);
+		transitions = new TransitionFunction<State, DetTransition<State, ObservableEvent>, ObservableEvent>(new DetTransition<State, ObservableEvent>());
+		
+		// Add in all the states
+		for(State s : other.states.getStates())
+			this.states.addState(s).setStateInitial(false);
+		// Add in all the events
+		for(Event e : other.events.getEvents())
+			this.events.addEvent(e);
+		// Add in all the transitions (but only take the first state it transitions to)
+		for(State s : other.states.getStates()) {
+			for(Transition<State, Event> t : other.transitions.getTransitions(s)) {
+				ArrayList<State> toStates = t.getTransitionStates();
+				this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toStates.get(0).getStateName());
+			} // for every transition
+		} // for every state
+		// Add in the initial state
+		ArrayList<State> initial = other.getInitialStates();
+		initialState = this.getState(initial.get(0));
+		initialState.setStateInitial(true);
+	} // DetObsFSM(FSM, String)
+	
+	/**
+	 * Constructor for an FSM object that contains no transitions or states, allowing the
+	 * user to add those elements their-self.
+	 */
+	
+	public DetObsFSM(String inId) {
+		id = inId;
+		states = new StateMap<State>(State.class);
+		events = new EventMap<ObservableEvent>(ObservableEvent.class);
+		transitions = new TransitionFunction<State, DetTransition<State, ObservableEvent>, ObservableEvent>(new DetTransition<State, ObservableEvent>());
+		initialState = null;
+	} // DetObsFSM(String)
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the

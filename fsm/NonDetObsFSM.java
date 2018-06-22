@@ -9,6 +9,7 @@ import support.StateMap;
 import support.TransitionFunction;
 import support.transition.DetTransition;
 import support.transition.NonDetTransition;
+import support.transition.Transition;
 import support.event.Event;
 import support.event.ObservableEvent;
 import java.io.*;
@@ -73,6 +74,41 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 		}
 	}
+	
+	/**
+	 * Constructor for a NonDetObsFSM that takes any FSM as a parameter and creates a new
+	 * NonDetObsFSM using that as the basis. Any information which is not permissible in a
+	 * NonDetObsFSM is thrown away, because it does not have any means to handle it.
+	 * 
+	 * @param other FSM to copy as a NonDetObsFSM (can be any kind of FSM).
+	 * @param inId Id for the new FSM to carry.
+	 */
+	
+	public NonDetObsFSM(FSM<State, Transition<State, Event>, Event> other, String inId) {
+		id = inId;
+		states = new StateMap<State>(State.class);
+		events = new EventMap<ObservableEvent>(ObservableEvent.class);
+		transitions = new TransitionFunction<State, NonDetTransition<State, ObservableEvent>, ObservableEvent>(new NonDetTransition<State, ObservableEvent>());
+		
+		// Add in all the states
+		for(State s : other.states.getStates())
+			this.states.addState(s);
+		// Add in all the events
+		for(Event e : other.events.getEvents())
+			this.events.addEvent(e);
+		// Add in all the transitions
+		for(State s : other.states.getStates()) {
+			for(Transition<State, Event> t : other.transitions.getTransitions(s)) {
+				// Add every state the transition leads to
+				for(State toState : t.getTransitionStates())
+					this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toState.getStateName());
+			} // for every transition
+		} // for every state
+		// Add in the initial states
+		initialStates = new ArrayList<State>();
+		for(State s: other.getInitialStates())
+			initialStates.add(this.getState(s));
+	} // NonDetObsFSM(FSM, String)
 	
 	/**
 	 * Constructor for an FSM object that has an ID.

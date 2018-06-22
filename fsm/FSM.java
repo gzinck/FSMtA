@@ -2,6 +2,7 @@ package fsm;
 
 import java.util.*;
 import support.*;
+import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
 import java.io.*;
