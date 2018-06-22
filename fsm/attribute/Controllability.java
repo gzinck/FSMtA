@@ -6,7 +6,7 @@ import support.State;
 
 /**
  * This interface defines the methods that any FSM with the characteristic of Controllable
- * (or, possessing Events that are Controllable and Uncontrollable) should implement.
+ * (or, possessing Events that are Controllable or Uncontrollable) should implement.
  * 
  * This interface is a part of the fsm.attribute package.
  * 
@@ -23,11 +23,11 @@ public interface Controllability<S extends State, T extends Transition<S, E>, E 
 	 * Getter method that requests the status of the defined Event's being Controllable, returning
 	 * true if it is Controllable, false if it is not, and null if the Event did not exist.
 	 * 
-	 * @param event - <E extends Event> object representing the Event whose status of Controllability is being checked.
-	 * @return - Returns a Boolean object representing the result of this method's query.
+	 * @param event - String object representing the Event whose status of Controllability is being checked.
+	 * @return - Returns a Boolean object representing the result of this method's query; null if the object did not exist, true/false representing the result of the query
 	 */
 	
-	public abstract Boolean getEventControllability(E event);
+	public abstract Boolean getEventControllability(String eventName);
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
@@ -36,10 +36,11 @@ public interface Controllability<S extends State, T extends Transition<S, E>, E 
 	 * 
 	 * Setter method that assigns a new value to the defined Event object's status of being Controllable.
 	 * 
-	 * @param event - <E extends Event> object representing the Event whose status of Controllability is being edited.
+	 * @param event - String object representing the Event whose status of Controllability is being edited.
 	 * @param value - boolean value representing the new value to assign to the defined Event object.
+	 * @return - Returns a boolean value representing the result of this process; false if the event was not found, true otherwise.
 	 */
 	
-	public abstract void setEventControllability(E event, boolean value);
+	public abstract void setEventControllability(String eventName, boolean value);
 	
 }

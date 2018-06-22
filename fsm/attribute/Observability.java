@@ -2,7 +2,6 @@ package fsm.attribute;
 
 import support.transition.Transition;
 import support.event.ObservableEvent;
-import support.event.Event;
 import support.State;
 import fsm.FSM;
 
@@ -54,8 +53,9 @@ public interface Observability<S extends State, T extends Transition<S, E>, E ex
 	 * 
 	 * @param eventName - String name representing the Event of which to change the Observability.
 	 * @param status - boolean value describing the new status of the Event to be adjusted in regards to Observability.
+	 * @return - Returns a boolean value describing the result of the operation; false if the given event was not found, true if success.
 	 */
 	
-	public abstract void setEventObservability(String eventName, boolean status);
+	public abstract boolean setEventObservability(String eventName, boolean status);
 	
 }

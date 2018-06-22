@@ -1,7 +1,5 @@
 package support.event;
 
-import support.State;
-
 /**
  * This class models an Event in an FSM, storing information about the Event's name.
  * 
@@ -105,6 +103,7 @@ public class Event {
 	 * @param other The Event to combine with.
 	 * @return New Event object which has the AND of the properties.
 	 */
+
 	public <E extends Event> E makeEventWith(E other) {
 		return (E)new Event(this);
 	}

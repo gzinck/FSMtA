@@ -15,10 +15,13 @@ import support.transition.DetTransition;
 
 public interface Deterministic<S extends State, T extends DetTransition<S, E>, E extends Event> {
 	
+//---  Getter Methods   -----------------------------------------------------------------------
+	
 	/**
 	 * Gets the initial state for the deterministic FSM.
 	 * 
 	 * @return State object which is currently the initial state. 
 	 */
+	
 	public abstract S getInitialState();
 }

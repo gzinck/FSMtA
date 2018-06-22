@@ -21,7 +21,7 @@ public class TestFSMs {
 		File f = new File(GenerateFSM.createNewObservableFSM(15, 2, 3, 2, 2, 4, "fileName", MAC_WORKING_FOLDER));
 		NonDetObsFSM fsm = new NonDetObsFSM(f, "fsm");
 		while(true) {
-			File f1 = new File(GenerateFSM.createNewObservableFSM(16, 3, 5, 3, 2, 2, "fil1", MAC_WORKING_FOLDER));
+			File f1 = new File(GenerateFSM.createNewObservableFSM(10, 3, 1, 10, 3, 0, "fil1", MAC_WORKING_FOLDER));
 			NonDetObsFSM fsm1 = new NonDetObsFSM(f1, "fs1");
 			fsm1.toTextFile(MAC_WORKING_FOLDER, "outText");
 			NonDetObsFSM fsm2 = new NonDetObsFSM(new File(MAC_WORKING_FOLDER + "outText.fsm"), "fs2");

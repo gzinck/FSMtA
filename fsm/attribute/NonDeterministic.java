@@ -16,6 +16,8 @@ import support.transition.NonDetTransition;
 
 public interface NonDeterministic<S extends State, T extends NonDetTransition<S, E>, E extends Event> {
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Determinizes a NonDeterministic FSM and returns the corresponding
 	 * Deterministic FSM. It condenses the FSM into sets of states where
@@ -25,5 +27,5 @@ public interface NonDeterministic<S extends State, T extends NonDetTransition<S,
 	 * of the FSM.
 	 */
 	
-	public abstract FSM determinize();
+	public abstract <fsm extends FSM> fsm determinize();
 }
