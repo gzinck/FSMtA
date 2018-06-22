@@ -266,54 +266,51 @@ public class FileSettingsPane extends VBox {
 	 * number of marked states, number of initial states).
 	 */
 	private void makeGenFSMEventHandler() {
-		genFSMBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				String newFSMName = fsmNameField.getText();
-				// If the new FSM name is unique and the type is valid, make the new FSM.
-				if(model.checkIfValidFSMId(newFSMName) && checkIfValidFSMType()) {
-					FSM newFSM = null;
-					
-					String determinism = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-					if(determinism.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-						// Deterministic, basic FSM
-						GenerateFSMDialog.FSMParameters parameters = GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.DETERMINISTIC, false);
-						if(parameters != null) {
-							File fsmFile = new File(GenerateFSM.createNewDeterministicFSM(
-									parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-									parameters.sizePaths, newFSMName, model.getWorkingDirectoryString() + "/"));
-							newFSM = new DetFSM(fsmFile, newFSMName);
-						} // if
-					} else if(determinism.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-						// NonDeterministic, basic FSM
-						GenerateFSMDialog.NonDeterministicFSMParameters parameters =
-								(GenerateFSMDialog.NonDeterministicFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, false);
-						if(parameters != null) {
-							File fsmFile = new File(GenerateFSM.createNewNonDeterministicFSM(
-									parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-									parameters.sizePaths, parameters.sizeInitial, newFSMName, model.getWorkingDirectoryString() + "/"));
-							newFSM = new NonDetFSM(fsmFile, newFSMName);
-						} // if
-					} else if(determinism.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-						// NonDeterministic with observability
-						GenerateFSMDialog.NonDetObsFSMParameters parameters =
-								(GenerateFSMDialog.NonDetObsFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, true);
-						if(parameters != null) {
-							File fsmFile = new File(GenerateFSM.createNewObservableFSM(
-									parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-									parameters.sizePaths, parameters.sizeInitial, parameters.sizeUnobserv,
-									newFSMName, model.getWorkingDirectoryString() + "/"));
-							newFSM = new NonDetObsFSM(fsmFile, newFSMName);
-						} // if
-					} // if/else if
-					// TODO: add the other kinds of FSMs we need to generate
-					
-					if(newFSM != null) {
-						model.addFSM(newFSM);
-						fsmNameField.setText("");
+		genFSMBtn.setOnAction(e -> {
+			String newFSMName = fsmNameField.getText();
+			// If the new FSM name is unique and the type is valid, make the new FSM.
+			if(model.checkIfValidFSMId(newFSMName) && checkIfValidFSMType()) {
+				FSM newFSM = null;
+				
+				String determinism = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
+				if(determinism.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+					// Deterministic, basic FSM
+					GenerateFSMDialog.FSMParameters parameters = GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.DETERMINISTIC, false);
+					if(parameters != null) {
+						File fsmFile = new File(GenerateFSM.createNewDeterministicFSM(
+								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
+								parameters.sizePaths, newFSMName, model.getWorkingDirectoryString() + "/"));
+						newFSM = new DetFSM(fsmFile, newFSMName);
 					} // if
+				} else if(determinism.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+					// NonDeterministic, basic FSM
+					GenerateFSMDialog.NonDeterministicFSMParameters parameters =
+							(GenerateFSMDialog.NonDeterministicFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, false);
+					if(parameters != null) {
+						File fsmFile = new File(GenerateFSM.createNewNonDeterministicFSM(
+								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
+								parameters.sizePaths, parameters.sizeInitial, newFSMName, model.getWorkingDirectoryString() + "/"));
+						newFSM = new NonDetFSM(fsmFile, newFSMName);
+					} // if
+				} else if(determinism.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+					// NonDeterministic with observability
+					GenerateFSMDialog.NonDetObsFSMParameters parameters =
+							(GenerateFSMDialog.NonDetObsFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, true);
+					if(parameters != null) {
+						File fsmFile = new File(GenerateFSM.createNewObservableFSM(
+								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
+								parameters.sizePaths, parameters.sizeInitial, parameters.sizeUnobserv,
+								newFSMName, model.getWorkingDirectoryString() + "/"));
+						newFSM = new NonDetObsFSM(fsmFile, newFSMName);
+					} // if
+				} // if/else if
+				// TODO: add the other kinds of FSMs we need to generate
+				
+				if(newFSM != null) {
+					model.addFSM(newFSM);
+					fsmNameField.setText("");
 				} // if
-			} // handle(ActionEvent)
+			} // if
 		}); // setOnAction()
 	} // makeNewFSMEventHandler()
 	
