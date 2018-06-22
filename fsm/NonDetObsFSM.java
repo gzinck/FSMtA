@@ -73,6 +73,7 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 				events.addEvent(special.get(2).get(i));
 			events.getEvent(special.get(2).get(i)).setEventObservability(false);
 		}
+		System.out.println(makeDotString());
 	}
 	
 	/**

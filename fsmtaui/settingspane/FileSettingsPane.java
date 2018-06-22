@@ -216,6 +216,7 @@ public class FileSettingsPane extends VBox {
 						} else if(fsmClass.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 							newFSM = new NonDetObsFSM(file, newFSMName);
 						}
+						// TODO: add the other kinds of FSMs we need to create
 						model.addFSM(newFSM);
 						fsmNameField.setText("");
 					} catch(FileNotFoundException exception) {
@@ -252,6 +253,7 @@ public class FileSettingsPane extends VBox {
 					} else if(fsmClass.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
 						newFSM = new NonDetObsFSM(newFSMName);
 					}
+					// TODO: add the other kinds of FSMs we need to create
 					model.addFSM(newFSM);
 					fsmNameField.setText("");
 				} // if
@@ -304,6 +306,7 @@ public class FileSettingsPane extends VBox {
 							newFSM = new NonDetObsFSM(fsmFile, newFSMName);
 						} // if
 					} // if/else if
+					// TODO: add the other kinds of FSMs we need to generate
 					
 					if(newFSM != null) {
 						model.addFSM(newFSM);

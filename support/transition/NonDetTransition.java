@@ -57,23 +57,33 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 		String eventDeal = "";
 		switch(event.getEventType()) {
 		case 0:
+			// Observable and controllable
 			eventDeal = "color = \"black\"";
 			break;
 		case 1:
+			// Unobservable but controllable
 			eventDeal = "color = \"red\"";
 			break;
 		case 2:
+			// Observable and uncontrollable
 			eventDeal = "color = \"yellow\"";
 			break;
 		case 3:
+			// Unobservable and uncontrollable
 			eventDeal = "color = \"orange\"";
 			break;
 		default: break;
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("\"" + firstState.getStateName() + "\"->{\"");
-		for(State s : states)
+		Iterator<S> itr = states.iterator();
+		while(itr.hasNext()) {
+			S s = itr.next();
 			sb.append(s.getStateName());
+			if(itr.hasNext())
+				sb.append("\",\"");
+		} // while there are more states
+			
 		sb.append("\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];");
 		return sb.toString();
 	}

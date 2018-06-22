@@ -49,6 +49,7 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 	
 //---  Operations   ---------------------------------------------------------------------------
 	
+	@Override
 	public String makeDotString(State firstState) {
 		String eventDeal = "";
 		switch(event.getEventType()) {

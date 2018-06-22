@@ -112,6 +112,7 @@ public class ConvertFSMOperationPane extends VBox {
 					NonDetObsFSM newFSM = new NonDetObsFSM(currFSM, id);
 					addFSM(newFSM);
 				} else {
+					// TODO: add the other kinds of FSMs we need to convert
 					// No option chosen
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);
 				} // if/else if/else
