@@ -208,6 +208,55 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	} // isCoAccessible(State, HashMap<String, Boolean>)
 
 	/**
+	 * Helper method to the getCoAccessibleMap method that recursively checks States in the calling FSM object's StateMap,
+	 * declaring them as either CoAccessible, not CoAccessible, or unvisited (true, false, null in the results HashMap)
+	 * over the course of its processing, creating via side-effect the list of States' statuses once all have been visited.
+	 * 
+	 * Algorithm works by recursively exploring all the neighbors of each observed State until it either finds a Marked State,
+	 * runs out of neighbors, or finds a State it has already seen. In the first case, all States along that path are set as 
+	 * 'true', and if States remain, another is processed in this same way. In either other case, it returns false, and either
+	 * another pathway is explored or that path of States is marked as not being CoAccessible ('false').
+	 * 
+	 * The method getCoAccessibleMap() uses this to generate the list of States and their statuses.
+	 * 
+	 * @param curr - State extending object that represents the current 'State' to process recursively.
+	 * @param results - HashMap<<r>String, Boolean> object that records the status of each State as CoAccessible or not.
+	 * @param visited - HashSet<<r>String> object that keeps track of which States have been already visited.
+	 * @return - Returns a boolean value: true if the State extending object curr is coaccessible, false otherwise.
+	 */
+	
+	private boolean recursivelyFindMarked(S curr, HashMap<String, Boolean> results, HashSet<String> visited) {
+		visited.add(curr.getStateName());
+		
+		// If the state is marked, return true
+		if(curr.getStateMarked()) {
+			results.put(curr.getStateName(), true);
+			return true;
+		}
+		
+		// Base cases when already checked if the state was coaccessible
+		Boolean check = results.get(curr.getStateName());
+		if(check != null)
+			return check;
+		
+		// Go through each unvisited state and recurse until find a marked state
+		ArrayList<T> thisTransitions = transitions.getTransitions(curr);
+		if(thisTransitions == null) return false;
+		for(T t : thisTransitions) {
+			for(S next : (ArrayList<S>)t.getTransitionStates()) {
+				if(!visited.contains(next.getStateName())) { // If not already visited
+					// If next is coaccessible, so is curr.
+					if(recursivelyFindMarked(next, results, visited)) {
+						results.put(curr.getStateName(), true);
+						return true;
+					} // if coaccessible
+				} // if not already visited
+			} // for each transition state
+		} // for each transition object
+		return false;
+	} // recursivelyFindMarked(S, HashMap<String, Boolean>, HashSet<String>)
+	
+	/**
 	 * This method converts an FSM object into a text file which can be read back in and used to recreate
 	 * an FSM later, or used for analytical purposes. A helper class, ReadWrite, manages the brunt
 	 * of this process, but for the various special features of FSM objects, each has to handle
@@ -668,53 +717,6 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		return states.getState(stateName).getStateMarked();
 	}
 
-	/**
-	 * This method helps the isCoAccessible method by recursively checking
-	 * states, but avoiding loops (using the HashSet of visited states).
-	 * This will only mark results when a given state is proven coaccessible,
-	 * but will never mark results for a state which is not coaccessible.
-	 * Thus, the method must be called for every state that needs to be
-	 * evaluated.
-	 * 
-	 * @param curr The current state to evaluate if it is coaccessible.
-	 * @param results HashMap mapping the state names to true if the state
-	 * is proven coaccessible, and false if it was proven otherwise.
-	 * @param visited HashSet of states which have already been visited when
-	 * evaluating the coaccessibility of curr.
-	 * @return - Returns a boolean value: true if the State extending object curr is coaccessible, false otherwise.
-	 */
-	
-	private boolean recursivelyFindMarked(S curr, HashMap<String, Boolean> results, HashSet<String> visited) {
-		visited.add(curr.getStateName());
-		
-		// If the state is marked, return true
-		if(curr.getStateMarked()) {
-			results.put(curr.getStateName(), true);
-			return true;
-		}
-		
-		// Base cases when already checked if the state was coaccessible
-		Boolean check = results.get(curr.getStateName());
-		if(check != null && check == true) 			return true;
-		else if (check != null && check == false)		return false;
-		
-		// Go through each unvisited state and recurse until find a marked state
-		ArrayList<T> thisTransitions = transitions.getTransitions(curr);
-		if(thisTransitions == null) return false;
-		for(T t : thisTransitions) {
-			for(S next : (ArrayList<S>)t.getTransitionStates()) {
-				if(!visited.contains(next.getStateName())) { // If not already visited
-					// If next is coaccessible, so is curr.
-					if(recursivelyFindMarked(next, results, visited)) {
-						results.put(curr.getStateName(), true);
-						return true;
-					} // if coaccessible
-				} // if not already visited
-			} // for each transition state
-		} // for each transition object
-		return false;
-	} // recursivelyFindMarked(S, HashMap<String, Boolean>, HashSet<String>)
-	
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
 	/**
@@ -733,12 +735,12 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Adds a new state using the state object passed in, which may be from another FSM.
-	 * It copies over the same state name.
+	 * This method adds a new State extending object to the calling FSM object's StateMap, using the provided
+	 * State extending object to perform this task. It creates a weak copy, only respecting the State extending
+	 * object's name and nothing else.
 	 * 
-	 * @param state State object to be used as a template for the new one to add to the
-	 * FSM.
-	 * @return True if the state was added successfully, false otherwise.
+	 * @param state - State extending object provided as the schematic of what to add to the calling FSM object's StateMap.
+	 * @return - Returns a boolean value; true if the State extending object was added successfully, false otherwise.
 	 */
 	
 	public boolean addState(S state) {
@@ -746,11 +748,12 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Adds transitions leaving a given state to the FSM.
+	 * This method adds a new series of Transition extending objects to a given State extending object, accessing
+	 * the calling FSM object's TransitionFunction object to either create a new entry for the State or
+	 * append the new Transitions to its pre-existing entry.
 	 * 
-	 * @param state - The State object to start from.
-	 * @param newTransitions - ArrayList of Transition objects leading to all the
-	 * places state is connected to.
+	 * @param state - State extending object representing the State to which the Transitions belong.
+	 * @param newTransitions - ArrayList of Transition objects describing what Transitions belong to the provided State extending object.
 	 */
 	
 	public void addStateTransitions(S state, ArrayList<T> newTransitions) {
@@ -758,28 +761,35 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	}
 	
 	/**
-	 * Adds the parameter state as an initial state of the FSM.
-	 * Behavior depends on if the FSM is deterministic or non-deterministic.
+	 * This method handles the introduction of a new State extending object as an Initial State
+	 * via a String object representing its name, behaving differently between Deterministic and 
+	 * NonDeterministic FSM objects as their definitions specify and require.
 	 * 
-	 * @param newInitial - String for the state name to be added as an initial state.
+	 * @param newInitial - String object representing the name of the State extending object being introduced as an Initial State.
 	 */
 	
 	public abstract void addInitialState(String newInitial);
 
 	/**
+	 * This method handles the introduction of a new State extending object as an Initial State,
+	 * behaving differently between Deterministic and NonDeterministic FSM objects as their
+	 * definitions specify and require.
 	 * 
-	 * @param newState
+	 * @param newState - State extending object representing the State being introduced as an Initial State.
 	 */
 	
-	public abstract void addInitialState(State newState);
+	public abstract void addInitialState(S newState);
 	
 	/**
-	 * Adds a transition from one state to another state.
+	 * This method handles the adding of a new Transition to the calling FSM object via a format
+	 * of 3 String objects representing a State, via an Event, leading to another State, creating
+	 * the objects in the calling FSM object's State and EventMaps where necessary.
 	 * 
-	 * @param state1 - The String corresponding to the origin state for the transition.
-	 * @param eventName - The String corresponding to the event to create.
-	 * @param state2 - The String corresponding to the destination state for the transition.
+	 * @param state1 - String object corresponding to the origin State for this Transition.
+	 * @param eventName - String object corresponding to the Event of this Transition.
+	 * @param state2 - String object corresponding to the destination State for the Transition.
 	 */
+	
 	
 	public void addTransition(String state1, String eventName, String state2) {
 		// If they do not exist yet, add the states.
@@ -807,13 +817,16 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		transitions.addTransition(s1, outbound);
 	}
 	
+	
 	/**
-	 * Adds a transition from one state to another state by copying the parameter
-	 * state and transition objects.
+	 * This method handles the adding of a new Transition to the calling FSM object via a
+	 * format of State and Transition objects, acquiring a reference to that State within
+	 * the StateMap and appending them jointly to the TransitionFunction.
 	 * 
-	 * @param state
-	 * @param transition
+	 * @param state - State extending object representing the State acquiring a new Transition.
+	 * @param transition - Transition extending object representing the Transition being added to the provided State extending object.
 	 */
+	
 	
 	public void addTransition(S state, T transition) {
 		S fromState = states.addState(state); // Get the state or make it
@@ -835,13 +848,14 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
 	/**
-	 * Removes a state from the FSM. If the State was an initial state, then the
-	 * State is no longer an initial state after removing it.
+	 * This method removes a State extending object from the calling FSM object as described by the
+	 * provided String object, further handling the cases of the State being Initial or appearing
+	 * in the TransitionFunction associated to this FSM object.
 	 * 
-	 * @param stateName - String value representing the State to remove from the FSM.
-	 * @return - Returns a boolean value representing the outcome of the operation:
-	 * true if the state was removed, false if the state did not exist.
+	 * @param stateName - String object representing the name of the State extending object to remove from the calling FSM object.
+	 * @return - Returns a boolean value representing the outcome of the operation: true if the state was removed, false if the state did not exist.
 	 */
+	
 
 	public boolean removeState(String stateName) {
 		// If the state exists...
@@ -856,24 +870,31 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		return false;
 	}
 	
+	
 	/**
-	 * Removes the parameter state from the FSM's set of initial states.
+	 * This method removes a State extending object from the calling FSM object's method of storing
+	 * Initial States, the State being described by a provided String representation of its name.
 	 * 
-	 * @param stateName - String for the state name to be removed as an initial state.
-	 * @return - True if the input state was successfully removed from the set of initial
-	 * states, false otherwise.
+	 * The exact details are handled by the FSM class implementing this, as Deterministic and NonDeterministic
+	 * FSMs handle Initial States differently.
+	 * 
+	 * @param stateName - String object representing the State extending object's name, denoting which State to remove from storage of Initial States.
+	 * @return - Returns a boolean value; true if the denoted State was successfully removed from the set of Initial States, false otherwise.
 	 */
 	
 	public abstract boolean removeInitialState(String stateName);
 	
 	/**
-	 * Removes a transition from one state to another state.
+	 * This method handles the removing of a Transition extending object from the calling FSM object's
+	 * TransitionFunction, as described by the provided format of Transition information: 3 String objects
+	 * representing the State leading, by a defined Event, to another State.
 	 * 
-	 * @param state1 - The String corresponding to the origin state for the transition.
-	 * @param eventName - The String corresponding to the event to create.
-	 * @param state2 - The String corresponding to the destination state for the transition.
-	 * @return True if the event was removed, false if it did not exist.
+	 * @param state1 - String object corresponding to the origin State extending object for the Transition object.
+	 * @param eventName - String object corresponding to the Event for the Transition object.
+	 * @param state2 - String object corresponding to the destination State extending object for the Transition object.
+	 * @return - Returns a boolean value; true if the Transition was removed, false if it did not exist.
 	 */
+	
 	
 	public boolean removeTransition(String state1, String eventName, String state2) {
 		S s1 = getState(state1);
@@ -894,17 +915,21 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 
 //---  Manipulations - Other   ----------------------------------------------------------------
 
+	
 	/**
-	 * Toggles a state's marked property.
+	 * This method handles the toggling of a State extending object's status as Marked, reversing
+	 * its current status to its opposite. (true -> false, false -> true). The State extending object
+	 * is so defined by a provided String object representing its name.
 	 * 
-	 * @param stateName - String representing the name of the state.
-	 * @return - True if the state is now marked, false if the state is
-	 * now unmarked (or if the state does not exist).
+	 * @param stateName - String object representing the name of the State extending object to have its status as Marked be toggled.
+	 * @return - Returns a Boolean object; true if the state is now marked, false if the state is now unmarked, or null if it did not exist.
 	 */
 	
-	public boolean toggleMarkedState(String stateName) {
+	
+	public Boolean toggleMarkedState(String stateName) {
 		S curr = states.getState(stateName);
-		if(curr == null)	return false;
+		if(curr == null)	
+			return null;
 		boolean isMarked = curr.getStateMarked();
 		states.getState(stateName).setStateMarked(!isMarked);
 		return !isMarked;
