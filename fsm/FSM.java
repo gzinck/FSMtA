@@ -257,6 +257,35 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	} // recursivelyFindMarked(S, HashMap<String, Boolean>, HashSet<String>)
 	
 	/**
+	 * Gets if the FSM is blocking—that is, if there are possible words which are not
+	 * part of the prefix closure of the marked language of the FSM. In other words, if
+	 * the FSM is NOT coaccessible, then the FSM is blocking.
+	 * It marks bad states along the way.
+	 * 
+	 * @return True if the FSM is blocking, false if it is okay.
+	 */
+	public boolean isBlocking() {
+		// First, find what states we need to indicate
+		HashMap<String, Boolean> processedStates = getCoAccessibleMap();	//Use helper method to generate list of legal/illegal States
+
+		boolean isBlocking = false;
+		
+		// Secondly, indicate blocking states
+		for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
+			if(!entry.getValue()) {
+				isBlocking = true;
+				this.getState(entry.getKey()).setStateBad(true);
+			} // if
+			else
+				// Reset the badness to false of good states (accommodates multiple different
+				// operations doing marking by overwriting).
+				this.getState(entry.getKey()).setStateBad(false);
+		} // for
+		
+		return isBlocking;
+	} // indicateDeadlockStates()
+	
+	/**
 	 * This method converts an FSM object into a text file which can be read back in and used to recreate
 	 * an FSM later, or used for analytical purposes. A helper class, ReadWrite, manages the brunt
 	 * of this process, but for the various special features of FSM objects, each has to handle

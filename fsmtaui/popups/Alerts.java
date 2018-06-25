@@ -69,7 +69,7 @@ public class Alerts {
 	/**
 	 * Makes an error dialog with a message and header.
 	 * 
-	 * @param message - Array with 2 elements: the header text for
+	 * @param message Array with 2 elements: the header text for
 	 * the error message, and the error message. This should be chosen
 	 * from the constants in this class, but could be from anywhere.
 	 */
@@ -78,4 +78,17 @@ public class Alerts {
 		error.setHeaderText(message[0]);
 		error.showAndWait();
 	} // makeError(String[] message)
+	
+	
+	/**
+	 * Makes an information dialog box with a message and header.
+	 * 
+	 * @param header The title for the information box. 
+	 * @param message The message for the user in the box.
+	 */
+	public static void makeInfoBox(String header, String message) {
+		Alert box = new Alert(Alert.AlertType.INFORMATION, message);
+		box.setHeaderText(header);
+		box.showAndWait();
+	} // makeInfoBox(String, String)
 } // Alerts

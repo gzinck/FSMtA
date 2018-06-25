@@ -1,7 +1,6 @@
 package fsm;
 
-import fsm.attribute.Deterministic;
-import fsm.attribute.Observability;
+import fsm.attribute.*;
 import support.EventMap;
 import support.ReadWrite;
 import support.State;
@@ -9,8 +8,7 @@ import support.StateMap;
 import support.TransitionFunction;
 import support.event.Event;
 import support.event.ObservableEvent;
-import support.transition.DetTransition;
-import support.transition.Transition;
+import support.transition.*;
 
 import java.io.*;
 import java.util.*;
@@ -137,7 +135,7 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 //---  Operations   ---------------------------------------------------------------------------
 	
 	@Override
-	public FSM<State, DetTransition<State, ObservableEvent>, ObservableEvent> createObserverView() {
+	public NonDeterministic<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> createObserverView() {
 		// TODO Auto-generated method stub
 		return null;
 	}

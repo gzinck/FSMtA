@@ -34,8 +34,7 @@ public class SingleFSMOperationPane extends VBox {
 	private Button performOperationBtn;
 	
 	/**
-	 * Creates a DeterminizationPane with all the options
-	 * to determinize an FSM.
+	 * Creates a pane with all the single FSM operations.
 	 */
 	public SingleFSMOperationPane(Model inModel) {
 		model = inModel;
@@ -111,7 +110,7 @@ public class SingleFSMOperationPane extends VBox {
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(4))) {
 					// Make Observer View
 					if(currFSM instanceof Observability) {
-						addFSM(((Observability)currFSM).createObserverView(), id);
+						addFSM((FSM)((Observability)currFSM).createObserverView(), id);
 					} else {
 						Alerts.makeError(Alerts.ERROR_ALREADY_OBSERVABLE);
 					} // if/else
@@ -140,24 +139,24 @@ public class SingleFSMOperationPane extends VBox {
 	 * Performs determinization of the FSM by selecting which type of FSM
 	 * is being determinized.
 	 * 
-	 * @param currFSM - FSM to determinize
-	 * @param id - String representing the id of the generated FSM from the
+	 * @param currFSM FSM to determinize
+	 * @param id String representing the id of the generated FSM from the
 	 * operation.
 	 */
 	private void startDeterminization(FSM currFSM, String id) {
-		FSM tempFSM = null;
+		NonDeterministic tempFSM = null;
 		// Then get observer view...
 		if(currFSM instanceof Observability) {
 			tempFSM = ((Observability)model.getCurrFSM()).createObserverView();
-		} else if(currFSM instanceof NonDetFSM){
-			tempFSM = (NonDetFSM)currFSM;
+		} else if(currFSM instanceof NonDeterministic){
+			tempFSM = (NonDeterministic)currFSM;
 		} // if/else if
 		// If nothing found, then error
 		if(tempFSM == null) Alerts.makeError(Alerts.ERROR_DETERMINIZE_ALREADY_DONE);
 		// Then get the determinized version from there.
 		else {
 			// TODO: actually perform the determinization... How can we call this appropriately?
-//			addFSM(tempFSM.performDeterminization(), id);
+			addFSM(tempFSM.determinize(), id);
 		} // if/else
 	} // startDeterminization(DeterministicFSM, String)
 } // class SingleFSMOperationPane

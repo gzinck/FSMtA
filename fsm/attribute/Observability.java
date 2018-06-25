@@ -25,10 +25,10 @@ public interface Observability<S extends State, T extends Transition<S, E>, E ex
 	 * excluding all Unobservable Events from the end-result and processing their removal as it changes
 	 * the structure of the FSM graph.
 	 * 
-	 * @return - Returns an FSM<S, T, E> representing the Observer-View version of the original FSM, removing Unobservable events.
+	 * @return - Returns a NonDeterministic FSM representing the Observer-View version of the original FSM, removing Unobservable events.
 	 */
 	
-	public abstract FSM<S, T, E> createObserverView();
+	public abstract NonDeterministic createObserverView();
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	

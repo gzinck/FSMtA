@@ -143,7 +143,7 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 //---  Operations   ---------------------------------------------------------------------------
 		
 	@Override
-	public FSM<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> createObserverView() {
+	public NonDeterministic<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> createObserverView() {
 		// TODO Auto-generated method stub
 		return null;
 	}

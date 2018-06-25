@@ -18,12 +18,14 @@ public class FSMOperationPane extends VBox {
 	/** Accordion with all the options for the pane. */
 	private Accordion optionBoxes;
 	
-	/** Pane with the options to perform an operation on multiple FSMs. */
-	private TitledPane multiFSMOperationPane;
+	/** Pane with the options to evaluate properties of a single FSM. */
+	private TitledPane evaluateFSMOperationPane;
 	/** Pane with the options to perform an operation on a single FSM. */
 	private TitledPane singleFSMOperationPane;
 	/** Pane with the options to perform an conversion on an FSM. */
 	private TitledPane convertFSMOperationPane;
+	/** Pane with the options to perform an operation on multiple FSMs. */
+	private TitledPane multiFSMOperationPane;
 	
 	/**
 	 * Creates a new FSMOperationsPane which has all the options for performing
@@ -37,13 +39,13 @@ public class FSMOperationPane extends VBox {
 		
 		// Make the title for the section
 		Label titleLabel = new Label("FSM Operations");
-		
-		multiFSMOperationPane = new TitledPane("Multi-FSM Operations", new MultiFSMOperationPane(model));
+		evaluateFSMOperationPane = new TitledPane("FSM Evaluation Operations", new EvaluateFSMOperationPane(model));
 		singleFSMOperationPane = new TitledPane("Single-FSM Operations", new SingleFSMOperationPane(model));
 		convertFSMOperationPane = new TitledPane("Conversion Operations", new ConvertFSMOperationPane(model));
+		multiFSMOperationPane = new TitledPane("Multi-FSM Operations", new MultiFSMOperationPane(model));
 		
-		optionBoxes = new Accordion(multiFSMOperationPane, singleFSMOperationPane, convertFSMOperationPane);
-		optionBoxes.setExpandedPane(multiFSMOperationPane);
+		optionBoxes = new Accordion(evaluateFSMOperationPane, singleFSMOperationPane, convertFSMOperationPane, multiFSMOperationPane);
+		optionBoxes.setExpandedPane(evaluateFSMOperationPane);
 		
 		getChildren().addAll(titleLabel, optionBoxes);
 	} // FSMOperationsPane(ObservableList<String>)
