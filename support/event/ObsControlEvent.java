@@ -27,6 +27,18 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
+	 * Constructor for an ObsControlEvent object that does not assign an ID. It defaults to setting
+	 * the event as observable & controllable. This should not be used unless it is promptly renamed after called,
+	 * it is simply used so that instantiation is possible in generic EventMap methods.
+	 */
+	
+	public ObsControlEvent() {
+		super();
+		controllability = true;
+		observability = true;
+	}
+	
+	/**
 	 * Constructor for an ObsControlEvent object that assigns a defined String object to be its name,
 	 * defaulting its status as Controllability and Observability to be true.
 	 * 
@@ -124,7 +136,7 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 
 	@Override
 	public int getEventType() {
-		return controllability && observability ? 3 : controllability ? 2 : observability ? 1 : 0;
+		return !controllability && !observability ? 3 : !controllability ? 2 : !observability ? 1 : 0;
 	}
 	
 }

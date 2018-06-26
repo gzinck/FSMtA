@@ -265,4 +265,14 @@ public class StateMap<S extends State> {
 		states.remove(stateName);
 	}
 	
+	/**
+	 * Removes all States in the parameter ArrayList from the StateMap.
+	 * 
+	 * @param inStates ArrayList of State objects to remove from the StateMap.
+	 */
+	public void removeStates(ArrayList<S> inStates) {
+		for(State s : inStates) {
+			states.remove(s.getStateName());
+		}
+	}
 }

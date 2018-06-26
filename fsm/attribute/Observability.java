@@ -1,8 +1,9 @@
 package fsm.attribute;
 
 import support.transition.Transition;
-import support.event.ObservableEvent;
+import support.attribute.EventObservability;
 import support.State;
+import support.event.*;
 import fsm.FSM;
 
 /**
@@ -14,7 +15,7 @@ import fsm.FSM;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface Observability<S extends State, T extends Transition<S, E>, E extends ObservableEvent>{
+public interface Observability<S extends State, T extends Transition<S, E>, E extends Event>{
 
 //---  Operations   ---------------------------------------------------------------------------
 	

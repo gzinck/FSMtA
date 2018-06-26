@@ -26,11 +26,11 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 //--- Constructors   --------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a NonDetTransition object, assigning a single String value as the Event name associated
-	 * to this object and a list of Strings as the State names led to by that Event
+	 * Constructor for a NonDetTransition object, assigning a single Event object
+	 * and a list of States which the event can lead to.
 	 * 
-	 * @param inEvent - String object representing the name of the Event associated to this NonDetTransition object
-	 * @param inStates - List of State objects representing the States led to by the Event associated to this NonDetTransition object
+	 * @param inEvent Event object representing the event that leads to the associated transition states.
+	 * @param inStates List of State objects representing the States led to by the Event associated with this NonDetTransition object.
 	 */
 	
 	public NonDetTransition(E inEvent, S ... inStates) {
@@ -38,6 +38,19 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 		states = new ArrayList<S>();
 		for(int i = 0; i < inStates.length; i++)
 			states.add(inStates[i]);
+	}
+	
+	/**
+	 * Constructor for a NonDetTransition object, assigning a single Event object
+	 * and a list of States which the event can lead to.
+	 * 
+	 * @param inEvent Event object representing the event that leads to the associated transition states.
+	 * @param inStates Collection of State objects representing the States led to by the Event associated with this NonDetTransition object.
+	 */
+	
+	public NonDetTransition(E inEvent, Collection<S> inStates) {
+		event = inEvent;
+		states = new ArrayList<S>(inStates);
 	}
 	
 	/**

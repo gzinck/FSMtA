@@ -581,6 +581,38 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		} // for thisInitial
 	} // parallelCompositionHelper(FSM)
 	
+//---  Copy Methods that steal from other FSMs   -----------------------------------------------------------------------
+
+	/**
+	 * Copies the states of another FSM into the current FSM with an appended
+	 * prefix (which can very well be the empty string).
+	 * @param other FSM whose states are copied.
+	 * @param prefix String prefix for the new state names (can be the empty string).
+	 */
+	public void copyStates(FSM<S, T, E> other, String prefix) {
+		for(S s : other.getStates())
+			states.addState(s, prefix);
+		for(S s : other.getInitialStates())
+			addInitialState(prefix + s.getStateName());
+	} // copyStates (FSM, String)
+	
+	/**
+	 * Copies the states of another FSM into the current FSM.
+	 * @param other FSM whose states are copied.
+	 */
+	public void copyStates(FSM<S, T, E> other) {
+		copyStates(other, "");
+	} // copyStates(FSM)
+	
+	/**
+	 * Copies the events of another FSM into the current FSM.
+	 * @param other FSM whose events are copied.
+	 */
+	public void copyEvents(FSM<S, T, E> other) {
+		for(E e : other.events.getEvents())
+			events.addEvent(e);
+	} // copyEvents(FSM)
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
