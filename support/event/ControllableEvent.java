@@ -23,6 +23,17 @@ public class ControllableEvent extends Event implements EventControllability{
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
+	 * Constructor for a Controllable Event object that does not assign an ID. It defaults to setting
+	 * the event as controllable. This should not be used unless it is promptly renamed after called,
+	 * it is simply used so that instantiation is possible in generic EventMap methods.
+	 */
+	
+	public ControllableEvent() {
+		super();
+		controllability = true;
+	}
+	
+	/**
 	 * Constructor for a Controllable Event object that assigns the defined String object
 	 * to be the Controllable Event object's name, and defaults the status of Controllability
 	 * as true. (Is Controllable)

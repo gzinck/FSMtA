@@ -29,21 +29,36 @@ public class DontLookAtMe {
 //		FSMToDot.createImgFromFSM(fsm3, GRAEME_WORKING_FOLDER + "test4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
 		
-		DetFSM fsm1 = new DetFSM();
-		fsm1.addTransition("1", "a", "2");
+		NonDetObsContFSM fsm1 = new NonDetObsContFSM();
+		fsm1.addTransition("1", "a", "3");
+		fsm1.addTransition("3", "d", "1");
+		fsm1.addTransition("1", "b", "2");
+		fsm1.addTransition("2", "e", "3");
 		fsm1.addTransition("2", "c", "4");
-		fsm1.addTransition("1", "c", "3");
-		fsm1.toggleMarkedState("3");
+		fsm1.addTransition("4", "a", "2");
+		fsm1.addTransition("4", "b", "3");
+		fsm1.addTransition("3", "d", "4");
+		fsm1.addTransition("3", "a", "4");
+		fsm1.addTransition("3", "c", "5");
+		fsm1.addTransition("5", "d", "6");
+		fsm1.addTransition("6", "a", "4");
 		fsm1.addInitialState("1");
+		fsm1.setEventControllability("d", false);
+		fsm1.setEventObservability("c", false);
+		fsm1.setEventObservability("e", false);
 		
-		DetFSM fsm2 = new DetFSM();
-		fsm2.addTransition("1", "b", "2");
-		fsm2.addTransition("1", "c", "3");
-		fsm2.addInitialState("1");
-		fsm2.toggleMarkedState("3");
-		fsm2.toggleMarkedState("1");
 		
-		DetFSM fsm3 = fsm1.product(fsm2);
+		NonDetObsContFSM fsm2 = new NonDetObsContFSM();
+		fsm2.addTransition("1", "a", "2");
+		fsm2.addTransition("2", "d", "1");
+		fsm2.addTransition("1", "b", "3");
+		fsm2.addTransition("3", "e", "2");
+		fsm2.addTransition("3", "c", "4");
+		fsm2.addTransition("4", "b", "2");
+		fsm2.addTransition("2", "d", "4");
+		fsm2.addTransition("2", "a", "4");
+		
+		NonDetObsContFSM fsm3 = fsm1.getSupremalControllableSublanguage(fsm2);
 	
 		System.out.println(fsm3.makeDotString());
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "/" + "test1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);

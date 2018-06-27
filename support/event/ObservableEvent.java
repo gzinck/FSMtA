@@ -23,8 +23,9 @@ public class ObservableEvent extends Event implements EventObservability{
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor 
-	 * 
+	 * Constructor for an Observable Event object that does not assign an ID. It defaults to setting
+	 * the event as observable. This should not be used unless it is promptly renamed after called,
+	 * it is simply used so that instantiation is possible in generic EventMap methods.
 	 */
 	
 	public ObservableEvent() {
