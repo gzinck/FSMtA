@@ -23,8 +23,8 @@ public class FSMToDot {
 	 * method to dot-String-format and generates a .jpg image from it using
 	 * the GraphViz library.
 	 * 
-	 * @param fsm - A generic FSM object in the family descended from DeterministicFSM.
-	 * @param path - A String denoting the path to which the file should be saved, including its name.
+	 * @param fsm - A generic FSM object in the family descended from the abstract class FSM.
+	 * @param path - A String object denoting the path to which the file should be saved, including its name.
 	 * @param workingPath - A String denoting the path to the GraphViz working directory.
 	 * @param configPath - A String denoting the path to the GraphViz config file.
 	 */

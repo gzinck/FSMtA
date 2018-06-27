@@ -25,9 +25,9 @@ public class ControllableEvent extends Event implements EventControllability{
 	/**
 	 * Constructor for a Controllable Event object that assigns the defined String object
 	 * to be the Controllable Event object's name, and defaults the status of Controllability
-	 * as false. (Is Controllable)
+	 * as true. (Is Controllable)
 	 * 
-	 * @param eventName - String object provided as the name of this Controllable Event object
+	 * @param eventName - String object provided as the name of the Event associated to this Controllable Event object
 	 */
 	
 	public ControllableEvent(String eventName) {
@@ -49,11 +49,12 @@ public class ControllableEvent extends Event implements EventControllability{
 	}
 	
 	/**
-	 * Constructor for an ControllableEvent object that uses the parameter Event object's information
-	 * to construct a new event object.
+	 * Constructor for a ControllableEvent object that uses the provided Event object's information
+	 * to construct a new Event object.
 	 * 
 	 * @param oldEvent - Event object to be copied.
 	 */
+	
 	public ControllableEvent(ControllableEvent oldEvent) {
 		super(oldEvent);
 		controllability = oldEvent.controllability;
