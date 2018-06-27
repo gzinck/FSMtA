@@ -58,6 +58,8 @@ public class Alerts {
 	
 	public static final String[] ERROR_MULTI_OPERATION_NO_FSM = {"Multi-FSM Operation Error", "To perform an operation on two FSMs, you must select two FSMs."};
 	
+	public static final String[] ERROR_INCOMPATIBLE_FSM_OBSCONT = {"Incompatible FSM Type Error", "To perform the operation, you must have a compatible FSM type (must have observability and controllability enabled)."};
+	
 	//--------------------------------------------------------------------------------
 	// For the FileSettingsPane
 	//--------------------------------------------------------------------------------

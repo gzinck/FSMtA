@@ -254,8 +254,10 @@ public class FileSettingsPane extends VBox {
 						newFSM = new NonDetObsFSM(newFSMName);
 					}
 					// TODO: add the other kinds of FSMs we need to create
-					model.addFSM(newFSM);
-					fsmNameField.setText("");
+					if(newFSM != null) {
+						model.addFSM(newFSM);
+						fsmNameField.setText("");
+					}
 				} // if
 			} // handle(ActionEvent)
 		}); // setOnAction()

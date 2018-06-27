@@ -2,6 +2,13 @@ package fsm.attribute;
 
 import support.transition.Transition;
 import support.event.Event;
+
+import java.util.HashMap;
+import java.util.HashSet;
+
+import fsm.DetObsContFSM;
+import fsm.FSM;
+import support.DisabledEvents;
 import support.State;
 
 /**
@@ -15,6 +22,36 @@ import support.State;
 
 public interface Controllability<S extends State, T extends Transition<S, E>, E extends Event>{
 
+//---  Operations   -----------------------------------------------------------------------
+	/**
+	 * This creates a new FSM which represents the supremal controllable sublanguage
+	 * of the calling FSM with respect to the language of the parameter FSM, other.
+	 * This factors in both the observability and controllability of different events in the
+	 * FSMs.
+	 * 
+	 * @param other The FSM representing the language to which the the calling FSM must be
+	 * controllable. 
+	 * @return The FSM representing the supremal controllable sublanguage of the calling FSM
+	 * with respect to the parameter FSM.
+	 */
+	public abstract FSM<S, T, E> getSupremalControllableSublanguage(FSM other);
+	
+	/**
+	 * Recursively goes through states and examines what should be disabled. The results of what states
+	 * to disable and events to disable (at enabled states) are stored in the disabledMap HashMap using
+	 * DisabledEvents objects.
+	 * 
+	 * @param curr State in the current FSM that is being evaluated for disabled events.
+	 * @param otherFSM FSM representing the desired maximum specification for the final FSM product.
+	 * @param visitedStates HashSet of state names (Strings) which indicate which states have already
+	 * been recursed through (thereby preventing loops). Because of the fact that loops are not allowed
+	 * (which in turn allows this to not enter an infinite loop), this whole process must be repeated for
+	 * every single state in the FSM (aside from ones we already have a guarantee are disabled).
+	 * @param disabledMap Results of what to disable at each state.
+	 * @return A DisabledEvents object with what needs to be disabled at any given state.
+	 */
+	public abstract DisabledEvents getDisabledEvents(State curr, FSM otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap);
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**

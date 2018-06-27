@@ -22,7 +22,7 @@ public class MultiFSMOperationPane extends VBox {
 	private static final String TITLE_MSG = "Perform Operations with Multiple FSMs";
 	/** ObservableList of Strings with all the possible operations involving
 	 * multiple FSMs that a user can choose. */
-	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Union", "Product", "Parallel Composition");
+	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Union", "Product", "Parallel Composition", "Get Supremal Controllable Sublanguage");
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -123,22 +123,19 @@ public class MultiFSMOperationPane extends VBox {
 				FSM fsm2 = model.getFSM(fsm2String);
 				if(operation.equals(MULTI_FSM_OPERATIONS.get(0))) {
 					// Perform union
-					FSM newFSM = fsm1.union(fsm2);
-					newFSM.setId(id);
-					model.addFSM(newFSM);
-					model.addViewport(newFSM, id);
+					addFSM(fsm1.union(fsm2), id);
 				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(1))) {
 					// Perform product
-					FSM newFSM = fsm1.product(fsm2);
-					newFSM.setId(id);
-					model.addFSM(newFSM);
-					model.addViewport(newFSM, id);
+					addFSM(fsm1.product(fsm2), id);
 				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(2))) {
 					// Perform parallel composition
-					FSM newFSM = fsm1.parallelComposition(fsm2);
-					newFSM.setId(id);
-					model.addFSM(newFSM);
-					model.addViewport(newFSM, id);
+					addFSM(fsm1.parallelComposition(fsm2), id);
+				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(3))) {
+					// Get Supremal Controllable Sublanguage
+					if(fsm1 instanceof NonDetObsContFSM)
+						addFSM(((NonDetObsContFSM)fsm1).getSupremalControllableSublanguage(fsm2), id);
+					else
+						Alerts.makeError(Alerts.ERROR_INCOMPATIBLE_FSM_OBSCONT);
 				} else {
 					// Error message if no operation was selected
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);
@@ -146,4 +143,17 @@ public class MultiFSMOperationPane extends VBox {
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makePerformOperationEventHandler()
+	
+	/**
+	 * Helper method o add an FSM to the model and reset the text field.
+	 * 
+	 * @param newFSM - DeterministicFSM to add to the model.
+	 * @param id - String representing the id of the FSM.
+	 */
+	private void addFSM(FSM newFSM, String id) {
+		newFSM.setId(id);
+		model.addFSM(newFSM);
+		fsmNameField.setText("");
+		fsmNameField.requestFocus();
+	} // addFSM(DeterministicFSM, String)
 } // class MultiFSMOperationPane
