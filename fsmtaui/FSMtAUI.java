@@ -51,8 +51,7 @@ public class FSMtAUI extends Application {
 	 */
 	private ObservableList<String> openFSMStrings;
 	/** Model object modeling everything that happens in the UI. It has the openFSMs
-	 * and Strings, as well as the working directory, stored to pass to other objects.
-	 */
+	 * and Strings, as well as the working directory, stored to pass to other objects. */
 	private Model model;
 	
 	/** Stage used for the GUI. */
@@ -97,6 +96,7 @@ public class FSMtAUI extends Application {
 		root = new BorderPane();
 		root.setFocusTraversable(true);
 		scene = new Scene(root);
+		scene.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
 		
 		// Get the working directory from user
 		workingDirectory = getWorkingDirectory();

@@ -92,6 +92,22 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 		return dummyTransition.generateTransition();
 	}
 	
+	/**
+	 * Getter method that retrieves if a certain event exists at a certain state.
+	 * 
+	 * @param state State object to look for transitions.
+	 * @param event Event to look for.
+	 * @return True if the state has the event in one of its transitions.
+	 */
+	public boolean eventExists(State state, Event event) {
+		ArrayList<T> thisTransitions = transitions.get(state);
+		if(thisTransitions != null)
+			for(T t : thisTransitions)
+				if(t.getTransitionEvent().equals(event))
+					return true;
+		return false;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**

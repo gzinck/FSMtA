@@ -85,7 +85,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		// Parse the graph and identify disabled states and disabled events
 		for(State s : states.getStates()) {
 			HashSet<String> visitedStates = new HashSet<String>();
-			disabledMap.put(s.getStateName(), getDisabledPortions(s, other, visitedStates, disabledMap));
+			disabledMap.put(s.getStateName(), getDisabledEvents(s, other, visitedStates, disabledMap));
 		} // for every state
 		
 		// Now, build the FSM that we will return
@@ -121,11 +121,8 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				} // if there are allowed transitions
 			} // if disabled state/else
 		} // for every state
-		
-		System.out.println(disabledMap.toString());
-		
+//		System.out.println(disabledMap.toString());
 		newFSM.states.removeStates(statesToRemove);
-		
 		return newFSM;
 	} // getSupremalControllableSublanguage(FSM)
 	
@@ -143,7 +140,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	 * @param disabledMap Results of what to disable at each state.
 	 * @return A DisabledEvents object with what needs to be disabled at any given state.
 	 */
-	private DisabledEvents getDisabledPortions(State curr, FSM otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap) {
+	private DisabledEvents getDisabledEvents(State curr, FSM otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap) {
 		String currName = curr.getStateName();
 		State otherCurr = otherFSM.getState(currName);
 		
@@ -162,19 +159,25 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			return de; // Then we need to disable the state
 		}
 		
-		System.out.println("Main: " + curr.getStateName());
-		
 		// Otherwise, go through the neighbours and identify which events we need to disable.
 		DisabledEvents currDE = new DisabledEvents(false);
-		for(Transition t : transitions.getTransitions(curr)) {
+		ArrayList<? extends Transition> thisTransitions = transitions.getTransitions(curr);
+		if(thisTransitions != null)
+		for(Transition t : thisTransitions) {
 			DisabledEvents tempDE = new DisabledEvents(false);
 			boolean transitionEventDisabled = false;
 			
 			loopThroughTransitionStates:
 			for(State s : (ArrayList<State>)(t.getTransitionStates())) {
-				System.out.println("Connected with " + t.getTransitionEvent().getEventName() + " to " + s.getStateName());
-				DisabledEvents nextDE = getDisabledPortions(s, otherFSM, visitedStates, disabledMap);
+				DisabledEvents nextDE = getDisabledEvents(s, otherFSM, visitedStates, disabledMap);
 				Event e = t.getTransitionEvent();
+				
+				// If the event is not present in the specification, then break
+				if(!otherFSM.transitions.eventExists(otherFSM.getState(s), e)) {
+					currDE.disableEvent(e.getEventName());
+					transitionEventDisabled = true;
+					break loopThroughTransitionStates;
+				} // if event not present in spec
 				
 				if(nextDE != null) { // As long as we're not backtracking...
 					// If the transition state is bad, must disable the event.
@@ -183,24 +186,18 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 						if(e instanceof ControllableEvent && !((ControllableEvent)e).getEventControllability()) {
 							currDE.disableState();
 							disabledMap.put(currName, currDE);
-							System.out.println("DISABLED ENTIRE STATE");
 							return currDE;
 						} // if uncontrollable event
 						// Else, disable the transition event (but none of the other events)
 						currDE.disableEvent(e.getEventName());
 						transitionEventDisabled = true;
-						System.out.println("DISABLED ENTIRE EVENT " + e.getEventName());
 						break loopThroughTransitionStates;
 					} // if state is disabled
 					
 					// If the state is good, but has disabled events, AND the transition event to the toState is unobservable
 					// remove the disabled events from this state.
-					if(!nextDE.allEventsEnabled()) {
-						System.out.println("Not all children are great.");
-					}
 					if(!nextDE.allEventsEnabled() && e instanceof EventObservability && !((EventObservability)e).getEventObservability()) {
 						tempDE.disableEvents(nextDE);
-						System.out.println("Disabling events because of later problems... " + nextDE.toString());
 					} // if there are disabled events and the transition's event is unobservable
 				} // if the disabled events for the next state is NOT null
 			} // for each destination state
@@ -211,7 +208,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				currDE.disableEvents(tempDE);
 		} // for each transition
 		return currDE;
-	} // getDisabledPortions
+	} // getDisabledEvents
 
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	

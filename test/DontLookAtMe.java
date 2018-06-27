@@ -30,33 +30,23 @@ public class DontLookAtMe {
 		
 		
 		NonDetObsContFSM fsm1 = new NonDetObsContFSM();
-		fsm1.addTransition("1", "a", "3");
-		fsm1.addTransition("3", "d", "1");
-		fsm1.addTransition("1", "b", "2");
-		fsm1.addTransition("2", "e", "3");
-		fsm1.addTransition("2", "c", "4");
-		fsm1.addTransition("4", "a", "2");
-		fsm1.addTransition("4", "b", "3");
-		fsm1.addTransition("3", "d", "4");
-		fsm1.addTransition("3", "a", "4");
-		fsm1.addTransition("3", "c", "5");
-		fsm1.addTransition("5", "d", "6");
-		fsm1.addTransition("6", "a", "4");
+		fsm1.addTransition("1", "a", "2");
+		fsm1.addTransition("2", "b", "3");
+		fsm1.addTransition("2", "a", "10");
+		fsm1.addTransition("10", "c", "1");
+		fsm1.addTransition("10", "b", "2");
 		fsm1.addInitialState("1");
-		fsm1.setEventControllability("d", false);
-		fsm1.setEventObservability("c", false);
-		fsm1.setEventObservability("e", false);
+		//fsm1.setEventControllability("d", false);
+		fsm1.setEventObservability("a", false);
+		//fsm1.setEventObservability("e", false);
 		
 		
 		NonDetObsContFSM fsm2 = new NonDetObsContFSM();
 		fsm2.addTransition("1", "a", "2");
-		fsm2.addTransition("2", "d", "1");
-		fsm2.addTransition("1", "b", "3");
-		fsm2.addTransition("3", "e", "2");
-		fsm2.addTransition("3", "c", "4");
-		fsm2.addTransition("4", "b", "2");
-		fsm2.addTransition("2", "d", "4");
-		fsm2.addTransition("2", "a", "4");
+		fsm2.addTransition("2", "b", "3");
+		fsm2.addTransition("2", "a", "10");
+		fsm2.addTransition("10", "c", "1");
+		fsm2.addInitialState("1");
 		
 		NonDetObsContFSM fsm3 = fsm1.getSupremalControllableSublanguage(fsm2);
 	
