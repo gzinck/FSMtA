@@ -112,6 +112,7 @@ public class FSMtAUI extends Application {
 			
 			// Set up the pane for all the tabs of settings
 			settingsPane = new SettingsPane(model);
+			settingsPane.setId("settings-pane");
 			settingsPane.setPrefSize(SIDEBAR_WIDTH, SIDEBAR_HEIGHT);
 			root.setLeft(settingsPane);
 			

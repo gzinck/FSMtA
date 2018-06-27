@@ -1,8 +1,13 @@
 package fsm;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import fsm.attribute.*;
 import support.event.ControllableEvent;
 import support.event.Event;
@@ -28,6 +33,19 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	protected ArrayList<State> initialStates;
 	
 //--- Constructors  ----------------------------------------------------------------------
+	
+	/**
+	 * Constructor for an NonDetObsContFSM object that takes in a file encoding the contents of the FSM.
+	 * 
+	 * NonDetObsContFSM File Order for Special: Initial, Marked.
+	 * 
+	 * @param in - File read in order to create the FSM.
+	 * @param id - The id for the FSM (can be any String).
+	 */
+	
+	public NonDetObsContFSM(File in, String inId) {
+		// TODO: Implement the file input
+	}
 	
 	/**
 	 * Constructor for a NonDetObsContFSM that takes any FSM as a parameter and creates a new
@@ -105,9 +123,86 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	}
 	
 	@Override
-	public <fsm extends FSM> fsm determinize() {
-		// TODO Auto-generated method stub
-		return null;
+	public DetFSM determinize(){
+		/*
+		 * Create newFSM
+		 * Create queue to process states
+		 * First entry in queue is aggregate of initial states
+		 * For queue:
+		 *   Break the entry apart into composite States
+		 *   Process States and aggregate their Transitions
+		 *   For each event in these Transitions:
+		 *     Aggregate target States into new entities, add to queue
+		 *     Set that aggregate as the single target State for the associated Event
+		 *   If all composite States are Marked, set conglomerate as Marked
+		 * Return newFSM 
+		 * 
+		 */
+		
+		DetFSM fsmOut = new DetFSM("Determinized " + this.getId());
+		LinkedList<String> queue = new LinkedList<String>();
+		StringBuilder init = new StringBuilder();
+		Collections.sort(getInitialStates());
+		boolean mark1 = true;
+		
+		// Make the initial state
+		Iterator<State> itr = getInitialStates().iterator();
+		while(itr.hasNext()) {
+			State curr = itr.next();
+			init.append(curr.getStateName());
+			if(itr.hasNext()) init.append(","); // Add a comma if there is another item to add
+			mark1 = curr.getStateMarked() ? mark1 : false; // TODO: isn't it supposed to mark it if at least 1 state is marked? Might be wrong, not sure
+		}
+		queue.add(init.toString());
+		fsmOut.addInitialState("{" + init.toString() + "}");
+		
+		// Mark the initial state if all of the states are marked
+		if(mark1)
+			fsmOut.getState("{"+init+"}").setStateMarked(true);
+		HashSet<String> processed = new HashSet<String>();
+		
+		// Go through all the states names added to the queue
+		while(!queue.isEmpty()) {
+			String aggregate = queue.poll();
+			if(processed.contains(aggregate)) // Don't reprocess if already done
+				continue;
+			processed.add(aggregate);
+			String[] states = aggregate.split(","); // Break up the states into separate ones
+			HashMap<String, HashSet<String>> eventStates = new HashMap<String, HashSet<String>>();
+			TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> allTrans = this.getTransitions();
+			
+			// Go through every state and add 
+			for(String targetState : states) {
+				ArrayList<NonDetTransition<State, ObsControlEvent>> transitions = allTrans.getTransitions(getState(targetState));
+				for(NonDetTransition<State, ObsControlEvent> oneTransition : transitions) {
+					if(eventStates.get(oneTransition.getTransitionEvent().getEventName()) == null) {
+						eventStates.put(oneTransition.getTransitionEvent().getEventName(), new HashSet<String>());
+					}
+					for(State outState : oneTransition.getTransitionStates())
+						eventStates.get(oneTransition.getTransitionEvent().getEventName()).add(outState.getStateName());
+				}
+			}
+			for(String event : eventStates.keySet()) {
+				ArrayList<String> outboundStates = new ArrayList<String>();
+				boolean mark = true;
+				Iterator<String> iter = eventStates.get(event).iterator();
+				while(iter.hasNext()) {
+					String markCheck = iter.next();
+					mark = this.getState(markCheck).getStateMarked() ? mark : false;
+					outboundStates.add(markCheck);
+				}
+				Collections.sort(outboundStates);
+				String collec = "";
+				for(String s : outboundStates)
+					collec += s + ",";
+				collec = collec.substring(0, collec.length() - 1);
+				queue.add(collec);
+				fsmOut.addTransition("{"+aggregate+"}", event, "{"+collec+"}");
+				if(mark)
+					fsmOut.getState("{"+collec+"}").setStateMarked(true);
+			}
+		}
+		return fsmOut;
 	}
 	
 	@Override

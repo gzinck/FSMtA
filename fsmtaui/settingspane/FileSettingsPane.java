@@ -30,7 +30,7 @@ public class FileSettingsPane extends VBox {
 	/** List of possible FSM types, which is passed to other methods. */
 	public static enum FSM_TYPE {
 		DETERMINISTIC, NON_DETERMINISTIC
-	}
+	} // FSM_TYPE
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -38,10 +38,6 @@ public class FileSettingsPane extends VBox {
 	private TextField fsmNameField;
 	/** Box with the possible types of FSMs. */
 	private ChoiceBox<String> fsmTypeChoiceBox;
-	/** CheckBox for whether the FSM should have observability properties. */
-	private CheckBox fsmObserveCheck;
-	/** CheckBox for whether the FSM should have controllability properties. */
-	private CheckBox fsmControlCheck;
 	/** Button for reading in a file. */
 	private Button readInFileBtn;
 	/** Button for creating a new FSM. */
@@ -74,9 +70,13 @@ public class FileSettingsPane extends VBox {
 		
 		// Add all the elements to the pane
 		Label titleLabel = new Label("File Options");
+		titleLabel.getStyleClass().add("padded");
 		VBox mainFileOptions = makeMainFileOptions();
+		mainFileOptions.getStyleClass().add("padded");
 		VBox openFSMBox = makeOpenFSMBox();
+		openFSMBox.getStyleClass().add("padded");
 		VBox saveBtns = makeSaveBtns();
+		saveBtns.getStyleClass().add("padded");
 		
 		getChildren().addAll(
 			titleLabel, new Separator(),
@@ -111,9 +111,7 @@ public class FileSettingsPane extends VBox {
 		// Type of new FSM
 		Label fsmTypeLabel = new Label("FSM Type:");
 		fsmTypeChoiceBox = new ChoiceBox<String>(FXCollections.observableArrayList("Deterministic", "Non-Deterministic"));
-		fsmObserveCheck = new CheckBox("Enable Unobservable Events");
-		fsmControlCheck = new CheckBox("Enable Uncontrollable Events");
-		VBox fsmType = new VBox(fsmTypeLabel, fsmTypeChoiceBox, fsmObserveCheck, fsmControlCheck);
+		VBox fsmType = new VBox(fsmTypeLabel, fsmTypeChoiceBox);
 		
 		// Buttons to pull in new FSM
 		readInFileBtn = new Button("Read In File");
@@ -207,16 +205,11 @@ public class FileSettingsPane extends VBox {
 						FSM newFSM = null;
 						
 						String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-						if(fsmClass.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-							newFSM = new DetFSM(file, newFSMName);
-						} else if(fsmClass.equals("Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-							newFSM = new DetObsFSM(file, newFSMName);
-						} else if(fsmClass.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-							newFSM = new NonDetFSM(file, newFSMName);
-						} else if(fsmClass.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-							newFSM = new NonDetObsFSM(file, newFSMName);
+						if(fsmClass.equals("Deterministic")) {
+							newFSM = new DetObsContFSM(file, newFSMName);
+						} else if(fsmClass.equals("Non-Deterministic")) {
+							newFSM = new NonDetObsContFSM(file, newFSMName);
 						}
-						// TODO: add the other kinds of FSMs we need to create
 						model.addFSM(newFSM);
 						fsmNameField.setText("");
 					} catch(FileNotFoundException exception) {
@@ -244,16 +237,11 @@ public class FileSettingsPane extends VBox {
 					FSM newFSM = null;
 					
 					String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-					if(fsmClass.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-						newFSM = new DetFSM(newFSMName);
-					} else if(fsmClass.equals("Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-						newFSM = new DetObsFSM(newFSMName);
-					} else if(fsmClass.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-						newFSM = new NonDetFSM(newFSMName);
-					} else if(fsmClass.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-						newFSM = new NonDetObsFSM(newFSMName);
+					if(fsmClass.equals("Deterministic")) {
+						newFSM = new DetObsContFSM(newFSMName);
+					} else if(fsmClass.equals("Non-Deterministic")) {
+						newFSM = new NonDetObsContFSM(newFSMName);
 					}
-					// TODO: add the other kinds of FSMs we need to create
 					if(newFSM != null) {
 						model.addFSM(newFSM);
 						fsmNameField.setText("");
@@ -274,8 +262,8 @@ public class FileSettingsPane extends VBox {
 			if(model.checkIfValidFSMId(newFSMName) && checkIfValidFSMType()) {
 				FSM newFSM = null;
 				
-				String determinism = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-				if(determinism.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+				String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
+				if(fsmClass.equals("Deterministic")) {
 					// Deterministic, basic FSM
 					GenerateFSMDialog.FSMParameters parameters = GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.DETERMINISTIC, false);
 					if(parameters != null) {
@@ -284,17 +272,7 @@ public class FileSettingsPane extends VBox {
 								parameters.sizePaths, newFSMName, model.getWorkingDirectoryString() + "/"));
 						newFSM = new DetFSM(fsmFile, newFSMName);
 					} // if
-				} else if(determinism.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-					// NonDeterministic, basic FSM
-					GenerateFSMDialog.NonDeterministicFSMParameters parameters =
-							(GenerateFSMDialog.NonDeterministicFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, false);
-					if(parameters != null) {
-						File fsmFile = new File(GenerateFSM.createNewNonDeterministicFSM(
-								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-								parameters.sizePaths, parameters.sizeInitial, newFSMName, model.getWorkingDirectoryString() + "/"));
-						newFSM = new NonDetFSM(fsmFile, newFSMName);
-					} // if
-				} else if(determinism.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+				} else if(fsmClass.equals("Non-Deterministic")) {
 					// NonDeterministic with observability
 					GenerateFSMDialog.NonDetObsFSMParameters parameters =
 							(GenerateFSMDialog.NonDetObsFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, true);

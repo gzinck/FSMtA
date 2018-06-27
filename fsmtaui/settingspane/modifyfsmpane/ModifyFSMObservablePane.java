@@ -106,7 +106,6 @@ public class ModifyFSMObservablePane extends VBox {
 			(ObservableValue<? extends Tab> value, Tab oldTab, Tab newTab) -> {
 				if(newTab != null) {
 					FSM fsm = ((FSMViewport)newTab.getContent()).getFSM();
-					
 					// Only show observable options if observable
 					if(fsm instanceof Observability) {
 						getChildren().setAll(observabilityBox);

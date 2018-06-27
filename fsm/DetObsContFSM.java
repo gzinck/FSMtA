@@ -1,5 +1,6 @@
 package fsm;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,19 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	protected State initialState;
 	
 //--- Constructors  ----------------------------------------------------------------------
+	
+	/**
+	 * Constructor for an DetObsContFSM object that takes in a file encoding the contents of the FSM.
+	 * 
+	 * DetObsContFSM File Order for Special: Initial, Marked.
+	 * 
+	 * @param in - File read in order to create the FSM.
+	 * @param id - The id for the FSM (can be any String).
+	 */
+	
+	public DetObsContFSM(File in, String inId) {
+		// TODO: Implement the file input
+	}
 	
 	/**
 	 * Constructor for a DetObsContFSM that takes any FSM as a parameter and creates a new
