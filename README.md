@@ -24,6 +24,12 @@ FSMtAUI is split into a number of packages to organize based on function:
 ## Known problems
 Currently, we are rejigging what types of FSMs there are to simplify it. We will have a much simpler setup after this in the fsm package. The problem is that right now, there are some functions which do not work when using the GUI (or the backend, for that matter). These pieces should come back together in the near future.
 
+### Immediate To-Do List:
+- Add file i/o for the new obscont FSMs
+- Remove the redundant FSMs (already removed from the GUI)
+- Add the create observer view functionality
+- Add the above to the UI
+
 ## How to build an FSM from scratch
 To build an FSM from the beginning...
 

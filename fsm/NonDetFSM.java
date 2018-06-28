@@ -286,8 +286,10 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 	@Override
 	public boolean removeInitialState(String stateName) {
 		State theState = states.getState(stateName);
-		theState.setStateInitial(false);
-		if(initialStates.remove(theState)) return true;
+		if(theState != null) {
+			theState.setStateInitial(false);
+			if(initialStates.remove(theState)) return true;
+		}
 		return false;
 	}
 }

@@ -195,7 +195,7 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public S addState(S state, String prefix) {
+	public S addState(State state, String prefix) {
 		String stateName = prefix + state.getStateName();
 		if(states.containsKey(stateName))
 			return states.get(stateName);

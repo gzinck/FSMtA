@@ -394,9 +394,11 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 
 	@Override
 	public boolean removeInitialState(String stateName) {
-		State curr = getState(stateName);
-		if(curr != null)
-			return initialStates.remove(curr);
+		State theState = states.getState(stateName);
+		if(theState != null) {
+			theState.setStateInitial(false);
+			if(initialStates.remove(theState)) return true;
+		}
 		return false;
 	}
 
