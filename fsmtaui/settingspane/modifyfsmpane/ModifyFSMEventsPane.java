@@ -39,9 +39,11 @@ public class ModifyFSMEventsPane extends VBox {
 	 * need access to.
 	 */
 	public ModifyFSMEventsPane(Model inModel) {
-		model = inModel; 
+		model = inModel;
+		this.getStyleClass().add("modify-fsm-subpane");
 		
 		Label addEventLabel = new Label("Add/Remove Event");
+		addEventLabel.getStyleClass().add("subpane-section-title");
 		GridPane addRemoveEventFields = new GridPane();
 		
 		// Buttons to define what event to consider
@@ -68,7 +70,6 @@ public class ModifyFSMEventsPane extends VBox {
 		GridPane addRemoveEventBtns = new GridPane();
 		addRemoveEventBtns.addColumn(0, addEventBtn);
 		addRemoveEventBtns.addColumn(1, removeEventBtn);
-		
 		getChildren().addAll(addEventLabel, addRemoveEventFields, addRemoveEventBtns);
 		
 		makeAddEventHandler();

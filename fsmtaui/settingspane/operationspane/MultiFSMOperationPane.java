@@ -42,8 +42,10 @@ public class MultiFSMOperationPane extends VBox {
 	 */
 	public MultiFSMOperationPane(Model inModel) {
 		model = inModel;
+		this.getStyleClass().add("operations-subpane");
 		
 		Label sectionTitle = new Label(TITLE_MSG);
+		sectionTitle.getStyleClass().add("subpane-section-title");
 		HBox operationSelector = makeOperationSelector();
 		GridPane fsmSelectors = makeFSMSelectors();
 		HBox nameField = makeFSMNameField();

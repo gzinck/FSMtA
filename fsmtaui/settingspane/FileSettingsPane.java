@@ -70,7 +70,7 @@ public class FileSettingsPane extends VBox {
 		
 		// Add all the elements to the pane
 		Label titleLabel = new Label("File Options");
-		titleLabel.getStyleClass().add("padded");
+		titleLabel.getStyleClass().add("section-header");
 		VBox mainFileOptions = makeMainFileOptions();
 		mainFileOptions.getStyleClass().add("padded");
 		VBox openFSMBox = makeOpenFSMBox();

@@ -44,8 +44,10 @@ public class ModifyFSMObservablePane extends VBox {
 	 */
 	public ModifyFSMObservablePane(Model inModel) {
 		model = inModel;
+		this.getStyleClass().add("modify-fsm-subpane");
 		
 		Label eventObservabilityLabel = new Label("Toggle Event Observability");
+		eventObservabilityLabel.getStyleClass().add("subpane-section-title");
 		Label eventNameLabel = new Label("Event Name:");
 		eventObservabilityField = new TextField();
 		HBox eventName = new HBox(eventNameLabel, eventObservabilityField);

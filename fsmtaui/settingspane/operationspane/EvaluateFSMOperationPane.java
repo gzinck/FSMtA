@@ -43,8 +43,10 @@ public class EvaluateFSMOperationPane extends VBox {
 	 */
 	public EvaluateFSMOperationPane(Model inModel) {
 		model = inModel;
+		this.getStyleClass().add("operations-subpane");
 		
 		Label sectionTitle = new Label(TITLE_MSG);
+		sectionTitle.getStyleClass().add("subpane-section-title");
 		HBox evaluationSelector = makeEvaluationSelector();
 		evaluateBtn = new Button("Evaluate FSM");
 		

@@ -37,8 +37,10 @@ public class ConvertFSMOperationPane extends VBox {
 	 */
 	public ConvertFSMOperationPane(Model inModel) {
 		model = inModel;
+		this.getStyleClass().add("operations-subpane");
 		
 		Label sectionTitle = new Label(TITLE_MSG);
+		sectionTitle.getStyleClass().add("subpane-section-title");
 		VBox operationSelector = makeConversionSelector();
 		HBox nameField = makeFSMNameField();
 		convertBtn = new Button("Perform Conversion");

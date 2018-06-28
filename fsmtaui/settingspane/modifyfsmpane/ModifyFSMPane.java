@@ -42,6 +42,7 @@ public class ModifyFSMPane extends VBox {
 		super();
 		model = inModel;
 		Label titleLabel = new Label("Modify FSM");
+		titleLabel.getStyleClass().add("section-header");
 		
 		// Create the event/state add and remove options
 		eventOptions = new TitledPane("Event Options", new ModifyFSMEventsPane(model));

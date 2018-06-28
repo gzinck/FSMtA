@@ -47,8 +47,10 @@ public class ModifyFSMInitialStatesPane extends VBox {
 	 */
 	public ModifyFSMInitialStatesPane(Model inModel) {
 		model = inModel;
+		this.getStyleClass().add("modify-fsm-subpane");
 		
 		initialOptionsLabel = new Label(LABEL_STR);
+		initialOptionsLabel.getStyleClass().add("subpane-section-title");
 		
 		Label stateNameLabel = new Label("State Name:");
 		initialStateNameField = new TextField();

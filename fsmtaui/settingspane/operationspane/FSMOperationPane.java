@@ -39,6 +39,8 @@ public class FSMOperationPane extends VBox {
 		
 		// Make the title for the section
 		Label titleLabel = new Label("FSM Operations");
+		titleLabel.getStyleClass().add("section-header");
+		
 		evaluateFSMOperationPane = new TitledPane("FSM Evaluation Operations", new EvaluateFSMOperationPane(model));
 		singleFSMOperationPane = new TitledPane("Single-FSM Operations", new SingleFSMOperationPane(model));
 		convertFSMOperationPane = new TitledPane("Conversion Operations", new ConvertFSMOperationPane(model));

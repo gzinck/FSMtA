@@ -1,3 +1,31 @@
-#settings-pane .padded {
+.padded {
     -fx-padding: 10;
+}
+
+.modify-fsm-subpane, .operations-subpane {
+    -fx-padding: 10px;
+}
+
+.section-header {
+    -fx-font-size: 20px;
+    -fx-padding: 10px;
+    -fx-font-weight: bold;
+    -fx-color: #AAFFFF;
+}
+
+.subpane-section-title {
+    -fx-font-size: 16px;
+    -fx-padding: 10px 0 10px 0;
+    -fx-font-weight: bold;
+}
+
+/* Used for the titled of accordion panes */
+.title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Used for the buttons */
+.button {
+    -fx-color: #AAFFFF;
 }

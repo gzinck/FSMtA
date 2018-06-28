@@ -38,8 +38,10 @@ public class SingleFSMOperationPane extends VBox {
 	 */
 	public SingleFSMOperationPane(Model inModel) {
 		model = inModel;
+		this.getStyleClass().add("operations-subpane");
 		
 		Label sectionTitle = new Label(TITLE_MSG);
+		sectionTitle.getStyleClass().add("subpane-section-title");
 		HBox operationSelector = makeOperationSelector();
 		HBox nameField = makeFSMNameField();
 		performOperationBtn = new Button("Perform Operation");

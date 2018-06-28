@@ -39,8 +39,10 @@ public class ModifyFSMStatesPane extends VBox {
 	 */
 	public ModifyFSMStatesPane(Model inModel) {
 		model = inModel;
+		this.getStyleClass().add("modify-fsm-subpane");
 		
 		Label stateOptionsLabel = new Label("Add/Remove State");
+		stateOptionsLabel.getStyleClass().add("subpane-section-title");
 		
 		Label stateNameLabel = new Label("State Name:");
 		stateNameField = new TextField();
