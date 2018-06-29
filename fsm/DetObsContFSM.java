@@ -10,6 +10,7 @@ import support.event.Event;
 import support.event.ObsControlEvent;
 import support.event.ObservableEvent;
 import support.*;
+import support.attribute.EventControllability;
 import support.attribute.EventObservability;
 import support.transition.*;
 
@@ -118,7 +119,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	}
 	
 	@Override
-	public DetObsContFSM getSupremalControllableSublanguage(FSM other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM getSupremalControllableSublanguage(FSM<S1, T1, E1> other) {
 		// Store what events are disabled in the map.
 		HashMap<String, DisabledEvents> disabledMap = new HashMap<String, DisabledEvents>();
 		// Parse the graph and identify disabled states and disabled events
@@ -141,12 +142,12 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 				ArrayList<DetTransition<State, ObsControlEvent>> allowedTransitions = new ArrayList<DetTransition<State, ObsControlEvent>>();
 				ArrayList<DetTransition<State, ObsControlEvent>> transitions = this.transitions.getTransitions(getState(s));
 				if(transitions != null) {
-					for(DetTransition t : transitions) {
-						Event e = t.getTransitionEvent();
+					for(DetTransition<State, ObsControlEvent> t : transitions) {
+						ObsControlEvent e = t.getTransitionEvent();
 						if(disabled.eventIsEnabled(e.getEventName())) {
 							State toState = t.getTransitionState();
 							if(!disabledMap.get(toState.getStateName()).stateIsDisabled())
-								allowedTransitions.add(new DetTransition(e, toState));
+								allowedTransitions.add(new DetTransition<State, ObsControlEvent>(e, toState));
 						} // if the event is enabled
 					} // for every transition
 				} // if there are any transitions
@@ -160,7 +161,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	} // getSupremalControllableSublanguage(FSM)
 	
 	@Override
-	public DisabledEvents getDisabledEvents(State curr, FSM otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DisabledEvents getDisabledEvents(State curr, FSM<S1, T1, E1> otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap) {
 		String currName = curr.getStateName();
 		State otherCurr = otherFSM.getState(currName);
 		
@@ -181,32 +182,29 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		
 		// Otherwise, go through the neighbours and identify which events we need to disable.
 		DisabledEvents currDE = new DisabledEvents(false);
-		ArrayList<? extends DetTransition> thisTransitions = transitions.getTransitions(curr);
+		ArrayList<DetTransition<State, ObsControlEvent>> thisTransitions = transitions.getTransitions(curr);
 		if(thisTransitions != null)
-		for(DetTransition t : thisTransitions) {
-			boolean transitionEventDisabled = false;
+		for(DetTransition<State, ObsControlEvent> t : thisTransitions) {
 			
 			DisabledEvents nextDE = getDisabledEvents(t.getTransitionState(), otherFSM, visitedStates, disabledMap);
-			Event e = t.getTransitionEvent();
+			ObsControlEvent e = t.getTransitionEvent();
 			
 			// If the event is not present in the specification, then break
 			if(!otherFSM.transitions.eventExists(otherFSM.getState(t.getTransitionState()), e)) {
 				currDE.disableEvent(e.getEventName());
-				transitionEventDisabled = true;
 			} // if event not present in spec
 			
 			if(nextDE != null) { // As long as we're not backtracking...
 				// If the transition state is bad, must disable the event.
 				if(nextDE.stateIsDisabled()) {
 					// If the event is uncontrollable, disable this entire state
-					if(e instanceof ControllableEvent && !((ControllableEvent)e).getEventControllability()) {
+					if(e instanceof EventControllability && !((EventControllability)e).getEventControllability()) {
 						currDE.disableState();
 						disabledMap.put(currName, currDE);
 						return currDE;
 					} // if uncontrollable event
 					// Else, disable the transition event (but none of the other events)
 					currDE.disableEvent(e.getEventName());
-					transitionEventDisabled = true;
 				} // if state is disabled
 				
 				// If the state is good, but has disabled events, AND the transition event to the toState is unobservable
@@ -222,22 +220,21 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public NonDetObsContFSM union(FSM<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM<S1, T1, E1> other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		unionHelper(other, newFSM);
 		return newFSM;
 	}
 
 	@Override
-	public DetObsContFSM product(FSM<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM product(FSM<S1, T1, E1> other) {
 		DetObsContFSM newFSM = new DetObsContFSM();
 		productHelper(other, newFSM);
 		return newFSM;
 	}
 
 	@Override
-	public DetObsContFSM parallelComposition(
-			FSM<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM parallelComposition(FSM<S1, T1, E1> other) {
 		DetObsContFSM newFSM = new DetObsContFSM();
 		parallelCompositionHelper(other, newFSM);
 		return newFSM;

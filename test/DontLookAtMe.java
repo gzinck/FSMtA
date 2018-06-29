@@ -36,19 +36,20 @@ public class DontLookAtMe {
 		fsm1.addTransition("10", "c", "1");
 		fsm1.addTransition("10", "b", "2");
 		fsm1.addInitialState("1");
+		fsm1.addInitialState("2");
 		//fsm1.setEventControllability("d", false);
 		fsm1.setEventObservability("a", false);
 		//fsm1.setEventObservability("e", false);
 		
 		
-		NonDetObsContFSM fsm2 = new NonDetObsContFSM();
+		DetFSM fsm2 = new DetFSM();
 		fsm2.addTransition("1", "a", "2");
 		fsm2.addTransition("2", "b", "3");
 		fsm2.addTransition("2", "a", "10");
 		fsm2.addTransition("10", "c", "1");
 		fsm2.addInitialState("1");
 		
-		NonDetObsContFSM fsm3 = fsm1.getSupremalControllableSublanguage(fsm2);
+		NonDetObsContFSM fsm3 = fsm1.union(fsm2);
 	
 		System.out.println(fsm3.makeDotString());
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "/" + "test1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);

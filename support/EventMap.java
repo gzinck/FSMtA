@@ -72,7 +72,7 @@ public class EventMap<E extends Event> {
 	 * @return - Returns the corresponding Event object from the current FSM, which has the same event name String as the input event.
 	 */
 	
-	public E getEvent(E event) {
+	public E getEvent(Event event) {
 		String name = event.getEventName();
 		return events.get(name);
 	}

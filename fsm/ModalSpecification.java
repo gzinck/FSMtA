@@ -12,7 +12,7 @@ import java.util.HashSet;
 import fsm.attribute.*;
 
 public class ModalSpecification
-		extends TransitionSystem<State, NonDetTransition<State, Event>, Event> {
+		extends TransitionSystem<State, DetTransition<State, Event>, Event> {
 	
 //--- Instance Variables  ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ public class ModalSpecification
 	
 	/** TransitionFunction object mapping states to sets of "must" transitions for the Modal Specification.
 	 * These are transitions which must be present in the controlled FSM in order to satisfy the spec. */
-	protected TransitionFunction<State, NonDetTransition<State, Event>, Event> mustTransitions;
+	protected TransitionFunction<State, DetTransition<State, Event>, Event> mustTransitions;
 	
 //---  Constructors  --------------------------------------------------------------------------
 	
@@ -38,7 +38,7 @@ public class ModalSpecification
 		id = inId;
 		states = new StateMap<State>(State.class);
 		events = new EventMap<Event>(Event.class);
-		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
+		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		
 		copyStates(other); // Add in all the states
 		copyEvents(other); // Add in all the events
@@ -58,8 +58,8 @@ public class ModalSpecification
 		id = inId;
 		events = new EventMap<Event>(Event.class);
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
-		mustTransitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
+		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
+		mustTransitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		initialStates = new ArrayList<State>();
 	} // ModalSpecification()
 	
@@ -72,8 +72,8 @@ public class ModalSpecification
 		id = "";
 		events = new EventMap<Event>(Event.class);
 		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
-		mustTransitions = new TransitionFunction<State, NonDetTransition<State, Event>, Event>(new NonDetTransition<State, Event>());
+		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
+		mustTransitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		initialStates = new ArrayList<State>();
 	} // ModalSpecification()
 	
@@ -95,15 +95,14 @@ public class ModalSpecification
 	
 	private <S extends State, T extends Transition<S, E>, E extends Event> FSM<S, DetTransition<S, E>, E> getDeterminizedProductWithFSM(FSM<S, T, E> fsm) {
 		FSM<S, DetTransition<S, E>, E> newFSM = ((Observability)fsm).createObserverView().determinize();
-		NonDetObsContFSM tempFSM = new NonDetObsContFSM();
+		DetObsContFSM tempFSM = new DetObsContFSM();
 		// We need to take all the events from the parameter fsm and copy them over to the tempFSM,
 		// but copy the states and transitions direct from the current FSM.
 		tempFSM.copyEvents(fsm);
 		tempFSM.copyStates(this);
 		tempFSM.copyTransitions(this);
 		// Determinize the underlying transition system of this FSM.
-		FSM tempFSM2 = tempFSM.createObserverView().determinize(); // TODO: fix the types here...
-		return newFSM.product(tempFSM2);
+		return newFSM.product(tempFSM);
 	}
 	
 	/**
@@ -129,6 +128,33 @@ public class ModalSpecification
 		return false;
 	}
 	
+	/**
+	 * Gets the original state names for the fsm using the product state names (which is in the form of
+	 * ({state1,state2}, specState) and we want the array of states in the first set).
+	 * 
+	 * @param aggregateStateName String representing the state to break apart.
+	 * @return String array with all the states from the original FSM represented in the input String.
+	 */
+	
+	private String[] getOriginalComponentStates(String aggregateStateName) {
+		String[] productHalves = aggregateStateName.split(", ");
+		aggregateStateName = productHalves[0].substring(2, productHalves[0].length() - 1); // Take out the braces
+		return aggregateStateName.split(","); // Get the individual state names
+	}
+	
+	/**
+	 * Gets the original state name for the specification using the product state names (which is in the form of
+	 * ({state1,state2}, specState) and we want the second entry in the product).
+	 * 
+	 * @param aggregateStateName String representing the state to break apart.
+	 * @return String with the state name from the specification.
+	 */
+	
+	private String getSpecificationState(String aggregateStateName) {
+		String[] productHalves = aggregateStateName.split(", ");
+		return productHalves[1].substring(1, productHalves[1].length() - 2); // Take out the braces
+	}
+	
 	private <S extends State, T extends Transition<S, E>, E extends Event>
 			boolean markDeadEnds(FSM<S, T, E> fsm, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
 		// TODO: essentially, perform the coaccessible operation every time, but must get to an end
@@ -145,9 +171,9 @@ public class ModalSpecification
 	
 	public void copyMustTransitions(ModalSpecification other) {
 		for(State s : other.states.getStates()) {
-			ArrayList<NonDetTransition<State, Event>> thisTransitions = other.mustTransitions.getTransitions(s);
+			ArrayList<DetTransition<State, Event>> thisTransitions = other.mustTransitions.getTransitions(s);
 			if(thisTransitions != null)
-				for(NonDetTransition<State, Event> t : thisTransitions) {
+				for(DetTransition<State, Event> t : thisTransitions) {
 					// Add every state the transition leads to
 					for(State toState : t.getTransitionStates())
 						this.addMustTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toState.getStateName());
@@ -191,9 +217,9 @@ public class ModalSpecification
 		Event e = events.addEvent(eventName);
 		
 		// See if there is already a transition with the event...
-		ArrayList<NonDetTransition<State, Event>> thisTransitions = mustTransitions.getTransitions(s1);
+		ArrayList<DetTransition<State, Event>> thisTransitions = mustTransitions.getTransitions(s1);
 		if(thisTransitions != null) {
-			for(NonDetTransition<State, Event> t : thisTransitions) {
+			for(DetTransition<State, Event> t : thisTransitions) {
 				if(t.getTransitionEvent().equals(e)) {
 					t.setTransitionState(s2);
 					return;
@@ -202,7 +228,7 @@ public class ModalSpecification
 		} // if not null
 		
 		// Otherwise, make a new Transition object
-		NonDetTransition<State, Event> outbound = transitions.getEmptyTransition();
+		DetTransition<State, Event> outbound = transitions.getEmptyTransition();
 		outbound.setTransitionEvent(e);
 		outbound.setTransitionState(s2);
 		mustTransitions.addTransition(s1, outbound);

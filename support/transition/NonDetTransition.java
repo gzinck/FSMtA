@@ -33,6 +33,7 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 * @param inStates List of State objects representing the States led to by the Event associated with this NonDetTransition object.
 	 */
 	
+	@SafeVarargs
 	public NonDetTransition(E inEvent, S ... inStates) {
 		event = inEvent;
 		states = new ArrayList<S>();
@@ -100,7 +101,7 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 		sb.append("\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];");
 		return sb.toString();
 	}
-		
+	
 	@Override
 	public NonDetTransition<S, E> generateTransition(){
 		NonDetTransition<S, E> outbound = new NonDetTransition<S, E>();

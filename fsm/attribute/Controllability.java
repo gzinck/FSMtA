@@ -34,7 +34,7 @@ public interface Controllability<S extends State, T extends Transition<S, E>, E 
 	 * @return The FSM representing the supremal controllable sublanguage of the calling FSM
 	 * with respect to the parameter FSM.
 	 */
-	public abstract FSM<S, T, E> getSupremalControllableSublanguage(FSM other);
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM<S, T, E> getSupremalControllableSublanguage(FSM<S1, T1, E1> other);
 	
 	/**
 	 * Recursively goes through states and examines what should be disabled. The results of what states
@@ -50,7 +50,7 @@ public interface Controllability<S extends State, T extends Transition<S, E>, E 
 	 * @param disabledMap Results of what to disable at each state.
 	 * @return A DisabledEvents object with what needs to be disabled at any given state.
 	 */
-	public abstract DisabledEvents getDisabledEvents(State curr, FSM otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap);
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DisabledEvents getDisabledEvents(State curr, FSM<S1, T1, E1> otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap);
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	

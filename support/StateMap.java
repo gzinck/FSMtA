@@ -58,7 +58,6 @@ public class StateMap<S extends State> {
 	 */
 	
 	public void renameStates() {
-		int index = 0;
 		State[] stateArr = new State[states.size()];
 		states.values().toArray(stateArr);
 		for(int i = 0; i < states.size(); i++)
@@ -99,7 +98,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object from this StateMap object, representing what its HashMap<String, <S extends State>> had stored at that position.
 	 */
 	
-	public S getState(S state) {
+	public S getState(State state) {
 		String stateName = state.getStateName();
 		return states.get(stateName);
 	}
@@ -206,17 +205,18 @@ public class StateMap<S extends State> {
 	}
 	
 	/**
-	 * 
-	 * @param state1
-	 * @param state2
-	 * @return
+	 * Adds a state to the mapping that is a hybrid of the two input states, combining
+	 * their names 
+	 * @param state1 The first State from which to adopt attributes and make a new state.
+	 * @param state2 The second State from which to adopt attributes and make a new state.
+	 * @return The State object which is presently mapped.
 	 */
 	
-	public S addState(S state1, S state2) {
+	public S addState(S state1, State state2) {
 		String stateName = "(" + state1.getStateName() + ", " + state2.getStateName() + ")";
 		if(states.containsKey(stateName))
 			return states.get(stateName);
-		S newState = state1.makeStateWith(state2);
+		S newState = state1.makeStateWith(state2); // TODO: fix the generic types here
 		states.put(newState.getStateName(), newState);
 		return newState;
 	}

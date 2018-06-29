@@ -54,7 +54,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @return - Returns a FSM<<r>S, T, E> extending object representing the result of this union operation.
 	 */
 	
-	public abstract FSM union(FSM<S, T, E> other);
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM union(FSM<S1, T1, E1> other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Union operation
@@ -68,7 +68,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @param newFSM - FSM<<r>S, T, E> extending object that is provided as the holding place for the product of the two FSM object's being adjoined via Union
 	 */
 	
-	protected <NewT extends Transition<S, E>> void unionHelper(FSM<S, T, E> other, FSM<S, NewT, E> newFSM) {
+	protected <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event, NewT extends Transition<S, E>> void unionHelper(FSM<S1, T1, E1> other, FSM<S, NewT, E> newFSM) {
 		// Add initial states
 		for(State s : getInitialStates())  // Add the states from the this FSM
 			newFSM.addInitialState(STATE_PREFIX_1 + s.getStateName());
@@ -78,13 +78,13 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		// Add other states as well
 		for(S s : this.states.getStates())
 			newFSM.states.addState(s, STATE_PREFIX_1);
-		for(S s : other.states.getStates())
+		for(S1 s : other.states.getStates())
 			newFSM.states.addState(s, STATE_PREFIX_2);
 		
 		// Add events
 		for(E e : this.events.getEvents())
 			newFSM.events.addEvent(e);
-		for(E e : other.events.getEvents())
+		for(E1 e : other.events.getEvents())
 			newFSM.events.addEvent(e);
 		
 		// Add transitions
@@ -99,11 +99,11 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 			} // for transition
 		} // for entry
 		
-		for(Map.Entry<S, ArrayList<T>> entry : other.transitions.getAllTransitions()) {
+		for(Map.Entry<S1, ArrayList<T1>> entry : other.transitions.getAllTransitions()) {
 			S currState = newFSM.states.getState(STATE_PREFIX_2 + entry.getKey().getStateName());
-			for(T t : entry.getValue()) {
+			for(T1 t : entry.getValue()) {
 				E newEvent = newFSM.events.getEvent(t.getTransitionEvent());
-				for(S toState : t.getTransitionStates()) {
+				for(S1 toState : t.getTransitionStates()) {
 					S newState = newFSM.states.getState(STATE_PREFIX_2 + toState.getStateName());
 					newFSM.addTransition(currState.getStateName(), newEvent.getEventName(), newState.getStateName());
 				} // for every toState in the transition
@@ -119,7 +119,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @return - Returns a FSM<<r>S, T, E> extending object representing the FSM object resulting from the Product operation.
 	 */
 	
-	public abstract FSM product(FSM<S, T, E> other);
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM product(FSM<S1, T1, E1> other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Product operation
@@ -133,10 +133,10 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @param newFSM - FSM<<r>S, T, E> object representing the FSM holding the contents of the product of the Product operation.
 	 */
 	
-	protected void productHelper(FSM<S, T, E> other, FSM<S, T, E> newFSM) {
+	protected <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> void productHelper(FSM<S1, T1, E1> other, FSM<S, T, E> newFSM) {
 		// Get all the events the two have in common
 		for(E thisEvent : this.events.getEvents()) {
-			for(E otherEvent : other.events.getEvents()) {
+			for(E1 otherEvent : other.events.getEvents()) {
 				// All common events are added
 				if(thisEvent.getEventName().equals(otherEvent.getEventName())) {
 					newFSM.events.addEvent(thisEvent, otherEvent);
@@ -146,32 +146,32 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		
 		// Go through all the initial states and add everything they connect to with shared events.
 		for(S thisInitial : this.getInitialStates()) {
-			for(S otherInitial : other.getInitialStates()) {
+			for(S1 otherInitial : other.getInitialStates()) {
 				// Now, start going through the paths leading out from this new initial state.
 				LinkedList<S> thisNextState = new LinkedList<S>();
 				thisNextState.add(thisInitial);
-				LinkedList<S> otherNextState = new LinkedList<S>();
+				LinkedList<S1> otherNextState = new LinkedList<S1>();
 				otherNextState.add(otherInitial);
 				
 				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
 					S thisState = thisNextState.poll();
-					S otherState = otherNextState.poll();
+					S1 otherState = otherNextState.poll();
 					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
 					
 					// Go through all the transitions in each, see what they have in common
 					ArrayList<T> thisTransitions = this.transitions.getTransitions(thisState);
-					ArrayList<T> otherTransitions = other.transitions.getTransitions(otherState);
+					ArrayList<T1> otherTransitions = other.transitions.getTransitions(otherState);
 					if(thisTransitions != null && otherTransitions != null) {
 						for(T thisTrans : thisTransitions) {
-							for(T otherTrans : otherTransitions) {
+							for(T1 otherTrans : otherTransitions) {
 								
 								// If they share the same event
 								E thisEvent = thisTrans.getTransitionEvent();
-								if(thisEvent.equals(otherTrans.getTransitionEvent())) {
+								if(thisEvent.getEventName().equals(otherTrans.getTransitionEvent().getEventName())) {
 									
 									// Then create transitions to all the combined neighbours
 									for(S thisToState : thisTrans.getTransitionStates()) {
-										for(S otherToState : otherTrans.getTransitionStates()) {
+										for(S1 otherToState : otherTrans.getTransitionStates()) {
 											
 											// If the state doesn't exist, add to queue
 											if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherToState.getStateName() + ")")) {
@@ -201,7 +201,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @return - Returns a FSM<<r>S, T, E> extending object representing the result of the Parallel Composition operation.
 	 */
 	
-	public abstract FSM<S, T, E> parallelComposition(FSM<S, T, E> other);
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM<S, T, E> parallelComposition(FSM<S1, T1, E1> other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Parallel Composition
@@ -215,11 +215,11 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 * @param newFSM - FSM<<r>S, T, E> extending object that is provided to contain the results of this Parallel Composition operation.
 	 */
 	
-	protected void parallelCompositionHelper(FSM<S, T, E> other, FSM<S, T, E> newFSM) {
+	protected <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> void parallelCompositionHelper(FSM<S1, T1, E1> other, FSM<S, T, E> newFSM) {
 		// Get all the events the two have in common
 		HashSet<String> commonEvents = new HashSet<String>();
 		for(E thisEvent : this.events.getEvents()) {
-			for(E otherEvent : other.events.getEvents()) {
+			for(E1 otherEvent : other.events.getEvents()) {
 				// If it is a common event
 				if(thisEvent.getEventName().equals(otherEvent.getEventName())) {
 					E newEvent = newFSM.events.addEvent(thisEvent, otherEvent);
@@ -232,30 +232,30 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		for(E thisEvent : this.events.getEvents())
 			if(!commonEvents.contains(thisEvent.getEventName()))
 				newFSM.events.addEvent(thisEvent);
-		for(E otherEvent : other.events.getEvents())
+		for(E1 otherEvent : other.events.getEvents())
 			if(!commonEvents.contains(otherEvent.getEventName()))
 				newFSM.events.addEvent(otherEvent);
 		
 		// Go through all the initial states and add everything they connect to.
 		for(S thisInitial : this.getInitialStates()) {
-			for(S otherInitial : other.getInitialStates()) {
+			for(S1 otherInitial : other.getInitialStates()) {
 				// Now, start going through the paths leading out from this new initial state.
 				LinkedList<S> thisNextState = new LinkedList<S>();
 				thisNextState.add(thisInitial);
-				LinkedList<S> otherNextState = new LinkedList<S>();
+				LinkedList<S1> otherNextState = new LinkedList<S1>();
 				otherNextState.add(otherInitial);
 				
 				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
 					S thisState = thisNextState.poll();
-					S otherState = otherNextState.poll();
+					S1 otherState = otherNextState.poll();
 					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
 					
 					// Go through all the transitions in each, see what they have in common
 					ArrayList<T> thisTransitions = this.transitions.getTransitions(thisState);
-					ArrayList<T> otherTransitions = other.transitions.getTransitions(otherState);
+					ArrayList<T1> otherTransitions = other.transitions.getTransitions(otherState);
 					if(thisTransitions != null && otherTransitions != null) {
 						for(T thisTrans : thisTransitions) {
-							for(T otherTrans : otherTransitions) {
+							for(T1 otherTrans : otherTransitions) {
 								
 								// If they share the same event
 								E thisEvent = thisTrans.getTransitionEvent();
@@ -263,7 +263,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 									
 									// Then create transitions to all the combined neighbours
 									for(S thisToState : thisTrans.getTransitionStates()) {
-										for(S otherToState : otherTrans.getTransitionStates()) {
+										for(S1 otherToState : otherTrans.getTransitionStates()) {
 											
 											// If the state doesn't exist, add to queue
 											if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherToState.getStateName() + ")")) {
@@ -304,12 +304,12 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 						} // for this transitions
 					} // if transitions are not null
 					if(otherTransitions != null) {
-						for(T otherTrans : other.transitions.getTransitions(otherState)) {
+						for(T1 otherTrans : other.transitions.getTransitions(otherState)) {
 							// If it's NOT a common event
-							E thisEvent = otherTrans.getTransitionEvent();
+							E1 thisEvent = otherTrans.getTransitionEvent();
 							if(!commonEvents.contains(otherTrans.getTransitionEvent().getEventName())) {
 								// Then, add all the transitions
-								for(S otherToState : otherTrans.getTransitionStates()) {
+								for(S1 otherToState : otherTrans.getTransitionStates()) {
 									
 									// If it doesn't exist, add it to the queue
 									if(!newFSM.stateExists("(" + thisState.getStateName() + ", " + otherToState.getStateName() + ")")) {

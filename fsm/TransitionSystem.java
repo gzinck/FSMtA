@@ -401,7 +401,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a State extending object that corresponds to the provided State extending object's name in the current FSM.
 	 */
 	
-	public S getState(S state) {
+	public S getState(State state) {
 		return states.getState(state);
 	}
 	

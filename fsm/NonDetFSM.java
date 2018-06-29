@@ -233,21 +233,21 @@ public class NonDetFSM extends FSM<State, NonDetTransition<State, Event>, Event>
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public NonDetFSM union(FSM<State, NonDetTransition<State, Event>, Event> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetFSM union(FSM<S1, T1, E1> other) {
 		NonDetFSM newFSM = new NonDetFSM();
 		unionHelper(other, newFSM);
 		return newFSM;
 	}
 
 	@Override
-	public NonDetFSM product(FSM<State, NonDetTransition<State, Event>, Event> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetFSM product(FSM<S1, T1, E1> other) {
 		NonDetFSM newFSM = new NonDetFSM();
 		productHelper(other, newFSM);
 		return newFSM;
 	}
 	
 	@Override
-	public NonDetFSM parallelComposition(FSM<State, NonDetTransition<State, Event>, Event> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetFSM parallelComposition(FSM<S1, T1, E1> other) {
 		NonDetFSM newFSM = new NonDetFSM();
 		parallelCompositionHelper(other, newFSM);
 		return newFSM;

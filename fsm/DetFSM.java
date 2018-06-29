@@ -7,7 +7,6 @@ import fsm.attribute.Deterministic;
 import support.*;
 import support.transition.*;
 import support.event.Event;
-import support.ReadWrite;
 
 /**
  * This class models a Deterministic FSM that expands upon the abstract FSM class to
@@ -149,23 +148,23 @@ public class DetFSM extends FSM<State, DetTransition<State, Event>, Event>
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
-	public NonDetFSM union(FSM<State, DetTransition<State, Event>, Event> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetFSM union(FSM<S1, T1, E1> other) {
 		NonDetFSM newFSM = new NonDetFSM();
-		unionHelper(other, newFSM);			//Trivial case permits just using the unionHelper, no extra work.
+		unionHelper(other, newFSM);
 		return newFSM;
 	}
 
 	@Override
-	public DetFSM product(FSM<State, DetTransition<State, Event>, Event> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetFSM product(FSM<S1, T1, E1> other) {
 		DetFSM newFSM = new DetFSM();
-		productHelper(other, newFSM);		//Trivial case permits just using the productHelper, no extra work.
+		productHelper(other, newFSM);
 		return newFSM;
 	}
 	
 	@Override
-	public DetFSM parallelComposition(FSM<State, DetTransition<State, Event>, Event> other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetFSM parallelComposition(FSM<S1, T1, E1> other) {
 		DetFSM newFSM = new DetFSM();
-		parallelCompositionHelper(other, newFSM);	//Trivial case permits just using the parallelCompositionHelper, no extra work.
+		parallelCompositionHelper(other, newFSM);	
 		return newFSM;
 	}
 
