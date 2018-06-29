@@ -108,6 +108,23 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 		return false;
 	}
 	
+	/**
+	 * Getter method that retrieves the transition states at a certain state.
+	 * 
+	 * @param state State object to look for transitions.
+	 * @param event Event to look for.
+	 * @return ArrayList of transition states that it goes to, or null if there
+	 * are none.
+	 */
+	public ArrayList<S> getTransitionStates(State state, Event event) {
+		ArrayList<T> thisTransitions = transitions.get(state);
+		if(thisTransitions != null)
+			for(T t : thisTransitions)
+				if(t.getTransitionEvent().equals(event))
+					return t.getTransitionStates();
+		return null;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**

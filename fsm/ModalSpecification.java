@@ -1,6 +1,8 @@
 package fsm;
 
 import support.*;
+import support.attribute.EventControllability;
+import support.attribute.EventObservability;
 import support.event.Event;
 import support.transition.DetTransition;
 import support.transition.NonDetTransition;
@@ -86,22 +88,35 @@ public class ModalSpecification
 		// Now mark the bad states
 		boolean keepGoing = true;
 		while(keepGoing) {
-			keepGoing = markBadStates(fsm, product, new HashSet<String>());
-			// TODO: remove these bad states
-			markDeadEnds(fsm, product, new HashSet<String>());
+			 HashSet<String> badStatesNames = markBadStates(fsm, product);
+			
+			// TODO: Do something more efficient for removing states
+			for(String badStateName : badStatesNames) {
+				product.removeState(badStateName);
+			}
+			
+			badStatesNames = new HashSet<String>();
+			markDeadEnds(fsm, product,  badStatesNames);
 		} // while
 		return null;
 	}
 	
 	private <S extends State, T extends Transition<S, E>, E extends Event> FSM<S, DetTransition<S, E>, E> getDeterminizedProductWithFSM(FSM<S, T, E> fsm) {
-		FSM<S, DetTransition<S, E>, E> newFSM = ((Observability)fsm).createObserverView().determinize();
+		FSM<S, DetTransition<S, E>, E> newFSM;
+		if(fsm instanceof Observability) {
+			newFSM = ((Observability)fsm).createObserverView().determinize();
+		} else if(fsm instanceof NonDeterministic) {
+			newFSM = ((NonDeterministic)fsm).determinize();
+		} else{
+			newFSM = (FSM<S, DetTransition<S, E>, E>)fsm; // TODO: make sure this is right...
+		} // if/else
 		DetObsContFSM tempFSM = new DetObsContFSM();
-		// We need to take all the events from the parameter fsm and copy them over to the tempFSM,
-		// but copy the states and transitions direct from the current FSM.
-		tempFSM.copyEvents(fsm);
+		// Make the underlying FSM of the specification
+		// TODO: Throw an exception when the specification has some unobservable events
+		tempFSM.copyEvents(this);
 		tempFSM.copyStates(this);
 		tempFSM.copyTransitions(this);
-		// Determinize the underlying transition system of this FSM.
+		
 		return newFSM.product(tempFSM);
 	}
 	
@@ -116,17 +131,69 @@ public class ModalSpecification
 	 * 
 	 * @param fsm Original FSM which needs to be controlled.
 	 * @param product FSM representing the product of the determinized first FSM with the specification.
-	 * @param badStates HashSet of all the names of States which are bad.
-	 * @return True if there was at least one state which was marked as bad.
+	 * @return HashSet of all the names of States which are bad.
 	 */
 	private <S extends State, T extends Transition<S, E>, E extends Event>
-			boolean markBadStates(FSM<S, T, E> fsm, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
+	HashSet<String> markBadStates(FSM<S, T, E> fsm, FSM<S, DetTransition<S, E>, E> product) {
 		// We need to parse every state in the product, check every component state if there is some uncontrollable observable
 		// event that isn't defined in the product.
 		// Also look if must transitions exist...
-		// TODO: Make it so that a determinize function returns a set of states which can easily be cycled through...
-		return false;
-	}
+		
+		HashSet<String> badStates = new HashSet<String>();
+		// Go through every state in the product
+		for(S s : product.getStates()) {
+			
+			// If a must transition does not exist at the state, mark the state
+			String specStateName = getSpecificationState(s.getStateName());
+			ArrayList<DetTransition<State, Event>> specTransitions = this.mustTransitions.getTransitions(this.getState(specStateName));
+			if(specTransitions != null) for(DetTransition<State, Event> t : specTransitions) {
+				Event event = t.getTransitionEvent();
+				ArrayList<S> toStates = product.transitions.getTransitionStates(s, product.events.getEvent(event));
+				// Mark the state as bad if the must transition does not exist
+				if(toStates == null) {
+					badStates.add(s.getStateName());
+				} else {
+					// Mark the state as bad if all the states it leads to are bad
+					boolean itsBad = true;
+					for(S toState : toStates)
+						if(!badStates.contains(toState.getStateName()))
+							itsBad = false;
+					if(itsBad) {
+						badStates.add(s.getStateName());
+					}
+				}
+			} // for all the state's transitions
+			
+			// If an uncontrollable observable event exists from any of the states in the original fsm, and
+			// the event not allowed in the product, then UH-NO NOT HAP'NIN (mark the state
+			String[] origStateNames = getOriginalComponentStates(s.getStateName());
+			for(int i = 0; i < origStateNames.length; i++) {
+				// Go through all the original transitions
+				ArrayList<T> origTransitions = fsm.transitions.getTransitions(fsm.getState(origStateNames[i]));
+				if(origTransitions != null) for(T t : origTransitions) {
+					E event = t.getTransitionEvent();
+					if(event instanceof EventObservability && ((EventObservability)event).getEventObservability() && event instanceof EventControllability && !((EventControllability)event).getEventControllability()) {
+						// Then the event must be present in the product
+						ArrayList<S> toStates = product.transitions.getTransitionStates(product.getState(specStateName), product.events.getEvent(event));
+						// Mark the state as bad if the must transition does not exist
+						if(toStates == null) {
+							badStates.add(s.getStateName());
+						} else {
+							// Mark the state as bad if all the states it leads to are bad
+							boolean itsBad = true;
+							for(S toState : toStates)
+								if(!badStates.contains(toState.getStateName()))
+									itsBad = false;
+							if(itsBad) {
+								badStates.add(s.getStateName());
+							}
+						}
+					} // if it's observable but NOT controllable
+				} // for all the transitions
+			} // for every component state in the original fsm
+		} // for every state
+		return badStates;
+	} // markBadStates(FSM, FSM, HashSet) 
 	
 	/**
 	 * Gets the original state names for the fsm using the product state names (which is in the form of
@@ -136,7 +203,7 @@ public class ModalSpecification
 	 * @return String array with all the states from the original FSM represented in the input String.
 	 */
 	
-	private String[] getOriginalComponentStates(String aggregateStateName) {
+	static private String[] getOriginalComponentStates(String aggregateStateName) {
 		String[] productHalves = aggregateStateName.split(", ");
 		aggregateStateName = productHalves[0].substring(2, productHalves[0].length() - 1); // Take out the braces
 		return aggregateStateName.split(","); // Get the individual state names
@@ -150,15 +217,19 @@ public class ModalSpecification
 	 * @return String with the state name from the specification.
 	 */
 	
-	private String getSpecificationState(String aggregateStateName) {
+	static private String getSpecificationState(String aggregateStateName) {
 		String[] productHalves = aggregateStateName.split(", ");
 		return productHalves[1].substring(1, productHalves[1].length() - 2); // Take out the braces
 	}
 	
 	private <S extends State, T extends Transition<S, E>, E extends Event>
 			boolean markDeadEnds(FSM<S, T, E> fsm, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
+		
 		// TODO: essentially, perform the coaccessible operation every time, but must get to an end
 		// state in both FSMs (maybe in different ways).
+		
+		
+		
 		return false;
 	}
 	
