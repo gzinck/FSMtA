@@ -28,6 +28,8 @@ public class State implements Comparator<State>, Comparable<State>{
 	private boolean marked;
 	/** boolean instance variable representing if the state is marked as a bad state*/
 	private boolean badState;
+	/** */
+	private boolean privacy;
 
 //--- Constructors   --------------------------------------------------------------------------
 	

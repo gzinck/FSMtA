@@ -280,7 +280,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param prefix String prefix for the new state names (can be the empty string).
 	 */
 	
-	public <S extends State, E extends Event, T extends Transition<S, E>> void copyStates(TransitionSystem<S, T, E> other, String prefix) {
+	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyStates(TransitionSystem<S1, T1, E1> other, String prefix) {
 		for(State s : other.getStates())
 			states.addState(s, prefix);
 		for(State s : other.getInitialStates())
@@ -498,11 +498,8 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a boolean value describing the results of the defined operation
 	 */
 	
-	public boolean addState(String stateName) {
-		if(states.stateExists(stateName))
-			return false;
-		states.addState(stateName);
-		return true;
+	public S addState(String stateName) {
+		return states.addState(stateName);
 	}
 	
 	/**
@@ -514,7 +511,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a boolean value; true if the State extending object was added successfully, false otherwise.
 	 */
 	
-	public boolean addState(State state) {
+	public S addState(State state) {
 		return addState(state.getStateName());
 	}
 	
@@ -561,7 +558,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param state2 - String object corresponding to the destination State for the Transition.
 	 */
 	
-	
 	public void addTransition(String state1, String eventName, String state2) {
 		// If they do not exist yet, add the states.
 		S s1 = states.addState(state1);
@@ -588,7 +584,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		transitions.addTransition(s1, outbound);
 	}
 	
-	
 	/**
 	 * This method handles the adding of a new Transition to the calling FSM object via a
 	 * format of State and Transition objects, acquiring a reference to that State within
@@ -597,7 +592,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param state - State extending object representing the State acquiring a new Transition.
 	 * @param transition - Transition extending object representing the Transition being added to the provided State extending object.
 	 */
-	
 	
 	public void addTransition(S state, T transition) {
 		S fromState = states.addState(state); // Get the state or make it
@@ -615,7 +609,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		}
 	}
 	
-	
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
 	/**
@@ -627,7 +620,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a boolean value representing the outcome of the operation: true if the state was removed, false if the state did not exist.
 	 */
 	
-
 	public boolean removeState(String stateName) {
 		// If the state exists...
 		if(states.stateExists(stateName)) {
@@ -640,7 +632,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		}
 		return false;
 	}
-	
 	
 	/**
 	 * This method removes a State extending object from the calling FSM object's method of storing
@@ -665,8 +656,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param state2 - String object corresponding to the destination State extending object for the Transition object.
 	 * @return - Returns a boolean value; true if the Transition was removed, false if it did not exist.
 	 */
-	
-	
+		
 	public boolean removeTransition(String state1, String eventName, String state2) {
 		S s1 = getState(state1);
 		S s2 = getState(state2);
@@ -686,7 +676,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 
 //---  Manipulations - Other   ----------------------------------------------------------------
 
-	
 	/**
 	 * This method handles the toggling of a State extending object's status as Marked, reversing
 	 * its current status to its opposite. (true -> false, false -> true). The State extending object
@@ -695,7 +684,6 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param stateName - String object representing the name of the State extending object to have its status as Marked be toggled.
 	 * @return - Returns a Boolean object; true if the state is now marked, false if the state is now unmarked, or null if it did not exist.
 	 */
-	
 	
 	public Boolean toggleMarkedState(String stateName) {
 		S curr = states.getState(stateName);

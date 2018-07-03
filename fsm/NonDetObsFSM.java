@@ -147,26 +147,6 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-//---  Getter Methods   -----------------------------------------------------------------------
-
-	@Override
-	public Boolean getEventObservability(String eventName) {
-		if(events.getEvent(eventName) == null)
-			return null;
-		return events.getEvent(eventName).getEventObservability();
-	}
-	
-//---  Setter Methods   -----------------------------------------------------------------------
-
-	@Override
-	public boolean setEventObservability(String eventName, boolean status) {
-		if(events.getEvent(eventName) != null) {
-			events.getEvent(eventName).setEventObservability(status);
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public void toTextFile(String filePath, String name) {
@@ -202,6 +182,38 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 		
 	}
 
+//---  Getter Methods   -----------------------------------------------------------------------
+
+	@Override
+	public Boolean getEventObservability(String eventName) {
+		if(events.getEvent(eventName) == null)
+			return null;
+		return events.getEvent(eventName).getEventObservability();
+	}
+
+	@Override
+	public ArrayList<State> getInitialStates() {
+		return initialStates;
+	}
+
+	@Override
+	public boolean hasInitialState(String stateName) {
+		for(State s : initialStates)
+			if(s.getStateName().equals(stateName)) return true;
+		return false;
+	}
+
+//---  Setter Methods   -----------------------------------------------------------------------
+
+	@Override
+	public boolean setEventObservability(String eventName, boolean status) {
+		if(events.getEvent(eventName) != null) {
+			events.getEvent(eventName).setEventObservability(status);
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsFSM union(FSM<S1, T1, E1> other) {
 		NonDetObsFSM newFSM = new NonDetObsFSM();
@@ -221,18 +233,6 @@ public class NonDetObsFSM extends FSM<State, NonDetTransition<State, ObservableE
 		NonDetObsFSM newFSM = new NonDetObsFSM();
 		parallelCompositionHelper(other, newFSM);
 		return newFSM;
-	}
-
-	@Override
-	public ArrayList<State> getInitialStates() {
-		return initialStates;
-	}
-	
-	@Override
-	public boolean hasInitialState(String stateName) {
-		for(State s : initialStates)
-			if(s.getStateName().equals(stateName)) return true;
-		return false;
 	}
 
 	@Override

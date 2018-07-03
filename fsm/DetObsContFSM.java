@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import fsm.attribute.*;
-import support.event.ControllableEvent;
 import support.event.Event;
 import support.event.ObsControlEvent;
-import support.event.ObservableEvent;
 import support.*;
 import support.attribute.EventControllability;
 import support.attribute.EventObservability;
 import support.transition.*;
+import java.util.*;
 
 public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>
 		implements Deterministic<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>,
@@ -41,7 +40,22 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	 */
 	
 	public DetObsContFSM(File in, String inId) {
-		// TODO: Implement the file input
+		id = inId;									//Assign id
+		states = new StateMap<State>(State.class);	//Initialize the storage for States, Event, and Transitions
+		events = new EventMap<ObsControlEvent>(ObsControlEvent.class);	//51: Create a ReadWrite object for file reading/writing (reading in this case), denote generics
+		transitions = new TransitionFunction<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>(new DetTransition<State, ObsControlEvent>());
+		
+		ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> redWrt = new ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>();
+		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
+		initialState = states.getState(special.get(0).get(0));	//Special ArrayList 0-entry is InitialState
+		states.getState(initialState).setStateInitial(true);
+		for(int i = 0; i < special.get(1).size(); i++)			//Special ArrayList 1-entry is MarkedState
+			states.getState(special.get(1).get(i)).setStateMarked(true);
+		for(int i = 0; i < special.get(2).size(); i++) {			//Special ArrayList 2-entry is ObservableEvent
+			if(events.getEvent(special.get(2).get(i)) == null)
+				events.addEvent(special.get(2).get(i));
+			events.getEvent(special.get(2).get(i)).setEventObservability(false);
+		}
 	}
 	
 	/**
@@ -107,14 +121,114 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public NonDeterministic createObserverView() {
-		// TODO Auto-generated method stub
-		return null;
+	public NonDetObsContFSM createObserverView() {
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();
+		HashMap<String, String> name = new HashMap<String, String>();
+		for(State s : this.getStates()) {
+			HashSet<State> thisSet = new HashSet<State>();
+			ArrayList<String> nameSet = new ArrayList<String>();
+			thisSet.add(s);
+			nameSet.add(s.getStateName());
+			LinkedList<State> queue = new LinkedList<State>();
+			queue.add(s);
+			HashSet<State> visited = new HashSet<State>();
+			while(!queue.isEmpty()) {
+				State top = queue.poll();
+				if(visited.contains(top))
+					continue;
+				visited.add(top);
+				for(DetTransition<State, ObsControlEvent> t : this.getTransitions().getTransitions(top)) {
+					if(!t.getTransitionEvent().getEventObservability() && !thisSet.contains(t.getTransitionState())) {
+						thisSet.add(t.getTransitionState());
+						nameSet.add(t.getTransitionState().getStateName());
+						queue.add(t.getTransitionState());
+					}
+				}
+			}
+			Collections.sort(nameSet);
+			StringBuilder sb = new StringBuilder();
+			
+			Iterator<State> iter = thisSet.iterator();
+			boolean on = true;
+			while(iter.hasNext()) {
+				if(!iter.next().getStateMarked())
+					on = false;
+			}
+			
+			for(int i = 0; i < nameSet.size(); i++)
+				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? ", " : "}"));
+			
+			name.put(s.getStateName(), "{" + sb.toString());
+			map.put(s, thisSet);
+			
+			if(on) {
+				State in = newFSM.addState(name.get(s.getStateName()));
+				in.setStateMarked(true);
+			}
+				
+		}
+		
+		for(State ar : map.keySet()) {
+			StringBuilder newState = new StringBuilder();
+			Iterator<State> iter = map.get(ar).iterator();
+			ArrayList<State> aggregate = new ArrayList<State>();
+			while(iter.hasNext()) {
+				State s = iter.next();
+				aggregate.add(s);
+				for(DetTransition<State, ObsControlEvent> dT : this.getTransitions().getTransitions(s)) {
+					if(dT.getTransitionEvent().getEventObservability()) {
+						NonDetTransition<State, ObsControlEvent> newTrans = new NonDetTransition<State, ObsControlEvent>();
+						newTrans.setTransitionEvent(dT.getTransitionEvent());
+						newTrans.setTransitionState(newFSM.addState(name.get(dT.getTransitionState().getStateName())));
+						newFSM.addTransition(newFSM.addState(name.get(ar.getStateName())), newTrans);
+					}
+				}
+			}
+			Collections.sort(aggregate);
+			for(int i = 0; i < aggregate.size(); i++)
+				newState.append(aggregate.get(i).getStateName() + (i + 1 < aggregate.size() ? ", " : "}"));
+			newFSM.addState("{" + newState.toString());
+		}
+		
+		newFSM.addInitialState(name.get(this.getInitialState().getStateName()));
+		
+		return newFSM;
 	}
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-		// TODO Auto-generated method stub
+
+		if(name == null)
+			name = id;
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "3\n";
+		ArrayList<String> init = new ArrayList<String>();
+		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> unob = new ArrayList<String>();
+		for(State s : this.getStates()) {
+			if(s.getStateMarked()) 
+				mark.add(s.getStateName());
+			if(s.getStateInitial()) 
+				init.add(s.getStateName());
+		}
+		for(ObsControlEvent e : this.getEvents()) {
+			if(!e.getEventObservability())
+				unob.add(e.getEventName());
+		}
+		special += init.size() + "\n";
+		for(String s : init)
+			special += s + "\n";
+		special += mark.size() + "\n";
+		for(String s : mark)
+			special += s + "\n";
+		special += unob.size() + "\n";
+		for(String s : unob)
+			special += s + "\n";
+		ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());
+		
 		
 	}
 	

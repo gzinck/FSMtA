@@ -67,7 +67,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 */
 	
 	public ArrayList<T> getTransitions(S state) {
-		return transitions.get(state);
+		return transitions.get(state) != null ? transitions.get(state) : new ArrayList<T>();
 	}
 	
 	/**
@@ -142,11 +142,11 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * This method appends a new Transition object to the ArrayList<T> at the specified State key.
+	 * This method appends a new Transition object to the ArrayList<<s>T> at the specified State key.
 	 * creating the entry if it doesn't yet exist.
 	 * 
-	 * @param state - State object representing the Key in the stored <Key, Value> data structure, \<State, ArrayList\<T\>\>.
-	 * @param transition - <T extends Transition> object representing the new Transition to append to the existing ArrayList<T> at Key State in <Key, Value>. 
+	 * @param state - State object representing the Key in the stored <Key, Value> data structure, <<r>State, ArrayList<<r>T>>.
+	 * @param transition - <<s>T extends Transition> object representing the new Transition to append to the existing ArrayList<T> at Key State in <Key, Value>. 
 	 */
 	
 	public void addTransition(S state, T transition) {
@@ -155,7 +155,15 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 			transitions.put(state, new ArrayList<T>());
 			currT = transitions.get(state);
 		}
-		currT.add(transition);
+		boolean on = true;
+		for(T t : currT) {
+			if(t.getTransitionEvent().equals(transition.getTransitionEvent()) && t.getTransitionStates().equals(transition.getTransitionStates())) {
+				on = false;
+				break;
+			}
+		}
+		if(on)
+			currT.add(transition);
 	}
 	
 	/**
