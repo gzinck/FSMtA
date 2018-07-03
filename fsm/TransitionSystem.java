@@ -190,7 +190,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 			if(!isCoaccessible) results.put(curr.getStateName(), false);
 		}
 		return results;
-	} // isCoAccessible(State, HashMap<String, Boolean>)
+	} // getCoAccessibleMap(State, HashMap<String, Boolean>)
 
 	/**
 	 * Helper method to the getCoAccessibleMap method that recursively checks States in the calling FSM object's StateMap,

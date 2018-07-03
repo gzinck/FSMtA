@@ -29,7 +29,7 @@ public class DontLookAtMe {
 //		FSMToDot.createImgFromFSM(fsm3, GRAEME_WORKING_FOLDER + "test4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
 		
-		NonDetObsContFSM fsm1 = new NonDetObsContFSM();
+		DetObsContFSM fsm1 = new DetObsContFSM();
 		fsm1.addTransition("1", "a", "2");
 		fsm1.addTransition("2", "b", "3");
 		fsm1.addTransition("2", "a", "10");
@@ -42,14 +42,17 @@ public class DontLookAtMe {
 		//fsm1.setEventObservability("e", false);
 		
 		
-		DetFSM fsm2 = new DetFSM();
+		DetObsContFSM fsm2 = new DetObsContFSM();
 		fsm2.addTransition("1", "a", "2");
 		fsm2.addTransition("2", "b", "3");
 		fsm2.addTransition("2", "a", "10");
 		fsm2.addTransition("10", "c", "1");
+		fsm2.addTransition("10", "c", "2");
 		fsm2.addInitialState("1");
+		fsm2.addInitialState("2");
+		fsm1.setEventControllability("a", false);
 		
-		NonDetObsContFSM fsm3 = fsm1.union(fsm2);
+		DetObsContFSM fsm3 = fsm1.parallelComposition(fsm2);
 	
 		System.out.println(fsm3.makeDotString());
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "/" + "test1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);

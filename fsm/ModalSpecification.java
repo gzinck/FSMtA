@@ -9,7 +9,10 @@ import support.transition.NonDetTransition;
 import support.transition.Transition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
 
 import fsm.attribute.*;
 
@@ -84,24 +87,6 @@ public class ModalSpecification
 	public <S extends State, T extends Transition<S, E>, E extends Event> FSM<S, T, E> makeOptimalSupervisor(FSM<S, T, E> fsm) {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
-		FSM<S, DetTransition<S, E>, E> product = getDeterminizedProductWithFSM(fsm);
-		// Now mark the bad states
-		boolean keepGoing = true;
-		while(keepGoing) {
-			 HashSet<String> badStatesNames = markBadStates(fsm, product);
-			
-			// TODO: Do something more efficient for removing states
-			for(String badStateName : badStatesNames) {
-				product.removeState(badStateName);
-			}
-			
-			badStatesNames = new HashSet<String>();
-			markDeadEnds(fsm, product,  badStatesNames);
-		} // while
-		return null;
-	}
-	
-	private <S extends State, T extends Transition<S, E>, E extends Event> FSM<S, DetTransition<S, E>, E> getDeterminizedProductWithFSM(FSM<S, T, E> fsm) {
 		FSM<S, DetTransition<S, E>, E> newFSM;
 		if(fsm instanceof Observability) {
 			newFSM = ((Observability)fsm).createObserverView().determinize();
@@ -110,14 +95,25 @@ public class ModalSpecification
 		} else{
 			newFSM = (FSM<S, DetTransition<S, E>, E>)fsm; // TODO: make sure this is right...
 		} // if/else
-		DetObsContFSM tempFSM = new DetObsContFSM();
+		
+		DetObsContFSM specFSM = new DetObsContFSM();
 		// Make the underlying FSM of the specification
 		// TODO: Throw an exception when the specification has some unobservable events
-		tempFSM.copyEvents(this);
-		tempFSM.copyStates(this);
-		tempFSM.copyTransitions(this);
+		specFSM.copyEvents(this);
+		specFSM.copyStates(this);
+		specFSM.copyTransitions(this);
 		
-		return newFSM.product(tempFSM);
+		FSM<S, DetTransition<S, E>, E> product = newFSM.product(specFSM);
+		
+		
+		// Now mark the bad states
+		boolean keepGoing = true;
+		while(keepGoing) {
+			markBadStates(fsm, specFSM, product);
+			markDeadEnds(specFSM, product);
+			markDeadEnds(fsm, product);
+		} // while
+		return null;
 	}
 	
 	/**
@@ -130,11 +126,12 @@ public class ModalSpecification
 	 * but there is no such transition defined for the determinized collection of states.
 	 * 
 	 * @param fsm Original FSM which needs to be controlled.
+	 * @param specFSM FSM underlying the modal specification object.
 	 * @param product FSM representing the product of the determinized first FSM with the specification.
 	 * @return HashSet of all the names of States which are bad.
 	 */
 	private <S extends State, T extends Transition<S, E>, E extends Event>
-	HashSet<String> markBadStates(FSM<S, T, E> fsm, FSM<S, DetTransition<S, E>, E> product) {
+			HashSet<String> markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product) {
 		// We need to parse every state in the product, check every component state if there is some uncontrollable observable
 		// event that isn't defined in the product.
 		// Also look if must transitions exist...
@@ -222,16 +219,104 @@ public class ModalSpecification
 		return productHalves[1].substring(1, productHalves[1].length() - 2); // Take out the braces
 	}
 	
-	private <S extends State, T extends Transition<S, E>, E extends Event>
-			boolean markDeadEnds(FSM<S, T, E> fsm, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
+	/**
+	 * Looks into all the sets of states in the first entry in the product FSM and cycles through,
+	 * making sure that it is possible to reach some final state from each of the states based on
+	 * what events are allowed (which is defined by the transitions in the product).
+	 * 
+	 * @param fsm FSM that has all the possible states and transitions.
+	 * @param product FSM that defines what events are allowed at a given state in fsm.
+	 */
+	
+	static protected <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
+			void markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product) {
 		
-		// TODO: essentially, perform the coaccessible operation every time, but must get to an end
-		// state in both FSMs (maybe in different ways).
+		// When a state is processed, add it to the map and state if it reached a marked state.
+		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
 		
+		for(S1 curr : product.states.getStates()) {
+			for(String subState : getOriginalComponentStates(curr.getStateName())) {
+				// Check for a path to a marked state.
+				boolean isCoaccessible = stateIsCoAccessible(fsm.getState(subState), curr, results, fsm, product);
+				if(!isCoaccessible) {
+					curr.setStateBad(true); // Mark it as a bad state if it's not coaccessible.
+					break;
+				} // if not coaccessible
+			} // for every substate
+		} // for every state
+	} // markDeadEnds
+	
+	/**
+	 * Evaluates if a given state in an FSM (associated with a given state in a product FSM) is connected to
+	 * a marked state.
+	 * To do so, it performs a breadth-first search looking for a marked state in the fsm using only transitions which are
+	 * enabled by the product.
+	 * 
+	 * @param fsmState State to evaluate for coaccessibility from the fsm.
+	 * @param prodState State to evaluate for coaccessibility from the product.
+	 * @param results HashMap mapping states to either true (if known to be coaccessible) or false (if known to be NOT coaccessible).
+	 * @param fsm FSM which is one of the FSMs in the product and has a similar alphabet.
+	 * @param product FSM which is composed of the FSM and another FSM.
+	 * @return True if the fsm state leads to a marked state using the product's transitions; false otherwise.
+	 */
+	
+	static private <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
+			boolean stateIsCoAccessible(S fsmState, S1 prodState, HashMap<String, Boolean> results, FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product) {
+		HashSet<String> visited = new HashSet<String>();
+		visited.add(fsmState.getStateName() + prodState.getStateName()); // We visit the combo to catch loops (BUT THIS HAS A HIGH COMPLEXITY)
 		
+		// Base cases when already checked if the state was coaccessible
+		Boolean check = results.get(fsmState.getStateName());
+		if(check != null)
+			return check;
 		
+		// If the state is marked, return true
+		if(fsmState.getStateMarked()) {
+			results.put(fsmState.getStateName(), true);
+			return true;
+		}
+		
+		// Go through all the accessible states and find something marked using bfs
+		LinkedList<State> statesToProcess = new LinkedList<State>();
+		statesToProcess.add(fsmState);
+		statesToProcess.add(prodState);
+		while(!statesToProcess.isEmpty()) {
+			State fsmState1 = statesToProcess.poll();
+			State prodState1 = statesToProcess.poll();
+			
+			// Go through the neighbours of fsmState
+			ArrayList<T> thisTransitions = fsm.transitions.getTransitions((S)fsmState1);
+			if(thisTransitions != null) for(T t : thisTransitions) {
+				// Only proceed if the event is acceptable in the product as well
+				ArrayList<S1> prodNextList = product.transitions.getTransitionStates(prodState1, product.events.getEvent(t.getTransitionEvent()));
+				if(prodNextList != null) {
+					
+					// TODO: Make sure it NEVER returns a list of dead states.
+					
+					S1 prodNext = prodNextList.get(0);
+					// Go through all the transition states
+					for(S toState : t.getTransitionStates()) {
+						// Return true if it's marked
+						if(toState.getStateMarked()) {
+							results.put(fsmState1.getStateName() + prodState1.getStateName(), false);
+							return true;
+						} // if it's marked
+						// Return true if it's already known to be good
+						if(results.get(toState.getStateName() + prodNext.getStateName()) == true)
+							return true;
+						if(!visited.contains(toState.getStateName() + prodNext.getStateName())) {
+							statesToProcess.add(toState);
+							statesToProcess.add(prodNext);
+						} // if haven't visited the nodes
+					} // for all the toStates
+				} // if event is OK in product
+			} // for all the transitions
+		} // while queue is not empty
+		
+		// If made it here, it's not accessible.
+		results.put(fsmState.getStateName() + prodState.getStateName(), false);
 		return false;
-	}
+	} // recursivelyFindMarked
 	
 //---  Copy methods that steal from other systems   -----------------------------------------------------------------------
 	
