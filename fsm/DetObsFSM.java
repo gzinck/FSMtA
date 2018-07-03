@@ -135,8 +135,14 @@ public class DetObsFSM extends FSM<State, DetTransition<State, ObservableEvent>,
 //---  Operations   ---------------------------------------------------------------------------
 	
 	@Override
-	public NonDeterministic<State, NonDetTransition<State, ObservableEvent>, ObservableEvent> createObserverView() {
-		// TODO Auto-generated method stub
+	public NonDetFSM createObserverView() {
+		NonDetFSM newFSM = new NonDetFSM();
+		ArrayList<ArrayList<State>> stateSets = new ArrayList<ArrayList<State>>();
+		for(State s : this.getStates()) {
+			ArrayList<State> thisSet = new ArrayList<State>();
+			thisSet.add(s);
+			
+		}
 		return null;
 	}
 

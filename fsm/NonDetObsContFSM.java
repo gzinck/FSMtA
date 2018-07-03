@@ -42,7 +42,26 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	 */
 	
 	public NonDetObsContFSM(File in, String inId) {
-		// TODO: Implement the file input
+		id = inId;									//Assign id
+		states = new StateMap<State>(State.class);	//Initialize the storage for States, Event, and Transitions
+		events = new EventMap<ObsControlEvent>(ObsControlEvent.class);	//51: Create a ReadWrite object for file reading/writing (reading in this case), denote generics
+		transitions = new TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>(new NonDetTransition<State, ObsControlEvent>());
+		initialStates = new ArrayList<State>();
+		
+		ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> redWrt = new ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>();
+		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
+		
+		for(int i = 0; i < special.get(0).size(); i++) {	//Special ArrayList 0-entry is InitialState
+			states.getState(special.get(0).get(i)).setStateInitial(true);
+			initialStates.add(states.addState(special.get(0).get(i)));
+		}
+		for(int i = 0; i < special.get(1).size(); i++)			//Special ArrayList 1-entry is MarkedState
+			states.getState(special.get(1).get(i)).setStateMarked(true);
+		for(int i = 0; i < special.get(2).size(); i++) {			//Special ArrayList 2-entry is ObservableEvent
+			if(events.getEvent(special.get(2).get(i)) == null)
+				events.addEvent(special.get(2).get(i));
+			events.getEvent(special.get(2).get(i)).setEventObservability(false);
+		}
 	}
 	
 	/**
@@ -109,19 +128,124 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public NonDeterministic createObserverView() {
-		// TODO Auto-generated method stub
-		return null;
+	public NonDetObsContFSM createObserverView() {
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();
+		HashMap<String, String> name = new HashMap<String, String>();
+		for(State s : this.getStates()) {
+			HashSet<State> thisSet = new HashSet<State>();
+			ArrayList<String> nameSet = new ArrayList<String>();
+			thisSet.add(s);
+			nameSet.add(s.getStateName());
+			LinkedList<State> queue = new LinkedList<State>();
+			queue.add(s);
+			HashSet<State> visited = new HashSet<State>();
+			while(!queue.isEmpty()) {
+				State top = queue.poll();
+				if(visited.contains(top))
+					continue;
+				visited.add(top);
+				for(NonDetTransition<State, ObsControlEvent> t : this.getTransitions().getTransitions(top)) {
+					for(State sr : t.getTransitionStates()) {
+					  if(!t.getTransitionEvent().getEventObservability() && !thisSet.contains(sr)) {
+					 	thisSet.add(sr);
+						nameSet.add(sr.getStateName());
+						queue.add(sr);
+					}
+				  }
+				}
+			}
+			Collections.sort(nameSet);
+			StringBuilder sb = new StringBuilder();
+			
+			Iterator<State> iter = thisSet.iterator();
+			boolean on = true;
+			while(iter.hasNext()) {
+				if(!iter.next().getStateMarked())
+					on = false;
+			}
+			
+			for(int i = 0; i < nameSet.size(); i++)
+				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? ", " : "}"));
+			
+			name.put(s.getStateName(), "{" + sb.toString());
+			map.put(s, thisSet);
+			
+			if(on) {
+				State in = newFSM.addState(name.get(s.getStateName()));
+				in.setStateMarked(true);
+			}
+				
+		}
+		
+		for(State ar : map.keySet()) {
+			StringBuilder newState = new StringBuilder();
+			Iterator<State> iter = map.get(ar).iterator();
+			ArrayList<State> aggregate = new ArrayList<State>();
+			while(iter.hasNext()) {
+				State s = iter.next();
+				aggregate.add(s);
+				for(NonDetTransition<State, ObsControlEvent> dT : this.getTransitions().getTransitions(s)) {
+					if(dT.getTransitionEvent().getEventObservability()) {
+					  for(State sr : dT.getTransitionStates()) {
+						NonDetTransition<State, ObsControlEvent> newTrans = new NonDetTransition<State, ObsControlEvent>();
+						newTrans.setTransitionEvent(dT.getTransitionEvent());
+						newTrans.addTransitionState(newFSM.addState(sr));
+						newFSM.addTransition(newFSM.addState(sr), newTrans);
+					  }
+					}
+				}
+			}
+			Collections.sort(aggregate);
+			for(int i = 0; i < aggregate.size(); i++)
+				newState.append(aggregate.get(i).getStateName() + (i + 1 < aggregate.size() ? ", " : "}"));
+			newFSM.addState("{" + newState.toString());
+		}
+		
+		for(State sI : this.getInitialStates())
+			newFSM.addInitialState(name.get(sI.getStateName()));
+		
+		return newFSM;
 	}
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-		// TODO Auto-generated method stub
+
+		if(name == null)
+			name = id;
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "3\n";
+		ArrayList<String> init = new ArrayList<String>();
+		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> unob = new ArrayList<String>();
+		for(State s : this.getStates()) {
+			if(s.getStateMarked()) 
+				mark.add(s.getStateName());
+			if(s.getStateInitial()) 
+				init.add(s.getStateName());
+		}
+		for(ObsControlEvent e : this.getEvents()) {
+			if(!e.getEventObservability())
+				unob.add(e.getEventName());
+		}
+		special += init.size() + "\n";
+		for(String s : init)
+			special += s + "\n";
+		special += mark.size() + "\n";
+		for(String s : mark)
+			special += s + "\n";
+		special += unob.size() + "\n";
+		for(String s : unob)
+			special += s + "\n";
+		ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());
+		
 		
 	}
 	
 	@Override
-	public DetFSM determinize(){
+	public DetObsContFSM determinize(){
 		/*
 		 * Create newFSM
 		 * Create queue to process states
@@ -137,7 +261,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		 * 
 		 */
 		
-		DetFSM fsmOut = new DetFSM("Determinized " + this.getId());
+		DetObsContFSM fsmOut = new DetObsContFSM("Determinized " + this.getId());
 		LinkedList<String> queue = new LinkedList<String>();
 		StringBuilder init = new StringBuilder();
 		Collections.sort(getInitialStates());
@@ -148,8 +272,9 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		while(itr.hasNext()) {
 			State curr = itr.next();
 			init.append(curr.getStateName());
-			if(itr.hasNext()) init.append(","); // Add a comma if there is another item to add
-			mark1 = curr.getStateMarked() ? mark1 : false; // TODO: isn't it supposed to mark it if at least 1 state is marked? Might be wrong, not sure
+			if(itr.hasNext()) 
+				init.append("-"); // Add a comma if there is another item to add
+			mark1 = curr.getStateMarked() ? mark1 : false; 
 		}
 		queue.add(init.toString());
 		fsmOut.addInitialState("{" + init.toString() + "}");
@@ -165,7 +290,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			if(processed.contains(aggregate)) // Don't reprocess if already done
 				continue;
 			processed.add(aggregate);
-			String[] states = aggregate.split(","); // Break up the states into separate ones
+			String[] states = aggregate.split("-"); // Break up the states into separate ones
 			HashMap<String, HashSet<String>> eventStates = new HashMap<String, HashSet<String>>();
 			TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> allTrans = this.getTransitions();
 			
@@ -192,7 +317,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				Collections.sort(outboundStates);
 				String collec = "";
 				for(String s : outboundStates)
-					collec += s + ",";
+					collec += s + "-";
 				collec = collec.substring(0, collec.length() - 1);
 				queue.add(collec);
 				fsmOut.addTransition("{"+aggregate+"}", event, "{"+collec+"}");
@@ -354,7 +479,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 
 	@Override
 	public boolean hasInitialState(String stateName) {
-		return initialStates.contains(stateName);
+		return initialStates.contains(getState(stateName));
 	}
 	
 	@Override

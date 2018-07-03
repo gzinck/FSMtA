@@ -2,10 +2,8 @@ package fsm;
 
 import java.util.*;
 import support.*;
-import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
-import java.io.*;
 
 /**
  * This abstract class models a Finite State Machine with some of the essential elements.
