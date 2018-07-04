@@ -1,7 +1,6 @@
 package fsmtaui;
 
 import fsmtaui.popups.ImageLegend;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
@@ -104,7 +103,7 @@ class ContentPane extends BorderPane {
 	
 	void makeHelpBtnEventHandler() {
 		helpBtn.setOnAction(e -> {
-			ImageLegend il = new ImageLegend();
+			new ImageLegend();
 		}); // setOnAction
 	}
 } // class ContentPane

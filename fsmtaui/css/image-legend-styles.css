@@ -10,6 +10,10 @@
     -fx-background-position: center center;
 }
 
+#state-legend > Label, #transition-legend > Label {
+    -fx-padding: 10px;
+}
+
 #transition-legend {
     -fx-padding: 10;
 }
@@ -17,47 +21,47 @@
 
 /* Image for the default state type */
 #default-state {
-    -fx-background-image: url("../img/legend/default-state.png");
+    -fx-background-image: url("../img/legend/states/default-state.jpg");
 }
 
 /* Image for the secret state type */
 #secret-state {
-    -fx-background-image: url("../img/legend/secret-state.png");
+    -fx-background-image: url("../img/legend/states/secret-state.jpg");
 }
 
 /* Image for the bad state type */
 #bad-state {
-    -fx-background-image: url("../img/legend/bad-state.png");
+    -fx-background-image: url("../img/legend/states/bad-state.jpg");
 }
 
 /* Image for the bad/secret state type */
 #secret-bad-state {
-    -fx-background-image: url("../img/legend/secret-bad-state.png");
+    -fx-background-image: url("../img/legend/states/secret-bad-state.jpg");
 }
 
 /* Image for the marked state type */
-#secret-bad-state {
-    -fx-background-image: url("../img/legend/marked-state.png");
+#marked-state {
+    -fx-background-image: url("../img/legend/states/marked-state.jpg");
 }
 
 /**************************** TRANSITION PICTURES *****************************************/
 
 /* Image for the default transition type */
 #default-transition {
-    -fx-background-image: url("../img/legend/default-transition.png");
+    -fx-background-image: url("../img/legend/transitions/default-transition.jpg");
 }
 
 /* Image for the unobservable transition type */
 #unobservable-transition {
-    -fx-background-image: url("../img/legend/unobservable-transition.png");
+    -fx-background-image: url("../img/legend/transitions/unobservable-transition.jpg");
 }
 
 /* Image for the uncontrollable transition type */
 #uncontrollable-transition {
-    -fx-background-image: url("../img/legend/uncontrollable-transition.png");
+    -fx-background-image: url("../img/legend/transitions/uncontrollable-transition.jpg");
 }
 
 /* Image for the unobservable and uncontrollable transition type */
 #unobservable-uncontrollable-transition {
-    -fx-background-image: url("../img/legend/unobservable-uncontrollable-transition.png");
+    -fx-background-image: url("../img/legend/transitions/unobservable-uncontrollable-transition.jpg");
 }

@@ -44,7 +44,6 @@ public class ImageLegend {
 		
 		// Default state
 		Region defaultState = new Region();
-		System.out.println(defaultState.getClass());
 		defaultState.setId("default-state");
 		Label defaultStateLabel = new Label("Default State");
 		stateLegend.addRow(0, defaultState, defaultStateLabel);

@@ -266,13 +266,12 @@ public class FileSettingsPane extends VBox {
 				GenerateFSMDialog dialog = new GenerateFSMDialog(fsmClass.equals("Deterministic")); // pass boolean of whether the FSM is deterministic or not
 				GenerateFSMDialog.FSMParameters parameters = dialog.getFSMParametersFromUser();
 				if(parameters != null) {
-					// TODO: Uncomment this
-//					File fsmFile = new File(GenerateFSM.createNewFSM(
-//							parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-//							parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
-//							parameters.sizeUnobserv, parameters.sizeUncontrol, fsmClass.equals("Deterministic"),
-//							newFSMName, model.getWorkingDirectoryString() + "/"));
-//					newFSM = new DetObsContFSM(fsmFile, newFSMName);
+					File fsmFile = new File(GenerateFSM.createNewFSM(
+							parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
+							parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
+							parameters.sizeUnobserv, parameters.sizeUncontrol, fsmClass.equals("Deterministic"),
+							newFSMName, model.getWorkingDirectoryString() + "/"));
+					newFSM = new DetObsContFSM(fsmFile, newFSMName);
 				} // if
 				
 				if(newFSM != null) {
