@@ -19,13 +19,12 @@ public interface NonDeterministic<S extends State, T extends NonDetTransition<S,
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Determinizes a NonDeterministic FSM and returns the corresponding
-	 * Deterministic FSM. It condenses the FSM into sets of states where
-	 * only one transition of a given event name will leave any given state.
+	 * This method Determinizes a NonDeterministic FSM and returns the corresponding Deterministic FSM. It condenses
+	 * the FSM into sets of states where only one transition of a given event name will leave any given state.
 	 * 
-	 * @return Deterministic FSM corresponding to the deterministic version
-	 * of the FSM.
+	 * @return - Returns a NonDetObsContFSM object corresponding to the deterministic version of the calling DetObsContFSM object.
 	 */
 	
 	public abstract <fsm extends FSM> fsm determinize();
+	
 }

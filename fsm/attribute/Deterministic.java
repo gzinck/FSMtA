@@ -6,7 +6,7 @@ import support.transition.DetTransition;
 
 /**
  * The Deterministic interface defines specialized methods which apply to all FSMs
- * which are deterministic, such as setInitialState, among others.
+ * which are Deterministic, such as setInitialState, among others.
  * 
  * This interface is a part of the fsm.attribute package.
  * 

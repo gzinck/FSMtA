@@ -13,6 +13,7 @@ import java.util.Iterator;
  */
 
 public class DisabledEvents {
+	
 	/** Stores whether the state is disabled. */
 	private boolean stateIsDisabled;
 	/** Stores all the events which are disabled for the state, or null if none are disabled. */

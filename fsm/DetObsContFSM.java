@@ -13,10 +13,19 @@ import support.attribute.EventObservability;
 import support.transition.*;
 import java.util.*;
 
+/**
+ * This class 
+ * 
+ * This class is a part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
+
 public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>
 		implements Deterministic<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>,
 		Observability<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>,
-		Controllability<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> {
+		Controllability<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>,
+		OpacityTest<State>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -31,12 +40,12 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 //--- Constructors  ----------------------------------------------------------------------
 	
 	/**
-	 * Constructor for an DetObsContFSM object that takes in a file encoding the contents of the FSM.
+	 * Constructor for a DetObsContFSM object that takes in a file encoding the contents of the FSM.
 	 * 
-	 * DetObsContFSM File Order for Special: Initial, Marked.
+	 * DetObsContFSM File Order for Special: Initial, Marked, Private, ObservableEvent, ControllableEvent.
 	 * 
-	 * @param in - File read in order to create the FSM.
-	 * @param id - The id for the FSM (can be any String).
+	 * @param in - File object to read in order to create the FSM.
+	 * @param id - String object representing the id for the FSM.
 	 */
 	
 	public DetObsContFSM(File in, String inId) {
@@ -101,7 +110,9 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself.
+	 * user to add those elements themselves.
+	 * 
+	 * @param inId - String object representing the id for this FSM object.
 	 */
 	
 	public DetObsContFSM(String inId) {
@@ -114,7 +125,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself. It has no id, either.
+	 * user to add those elements themselves, requesting no id for the FSM.
 	 */
 	
 	public DetObsContFSM() {
@@ -129,82 +140,82 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	
 	@Override
 	public NonDetObsContFSM createObserverView() {
-		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();
-		HashMap<String, String> name = new HashMap<String, String>();
-		for(State s : this.getStates()) {
-			HashSet<State> thisSet = new HashSet<State>();
-			ArrayList<String> nameSet = new ArrayList<String>();
-			thisSet.add(s);
-			nameSet.add(s.getStateName());
-			LinkedList<State> queue = new LinkedList<State>();
-			queue.add(s);
-			HashSet<State> visited = new HashSet<State>();
-			while(!queue.isEmpty()) {
-				State top = queue.poll();
-				if(visited.contains(top))
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();			//Create new FSM to hold result of operation
+		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();	//Maps a State to all States it is attached to
+		HashMap<String, String> name = new HashMap<String, String>();		//Maps all State names to their new names via attached States
+		for(State s : this.getStates()) {						//For all States in the FSM:
+			HashSet<State> thisSet = new HashSet<State>();			//Keeps track of all States attached to this State
+			ArrayList<String> nameSet = new ArrayList<String>();		//Holds the names in a format that can be easily sorted
+			thisSet.add(s);											//Add the original State as one in the group
+			nameSet.add(s.getStateName());							//Add the original State to be concatenated into a name
+			LinkedList<State> queue = new LinkedList<State>();		//Queue to process all States connected via Unobservable Events
+			queue.add(s);											//First Queue entry is the original State
+			HashSet<State> visited = new HashSet<State>();			//Keeps track of revisited States
+			while(!queue.isEmpty()) {					//While there are more States to look at:
+				State top = queue.poll();					//Get the next State
+				if(visited.contains(top))					//If already processed, don't re-process the State
 					continue;
-				visited.add(top);
-				for(DetTransition<State, ObsControlEvent> t : this.getTransitions().getTransitions(top)) {
-					if(!t.getTransitionEvent().getEventObservability() && !thisSet.contains(t.getTransitionState())) {
-						thisSet.add(t.getTransitionState());
-						nameSet.add(t.getTransitionState().getStateName());
-						queue.add(t.getTransitionState());
+				visited.add(top);							//Mark it as visited
+				for(DetTransition<State, ObsControlEvent> t : this.getTransitions().getTransitions(top)) {	//Process all the State's Transitions
+					if(!t.getTransitionEvent().getEventObservability() && !thisSet.contains(t.getTransitionState())) {	
+						thisSet.add(t.getTransitionState());			//If the Event is unobservable and has not yet been seen, add the State
+						nameSet.add(t.getTransitionState().getStateName());	//Duplicates handled by second condition
+						queue.add(t.getTransitionState());			//As the State is a part of the new aggregated State, check its transitions too
 					}
 				}
 			}
-			Collections.sort(nameSet);
-			StringBuilder sb = new StringBuilder();
+			Collections.sort(nameSet);		//For consistency, sort all included State names so that aggregates of same States are the same.
+			StringBuilder sb = new StringBuilder();	//Better than a String, try it in Kattis problems that are too slow.
 			
-			Iterator<State> iter = thisSet.iterator();
-			boolean on = true;
-			boolean priv = true;
-			while(iter.hasNext()) {
+			Iterator<State> iter = thisSet.iterator();	//HashSet used to avoid duplicates, now process the State objects
+			boolean on = true;							//Should be Marked?
+			boolean priv = true;							//Should be Secret?
+			while(iter.hasNext()) {						//For all States, check each's Status as Marked/Secret. If ever no, negate.
 				State sit = iter.next();
 				if(!sit.getStateMarked())
 					on = false;
 				if(!sit.getStatePrivacy())
 					priv = false;
 			}
-			for(int i = 0; i < nameSet.size(); i++)
+			for(int i = 0; i < nameSet.size(); i++)		//Now build the new State's name via the sorted NameSet
 				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? ", " : "}"));
-			name.put(s.getStateName(), "{" + sb.toString());
-			map.put(s, thisSet);
-			if(on) {
+			name.put(s.getStateName(), "{" + sb.toString());		//Preferred nomenclature is to use brackets,
+			map.put(s, thisSet);				//Keep track of pairings between States and their new Names or all included States
+			if(on) {							//If no included State were found to be unmarked, the aggregate is Marked
 				State in = newFSM.addState(name.get(s.getStateName()));
 				in.setStateMarked(true);
 			}
-			if(priv) {
+			if(priv) {						//If no included State were found to be not secret, the aggregate is Secret
 				State in = newFSM.addState(name.get(s.getStateName()));
 				in.setStatePrivate(true);
 			}
 		}
 		
-		for(State ar : map.keySet()) {
-			StringBuilder newState = new StringBuilder();
-			Iterator<State> iter = map.get(ar).iterator();
-			ArrayList<State> aggregate = new ArrayList<State>();
-			while(iter.hasNext()) {
-				State s = iter.next();
-				aggregate.add(s);
-				for(DetTransition<State, ObsControlEvent> dT : this.getTransitions().getTransitions(s)) {
-					if(dT.getTransitionEvent().getEventObservability()) {
-						NonDetTransition<State, ObsControlEvent> newTrans = new NonDetTransition<State, ObsControlEvent>();
-						newTrans.setTransitionEvent(dT.getTransitionEvent());
-						newTrans.setTransitionState(newFSM.addState(name.get(dT.getTransitionState().getStateName())));
-						newFSM.addTransition(newFSM.addState(name.get(ar.getStateName())), newTrans);
-					}
+		for(State ar : map.keySet()) {						//For all States (which have been paired to aggregates)
+			StringBuilder newState = new StringBuilder();		//Gotta build the name of the target State to go towards
+			Iterator<State> iter = map.get(ar).iterator();		//Each State has a set of included States, so process through them!
+			ArrayList<State> aggregate = new ArrayList<State>();		//Keep track of all States that are a part of the translated State to sort
+			while(iter.hasNext()) {						//For all included States:
+				State s = iter.next();						//Get the next State 
+				aggregate.add(s);							//Add to collection of States making it up
+				for(DetTransition<State, ObsControlEvent> dT : this.getTransitions().getTransitions(s)) {	//For all Transitions at this State:
+					if(dT.getTransitionEvent().getEventObservability()) {			//If the observed Transition is Observable (not to be excised):
+						NonDetTransition<State, ObsControlEvent> newTrans = new NonDetTransition<State, ObsControlEvent>();	//New Transition
+						newTrans.setTransitionEvent(dT.getTransitionEvent());		//Assign it the old Event for consistency
+						newTrans.setTransitionState(newFSM.addState(name.get(dT.getTransitionState().getStateName())));	//Only one target State
+						newFSM.addTransition(newFSM.addState(name.get(ar.getStateName())), newTrans);	//Now add the Transition to the FSM as an
+					}															//extension of the newly defined State
 				}
 			}
-			Collections.sort(aggregate);
-			for(int i = 0; i < aggregate.size(); i++)
+			Collections.sort(aggregate);						//Sort aggregate of States for naming purposes
+			for(int i = 0; i < aggregate.size(); i++)		//Now build its name
 				newState.append(aggregate.get(i).getStateName() + (i + 1 < aggregate.size() ? ", " : "}"));
-			newFSM.addState("{" + newState.toString());
+			newFSM.addState("{" + newState.toString());		//And add the State just in case, probably redundant
 		}
 		
-		newFSM.addInitialState(name.get(this.getInitialState().getStateName()));
+		newFSM.addInitialState(name.get(this.getInitialState().getStateName()));	//And assign the new Initial State
 		
-		return newFSM;
+		return newFSM;						//Good work!
 	}
 
 	@Override
@@ -238,8 +249,6 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 			special += s + "\n";
 		ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>();
 		rdWrt.writeToFile(truePath,  special, this.getTransitions());
-		
-		
 	}
 	
 	@Override
@@ -341,6 +350,16 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		return currDE;
 	} // getDisabledEvents
 
+	@Override
+	public ArrayList<State> testCurrentStateOpacity(){
+		ArrayList<State> secrets = new ArrayList<State>();
+		for(State s : this.getStates()) {
+			if(s.getStatePrivacy())
+				secrets.add(s);
+		}
+		return secrets;
+	}
+	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override

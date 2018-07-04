@@ -5,16 +5,21 @@ import support.attribute.EventControllability;
 import support.attribute.EventObservability;
 import support.event.Event;
 import support.transition.DetTransition;
-import support.transition.NonDetTransition;
 import support.transition.Transition;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
-
 import fsm.attribute.*;
+
+/**
+ * This class models an FSM-adjacent construction called a ModalSpecification which
+ * Graeme should write a brief description of for me. TODO:
+ * 
+ * This class is a part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
 
 public class ModalSpecification
 		extends TransitionSystem<State, DetTransition<State, Event>, Event> {
@@ -23,7 +28,6 @@ public class ModalSpecification
 
 	/** ArrayList<<j>State> object that holds a list of Initial States for this Modal Specification object. */
 	protected ArrayList<State> initialStates;
-	
 	/** TransitionFunction object mapping states to sets of "must" transitions for the Modal Specification.
 	 * These are transitions which must be present in the controlled FSM in order to satisfy the spec. */
 	protected TransitionFunction<State, DetTransition<State, Event>, Event> mustTransitions;
@@ -35,8 +39,8 @@ public class ModalSpecification
 	 * creates a new ModalSpecification using that as the basis. Any information which is not
 	 * permissible in a ModalSpecification is thrown away, because it does not have any means to handle it.
 	 * 
-	 * @param other TransitionSystem to copy as a ModalSpecification.
-	 * @param inId Id for the new ModalSpecification to carry.
+	 * @param other - TransitionSystem object to copy as a ModalSpecification.
+	 * @param inId - String object representing Id for the new ModalSpecification to carry.
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> ModalSpecification(TransitionSystem<S1, T1, E1> other, String inId) {
@@ -56,7 +60,9 @@ public class ModalSpecification
 	
 	/**
 	 * Constructor for an ModalSpecification object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself.
+	 * user to add those elements themselves.
+	 * 
+	 * @param inId - String object representing the id representing this ModalSpecification object.
 	 */
 	
 	public ModalSpecification(String inId) {
@@ -70,7 +76,7 @@ public class ModalSpecification
 	
 	/**
 	 * Constructor for an ModalSpecification object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself. It has no id, either.
+	 * user to add those elements themselves. It has no id, either.
 	 */
 	
 	public ModalSpecification() {
@@ -83,6 +89,15 @@ public class ModalSpecification
 	} // ModalSpecification()
 	
 //---  Operations   -----------------------------------------------------------------------
+	
+	/**
+	 * This method performs the operation to create the Optimal Supervisor of a supplied FSM.
+	 * 
+	 * TODO: Graeme, explain this.
+	 * 
+	 * @param fsm - FSM<<r>S, T, E> object 
+	 * @return - Returns a 
+	 */
 	
 	public <S extends State, T extends Transition<S, E>, E extends Event> FSM<S, T, E> makeOptimalSupervisor(FSM<S, T, E> fsm) {
 		//--------------------------------------------
@@ -125,10 +140,10 @@ public class ModalSpecification
 	 * 2) When there is some observable event where the event must be possible according to the specification,
 	 * but there is no such transition defined for the determinized collection of states.
 	 * 
-	 * @param fsm Original FSM which needs to be controlled.
-	 * @param specFSM FSM underlying the modal specification object.
-	 * @param product FSM representing the product of the determinized first FSM with the specification.
-	 * @return HashSet of all the names of States which are bad.
+	 * @param fsm - Original FSM which needs to be controlled.
+	 * @param specFSM - FSM underlying the modal specification object.
+	 * @param product - FSM representing the product of the determinized first FSM with the specification.
+	 * @return - Returns a HashSet of all the names of States which are bad.
 	 */
 	
 	private <S extends State, T extends Transition<S, E>, E extends Event>
@@ -197,8 +212,8 @@ public class ModalSpecification
 	 * Gets the original state names for the fsm using the product state names (which is in the form of
 	 * ({state1,state2}, specState) and we want the array of states in the first set).
 	 * 
-	 * @param aggregateStateName String representing the state to break apart.
-	 * @return String array with all the states from the original FSM represented in the input String.
+	 * @param aggregateStateName - String object representing the state to break apart.
+	 * @return - Returns an array of String objects with all the states from the original FSM represented in the input String.
 	 */
 	
 	static private String[] getOriginalComponentStates(String aggregateStateName) {
@@ -211,8 +226,8 @@ public class ModalSpecification
 	 * Gets the original state name for the specification using the product state names (which is in the form of
 	 * ({state1,state2}, specState) and we want the second entry in the product).
 	 * 
-	 * @param aggregateStateName String representing the state to break apart.
-	 * @return String with the state name from the specification.
+	 * @param aggregateStateName - String representing the state to break apart.
+	 * @return - Returns a String object with the state name from the specification.
 	 */
 	
 	static private String getSpecificationState(String aggregateStateName) {
@@ -225,8 +240,8 @@ public class ModalSpecification
 	 * making sure that it is possible to reach some final state from each of the states based on
 	 * what events are allowed (which is defined by the transitions in the product).
 	 * 
-	 * @param fsm FSM that has all the possible states and transitions.
-	 * @param product FSM that defines what events are allowed at a given state in fsm.
+	 * @param fsm - FSM that has all the possible states and transitions.
+	 * @param product - FSM that defines what events are allowed at a given state in fsm.
 	 */
 	
 	static protected <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
@@ -253,12 +268,12 @@ public class ModalSpecification
 	 * To do so, it performs a breadth-first search looking for a marked state in the fsm using only transitions which are
 	 * enabled by the product.
 	 * 
-	 * @param fsmState State to evaluate for coaccessibility from the fsm.
-	 * @param prodState State to evaluate for coaccessibility from the product.
-	 * @param results HashMap mapping states to either true (if known to be coaccessible) or false (if known to be NOT coaccessible).
-	 * @param fsm FSM which is one of the FSMs in the product and has a similar alphabet.
-	 * @param product FSM which is composed of the FSM and another FSM.
-	 * @return True if the fsm state leads to a marked state using the product's transitions; false otherwise.
+	 * @param fsmState - State to evaluate for coaccessibility from the fsm.
+	 * @param prodState - State to evaluate for coaccessibility from the product.
+	 * @param results - HashMap mapping states to either true (if known to be coaccessible) or false (if known to be NOT coaccessible).
+	 * @param fsm - FSM which is one of the FSMs in the product and has a similar alphabet.
+	 * @param product - FSM which is composed of the FSM and another FSM.
+	 * @return - Returns a boolean value; true if the fsm state leads to a marked state using the product's transitions; false otherwise.
 	 */
 	
 	static private <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
@@ -323,7 +338,8 @@ public class ModalSpecification
 	
 	/**
 	 * Copies the must transitions of another ModalSpecification into the current ModalSpecification.
-	 * @param other ModalSpecification whose transitions are to be copied.
+	 * 
+	 * @param other - ModalSpecification object whose transitions are to be copied.
 	 */
 	
 	public void copyMustTransitions(ModalSpecification other) {
@@ -337,6 +353,7 @@ public class ModalSpecification
 				} // for every transition
 		} // for every state
 	} // copyMustTransitions(ModalSpecification)
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	@Override

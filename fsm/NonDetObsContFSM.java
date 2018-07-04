@@ -15,10 +15,19 @@ import support.attribute.EventControllability;
 import support.attribute.EventObservability;
 import support.transition.*;
 
+/**
+ * This class 
+ * 
+ * This class is a part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
+
 public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>
 		implements NonDeterministic<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>,
 		Observability<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>,
-		Controllability<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> {
+		Controllability<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>,
+		OpacityTest<State>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -76,8 +85,8 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	 * NonDetObsContFSM using that as the basis. Any information which is not permissible in a
 	 * NonDetObsContFSM is thrown away, because it does not have any means to handle it.
 	 * 
-	 * @param other FSM to copy as a NonDetObsContFSM (can be any kind of FSM).
-	 * @param inId Id for the new FSM to carry.
+	 * @param other - FSM object to copy as a NonDetObsContFSM (can be any kind of FSM).
+	 * @param inId - String object representing the Id for the new FSM to carry.
 	 */
 	
 	public NonDetObsContFSM(FSM<State, Transition<State, Event>, Event> other, String inId) {
@@ -108,7 +117,9 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself.
+	 * user to add those elements themselves.
+	 * 
+	 * @param - String object representing the new id for this NonDetObsContFSM object
 	 */
 	
 	public NonDetObsContFSM(String inId) {
@@ -121,7 +132,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
-	 * user to add those elements him/herself. It has no id, either.
+	 * user to add those elements themselves. It has no id, either.
 	 */
 	
 	public NonDetObsContFSM() {
@@ -136,7 +147,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	@Override
 	public NonDetObsContFSM createObserverView() {
-		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();		//See comments in DetObsContFSM for now, same process
 		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();
 		HashMap<String, String> name = new HashMap<String, String>();
 		for(State s : this.getStates()) {
@@ -466,7 +477,17 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		} // for each transition
 		return currDE;
 	} // getDisabledEvents
-
+	
+	@Override
+	public ArrayList<State> testCurrentStateOpacity(){
+		ArrayList<State> secrets = new ArrayList<State>();
+		for(State s : this.getStates()) {
+			if(s.getStatePrivacy())
+				secrets.add(s);
+		}
+		return secrets;
+	}
+	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
