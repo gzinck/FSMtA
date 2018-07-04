@@ -14,11 +14,14 @@ import javafx.scene.layout.*;
  */
 public class ModifyFSMPane extends VBox {
 	
+	/** Integer for the number of pixels wide the settings sidebar will be. */
+	private static final int OPTIONS_WIDTH = 382;
+	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
 	
 	/** Accordion with all the options for the pane. */
-	private Accordion optionBoxes;
+	private VBox optionBoxes;
 	
 	/** TitledPane containing all the options for the events. */
 	private TitledPane eventOptions;
@@ -51,25 +54,11 @@ public class ModifyFSMPane extends VBox {
 		markedStateOptions = new TitledPane("Marked State Options",new ModifyFSMMarkedStatesPane(model));
 		observabilityOptions = new TitledPane("Observability Options", new ModifyFSMObservablePane(model));
 		
-		optionBoxes = new Accordion(eventOptions, stateOptions, initialStateOptions, markedStateOptions, observabilityOptions);
-		optionBoxes.setExpandedPane(eventOptions);
-		getChildren().addAll(titleLabel, optionBoxes);
+		optionBoxes = new VBox(eventOptions, stateOptions, initialStateOptions, markedStateOptions, observabilityOptions);
+		optionBoxes.setPrefWidth(OPTIONS_WIDTH);
+		ScrollPane scrollable = new ScrollPane();
+		scrollable.setContent(optionBoxes);
 		
-		// Make event handlers
-		
-		refreshOptions();
+		getChildren().addAll(titleLabel, scrollable);
 	} // SettingsPane()
-	
-	/**
-	 * Handles whenever the current FSM changes. When the FSM changes, if
-	 * the new FSM is nondeterministic, then the options reflect that.
-	 */
-	private void refreshOptions() {
-		model.getOpenFSMTabs().getSelectionModel().selectedItemProperty().addListener(
-			(ObservableValue<? extends Tab> value, Tab oldTab, Tab newTab) -> {
-				if(newTab != null) {
-					optionBoxes.setExpandedPane(eventOptions);
-				} // if
-			});
-	} // refreshOptions()
 } // class ModifyFSMPane

@@ -1,5 +1,7 @@
 package fsmtaui;
 
+import java.io.File;
+
 import fsm.FSM;
 import graphviz.FSMToDot;
 import javafx.geometry.Bounds;
@@ -57,6 +59,10 @@ public class FSMViewport extends Parent {
 		imageView = new ImageView(image);
 		imageView.setPreserveRatio(true);
 		
+		// Delete the image
+		File imageFile = new File(imageName + ".jpg");
+		imageFile.delete();
+		
 		scrollPane = new ScrollPane(imageView);
 		scrollPane.setPannable(true);
 		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
@@ -67,7 +73,7 @@ public class FSMViewport extends Parent {
 		ratio = 1.0;
 		
 		getChildren().setAll(scrollPane);
-	} // FSMViewport(DeterministicFSM, File, String)
+	} // FSMViewport(FSM, Model)
 	
 	/**
 	 * Gets the id of the FSM being represented.

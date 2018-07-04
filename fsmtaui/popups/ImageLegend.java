@@ -5,6 +5,14 @@ import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.control.Label;
 
+/**
+ * ImageLegend is an object which contains a whole new window that is always in front with all the
+ * explanations of what the different colours and symbols mean in an FSM image.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ *
+ */
+
 public class ImageLegend {
 	/** GridPane with all the information of the legend contained within. */
 	private HBox root;

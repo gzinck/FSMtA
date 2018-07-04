@@ -12,11 +12,14 @@ import javafx.scene.layout.*;
  *
  */
 public class FSMOperationPane extends VBox {	
+	/** Integer for the number of pixels wide the settings sidebar will be. */
+	private static final int OPTIONS_WIDTH = 382;
+	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
 	
 	/** Accordion with all the options for the pane. */
-	private Accordion optionBoxes;
+	private VBox optionBoxes;
 	
 	/** Pane with the options to evaluate properties of a single FSM. */
 	private TitledPane evaluateFSMOperationPane;
@@ -46,9 +49,11 @@ public class FSMOperationPane extends VBox {
 		convertFSMOperationPane = new TitledPane("Conversion Operations", new ConvertFSMOperationPane(model));
 		multiFSMOperationPane = new TitledPane("Multi-FSM Operations", new MultiFSMOperationPane(model));
 		
-		optionBoxes = new Accordion(evaluateFSMOperationPane, singleFSMOperationPane, convertFSMOperationPane, multiFSMOperationPane);
-		optionBoxes.setExpandedPane(evaluateFSMOperationPane);
+		optionBoxes = new VBox(evaluateFSMOperationPane, singleFSMOperationPane, convertFSMOperationPane, multiFSMOperationPane);
+		optionBoxes.setPrefWidth(OPTIONS_WIDTH);
+		ScrollPane scrollable = new ScrollPane();
+		scrollable.setContent(optionBoxes);
 		
-		getChildren().addAll(titleLabel, optionBoxes);
+		getChildren().addAll(titleLabel, scrollable);
 	} // FSMOperationsPane(ObservableList<String>)
 } // class FSMOperationsPane

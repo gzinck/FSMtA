@@ -3,6 +3,7 @@ package fsmtaui.settingspane;
 import fsm.*;
 import fsmtaui.Model;
 import fsmtaui.popups.*;
+import graphviz.FSMToDot;
 import support.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,8 +51,6 @@ public class FileSettingsPane extends VBox {
 	private Button saveFSMBtn;
 	/** Button for saving the selected FSMs as JPG files. */
 	private Button saveJPGBtn;
-	/** Button for saving the selected FSMs as PDF files. */
-	private Button savePDFBtn;
 	/**
 	 * Box with all the openFSMs listed. Double clicking on an element opens
 	 * the FSM as a viewport, if it is not already.
@@ -145,8 +144,7 @@ public class FileSettingsPane extends VBox {
 		closeFSMBtn = new Button("Close selected FSM");
 		saveFSMBtn = new Button("Save selected FSM as FSM file");
 		saveJPGBtn = new Button("Save selected FSM as JPG file");
-		savePDFBtn = new Button("Save selected FSM as PDF file");
-		return new VBox(closeFSMBtn, saveFSMBtn, saveJPGBtn, savePDFBtn);
+		return new VBox(closeFSMBtn, saveFSMBtn, saveJPGBtn);
 	} // makeSaveBtns()
 	
 	/**
@@ -272,6 +270,7 @@ public class FileSettingsPane extends VBox {
 							parameters.sizeUnobserv, parameters.sizeUncontrol, fsmClass.equals("Deterministic"),
 							newFSMName, model.getWorkingDirectoryString() + "/"));
 					newFSM = new DetObsContFSM(fsmFile, newFSMName);
+					fsmFile.delete();
 				} // if
 				
 				if(newFSM != null) {
@@ -327,23 +326,36 @@ public class FileSettingsPane extends VBox {
 	 * This can be used to read in the FSM into FSMtA later on.
 	 */
 	private void makeSaveFSMEventHandler() {
-		saveFSMBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				// Gets the selected FSMs and prompts the user for the path to save it to.
-				String fsmId = openFSMBox.getSelectionModel().getSelectedItem();
-				FSM fsmToSave = model.getFSM(fsmId);
-				if(fsmToSave == null) {
-					Alerts.makeError(Alerts.ERROR_NO_FSM_SELECTED);
-					return;
-				} // if
-				File file = Model.getPathToSaveFile();
-				if(file == null) {
-					Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
-					return;
-				} // if
-				fsmToSave.toTextFile(file.getParent(), file.getName());
-			} // handle(MouseEvent)
-		}); // setOnMouseClicked(EventHandler<MouseEvent>)
+		saveFSMBtn.setOnMouseClicked(e -> {
+			// Gets the selected FSMs and prompts the user for the path to save it to.
+			String fsmId = openFSMBox.getSelectionModel().getSelectedItem();
+			FSM fsmToSave = model.getFSM(fsmId);
+			if(fsmToSave == null) {
+				Alerts.makeError(Alerts.ERROR_NO_FSM_SELECTED);
+				return;
+			} // if
+			File file = Model.getPathToSaveFile();
+			if(file == null) {
+				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
+				return;
+			} // if
+			fsmToSave.toTextFile(file.getParent(), file.getName());
+		}); // setOnMouseClicked
+		
+		saveJPGBtn.setOnMouseClicked(e -> {
+			// Gets the selected FSMs and prompts the user for the path to save it to.
+			String fsmId = openFSMBox.getSelectionModel().getSelectedItem();
+			FSM fsmToSave = model.getFSM(fsmId);
+			if(fsmToSave == null) {
+				Alerts.makeError(Alerts.ERROR_NO_FSM_SELECTED);
+				return;
+			} // if
+			File file = Model.getPathToSaveFile();
+			if(file == null) {
+				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
+				return;
+			} // if
+			FSMToDot.createImgFromFSM(fsmToSave, file.getName(), file.getParent(), model.getGraphVizConfigPath());
+		}); // setOnMouseClicked
 	} // makeSaveFSMEventHandler()
 } // class FileSettingsPane

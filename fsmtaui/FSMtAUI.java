@@ -31,7 +31,7 @@ public class FSMtAUI extends Application {
 	/** Integer for the number of pixels wide and high the content (i.e., the FSM's visual representation) will be. */
 	private static final int CONTENT_SIZE = 600;
 	/** Integer for the number of pixels wide the settings sidebar will be. */
-	private static final int SIDEBAR_WIDTH = 360;
+	private static final int SIDEBAR_WIDTH = 400;
 	/** Integer for the number of pixels high the settings sidebar will be. */
 	private static final int SIDEBAR_HEIGHT = 600;
 	/** String used to ask the user for a working directory when beginning an FSMtA session. */
@@ -99,7 +99,7 @@ public class FSMtAUI extends Application {
 		scene.getStylesheets().add(this.getClass().getResource("css/styles.css").toExternalForm());
 		
 		// Get the working directory from user
-		workingDirectory = getWorkingDirectory();
+		workingDirectory = new File(this.getClass().getResource("").getPath().replaceAll("%20", " "));
 		
 		// Only run the application if we got a working directory
 		if(workingDirectory != null) {

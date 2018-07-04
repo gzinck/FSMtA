@@ -46,7 +46,7 @@ public class MultiFSMOperationPane extends VBox {
 		
 		Label sectionTitle = new Label(TITLE_MSG);
 		sectionTitle.getStyleClass().add("subpane-section-title");
-		HBox operationSelector = makeOperationSelector();
+		VBox operationSelector = makeOperationSelector();
 		GridPane fsmSelectors = makeFSMSelectors();
 		HBox nameField = makeFSMNameField();
 		performOperationBtn = new Button("Perform Operation");
@@ -62,10 +62,10 @@ public class MultiFSMOperationPane extends VBox {
 	 * 
 	 * @return - HBox with the ChoiceBox and its Label.
 	 */
-	private HBox makeOperationSelector() {
+	private VBox makeOperationSelector() {
 		Label operationLabel = new Label("Pick an operation:");
 		operationChoiceBox = new ChoiceBox<String>(MULTI_FSM_OPERATIONS);
-		return new HBox(operationLabel, operationChoiceBox);
+		return new VBox(operationLabel, operationChoiceBox);
 	} // makeOperationSelector()
 	
 	/**
