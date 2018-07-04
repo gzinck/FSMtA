@@ -209,7 +209,6 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-
 		if(name == null)
 			name = id;
 		String truePath = "";

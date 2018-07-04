@@ -167,6 +167,8 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = other.id;
 		initial = other.initial;
 		marked = other.marked;
+		privacy = other.privacy;
+		badState = other.badState;
 	}
 	
 	/**

@@ -18,13 +18,16 @@ public class TestFSMs {
 	@Test
 	public void test() {
 		File f = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 3, 1, 2, false, "fileName", MAC_WORKING_FOLDER));
-		NonDetObsContFSM fsm = new NonDetObsContFSM(f, "fsm");
+		NonDetObsContFSM fsm = new NonDetObsContFSM(f, "fsm").createObserverView();
 		System.out.println(fsm.makeDotString());
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		DetObsContFSM fsm2 = fsm.determinize();
-		
+		NonDetObsContFSM fsm2 = fsm.makeAccessible();
 		System.out.println(fsm2.makeDotString());
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		NonDetObsContFSM fsm3 = fsm2.makeCoAccessible();
+		System.out.println(fsm3.makeDotString());
+		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
 	/*
 		FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		DetFSM fsm2 = fsm1.determinize();

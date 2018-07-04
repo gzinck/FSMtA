@@ -337,6 +337,8 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				collec = collec.substring(0, collec.length() - 1);
 				queue.add(collec);
 				fsmOut.addTransition("{"+aggregate+"}", event, "{"+collec+"}");
+				fsmOut.setEventControllability(event, this.getEventControllability(event));
+				fsmOut.setEventObservability(event, this.getEventObservability(event));
 				if(mark)
 					fsmOut.getState("{"+collec+"}").setStateMarked(true);
 				if(priv)
