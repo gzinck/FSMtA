@@ -17,8 +17,8 @@ public class TestFSMs {
 	
 	@Test
 	public void test() {
-		File f = new File(GenerateFSM.createNewObservableFSM(10, 4, 3, 2, 2, 1, "fileName", MAC_WORKING_FOLDER));
-		NonDetObsContFSM fsm = new DetObsContFSM(f, "fsm").createObserverView().trim();
+		File f = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 3, 1, 2, false, "fileName", MAC_WORKING_FOLDER));
+		NonDetObsContFSM fsm = new NonDetObsContFSM(f, "fsm");
 		System.out.println(fsm.makeDotString());
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		DetObsContFSM fsm2 = fsm.determinize();

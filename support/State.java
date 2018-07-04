@@ -26,9 +26,9 @@ public class State implements Comparator<State>, Comparable<State>{
 	private boolean initial;
 	/** boolean instance variable representing the status of this State's being marked*/
 	private boolean marked;
-	/** boolean instance variable representing if the state is marked as a bad state*/
+	/** boolean instance variable representing if the State is tagged as a bad state*/
 	private boolean badState;
-	/** */
+	/** boolean instance variable representing the status of this State's being private*/
 	private boolean privacy;
 
 //--- Constructors   --------------------------------------------------------------------------
@@ -199,7 +199,11 @@ public class State implements Comparator<State>, Comparable<State>{
 			sb.append("\"" + id + "\"[shape = circle");
 		
 		// If bad, make it a different colour.
-		if(badState)
+		if(badState && privacy)
+			sb.append(" color = \"red\"];");
+		else if(badState)
+			sb.append(" color = \"purple\"];");
+		else if(privacy)
 			sb.append(" color = \"orange\"];");
 		else
 			sb.append(" color = \"black\"];");
@@ -245,10 +249,20 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
+	 * 
+	 * @return
+	 */
+	
+	public boolean getStatePrivacy() {
+		return privacy;
+	}
+	
+	/**
 	 * Getter method to request if the State is marked as a bad state.
 	 * 
 	 * @return True if the State has been marked as a bad state.
 	 */
+	
 	public boolean stateIsBad() {
 		return badState;
 	}
@@ -286,6 +300,15 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
+	 * 
+	 * @param init
+	 */
+	
+	public void setStatePrivate(boolean init) {
+		privacy = init;
+	}
+	
+	/**
 	 * Setter method to set if the State should be marked as a bad state.
 	 * 
 	 * @param Boolean representing if the state should be marked as bad or not.
@@ -309,6 +332,10 @@ public class State implements Comparator<State>, Comparable<State>{
 		return st1.getStateName().compareTo(st2.getStateName());
 	}
 
+	/**
+	 * 
+	 */
+	
 	@Override
 	public int compareTo(State o) {
 		return this.getStateName().compareTo(o.getStateName());

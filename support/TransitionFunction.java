@@ -60,10 +60,10 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Getter method to acquire an ArrayList<T> of Transition objects associated to the provided State object 
+	 * Getter method to acquire an ArrayList<<r>T> of Transition objects associated to the provided State object 
 	 * 
-	 * @param state - State object in an FSM associated to the returned ArrayList<T> of Transition objects
-	 * @return - Returns an ArrayList<T> of Transition objects that are associated to a defined State in an FSM
+	 * @param state - State object in an FSM associated to the returned ArrayList<<r>T> of Transition objects
+	 * @return - Returns an ArrayList<<r>T> of Transition objects that are associated to a defined State in an FSM
 	 */
 	
 	public ArrayList<T> getTransitions(S state) {

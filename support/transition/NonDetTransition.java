@@ -76,15 +76,15 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 			break;
 		case 1:
 			// Unobservable but controllable
-			eventDeal = "color = \"red\"";
+			eventDeal = "color = \"red\" arrowhead = \"normalicurve\"";
 			break;
 		case 2:
 			// Observable and uncontrollable
-			eventDeal = "color = \"yellow\"";
+			eventDeal = "color = \"blue\" arrowhead = \"normaldiamond\"";
 			break;
 		case 3:
 			// Unobservable and uncontrollable
-			eventDeal = "color = \"orange\"";
+			eventDeal = "color = \"purple\" arrowhead = \"normalodot\"";
 			break;
 		default: break;
 		}
@@ -156,7 +156,7 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 //--- Manipulations   -------------------------------------------------------------------------
 	
 	/**
-	 * This method appends the provided State to the ArrayList<State> holding all State names led to by
+	 * This method appends the provided State to the ArrayList<<r>State> holding all State names led to by
 	 * the Event associated to this NonDetTransition object
 	 * 
 	 * @param stateName - State object representing the State to append to the end of the list of States associated to this object

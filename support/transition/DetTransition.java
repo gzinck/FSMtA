@@ -54,16 +54,20 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 		String eventDeal = "";
 		switch(event.getEventType()) {
 		case 0:
+			// Observable and controllable
 			eventDeal = "color = \"black\"";
 			break;
 		case 1:
-			eventDeal = "color = \"red\"";
+			// Unobservable but controllable
+			eventDeal = "color = \"red\" arrowhead = \"normalicurve\"";
 			break;
 		case 2:
-			eventDeal = "color = \"yellow\"";
+			// Observable and uncontrollable
+			eventDeal = "color = \"blue\" arrowhead = \"normaldiamond\"";
 			break;
 		case 3:
-			eventDeal = "color = \"orange\"";
+			// Unobservable and uncontrollable
+			eventDeal = "color = \"purple\" arrowhead = \"normalodot\"";
 			break;
 		default: break;
 		}

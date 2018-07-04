@@ -51,10 +51,17 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		states.getState(initialState).setStateInitial(true);
 		for(int i = 0; i < special.get(1).size(); i++)			//Special ArrayList 1-entry is MarkedState
 			states.getState(special.get(1).get(i)).setStateMarked(true);
-		for(int i = 0; i < special.get(2).size(); i++) {			//Special ArrayList 2-entry is ObservableEvent
-			if(events.getEvent(special.get(2).get(i)) == null)
-				events.addEvent(special.get(2).get(i));
-			events.getEvent(special.get(2).get(i)).setEventObservability(false);
+		for(int i = 0; i <  special.get(2).size(); i++)			//Special ArrayList 2-entry is PrivateState
+			states.getState(special.get(2).get(i)).setStatePrivate(true);
+		for(int i = 0; i < special.get(3).size(); i++) {			//Special ArrayList 3-entry is ObservableEvent
+			if(events.getEvent(special.get(3).get(i)) == null)
+				events.addEvent(special.get(3).get(i));
+			events.getEvent(special.get(3).get(i)).setEventObservability(false);
+		}
+		for(int i = 0; i < special.get(4).size(); i++) {			//Special ArrayList 4-entry is Controllable Event
+			if(events.getEvent(special.get(4).get(i)) == null)
+				events.addEvent(special.get(4).get(i));
+			events.getEvent(special.get(4).get(i)).setEventControllability(false);
 		}
 	}
 	
@@ -151,22 +158,26 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 			
 			Iterator<State> iter = thisSet.iterator();
 			boolean on = true;
+			boolean priv = true;
 			while(iter.hasNext()) {
-				if(!iter.next().getStateMarked())
+				State sit = iter.next();
+				if(!sit.getStateMarked())
 					on = false;
+				if(!sit.getStatePrivacy())
+					priv = false;
 			}
-			
 			for(int i = 0; i < nameSet.size(); i++)
 				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? ", " : "}"));
-			
 			name.put(s.getStateName(), "{" + sb.toString());
 			map.put(s, thisSet);
-			
 			if(on) {
 				State in = newFSM.addState(name.get(s.getStateName()));
 				in.setStateMarked(true);
 			}
-				
+			if(priv) {
+				State in = newFSM.addState(name.get(s.getStateName()));
+				in.setStatePrivate(true);
+			}
 		}
 		
 		for(State ar : map.keySet()) {

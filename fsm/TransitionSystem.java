@@ -81,18 +81,19 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	
 	public <fsm extends FSM<S, T, E>> fsm makeAccessible() {
 		// Make a queue to keep track of states that are accessible and their neighbours.
-		LinkedList<String> queue = new LinkedList<String>();
+		LinkedList<State> queue = new LinkedList<State>();
 		
 		// Initialize a new FSM with initial states.
 		try {
 			TransitionSystem<S, T, E> newFSM = this.getClass().newInstance();
 			for(S initial : getInitialStates()) {
 				newFSM.addInitialState(initial);
-				queue.add(initial.getStateName());
+				queue.add(initial);
 			} // for initial state
 			
 			while(!queue.isEmpty()) {
-				String stateName = queue.poll();
+				State stateName = queue.poll();
+				newFSM.addState(stateName);
 				// Go through the transitions
 				ArrayList<T> currTransitions = this.transitions.getTransitions(getState(stateName));
 				if(currTransitions != null) {
@@ -100,7 +101,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 						// Add the states; it goes to to the queue if not already present in the newFSM
 						for(S s : t.getTransitionStates())
 							if(!newFSM.stateExists(s.getStateName()))
-								queue.add(s.getStateName());
+								queue.add(s);
 						// Add the transition by copying the old one.
 						newFSM.addTransition(newFSM.getState(stateName), t);
 					} // for
