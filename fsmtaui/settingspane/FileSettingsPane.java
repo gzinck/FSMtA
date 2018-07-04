@@ -263,28 +263,16 @@ public class FileSettingsPane extends VBox {
 				FSM newFSM = null;
 				
 				String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-				if(fsmClass.equals("Deterministic")) {
-					// Deterministic, basic FSM
-					GenerateFSMDialog.FSMParameters parameters = GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.DETERMINISTIC, false);
-					if(parameters != null) {
-						File fsmFile = new File(GenerateFSM.createNewDeterministicFSM(
-								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-								parameters.sizePaths, newFSMName, model.getWorkingDirectoryString() + "/"));
-						newFSM = new DetFSM(fsmFile, newFSMName);
-					} // if
-				} else if(fsmClass.equals("Non-Deterministic")) {
-					// NonDeterministic with observability
-					GenerateFSMDialog.NonDetObsFSMParameters parameters =
-							(GenerateFSMDialog.NonDetObsFSMParameters) GenerateFSMDialog.getFSMParametersFromUser(FSM_TYPE.NON_DETERMINISTIC, true);
-					if(parameters != null) {
-						File fsmFile = new File(GenerateFSM.createNewObservableFSM(
-								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-								parameters.sizePaths, parameters.sizeInitial, parameters.sizeUnobserv,
-								newFSMName, model.getWorkingDirectoryString() + "/"));
-						newFSM = new NonDetObsFSM(fsmFile, newFSMName);
-					} // if
-				} // if/else if
-				// TODO: add the other kinds of FSMs we need to generate
+				GenerateFSMDialog dialog = new GenerateFSMDialog(fsmClass.equals("Deterministic")); // pass boolean of whether the FSM is deterministic or not
+				GenerateFSMDialog.FSMParameters parameters = dialog.getFSMParametersFromUser();
+				if(parameters != null) {
+					File fsmFile = new File(GenerateFSM.createNewFSM(
+							parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
+							parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
+							parameters.sizeUnobserv, parameters.sizeUncontrol, fsmClass.equals("Deterministic"),
+							newFSMName, model.getWorkingDirectoryString() + "/"));
+					newFSM = new DetObsContFSM(fsmFile, newFSMName);
+				} // if
 				
 				if(newFSM != null) {
 					model.addFSM(newFSM);

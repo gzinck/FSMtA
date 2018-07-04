@@ -22,10 +22,6 @@ public class ConvertFSMOperationPane extends VBox {
 	private Model model;
 	/** Box with the possible types of FSMs to convert to. */
 	private ChoiceBox<String> fsmTypeChoiceBox;
-	/** CheckBox for whether the converted FSM should have observability properties. */
-	private CheckBox fsmObserveCheck;
-	/** CheckBox for whether the converted FSM should have controllability properties. */
-	private CheckBox fsmControlCheck;
 	/** Field for the name of the new FSM to create. */
 	private TextField fsmNameField;
 	/** Button allowing the user to perform the conversion on the selected FSM. */
@@ -41,7 +37,7 @@ public class ConvertFSMOperationPane extends VBox {
 		
 		Label sectionTitle = new Label(TITLE_MSG);
 		sectionTitle.getStyleClass().add("subpane-section-title");
-		VBox operationSelector = makeConversionSelector();
+		HBox operationSelector = makeConversionSelector();
 		HBox nameField = makeFSMNameField();
 		convertBtn = new Button("Perform Conversion");
 		
@@ -56,12 +52,10 @@ public class ConvertFSMOperationPane extends VBox {
 	 * @return - VBox with a ChoiceBox (for determinism properties) and two CheckBoxes
 	 * for enabling unobservable/uncontrollable events.
 	 */
-	private VBox makeConversionSelector() {
+	private HBox makeConversionSelector() {
 		Label operationLabel = new Label("Type to convert to:");
 		fsmTypeChoiceBox = new ChoiceBox<String>(FXCollections.observableArrayList("Deterministic", "Non-Deterministic"));
-		fsmObserveCheck = new CheckBox("Enable Unobservable Events");
-		fsmControlCheck = new CheckBox("Enable Uncontrollable Events");
-		return new VBox(operationLabel, fsmTypeChoiceBox, fsmObserveCheck, fsmControlCheck);
+		return new HBox(operationLabel, fsmTypeChoiceBox);
 	} // makeConversionSelector()
 	
 	/**
@@ -97,21 +91,13 @@ public class ConvertFSMOperationPane extends VBox {
 				// Then cannot perform operation
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_FSM);
 			} else {
-				if(type.equals("Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+				if(type.equals("Deterministic")) {
 					// Deterministic conversion
-					DetFSM newFSM = new DetFSM(currFSM, id);
+					DetObsContFSM newFSM = new DetObsContFSM(currFSM, id);
 					addFSM(newFSM);
-				} else if(type.equals("Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
+				} else if(type.equals("Non-Deterministic")) {
 					// Observable deterministic conversion
-					DetObsFSM newFSM = new DetObsFSM(currFSM, id);
-					addFSM(newFSM);
-				} else if(type.equals("Non-Deterministic") && !fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-					// Non-deterministic conversion
-					NonDetFSM newFSM = new NonDetFSM(currFSM, id);
-					addFSM(newFSM);
-				} else if(type.equals("Non-Deterministic") && fsmObserveCheck.isSelected() && !fsmControlCheck.isSelected()) {
-					// Observable non-deterministic conversion
-					NonDetObsFSM newFSM = new NonDetObsFSM(currFSM, id);
+					NonDetObsContFSM newFSM = new NonDetObsContFSM(currFSM, id);
 					addFSM(newFSM);
 				} else {
 					// TODO: add the other kinds of FSMs we need to convert

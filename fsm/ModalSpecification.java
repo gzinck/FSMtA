@@ -130,6 +130,7 @@ public class ModalSpecification
 	 * @param product FSM representing the product of the determinized first FSM with the specification.
 	 * @return HashSet of all the names of States which are bad.
 	 */
+	
 	private <S extends State, T extends Transition<S, E>, E extends Event>
 			HashSet<String> markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product) {
 		// We need to parse every state in the product, check every component state if there is some uncontrollable observable

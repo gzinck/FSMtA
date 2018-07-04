@@ -21,70 +21,74 @@ import javafx.scene.layout.GridPane;
  */
 
 public class GenerateFSMDialog {
+	
+	Dialog<FSMParameters> dialog;
+	GridPane optionGrid;
+	TextField sizeStates, sizeMarked, sizeEvents, sizePaths, sizeInitial, sizeSecret, sizeUnobserv, sizeUncontrol;
+	boolean deterministic;
+	
 	/**
-	 * Asks the user for parameters for creating a DeterministicFSM and
-	 * returns these as an FSMParameters object (a class at the bottom
-	 * of this one).
+	 * Creates a dialog box for getting information on what kind
+	 * of FSM should be created.
 	 * 
-	 * @param type - The type of FSM to get the parameters for.
-	 * @return - FSMParameters object representing the selected parameters,
-	 * or null if some parameters given were illegal.
+	 * @param inDeterministic Boolean representing if the new FSM should be a deterministic FSM (i.e.,
+	 * only one initial state and no repeat states).
 	 */
-	public static FSMParameters getFSMParametersFromUser(FileSettingsPane.FSM_TYPE type, boolean hasObservability) {
+	
+	public GenerateFSMDialog(boolean inDeterministic) {
+		deterministic = inDeterministic;
 		// Create the dialog box
-		Dialog<FSMParameters> dialog = new Dialog<FSMParameters>();
+		dialog = new Dialog<FSMParameters>();
 		dialog.setTitle("Select FSM Parameters");
 		dialog.setHeaderText("Select parameters to generate a new FSM:");
 		
 		// Create the grid for all the options
-		GridPane dGrid = new GridPane();
+		optionGrid = new GridPane();
 		Label sizeStatesLabel = new Label("Number of States");
-		TextField sizeStates = new TextField();
+		sizeStates = new TextField();
 		Label sizeMarkedLabel = new Label("Number of Marked States");
-		TextField sizeMarked = new TextField();
+		sizeMarked = new TextField();
 		Label sizeEventsLabel = new Label("Number of Events");
-		TextField sizeEvents = new TextField();
+		sizeEvents = new TextField();
 		Label sizePathsLabel = new Label("Max Number of Paths Leaving a State");
-		TextField sizePaths = new TextField();
-		dGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel);
-		dGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths);
-		
-		// Add options if the type is non-deterministic:
-		Label sizeInitialLabel = new Label("Number of Initial States");
-		TextField sizeInitial = new TextField();
-		if(type.equals(FSM_TYPE.NON_DETERMINISTIC)) {
-			dGrid.addRow(4, sizeInitialLabel, sizeInitial);
-		} // if non-deterministic
-		
-		// Add options if the type is observable
+		sizePaths = new TextField();
+		Label sizeSecretLabel = new Label("Number of Secret States");
+		sizeSecret = new TextField();
 		Label sizeUnobservLabel = new Label("Number of unobservable events");
-		TextField sizeUnobserv = new TextField();
-		if(hasObservability) {
-			dGrid.addRow(5, sizeUnobservLabel, sizeUnobserv);
+		sizeUnobserv = new TextField();
+		Label sizeUncontrolLabel = new Label("Number of unobservable events");
+		sizeUncontrol = new TextField();
+		
+		optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel);
+		optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeUncontrol);
+		
+		// Add extra option if the type is non-deterministic:
+		if(!deterministic) {
+			Label sizeInitialLabel = new Label("Number of Initial States");
+			sizeInitial = new TextField();
+			optionGrid.addRow(6, sizeInitialLabel, sizeInitial);
 		} // if non-deterministic
 		
 		// Add the options and buttons.
 		DialogPane dPane = dialog.getDialogPane();
-		dPane.setContent(dGrid);
+		dPane.setContent(optionGrid);
 		dPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
 		// Sets up the return result as an FSMParameter object
 		dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
             		try {
-            			if(type.equals(FSM_TYPE.DETERMINISTIC) && !hasObservability) {
+            			// Use certain default parameters for deterministic FSMs
+            			if(deterministic) {
 	            			return new FSMParameters(sizeStates.getText(),
 	            					sizeMarked.getText(), sizeEvents.getText(),
-	            					sizePaths.getText());
-            			} else if(type.equals(FSM_TYPE.NON_DETERMINISTIC) && !hasObservability) {
-            				return new NonDeterministicFSMParameters(sizeStates.getText(),
-            						sizeMarked.getText(), sizeEvents.getText(),
-            						sizePaths.getText(), sizeInitial.getText());
-            			} else if(type.equals(FSM_TYPE.NON_DETERMINISTIC) && hasObservability) {
-            				return new NonDetObsFSMParameters(sizeStates.getText(),
-            						sizeMarked.getText(), sizeEvents.getText(),
-            						sizePaths.getText(), sizeInitial.getText(),
-            						sizeUnobserv.getText());
+	            					sizePaths.getText(), sizeSecret.getText(),
+	            					sizeUnobserv.getText(), sizeUncontrol.getText(), "1");
+            			} else {
+            				return new FSMParameters(sizeStates.getText(),
+	            					sizeMarked.getText(), sizeEvents.getText(),
+	            					sizePaths.getText(), sizeSecret.getText(),
+	            					sizeUnobserv.getText(), sizeUncontrol.getText(), sizeInitial.getText());
             			} // if/else if
             		} catch (NumberFormatException e) {
             			// If some parameters were NAN, error box
@@ -93,7 +97,14 @@ public class GenerateFSMDialog {
             }// if
             return null;
         });
-		
+	} // GenerateFSMDialog
+	
+	/**
+	 * Gets the user's FSM parameters that they specify in the dialog and returns it.
+	 * 
+	 * @return FSMParameters object with all the information needed to generate an FSM.
+	 */
+	public FSMParameters getFSMParametersFromUser() {
 		// Shows the dialog and returns results
 		Optional<FSMParameters> optionalResult = dialog.showAndWait();
 		try {
@@ -104,55 +115,31 @@ public class GenerateFSMDialog {
 	} // getFSMParametersFromUser()
 	
 	/**
-	 * Private class that allows the javafx dialog box to return a set
+	 * Class that allows the javafx dialog box to return a set
 	 * of parameters for a new FSM to generate.
 	 * 
 	 * @author Mac Clevinger and Graeme Zinck
 	 *
 	 */
-	public static class FSMParameters {
+	public class FSMParameters {
 		public int sizeStates;
 		public int sizeMarked;
 		public int sizeEvents;
 		public int sizePaths;
+		public int sizeSecret;
+		public int sizeUnobserv;
+		public int sizeUncontrol;
+		public int sizeInitial;
 		
-		FSMParameters(String states, String marked, String events, String paths) {
+		FSMParameters(String states, String marked, String events, String paths, String secret, String unobservable, String uncontrollable, String initial) {
 			sizeStates = Integer.parseInt(states);
 			sizeMarked = Integer.parseInt(marked);
 			sizeEvents = Integer.parseInt(events);
 			sizePaths = Integer.parseInt(paths);
-		} // FSMParameters(String, String, String, String)
-	} // static class FSMParameters
-
-	/**
-	 * Allows the javafx dialog box to return a set
-	 * of parameters for a new non-deterministic FSM to generate.
-	 * 
-	 * @author Mac Clevinger and Graeme Zinck
-	 *
-	 */
-	public static class NonDeterministicFSMParameters extends FSMParameters {
-		public int sizeInitial;
-		
-		NonDeterministicFSMParameters(String states, String marked, String events, String paths, String initial) {
-			super(states, marked, events, paths);
-			sizeInitial = Integer.parseInt(initial);
-		} // NonDeterministicFSMParameters(String, String, String, String, String)
-	} // static class NonDeterministicFSMParameters
-	
-	/**
-	 * Allows the javafx dialog box to return a set of parameters
-	 * for a new non-deterministic observable FSM to generate.
-	 * 
-	 * @author Mac Clevinger and Graeme Zinck
-	 *
-	 */
-	public static class NonDetObsFSMParameters extends NonDeterministicFSMParameters {
-		public int sizeUnobserv;
-		
-		NonDetObsFSMParameters(String states, String marked, String events, String paths, String initial, String unobservable) {
-			super(states, marked, events, paths, initial);
+			sizeSecret = Integer.parseInt(secret);
 			sizeUnobserv = Integer.parseInt(unobservable);
-		} // NonDeterministicFSMParameters(String, String, String, String, String)
-	} // static class ObservableFSMParameters
+			sizeUncontrol = Integer.parseInt(uncontrollable);
+			sizeInitial = Integer.parseInt(initial);
+		} // FSMParameters
+	} // static class FSMParameters
 } // class GenerateFSMDialog
