@@ -27,5 +27,26 @@
 
 /* Used for the buttons */
 .button {
-    -fx-color: #AAFFFF;
+    /*-fx-color: #AAFFFF;*/
+}
+
+/* Used for the images for the content pane */
+.img-btn {
+    -fx-pref-width: 30px;
+    -fx-pref-height: 30px;
+    -fx-background-size: 20px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+#zoom-in-btn {
+    -fx-background-image: url("../img/zoom_in.png");
+}
+
+#zoom-out-btn {
+    -fx-background-image: url("../img/zoom_out.png");
+}
+
+#help-btn {
+    -fx-background-image: url("../img/help.png");
 }

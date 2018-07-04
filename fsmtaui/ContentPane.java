@@ -1,10 +1,12 @@
 package fsmtaui;
 
+import fsmtaui.popups.ImageLegend;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.geometry.*;
 
 /**
  * ContentPane holds all the openFSMTabs in a TabPane and handles
@@ -15,13 +17,16 @@ import javafx.scene.layout.*;
  * @author Mac Clevinger and Graeme Zinck
  *
  */
-class ContentPane extends VBox {
+class ContentPane extends BorderPane {
 	/** Model containing all the important information to display in the GUI. */
 	Model model;
 	/** Button to zoom in. */
 	Button zoomInBtn;
 	/** Button to zoom out. */
 	Button zoomOutBtn;
+	/** Button to get help and see the legend for the image. */
+	Button helpBtn;
+	
 	/**
 	 * Creates a ContentPane to hold the tabs.
 	 * 
@@ -30,23 +35,36 @@ class ContentPane extends VBox {
 	 */
 	ContentPane(Model inModel) {
 		model = inModel;
-		HBox zoomBtns = makeZoomBtns();
+		HBox zoomBtns = makeBtns();
 		
-		getChildren().addAll(model.getOpenFSMTabs(), zoomBtns);
+		setCenter(model.getOpenFSMTabs());
+		BorderPane.setAlignment(zoomBtns, Pos.BOTTOM_RIGHT);
+		setBottom(zoomBtns);
 		
 		makeZoomKeyboardEventHandler();
 		makeZoomBtnEventHandler();
+		makeHelpBtnEventHandler();
 	} // ContentPane()
 	
 	/**
-	 * Makes buttons to zoom in and out of the image.
+	 * Makes buttons to zoom in and out of the image and to get the legend popup.
 	 * 
 	 * @return - HBox containing zoom buttons.
 	 */
-	HBox makeZoomBtns() {
-		zoomInBtn = new Button("Zoom In");
-		zoomOutBtn = new Button("Zoom Out");
-		return new HBox(zoomInBtn, zoomOutBtn);
+	HBox makeBtns() {
+		HBox btnBox = new HBox();
+		btnBox.setAlignment(Pos.CENTER_RIGHT);
+		zoomInBtn = new Button();
+		zoomInBtn.getStyleClass().add("img-btn");
+		zoomInBtn.setId("zoom-in-btn");
+		zoomOutBtn = new Button();
+		zoomOutBtn.getStyleClass().add("img-btn");
+		zoomOutBtn.setId("zoom-out-btn");
+		helpBtn = new Button();
+		helpBtn.getStyleClass().add("img-btn");
+		helpBtn.setId("help-btn");
+		btnBox.getChildren().addAll(zoomInBtn, zoomOutBtn, helpBtn);
+		return btnBox;
 	} // makeZoomBtns()
 	
 	/**
@@ -75,20 +93,18 @@ class ContentPane extends VBox {
 	 * Handles zooming into and out of FSMs via buttons on screen.
 	 */
 	void makeZoomBtnEventHandler() {
-		zoomInBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				e.consume();
-				model.getCurrViewport().zoomIn();
-			} // handle(ActionEvent)
-		}); // setOnAction(EventHandler<ActionEvent>)
+		zoomInBtn.setOnAction(e -> {
+			model.getCurrViewport().zoomIn();
+		}); // setOnAction
 		
-		zoomOutBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				e.consume();
-				model.getCurrViewport().zoomOut();
-			} // handle(ActionEvent)
-		}); // setOnAction(EventHandler<ActionEvent>)
+		zoomOutBtn.setOnAction(e -> {
+			model.getCurrViewport().zoomOut();
+		}); // setOnAction
+	}
+	
+	void makeHelpBtnEventHandler() {
+		helpBtn.setOnAction(e -> {
+			ImageLegend il = new ImageLegend();
+		}); // setOnAction
 	}
 } // class ContentPane
