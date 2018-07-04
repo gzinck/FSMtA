@@ -14,7 +14,20 @@ import support.TransitionFunction;
 import support.event.Event;
 import support.transition.Transition;
 
+/**
+ * This class
+ * 
+ * This class is a part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ *
+ * @param <<r>S> - 
+ * @param <<r>T> - 
+ * @param <<r>E> - 
+ */
+
 public abstract class TransitionSystem<S extends State, T extends Transition<S, E>, E extends Event> {
+	
 //---  Instance Variables   -------------------------------------------------------------------
 
 	/** StateMap<<r>S> object possessing all the States associated to this FSM object */
@@ -248,7 +261,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * the FSM is NOT coaccessible, then the FSM is blocking.
 	 * It marks bad states along the way.
 	 * 
-	 * @return True if the FSM is blocking, false if it is okay.
+	 * @return - Returns a boolean value; true if the FSM is blocking, false otherwise
 	 */
 	
 	public boolean isBlocking() {
@@ -275,10 +288,10 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 //---  Copy Methods that steal from other FSMs   -----------------------------------------------------------------------
 
 	/**
-	 * Copies the states of another FSM into the current FSM with an appended
-	 * prefix (which can very well be the empty string).
-	 * @param other FSM whose states are copied.
-	 * @param prefix String prefix for the new state names (can be the empty string).
+	 * Copies the states of another FSM into the current FSM with an appended prefix (which can be an empty String).
+	 * 
+	 * @param other - FSM object whose states are copied.
+	 * @param prefix - String object representing the  prefix for the new state names (can be the empty string).
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyStates(TransitionSystem<S1, T1, E1> other, String prefix) {
@@ -290,7 +303,8 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	
 	/**
 	 * Copies the states of another FSM into the current FSM.
-	 * @param other FSM whose states are copied.
+	 * 
+	 * @param other - FSM object whose states are copied.
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyStates(TransitionSystem<S1, T1, E1> other) {
@@ -299,7 +313,8 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	
 	/**
 	 * Copies the events of another FSM into the current FSM.
-	 * @param other FSM whose events are copied.
+	 * 
+	 * @param other - FSM object whose events are copied.
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyEvents(TransitionSystem<S1, T1, E1> other) {
@@ -309,7 +324,8 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	
 	/**
 	 * Copies the transitions of another FSM into the current FSM.
-	 * @param other FSM whose transitions are to be copied.
+	 * 
+	 * @param other - FSM object whose transitions are to be copied.
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyTransitions(TransitionSystem<S1, T1, E1> other) {
