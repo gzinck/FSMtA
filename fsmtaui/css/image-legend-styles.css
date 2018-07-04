@@ -1,0 +1,63 @@
+#state-legend {
+    -fx-padding: 10;
+}
+
+#state-legend > Region, #transition-legend > Region {
+    -fx-pref-width: 30px;
+    -fx-pref-height: 30px;
+    -fx-background-size: 30px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+#transition-legend {
+    -fx-padding: 10;
+}
+/**************************** STATE PICTURES *****************************************/
+
+/* Image for the default state type */
+#default-state {
+    -fx-background-image: url("../img/legend/default-state.png");
+}
+
+/* Image for the secret state type */
+#secret-state {
+    -fx-background-image: url("../img/legend/secret-state.png");
+}
+
+/* Image for the bad state type */
+#bad-state {
+    -fx-background-image: url("../img/legend/bad-state.png");
+}
+
+/* Image for the bad/secret state type */
+#secret-bad-state {
+    -fx-background-image: url("../img/legend/secret-bad-state.png");
+}
+
+/* Image for the marked state type */
+#secret-bad-state {
+    -fx-background-image: url("../img/legend/marked-state.png");
+}
+
+/**************************** TRANSITION PICTURES *****************************************/
+
+/* Image for the default transition type */
+#default-transition {
+    -fx-background-image: url("../img/legend/default-transition.png");
+}
+
+/* Image for the unobservable transition type */
+#unobservable-transition {
+    -fx-background-image: url("../img/legend/unobservable-transition.png");
+}
+
+/* Image for the uncontrollable transition type */
+#uncontrollable-transition {
+    -fx-background-image: url("../img/legend/uncontrollable-transition.png");
+}
+
+/* Image for the unobservable and uncontrollable transition type */
+#unobservable-uncontrollable-transition {
+    -fx-background-image: url("../img/legend/unobservable-uncontrollable-transition.png");
+}

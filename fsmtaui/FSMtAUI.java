@@ -96,7 +96,7 @@ public class FSMtAUI extends Application {
 		root = new BorderPane();
 		root.setFocusTraversable(true);
 		scene = new Scene(root);
-		scene.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+		scene.getStylesheets().add(this.getClass().getResource("css/styles.css").toExternalForm());
 		
 		// Get the working directory from user
 		workingDirectory = getWorkingDirectory();
