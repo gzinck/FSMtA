@@ -15,7 +15,22 @@ import support.TransitionFunction;
 import support.event.Event;
 import support.transition.Transition;
 
+/**
+ * This abstract class provides the framework for Finite State Machine objects
+ * and their like, handling the presence of States, Events, and Transitions of
+ * generic types to permit different variations using the same design.
+ * 
+ * This abstract class is a part of the fsm package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ *
+ * @param <<r>S> - Generic object with the stipulation that it extend the State class.
+ * @param <<r>T> - Generic object with the stipulation that it extend the Transition class.
+ * @param <<r>E> - Generic object with the stipulation that it extend the Event class.
+ */
+
 public abstract class TransitionSystem<S extends State, T extends Transition<S, E>, E extends Event> {
+	
 //---  Instance Variables   -------------------------------------------------------------------
 
 	/** StateMap<<r>S> object possessing all the States associated to this FSM object */
@@ -43,7 +58,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * String in the dot-form format for consumption by the GraphViz program to
 	 * create a visual representation of the FSM.
 	 * 
-	 * @return - Returns a String containing the dot-form representation of this FSM object.
+	 * @return - Returns a String object containing the dot-form representation of this FSM object.
 	 */
 	
 	public String makeDotString() {
@@ -178,7 +193,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * Helper method that processes the calling FSM object to generate a list of States for that
 	 * object describing their status as CoAccessible, or able to reach a Marked State.
 	 * 
-	 * @return - Returns a HashMap mapping String state names to true if the state is coaccessible, and false if it is not.
+	 * @return - Returns a HashMap<<r>String, Boolean> object mapping String state names to true if the state is coaccessible, and false if it is not.
 	 */
 	
 	protected HashMap<String, Boolean> getCoAccessibleMap() {
@@ -249,7 +264,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * the FSM is NOT coaccessible, then the FSM is blocking.
 	 * It marks bad states along the way.
 	 * 
-	 * @return True if the FSM is blocking, false if it is okay.
+	 * @return - Returns a boolean value; true if the FSM is found to be blocking, false otherwise.
 	 */
 	
 	public boolean isBlocking() {
@@ -276,10 +291,11 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 //---  Copy Methods that steal from other FSMs   -----------------------------------------------------------------------
 
 	/**
-	 * Copies the states of another FSM into the current FSM with an appended
-	 * prefix (which can very well be the empty string).
-	 * @param other FSM whose states are copied.
-	 * @param prefix String prefix for the new state names (can be the empty string).
+	 * This method copies the states of another FSM object into the current FSM object with a prepended
+	 * String prefix (which can be an empty String).
+	 * 
+	 * @param other - FSM object whose states are copied for renaming.
+	 * @param prefix - String object representing the prefix for the new state names (can be the empty string).
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyStates(TransitionSystem<S1, T1, E1> other, String prefix) {
@@ -290,8 +306,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	} // copyStates (FSM, String)
 	
 	/**
-	 * Copies the states of another FSM into the current FSM.
-	 * @param other FSM whose states are copied.
+	 * This method copies the states of a provided FSM object into the current FSM object.
+	 * 
+	 * @param other - FSM object whose states are copied.
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyStates(TransitionSystem<S1, T1, E1> other) {
@@ -299,8 +316,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	} // copyStates(FSM)
 	
 	/**
-	 * Copies the events of another FSM into the current FSM.
-	 * @param other FSM whose events are copied.
+	 * This method copies the events of a provided FSM object into the current FSM object.
+	 * 
+	 * @param other - An FSM object whose events are copied.
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyEvents(TransitionSystem<S1, T1, E1> other) {
@@ -309,8 +327,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	} // copyEvents(FSM)
 	
 	/**
-	 * Copies the transitions of another FSM into the current FSM.
-	 * @param other FSM whose transitions are to be copied.
+	 * This method copies the transitions of another FSM into the current FSM.
+	 * 
+	 * @param other - An FSM object whose transitions are copied.
 	 */
 	
 	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyTransitions(TransitionSystem<S1, T1, E1> other) {
@@ -338,9 +357,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
-	 * Setter method that assigns a new StateMap<<s>S> to replace the previously assigned set of States.
+	 * Setter method that assigns a new StateMap<<r>S> to replace the previously assigned set of States.
 	 * 
-	 * @param inState - StateMap<<s>S> object that assigns a new set of Events to this FSM object
+	 * @param inState - StateMap<<r>S> object that assigns a new set of Events to this FSM object
 	 */
 	
 	public void setFSMStateMap(StateMap<S> inState) {
@@ -348,9 +367,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
-	 * Setter method that assigns a new EventMap<<s>E> object to replace the previously assigned set of Events.
+	 * Setter method that assigns a new EventMap<<r>E> object to replace the previously assigned set of Events.
 	 * 
-	 * @param inEvent - EventMap<<s>E> object that assigns a new set of Events to this FSM object
+	 * @param inEvent - EventMap<<r>E> object that assigns a new set of Events to this FSM object
 	 */
 	
 	public void setFSMEventMap(EventMap<E> inEvent) {
@@ -358,9 +377,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
-	 * Setter method that assigns a new TransitionFunction<<s>S, T, E> object to replace the previously assigned set of Transitions.
+	 * Setter method that assigns a new TransitionFunction<<r>S, T, E> object to replace the previously assigned set of Transitions.
 	 * 
-	 * @param inTrans - TransitionFunction<<s>S, T, E> object that assigns a new set of Transitions to this FSM object
+	 * @param inTrans - TransitionFunction<<r>S, T, E> object that assigns a new set of Transitions to this FSM object
 	 */
 	
 	public void setFSMTransitionFunction(TransitionFunction<S, T, E> inTrans) {
@@ -371,9 +390,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * Setter method that aggregates the other setter methods to assign new values to the instance variables containing
 	 * information about the State, Transitions, and Events.
 	 * 
-	 * @param inStates - StateMap<<s>S> object that stores a new set of States to assign to this FSM object
-	 * @param inEvents - TransitionFunction<<s>S, T, E> object that stores a new set of Transitions to assign to this FSM object
-	 * @param inTrans - EventMap<<e>E> object that stores a new set of Events to assign to this FSM object
+	 * @param inStates - StateMap<<r>S> object that stores a new set of States to assign to this FSM object
+	 * @param inEvents - TransitionFunction<<r>S, T, E> object that stores a new set of Transitions to assign to this FSM object
+	 * @param inTrans - EventMap<<r>E> object that stores a new set of Events to assign to this FSM object
 	 */
 	
 	public void constructFSM(StateMap<S> inStates, TransitionFunction<S, T, E> inTrans, EventMap<E> inEvents) {
@@ -472,7 +491,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * Getter method that returns the TransitionFunction<<r>T> object containing all
 	 * the Transitions associated to this FSM object.
 	 * 
-	 * @return - Returns a TransitionFunction<T> object containing all the Transitions associated to this FSM object.
+	 * @return - Returns a TransitionFunction<<r>T> object containing all the Transitions associated to this FSM object.
 	 */
 	
 	public TransitionFunction<S, T, E> getTransitions() {
@@ -493,11 +512,11 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
 	/**
-	 * This method adds a new State to the StateMap<State> object, returning true if it didn't exist
-	 * and was added successfully and false if it was already present.
+	 * This method adds a new State to the StateMap<<r>State> object, returning the State object in the FSM
+	 * that was either newly added or the already existing State corresponding to the provided State name.
 	 * 
 	 * @param stateName - String object representing the name of a State to add to the StateMap
-	 * @return - Returns a boolean value describing the results of the defined operation
+	 * @return - Returns a State object representing the corresponding State in the FSM that was just added.
 	 */
 	
 	public S addState(String stateName) {
@@ -510,7 +529,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * object's name and nothing else.
 	 * 
 	 * @param state - State extending object provided as the schematic of what to add to the calling FSM object's StateMap.
-	 * @return - Returns a boolean value; true if the State extending object was added successfully, false otherwise.
+	 * @return - Returns a State object representing the corresponding State in the FSM that was just added.
 	 */
 	
 	public S addState(State state) {
@@ -751,6 +770,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param stateName - String object representing the name of the State extending object to have its status as Marked be toggled.
 	 * @return - Returns a Boolean object; true if the state is now bad, false if the state is now not bad, or null if it did not exist.
 	 */
+	
 	public Boolean toggleBadState(String stateName) {
 		S curr = states.getState(stateName);
 		if(curr == null) return null;
@@ -767,6 +787,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param stateName - String object representing the name of the State extending object to have its status as secret be toggled.
 	 * @return - Returns a Boolean object; true if the state is now secret, false if the state is now not secret, or null if it did not exist.
 	 */
+	
 	public Boolean toggleSecretState(String stateName) {
 		S curr = states.getState(stateName);
 		if(curr == null) return null;
@@ -774,4 +795,5 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		curr.setStatePrivate(!isSecret);
 		return !isSecret;
 	}
+	
 }

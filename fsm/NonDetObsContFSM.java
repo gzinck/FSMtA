@@ -16,7 +16,9 @@ import support.attribute.EventObservability;
 import support.transition.*;
 
 /**
- * This class 
+ * This class models a Finite State Machine of the NonDeterministic variety, extending the
+ * Abstract Class FSM for generic FSM characteristics and implementing a variety of interfaces
+ * that denote more advanced features, such as Observable and Controllable Events.
  * 
  * This class is a part of the fsm package.
  * 
@@ -46,8 +48,8 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	 * 
 	 * NonDetObsContFSM File Order for Special: Initial, Marked.
 	 * 
-	 * @param in - File read in order to create the FSM.
-	 * @param id - The id for the FSM (can be any String).
+	 * @param in - File object provided in order to create the FSM.
+	 * @param id - String object representing the id for the FSM (can be any String).
 	 */
 	
 	public NonDetObsContFSM(File in, String inId) {
@@ -235,24 +237,29 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 
 	@Override
 	public void toTextFile(String filePath, String name) {
-
 		if(name == null)
 			name = id;
 		String truePath = "";
 		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
-		String special = "3\n";
+		String special = "5\n";
 		ArrayList<String> init = new ArrayList<String>();
 		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> priv = new ArrayList<String>();
 		ArrayList<String> unob = new ArrayList<String>();
+		ArrayList<String> cont = new ArrayList<String>();
 		for(State s : this.getStates()) {
 			if(s.getStateMarked()) 
 				mark.add(s.getStateName());
 			if(s.getStateInitial()) 
 				init.add(s.getStateName());
+			if(s.getStatePrivacy())
+				priv.add(s.getStateName());
 		}
 		for(ObsControlEvent e : this.getEvents()) {
 			if(!e.getEventObservability())
 				unob.add(e.getEventName());
+			if(!e.getEventControllability())
+				priv.add(e.getEventName());
 		}
 		special += init.size() + "\n";
 		for(String s : init)
@@ -260,17 +267,22 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		special += mark.size() + "\n";
 		for(String s : mark)
 			special += s + "\n";
+		special += priv.size() + "\n";
+		for(String s : priv)
+			special += s + "\n";
 		special += unob.size() + "\n";
 		for(String s : unob)
 			special += s + "\n";
+		special += cont.size() + "\n";
+		for(String s : cont)
+			special += s + "\n";
 		ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>();
 		rdWrt.writeToFile(truePath,  special, this.getTransitions());
-		
-		
 	}
 	
 	@Override
 	public DetObsContFSM determinize(){
+		
 		/*
 		 * Create newFSM
 		 * Create queue to process states
@@ -498,6 +510,14 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	}
 
 	@Override
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM<S1, T1, E1> ... other) {
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		for(FSM<S1, T1, E1> fsm : other)
+			unionHelper(fsm, newFSM);
+		return newFSM;
+	}
+	
+	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM<S1, T1, E1> other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		productHelper(other, newFSM);
@@ -505,9 +525,25 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	}
 
 	@Override
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM<S1, T1, E1> ... other) {
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		for(FSM<S1, T1, E1> fsm : other)
+			productHelper(fsm, newFSM);
+		return newFSM;
+	}
+	
+	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM<S1, T1, E1> other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		parallelCompositionHelper(other, newFSM);
+		return newFSM;
+	}
+	
+	@Override
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM<S1, T1, E1> ... other){
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		for(FSM<S1, T1, E1> fsm : other)
+			parallelCompositionHelper(fsm, newFSM);
 		return newFSM;
 	}
 

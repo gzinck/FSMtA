@@ -55,6 +55,15 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM union(FSM<S1, T1, E1> other);
 	
 	/**
+	 * This method performs a union operation between multiple FSM objects and returns the result.
+	 * 
+	 * @param other - Array of FSM<<r>S, T, E> extending objects that is added to the calling FSM object in order to create a unioned FSM<<r>S, T, E> extending object.
+	 * @return - Returns a FSM<<r>S, T, E> extending object representing the result of all union operation.
+	 */
+	
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM union(FSM<S1, T1, E1> ... other);
+	
+	/**
 	 * Helper method that performs the brunt of the operations involved with a single Union operation
 	 * between two FSM objects, leaving the specialized features in more advanced FSM types to their
 	 * own interpretations after this function has occurred.
@@ -118,6 +127,16 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 */
 	
 	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM product(FSM<S1, T1, E1> other);
+	
+	/**
+	 * This method performs a Product(or Intersection) operation between multiple FSM objects, one provided as an
+	 * argument and the other being the FSM object calling this method, and returns the resulting FSM object.
+	 * 
+	 * @param other - Array of FSM<<r>S, T, E> extending objects that performs the product operation on with the current FSM.
+	 * @return - Returns a FSM<<r>S, T, E> extending object representing the FSM object resulting from all Product operations.
+	 */
+	
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM product(FSM<S1, T1, E1> ... other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Product operation
@@ -200,6 +219,16 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 */
 	
 	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM<S, T, E> parallelComposition(FSM<S1, T1, E1> other);
+	
+	/**
+	 * This method performs the Parallel Composition of multiple FSMs: the FSM calling this method and the FSMs
+	 * provided as arguments. The resulting, returned, FSM will be the same type as the calling FSM.
+	 * 
+	 * @param other - Array of FSM<<r>S, T, E> extending objects provided to perform Parallel Composition with the calling FSM object.
+	 * @return - Returns a FSM<<r>S, T, E> extending object representing the result of all Parallel Composition operations.
+	 */
+	
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM<S, T, E> parallelComposition(FSM<S1, T1, E1> ... other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Parallel Composition

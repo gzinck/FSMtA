@@ -14,7 +14,9 @@ import support.transition.*;
 import java.util.*;
 
 /**
- * This class 
+ * This class models a Finite State Machine of the Deterministic variety, extending the
+ * Abstract Class FSM for generic FSM characteristics and implementing a variety of interfaces
+ * that denote more advanced features, such as Observable and Controllable Events.
  * 
  * This class is a part of the fsm package.
  * 
@@ -220,23 +222,30 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 
 	@Override
 	public void toTextFile(String filePath, String name) {
+		//Initial, Marked, Private, ObservableEvent, ControllableEvent.
 		if(name == null)
 			name = id;
 		String truePath = "";
 		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
-		String special = "3\n";
+		String special = "5\n";
 		ArrayList<String> init = new ArrayList<String>();
 		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> priv = new ArrayList<String>();
 		ArrayList<String> unob = new ArrayList<String>();
+		ArrayList<String> cont = new ArrayList<String>();
 		for(State s : this.getStates()) {
 			if(s.getStateMarked()) 
 				mark.add(s.getStateName());
 			if(s.getStateInitial()) 
 				init.add(s.getStateName());
+			if(s.getStatePrivacy())
+				priv.add(s.getStateName());
 		}
 		for(ObsControlEvent e : this.getEvents()) {
 			if(!e.getEventObservability())
 				unob.add(e.getEventName());
+			if(!e.getEventControllability())
+				priv.add(e.getEventName());
 		}
 		special += init.size() + "\n";
 		for(String s : init)
@@ -244,8 +253,14 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		special += mark.size() + "\n";
 		for(String s : mark)
 			special += s + "\n";
+		special += priv.size() + "\n";
+		for(String s : priv)
+			special += s + "\n";
 		special += unob.size() + "\n";
 		for(String s : unob)
+			special += s + "\n";
+		special += cont.size() + "\n";
+		for(String s : cont)
 			special += s + "\n";
 		ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>();
 		rdWrt.writeToFile(truePath,  special, this.getTransitions());
@@ -370,6 +385,14 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	}
 
 	@Override
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM<S1, T1, E1> ... other) {
+		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		for(FSM<S1, T1, E1> fsm : other)
+			unionHelper(fsm, newFSM);
+		return newFSM;
+	}
+	
+	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM product(FSM<S1, T1, E1> other) {
 		DetObsContFSM newFSM = new DetObsContFSM();
 		productHelper(other, newFSM);
@@ -377,9 +400,25 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	}
 
 	@Override
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM product(FSM<S1, T1, E1> ... other) {
+		DetObsContFSM newFSM = new DetObsContFSM();
+		for(FSM<S1, T1, E1> fsm : other)
+			productHelper(fsm, newFSM);
+		return newFSM;
+	}
+	
+	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM parallelComposition(FSM<S1, T1, E1> other) {
 		DetObsContFSM newFSM = new DetObsContFSM();
 		parallelCompositionHelper(other, newFSM);
+		return newFSM;
+	}
+	
+	@Override
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM parallelComposition(FSM<S1, T1, E1> ... other){
+		DetObsContFSM newFSM = new DetObsContFSM();
+		for(FSM<S1, T1, E1> fsm : other)
+			parallelCompositionHelper(fsm, newFSM);
 		return newFSM;
 	}
 

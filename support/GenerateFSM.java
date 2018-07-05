@@ -70,6 +70,8 @@ public class GenerateFSM {
 		f.delete();											//If there already exists a file, remove it.
 		events = new ArrayList<String>();					//Initiates the ArrayLists for usage
 		states = new ArrayList<String>();
+		String os = System.getProperty("os.name").split(" ")[0];
+		String lineSkip = os.equals("Windows") ? (char)13 + "" + (char)10 : (char)10 + "";
 		for(int i = 0; i < sizeEvents; i++) {				//Fills the ArrayList with requested number of Events immediately
 			String newName = "";
 			int copy = i;
@@ -83,9 +85,9 @@ public class GenerateFSM {
 		  RandomAccessFile raf = new RandomAccessFile(f, "rw");	//Allows us to write to the file
 		  Random rand = new Random();				//Create random object for randomness
 		  raf.writeBytes("5");			//Initial, Marked, Private, Unobservable, TODO: Controllable
-		  raf.write(10);
+		  raf.writeBytes(lineSkip);
 		  raf.writeBytes(("" + sizeInitial));
-		  raf.write(10);
+		  raf.writeBytes(lineSkip);
 		  HashSet<Integer> initial = new HashSet<Integer>();
 		  for(int i = 0; i < sizeInitial; i++) {
 			  int rand1 = rand.nextInt(sizeStates);
@@ -93,10 +95,10 @@ public class GenerateFSM {
 				  rand1 = rand.nextInt(sizeStates);
 			  initial.add(rand1);
 			  raf.writeBytes(rand1+"");		//Pick a state at random to be initial states
-			  raf.write(10);										//Again, redundancy!
+			  raf.writeBytes(lineSkip);										//Again, redundancy!
 		  }
 		  raf.writeBytes(("" + sizeMarked));		//Strings are basically arrays of characters, which can trivially convert
-		  raf.write(10);					//to bytes, so pass a String to the writeBytes command to write to file. (write 10 for line return)
+		  raf.writeBytes(lineSkip);					//to bytes, so pass a String to the writeBytes command to write to file. (write 10 for line return)
 		  HashSet<Integer> marked = new HashSet<Integer>();
 		  for(int i = 0; i < sizeMarked; i++) {		//Now to decide the marked states, again randomly
 			  int rand1 = rand.nextInt(sizeStates);
@@ -104,10 +106,10 @@ public class GenerateFSM {
 				  rand1 = rand.nextInt(sizeStates);
 			  marked.add(rand1);
 			  raf.writeBytes(rand1+"");		//Pick states at random to be marked
-			  raf.write(10);										//This does allow for redundancies, which do nothing but waste space.
+			  raf.writeBytes(lineSkip);										//This does allow for redundancies, which do nothing but waste space.
 		  }
 		  raf.writeBytes("" + sizePrivate);
-		  raf.write(10);
+		  raf.writeBytes(lineSkip);
 		  HashSet<Integer> privacy = new HashSet<Integer>();
 		  for(int i = 0; i < sizePrivate; i++) {
 			  int rand1 = rand.nextInt(sizeStates);
@@ -115,19 +117,19 @@ public class GenerateFSM {
 				  rand1 = rand.nextInt(sizeStates);
 			  marked.add(rand1);
 			  raf.writeBytes(rand1+"");
-			  raf.write(10);
+			  raf.writeBytes(lineSkip);
 		  }
 		  raf.writeBytes(("" + sizeUnobserv));
-		  raf.write(10);
+		  raf.writeBytes(lineSkip);
 		  for(int i = 0; i < sizeUnobserv; i++) {
 			  raf.writeBytes(events.get(rand.nextInt(sizeEvents)));
-			  raf.write(10);
+			  raf.writeBytes(lineSkip);
 		  }
 		  raf.writeBytes((""+sizeControl));
-		  raf.write(10);
+		  raf.writeBytes(lineSkip);
 		  for(int i = 0; i < sizeControl; i++) {
 			  raf.writeBytes(events.get(rand.nextInt(sizeEvents)));
-			  raf.write(10);
+			  raf.writeBytes(lineSkip);
 		  }
 		  for(int i = 0; i < sizeStates; i++) {		//Each state as defined by sizeStates is processed herein
 			  String nom = "";						//Holds the State's name to differentiate between them
@@ -155,7 +157,7 @@ public class GenerateFSM {
 				  else {
 				      raf.writeBytes(nom + " " + rand.nextInt(sizeStates) + " " + theEvent);	//Add a line of State1 State2 Event(Generated on the spot)
 				  }
-				  raf.write(10);						//Line return - For Windows computers, needs to be Carriage Feed + Line Return, 13 10
+				  raf.writeBytes(lineSkip);					//Line return - For Windows computers, needs to be Carriage Feed + Line Return, 13 10
 			  }
 		  }
 		  raf.close();				//Like a good Girl Scout
