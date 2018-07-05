@@ -217,6 +217,12 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		
 		return newFSM;						//Good work!
 	}
+	
+	@Override
+	public DetObsContFSM determinize() {
+		NonDetObsContFSM newFSM1 = this.createObserverView();
+		return newFSM1.determinize();
+	}
 
 	@Override
 	public void toTextFile(String filePath, String name) {

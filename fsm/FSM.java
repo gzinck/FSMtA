@@ -327,4 +327,12 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		} // for thisInitial
 	} // parallelCompositionHelper(FSM)
 
+	/**
+	 * This method Determinizes an FSM and returns the corresponding deterministic FSM. It condenses
+	 * the FSM into sets of states where only one transition of a given event name will leave any given state.
+	 * 
+	 * @return - Returns a DetObsContFSM object corresponding to the deterministic version of the calling object.
+	 */
+	
+	public abstract DetObsContFSM determinize();
 } // class FSM

@@ -99,7 +99,7 @@ public class SingleFSMOperationPane extends VBox {
 			} else {
 				if(operation.equals(SINGLE_FSM_OPERATIONS.get(0))) {
 					// Determinize
-					startDeterminization(currFSM, id);
+					addFSM(currFSM.determinize(), id);
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(1))) {
 					// Accessible
 					addFSM(currFSM.makeAccessible(), id);
@@ -136,29 +136,4 @@ public class SingleFSMOperationPane extends VBox {
 		fsmNameField.setText("");
 		fsmNameField.requestFocus();
 	} // addFSM(DeterministicFSM, String)
-	
-	/**
-	 * Performs determinization of the FSM by selecting which type of FSM
-	 * is being determinized.
-	 * 
-	 * @param currFSM FSM to determinize
-	 * @param id String representing the id of the generated FSM from the
-	 * operation.
-	 */
-	private void startDeterminization(FSM currFSM, String id) {
-		NonDeterministic tempFSM = null;
-		// Then get observer view...
-		if(currFSM instanceof Observability) {
-			tempFSM = ((Observability)model.getCurrFSM()).createObserverView();
-		} else if(currFSM instanceof NonDeterministic){
-			tempFSM = (NonDeterministic)currFSM;
-		} // if/else if
-		// If nothing found, then error
-		if(tempFSM == null) Alerts.makeError(Alerts.ERROR_DETERMINIZE_ALREADY_DONE);
-		// Then get the determinized version from there.
-		else {
-			// TODO: actually perform the determinization... How can we call this appropriately?
-			addFSM(tempFSM.determinize(), id);
-		} // if/else
-	} // startDeterminization(DeterministicFSM, String)
 } // class SingleFSMOperationPane
