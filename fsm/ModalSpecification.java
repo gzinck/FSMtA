@@ -99,17 +99,12 @@ public class ModalSpecification
 	 * @return - Returns a 
 	 */
 	
-	public <S extends State, T extends Transition<S, E>, E extends Event> FSM<S, T, E> makeOptimalSupervisor(FSM<S, T, E> fsm) {
+	public <S extends State, T extends Transition<S, E>, E extends Event>
+			FSM<S, T, E> makeOptimalSupervisor(FSM<S, T, E> fsm) {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
-		FSM<S, DetTransition<S, E>, E> newFSM;
-		if(fsm instanceof Observability) {
-			newFSM = ((Observability)fsm).createObserverView().determinize();
-		} else if(fsm instanceof NonDeterministic) {
-			newFSM = ((NonDeterministic)fsm).determinize();
-		} else{
-			newFSM = (FSM<S, DetTransition<S, E>, E>)fsm; // TODO: make sure this is right...
-		} // if/else
+		// TODO: How can we make this parameterized? It doesn't seem to like me...
+		FSM newFSM = fsm.determinize();
 		
 		DetObsContFSM specFSM = new DetObsContFSM();
 		// Make the underlying FSM of the specification
@@ -118,8 +113,7 @@ public class ModalSpecification
 		specFSM.copyStates(this);
 		specFSM.copyTransitions(this);
 		
-		FSM<S, DetTransition<S, E>, E> product = newFSM.product(specFSM);
-		
+		FSM product = newFSM.product(specFSM);
 		
 		// Now mark the bad states
 		boolean keepGoing = true;

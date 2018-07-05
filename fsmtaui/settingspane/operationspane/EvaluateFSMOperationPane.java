@@ -3,6 +3,7 @@ package fsmtaui.settingspane.operationspane;
 import fsm.attribute.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
+import fsmtaui.popups.CSODialog;
 import fsm.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,7 +35,7 @@ public class EvaluateFSMOperationPane extends VBox {
 	private ChoiceBox<String> evaluationChoiceBox;
 	/** ObservableList of Strings with all the possible operations involving
 	 * one FSM that a user can choose. */
-	private static final ObservableList<String> EVALUATION_OPTIONS = FXCollections.observableArrayList("Check Blocking");
+	private static final ObservableList<String> EVALUATION_OPTIONS = FXCollections.observableArrayList("Check Blocking", "Check for Current State Opacity");
 	/** Button allowing the user to perform the selection evaluatioln on the selected FSM. */
 	private Button evaluateBtn;
 	
@@ -89,6 +90,10 @@ public class EvaluateFSMOperationPane extends VBox {
 					model.refreshViewport();
 					String message = isBlocking ? IS_BLOCKING_MSG : NOT_BLOCKING_MSG;
 					Alerts.makeInfoBox(RESULT_TITLE, message);
+				} else if(operation.equals(EVALUATION_OPTIONS.get(1))) {
+					// Check if current state opaque
+					FSM newFSM = CSODialog.testCSO(currFSM);
+					if(newFSM != null) model.addFSM(newFSM);
 				} else {
 					// No option chosen
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);
