@@ -1,6 +1,7 @@
 package support.transition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import support.State;
 import support.event.Event;
@@ -134,9 +135,15 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 	
 	@Override
 	public boolean removeTransitionState(State inState) {
-		if(state.equals(inState)) {
+		if(state.equals(inState))
 			state = null;
-		}
+		return (state == null);
+	}
+	
+	@Override
+	public boolean removeTransitionStates(Collection<S> inStates) {
+		if(inStates.contains(state))
+			state = null;
 		return (state == null);
 	}
 	

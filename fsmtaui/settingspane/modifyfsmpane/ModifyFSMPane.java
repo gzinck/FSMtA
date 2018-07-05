@@ -27,12 +27,10 @@ public class ModifyFSMPane extends VBox {
 	private TitledPane eventOptions;
 	/** TitledPane containing all the options for adding/removing states. */
 	private TitledPane stateOptions;
-	/** TitledPane containing all the options for the initial state. */
-	private TitledPane initialStateOptions;
-	/** TitledPane containing all the options for the marked states. */
-	private TitledPane markedStateOptions;
-	/** TitledPane containing all the below elements for the observability options. */
-	private TitledPane observabilityOptions;
+	/** TitledPane containing all the options for the editing the properties of preexisting states. */
+	private TitledPane statePropertiesOptions;
+	/** TitledPane containing all the options for editing the properties of preexisting events. */
+	private TitledPane eventPropertiesOptions;
 	
 	/**
 	 * Creates a new ModifyFSMPane, which allows the user to change the
@@ -49,12 +47,11 @@ public class ModifyFSMPane extends VBox {
 		
 		// Create the event/state add and remove options
 		eventOptions = new TitledPane("Event Options", new ModifyFSMEventsPane(model));
+		eventPropertiesOptions = new TitledPane("Event Properties Options", new ModifyFSMEventPropertiesPane(model));
 		stateOptions = new TitledPane("State Options", new ModifyFSMStatesPane(model));
-		initialStateOptions = new TitledPane("Initial State Options", new ModifyFSMInitialStatesPane(model));
-		markedStateOptions = new TitledPane("Marked State Options",new ModifyFSMMarkedStatesPane(model));
-		observabilityOptions = new TitledPane("Observability Options", new ModifyFSMObservablePane(model));
+		statePropertiesOptions = new TitledPane("State Properties Options", new ModifyFSMStatePropertiesPane(model));
 		
-		optionBoxes = new VBox(eventOptions, stateOptions, initialStateOptions, markedStateOptions, observabilityOptions);
+		optionBoxes = new VBox(eventOptions, eventPropertiesOptions, stateOptions, statePropertiesOptions);
 		optionBoxes.setPrefWidth(OPTIONS_WIDTH);
 		ScrollPane scrollable = new ScrollPane();
 		scrollable.setContent(optionBoxes);

@@ -28,8 +28,6 @@ public class ModifyFSMStatesPane extends VBox {
 	private Button addStateBtn;
 	/** Button to remove a state from the FSM open in the current tab. */
 	private Button removeStateBtn;
-	/** Button to rename states from the FSM open in the current tab. */
-	private Button renameStatesBtn;
 	
 	/**
 	 * Creates a new pane to add/remove states.
@@ -52,13 +50,10 @@ public class ModifyFSMStatesPane extends VBox {
 		removeStateBtn = new Button("Remove State");
 		HBox stateBtnPane = new HBox(addStateBtn, removeStateBtn);
 		
-		renameStatesBtn = new Button("Rename All States");
-		
-		getChildren().addAll(stateOptionsLabel, stateName, stateBtnPane, new Separator(), renameStatesBtn);
+		getChildren().addAll(stateOptionsLabel, stateName, stateBtnPane);
 		
 		makeAddStateEventHandler();
 		makeRemoveStateEventHandler();
-		makeRenameStatesEventHandler();
 	} // ModifyFSMStatesPane(Model)
 	
 	/**
@@ -117,26 +112,4 @@ public class ModifyFSMStatesPane extends VBox {
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeRemoveStateEventHandler()
-	
-	/**
-	 * Creates the event handler for when the rename states button
-	 * is pressed.
-	 */
-	private void makeRenameStatesEventHandler() {
-		renameStatesBtn.setOnKeyPressed(e -> {
-			if(e.getCode() == KeyCode.ENTER) renameStatesBtn.fire();
-		});
-		renameStatesBtn.setOnAction(e -> {
-			FSM currFSM = model.getCurrFSM();
-			if(currFSM == null) {
-				// Then cannot remove event
-				Alerts.makeError(Alerts.ERROR_NO_FSM);
-			} else {
-				currFSM.renameStates();
-				stateNameField.setText("");
-				stateNameField.requestFocus();
-				model.refreshViewport();
-			} // if/else
-		});
-	} // makeRenameStatesEventHandler()
 } // class ModifyFSMStatesPane

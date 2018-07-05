@@ -45,19 +45,19 @@ public class GenerateFSMDialog {
 		// Create the grid for all the options
 		optionGrid = new GridPane();
 		Label sizeStatesLabel = new Label("Number of States");
-		sizeStates = new TextField();
+		sizeStates = new TextField("10");
 		Label sizeMarkedLabel = new Label("Number of Marked States");
-		sizeMarked = new TextField();
+		sizeMarked = new TextField("3");
 		Label sizeEventsLabel = new Label("Number of Events");
-		sizeEvents = new TextField();
+		sizeEvents = new TextField("2");
 		Label sizePathsLabel = new Label("Max Number of Paths Leaving a State");
-		sizePaths = new TextField();
+		sizePaths = new TextField("2");
 		Label sizeSecretLabel = new Label("Number of Secret States");
-		sizeSecret = new TextField();
-		Label sizeUnobservLabel = new Label("Number of unobservable events");
-		sizeUnobserv = new TextField();
-		Label sizeUncontrolLabel = new Label("Number of unobservable events");
-		sizeUncontrol = new TextField();
+		sizeSecret = new TextField("3");
+		Label sizeUnobservLabel = new Label("Number of Unobservable Events");
+		sizeUnobserv = new TextField("1");
+		Label sizeUncontrolLabel = new Label("Number of Unobservable Events");
+		sizeUncontrol = new TextField("2");
 		
 		optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel);
 		optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeUncontrol);
@@ -65,8 +65,8 @@ public class GenerateFSMDialog {
 		// Add extra option if the type is non-deterministic:
 		if(!deterministic) {
 			Label sizeInitialLabel = new Label("Number of Initial States");
-			sizeInitial = new TextField();
-			optionGrid.addRow(6, sizeInitialLabel, sizeInitial);
+			sizeInitial = new TextField("3");
+			optionGrid.addRow(7, sizeInitialLabel, sizeInitial);
 		} // if non-deterministic
 		
 		// Add the options and buttons.

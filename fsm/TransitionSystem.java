@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -674,6 +675,53 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		if(transitions.removeTransition(s1, e, s2)) return true;
 		return false;
 	}
+	
+//---  Manipulations - Changing Many States at the Same Time   ---------------------------------------------------------------
+	
+	/**
+	 * This method marks all states in the transition system.
+	 */
+	
+	public void markAllStates() {
+		for(S s : states.getStates())
+			s.setStateMarked(true);
+	}
+	
+	/**
+	 * This method unmarks all states in the transition system.
+	 */
+	
+	public void unmarkAllStates() {
+		for(S s : states.getStates())
+			s.setStateMarked(false);
+	}
+	
+	/**
+	 * This method removes any bad state markings in the transition system.
+	 */
+	
+	public void makeAllStatesGood() {
+		for(S s : states.getStates())
+			s.setStateBad(false);
+	}
+	
+	/**
+	 * This method removes all bad states from the transition system.
+	 */
+	
+	public void removeBadStates() {
+		// Collect all the bad states
+		ArrayList<S> badStates = new ArrayList<S>();
+		for(S s : states.getStates())
+			if(s.stateIsBad()) badStates.add(s);
+		// Remove the states from the state map
+		for(S s : badStates) {
+			states.removeState(s);
+			removeInitialState(s.getStateName());
+		}
+		// Remove any state in the bad map from transitions
+		transitions.removeStates(badStates);
+	}
 
 //---  Manipulations - Other   ----------------------------------------------------------------
 
@@ -691,7 +739,39 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		if(curr == null)	
 			return null;
 		boolean isMarked = curr.getStateMarked();
-		states.getState(stateName).setStateMarked(!isMarked);
+		curr.setStateMarked(!isMarked);
 		return !isMarked;
+	}
+	
+	/**
+	 * This method handles the toggling of a State extending object's status as bad, reversing
+	 * its current status to its opposite. (true -> false, false -> true). The State is identified
+	 * by passing in its String name.
+	 * 
+	 * @param stateName - String object representing the name of the State extending object to have its status as Marked be toggled.
+	 * @return - Returns a Boolean object; true if the state is now bad, false if the state is now not bad, or null if it did not exist.
+	 */
+	public Boolean toggleBadState(String stateName) {
+		S curr = states.getState(stateName);
+		if(curr == null) return null;
+		boolean isBad = curr.stateIsBad();
+		curr.setStateBad(!isBad);
+		return !isBad;
+	}
+	
+	/**
+	 * This method handles the toggling of a State extending object's status as secret, reversing
+	 * its current status to its opposite. (true -> false, false -> true). The State is identified
+	 * by passing in its String name.
+	 * 
+	 * @param stateName - String object representing the name of the State extending object to have its status as secret be toggled.
+	 * @return - Returns a Boolean object; true if the state is now secret, false if the state is now not secret, or null if it did not exist.
+	 */
+	public Boolean toggleSecretState(String stateName) {
+		S curr = states.getState(stateName);
+		if(curr == null) return null;
+		boolean isSecret = curr.getStatePrivacy();
+		curr.setStatePrivate(!isSecret);
+		return !isSecret;
 	}
 }

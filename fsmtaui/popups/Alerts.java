@@ -38,13 +38,9 @@ public class Alerts {
 	public static final String[] ERROR_ADD_STATE_NO_NAME = {"Add State Error", "To add a state, you must define the state's name."};
 	public static final String[] ERROR_ADD_STATE_NO_FSM = {"Add State Error", "To add a state, you must have an FSM open and active in the right pane."};
 	
-	// Errors for toggling initial states
-	public static final String[] ERROR_TOGGLE_INITIAL_NO_NAME = {"Toggle Initial Error", "To toggle a state's initial property, you must define the state's name."};
-	public static final String[] ERROR_TOGGLE_INITIAL_NO_FSM = {"Toggle Initial Error", "To toggle a state's initial property, you must have an FSM open and active in the right pane."};
-	
-	// Errors for toggling marked states
-	public static final String[] ERROR_TOGGLE_MARKED_NO_NAME = {"Toggle Marked Error", "To toggle a state's marked property, you must define the state's name."};
-	public static final String[] ERROR_TOGGLE_MARKED_NO_FSM = {"Toggle Marked Error", "To toggle a state's marked property, you must have an FSM open and active in the right pane."};
+	// Errors for toggling state options
+	public static final String[] ERROR_TOGGLE_STATE_NO_NAME = {"Toggle State Error", "To toggle a state's property, you must define the state's name."};
+	public static final String[] ERROR_TOGGLE_STATE_NO_FSM = {"Toggle State Error", "To toggle a state's property, you must have an FSM open and active in the right pane."};
 	
 	//--------------------------------------------------------------------------------
 	// For the FSMOperationsPane

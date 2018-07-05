@@ -167,21 +167,41 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	}
 	
 	/**
-	 * This method removes entries in the <State, ArrayList<T>> according to the provided State.
+	 * This method removes entries in the $lt;State, ArrayList&lt;T&gt;&gt; according to the provided State.
 	 * 
-	 * @param state - State object representing the Key-set to remove from the <State, ArrayList<T>> data set.
+	 * @param state - State object representing the Key-set to remove from the &lt;State, ArrayList&lt;T&gt;&gt; data set.
 	 */
 	
 	public void removeState(State state) {
 		transitions.remove(state);
-		ArrayList<T> tToRemove = new ArrayList<T>();
 		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
-			for(T transition : entry.getValue()) {
+			ArrayList<T> tToRemove = new ArrayList<T>();
+			for(T transition : entry.getValue())
 				if(transition.removeTransitionState(state))
 					tToRemove.add(transition);
-			}
 			entry.getValue().removeAll(tToRemove);
 		} // for every entry
+	}
+	
+	/**
+	 * This method removes entries in the transition function according to the provided hashset of states to remove.
+	 * 
+	 * @param badStates HashSet of States which are bad and must be removed from the TransitionFunction.
+	 */
+	
+	public void removeStates(Collection<S> badStates) {
+		// Remove the transitions from the bad states
+		Iterator<S> itr = badStates.iterator();
+		while(itr.hasNext()) transitions.remove(itr.next());
+		
+		// Remove the transitions that go to the bad states
+		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
+			ArrayList<T> tToRemove = new ArrayList<T>();
+			for(T transition : entry.getValue())
+				if(transition.removeTransitionStates(badStates))
+					tToRemove.add(transition);
+			entry.getValue().removeAll(tToRemove);
+		}
 	}
 	
 	/**

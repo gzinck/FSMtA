@@ -269,10 +269,11 @@ public class FileSettingsPane extends VBox {
 							parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
 							parameters.sizeUnobserv, parameters.sizeUncontrol, fsmClass.equals("Deterministic"),
 							newFSMName, model.getWorkingDirectoryString() + "/"));
-					newFSM = new DetObsContFSM(fsmFile, newFSMName);
+					if(fsmClass.equals("Deterministic"))
+						newFSM = new DetObsContFSM(fsmFile, newFSMName);
+					else	 newFSM = new NonDetObsContFSM(fsmFile, newFSMName);
 					fsmFile.delete();
 				} // if
-				
 				if(newFSM != null) {
 					model.addFSM(newFSM);
 					fsmNameField.setText("");

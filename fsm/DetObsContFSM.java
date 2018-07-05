@@ -440,6 +440,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 
 	@Override
 	public boolean removeInitialState(String stateName) {
+		if(initialState == null) return false;
 		if(initialState.getStateName().equals(stateName)) {
 			initialState = null;
 			return true;

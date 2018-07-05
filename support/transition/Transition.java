@@ -1,6 +1,7 @@
 package support.transition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import support.State;
 import support.event.Event;
@@ -102,7 +103,7 @@ public interface Transition<S extends State, E extends Event> {
 	public boolean removeTransitionState(String stateName);
 	
 	/**
-	 * Removes the state from the transition object; or, if the state
+	 * Removes the state from the transition object, and if the state
 	 * is the only item in the transition object (as it is for the base
 	 * Transition object), it returns true to indicate that the transition
 	 * object should be deleted entirely.
@@ -113,4 +114,17 @@ public interface Transition<S extends State, E extends Event> {
 	 */
 	
 	public boolean removeTransitionState(State inState);
+	
+	/**
+	 * Removes the set of states from the transition object, and if the states
+	 * were the only items in the transition object (as it is for the base
+	 * Transition object), it returns true to indicate that the transition
+	 * object should be deleted entirely.
+	 * 
+	 * @param inState Collection of State objects to delete from the transition object.
+	 * @return True if the transition object has no states to which it points,
+	 * else false.
+	 */
+	
+	public boolean removeTransitionStates(Collection<S> inStates);
 }

@@ -178,5 +178,11 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 		states.remove(inState);
 		return (states.size() == 0);
 	}
+	
+	@Override
+	public boolean removeTransitionStates(Collection<S> inStates) {
+		states.removeAll(inStates);
+		return (states.size() == 0);
+	}
 
 }
