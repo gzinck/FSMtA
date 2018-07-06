@@ -56,11 +56,6 @@ public class SelectFSMDialog {
             		
             		// Must have an id
             		id = fsmNameField.getText();
-            		if(id.equals("") || model.fsmExists(id)) {
-        				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
-        				return null;
-            		} // if illegal name
-            		
             		return fsms;
             }// if
             return null;
@@ -70,13 +65,16 @@ public class SelectFSMDialog {
 		// enough FSMs selected.
 		final Button btOk = (Button) dPane.lookupButton(ButtonType.OK);
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {
-		        // Check whether some conditions are fulfilled
-		        if (openFSMBox.getSelectionModel().getSelectedItems().size() < 2) {
-		        		Alerts.makeError(Alerts.ERROR_MULTI_OPERATION_NO_FSM);
-		            event.consume();
-		        }
-		    }
-		);
+			// Check whether some conditions are fulfilled
+			id = fsmNameField.getText();    
+			if (openFSMBox.getSelectionModel().getSelectedItems().size() < 2) {
+				Alerts.makeError(Alerts.ERROR_MULTI_OPERATION_NO_FSM);
+	        		event.consume();
+	        } else if(id.equals("") || model.fsmExists(id)) {
+				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
+				event.consume();
+	    		} // if illegal name
+		});
 	}
 	
 	/**
