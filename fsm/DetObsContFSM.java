@@ -399,14 +399,13 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM product(FSM ... other) {
 		DetObsContFSM newFSM = new DetObsContFSM();
-		for(int i = 0; i < other.length; i++) {
+		this.productHelper(other[0], newFSM);
+		for(int i = 1; i < other.length; i++) {
 			DetObsContFSM newerFSM = new DetObsContFSM();
 			other[i].productHelper(newFSM, newerFSM);
 			newFSM = newerFSM;
 		}
-		DetObsContFSM newerFSM = new DetObsContFSM();
-		this.productHelper(newFSM, newerFSM);
-		return newerFSM;
+		return newFSM;
 	}
 
 	@Override
