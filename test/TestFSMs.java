@@ -28,15 +28,16 @@ public class TestFSMs {
 		
 			DetObsContFSM fsm2 = new DetObsContFSM(f2, "fsm2");
 		
-		System.out.println(fsm2.makeDotString());
+		//System.out.println(fsm2.makeDotString());
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
 			DetObsContFSM fsm3 = new DetObsContFSM(f3, "fsm3");
 		
-		System.out.println(fsm3.makeDotString());
+		//System.out.println(fsm3.makeDotString());
 		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			DetObsContFSM fsm4 = fsm.product(fsm2);
+			DetObsContFSM fsm4 = fsm.product(fsm, fsm);
+			//fsm4 = fsm4.product(fsm);
 
 		System.out.println(fsm4.makeDotString());
 		FSMToDot.createImgFromFSM(fsm4, MAC_WORKING_FOLDER + "test4", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
