@@ -518,14 +518,13 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		for(int i = 0; i < other.length; i++) {
+		this.productHelper(other[0], newFSM);
+		for(int i = 1; i < other.length; i++) {
 			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
 			other[i].productHelper(newFSM, newerFSM);
 			newFSM = newerFSM;
 		}
-		NonDetObsContFSM newerFSM = new NonDetObsContFSM();
-		this.productHelper(newFSM, newerFSM);
-		return newerFSM;
+		return newFSM;
 	}
 	
 	@Override
