@@ -107,7 +107,7 @@ public class MultiFSMOperationPane extends VBox {
 //		});
 		performOperationBtn.setOnAction(e -> {
 			String operation = operationChoiceBox.getSelectionModel().getSelectedItem();
-			if(operation.equals("")) {
+			if(operation == null) {
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
 			} else {
 				SelectFSMDialog selectionDialog = new SelectFSMDialog(model, "Operation Selection Options", "Write a name for the new FSM, and select the FSMs to perform the operation.");
