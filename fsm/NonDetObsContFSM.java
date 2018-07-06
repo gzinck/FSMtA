@@ -191,7 +191,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 					priv = false;
 			}
 			for(int i = 0; i < nameSet.size(); i++)
-				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? ", " : "}"));
+				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? "," : "}"));
 			name.put(s.getStateName(), "{" + sb.toString());
 			map.put(s, thisSet);
 			if(on) {
@@ -225,7 +225,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			}
 			Collections.sort(aggregate);
 			for(int i = 0; i < aggregate.size(); i++)
-				newState.append(aggregate.get(i).getStateName() + (i + 1 < aggregate.size() ? ", " : "}"));
+				newState.append(aggregate.get(i).getStateName() + (i + 1 < aggregate.size() ? "," : "}"));
 			newFSM.addState("{" + newState.toString());
 		}
 		

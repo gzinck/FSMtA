@@ -172,7 +172,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 										for(S1 otherToState : otherTrans.getTransitionStates()) {
 											
 											// If the state doesn't exist, add to queue
-											if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherToState.getStateName() + ")")) {
+											if(!newFSM.stateExists("(" + thisToState.getStateName() + "," + otherToState.getStateName() + ")")) {
 												thisNextState.add(thisToState);
 												otherNextState.add(otherToState);
 											} // if state doesn't exist

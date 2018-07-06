@@ -213,7 +213,7 @@ public class StateMap<S extends State> {
 	 */
 	
 	public S addState(S state1, State state2) {
-		String stateName = "(" + state1.getStateName() + ", " + state2.getStateName() + ")";
+		String stateName = "(" + state1.getStateName() + "," + state2.getStateName() + ")";
 		if(states.containsKey(stateName))
 			return states.get(stateName);
 		S newState = state1.makeStateWith(state2); // TODO: fix the generic types here

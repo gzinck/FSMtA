@@ -17,26 +17,26 @@ public class TestFSMs {
 	
 	@Test
 	public void test() {
-		File f1 = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 3, 1, 2, false, "fileName1", MAC_WORKING_FOLDER));
-		File f2 = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 3, 1, 2, false, "fileName2", MAC_WORKING_FOLDER));
-		File f3 = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 3, 1, 2, false, "fileName3", MAC_WORKING_FOLDER));
+		File f1 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 3, 1, 1, 2, false, "fileName1", MAC_WORKING_FOLDER));
+		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 3, 1, 1, 2, false, "fileName2", MAC_WORKING_FOLDER));
+		File f3 = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 1, 1, 2, false, "fileName3", MAC_WORKING_FOLDER));
 		
-			NonDetObsContFSM fsm = new NonDetObsContFSM(f1, "fsm");
+			DetObsContFSM fsm = new DetObsContFSM(f1, "fsm");
 		
 		System.out.println(fsm.makeDotString());
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			NonDetObsContFSM fsm2 = new NonDetObsContFSM(f2, "fsm2");
+			DetObsContFSM fsm2 = new DetObsContFSM(f2, "fsm2");
 		
 		System.out.println(fsm2.makeDotString());
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			NonDetObsContFSM fsm3 = new NonDetObsContFSM(f3, "fsm3");
+			DetObsContFSM fsm3 = new DetObsContFSM(f3, "fsm3");
 		
 		System.out.println(fsm3.makeDotString());
 		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			NonDetObsContFSM fsm4 = fsm.union(fsm2, fsm3);
+			DetObsContFSM fsm4 = fsm.product(fsm2);
 
 		System.out.println(fsm4.makeDotString());
 		FSMToDot.createImgFromFSM(fsm4, MAC_WORKING_FOLDER + "test4", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);

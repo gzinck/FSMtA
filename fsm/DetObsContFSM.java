@@ -426,7 +426,8 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	@Override
 	public ArrayList<State> getInitialStates() {
 		ArrayList<State> initial = new ArrayList<State>();
-		initial.add(initialState);
+		if(initialState != null)
+			initial.add(initialState);
 		return initial;
 	}
 	
