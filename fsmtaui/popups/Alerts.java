@@ -52,7 +52,7 @@ public class Alerts {
 	public static final String[] ERROR_DETERMINIZE_ALREADY_DONE = {"Determinization Error", "The selected FSM was already deterministic."};
 	public static final String[] ERROR_ALREADY_OBSERVABLE = {"Observer View Error", "The selected FSM was already in observer view—there were no unobservable events."};
 	
-	public static final String[] ERROR_MULTI_OPERATION_NO_FSM = {"Multi-FSM Operation Error", "To perform an operation on two FSMs, you must select two FSMs."};
+	public static final String[] ERROR_MULTI_OPERATION_NO_FSM = {"Multi-FSM Operation Error", "To perform an operation on multiple FSMs, you must select at least two FSMs."};
 	
 	public static final String[] ERROR_INCOMPATIBLE_FSM_OBSCONT = {"Incompatible FSM Type Error", "To perform the operation, you must have a compatible FSM type (must have observability and controllability enabled)."};
 	

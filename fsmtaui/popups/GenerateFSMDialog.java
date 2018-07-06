@@ -56,7 +56,7 @@ public class GenerateFSMDialog {
 		sizeSecret = new TextField("3");
 		Label sizeUnobservLabel = new Label("Number of Unobservable Events");
 		sizeUnobserv = new TextField("1");
-		Label sizeUncontrolLabel = new Label("Number of Unobservable Events");
+		Label sizeUncontrolLabel = new Label("Number of Uncontrollable Events");
 		sizeUncontrol = new TextField("2");
 		
 		optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel);
