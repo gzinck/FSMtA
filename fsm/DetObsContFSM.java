@@ -386,25 +386,40 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		for(FSM fsm : other)
-			unionHelper(fsm, newFSM);
-		return newFSM;
+		for(int i = 0; i < other.length; i++) {
+			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+			other[i].unionHelper(newFSM, newerFSM);
+			newFSM = newerFSM;
+		}
+		NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+		this.unionHelper(newFSM, newerFSM);
+		return newerFSM;
 	}
 
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM product(FSM ... other) {
 		DetObsContFSM newFSM = new DetObsContFSM();
-		for(FSM fsm : other)
-			productHelper(fsm, newFSM);
-		return newFSM;
+		for(int i = 0; i < other.length; i++) {
+			DetObsContFSM newerFSM = new DetObsContFSM();
+			other[i].productHelper(newFSM, newerFSM);
+			newFSM = newerFSM;
+		}
+		DetObsContFSM newerFSM = new DetObsContFSM();
+		this.productHelper(newFSM, newerFSM);
+		return newerFSM;
 	}
 
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DetObsContFSM parallelComposition(FSM ... other){
 		DetObsContFSM newFSM = new DetObsContFSM();
-		for(FSM fsm : other)
-			parallelCompositionHelper(fsm, newFSM);
-		return newFSM;
+		for(int i = 0; i < other.length; i++) {
+			DetObsContFSM newerFSM = new DetObsContFSM();
+			other[i].parallelCompositionHelper(newFSM, newerFSM);
+			newFSM = newerFSM;
+		}
+		DetObsContFSM newerFSM = new DetObsContFSM();
+		this.parallelCompositionHelper(newFSM, newerFSM);
+		return newerFSM;
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------

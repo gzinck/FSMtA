@@ -505,25 +505,40 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		for(FSM<S1, T1, E1> fsm : other)
-			unionHelper(fsm, newFSM);
-		return newFSM;
+		for(int i = 0; i < other.length; i++) {
+			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+			other[i].unionHelper(newFSM, newerFSM);
+			newFSM = newerFSM;
+		}
+		NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+		this.unionHelper(newFSM, newerFSM);
+		return newerFSM;
 	}
 
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		for(FSM<S1, T1, E1> fsm : other)
-			productHelper(fsm, newFSM);
-		return newFSM;
+		for(int i = 0; i < other.length; i++) {
+			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+			other[i].productHelper(newFSM, newerFSM);
+			newFSM = newerFSM;
+		}
+		NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+		this.productHelper(newFSM, newerFSM);
+		return newerFSM;
 	}
 	
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM ... other){
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		for(FSM<S1, T1, E1> fsm : other)
-			parallelCompositionHelper(fsm, newFSM);
-		return newFSM;
+		for(int i = 0; i < other.length; i++) {
+			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+			other[i].parallelCompositionHelper(newFSM, newerFSM);
+			newFSM = newerFSM;
+		}
+		NonDetObsContFSM newerFSM = new NonDetObsContFSM();
+		this.parallelCompositionHelper(newFSM, newerFSM);
+		return newerFSM;
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------
