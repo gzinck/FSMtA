@@ -46,6 +46,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = name;
 		initial = init;
 		marked = mark;
+		privacy = false;
 		badState = false;
 	}
 	
@@ -95,6 +96,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = replace.getStateName();
 		initial = replace.getStateInitial();
 		marked = replace.getStateMarked();
+		privacy = replace.getStatePrivacy();
 		badState = false;
 	}
 	
@@ -107,9 +109,10 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * @param state2 The second state to inherit from.
 	 */
 	public State(State state1, State state2) {
-		id = "(" + state1.getStateName() + ", " + state2.getStateName() + ")";
+		id = "(" + state1.getStateName() + "," + state2.getStateName() + ")";
 		initial = (state1.initial && state2.initial);
 		marked = (state1.marked && state2.marked);
+		privacy = (state1.privacy && state2.privacy);
 		badState = false;
 	}
 	

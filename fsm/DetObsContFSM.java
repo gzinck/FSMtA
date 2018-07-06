@@ -402,7 +402,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		this.productHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
 			DetObsContFSM newerFSM = new DetObsContFSM();
-			other[i].productHelper(newFSM, newerFSM);
+			newFSM.productHelper(other[i], newerFSM);
 			newFSM = newerFSM;
 		}
 		return newFSM;
@@ -413,7 +413,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		DetObsContFSM newFSM = new DetObsContFSM();
 		for(int i = 0; i < other.length; i++) {
 			DetObsContFSM newerFSM = new DetObsContFSM();
-			other[i].parallelCompositionHelper(newFSM, newerFSM);
+			newFSM.parallelCompositionHelper(other[i], newerFSM);
 			newFSM = newerFSM;
 		}
 		DetObsContFSM newerFSM = new DetObsContFSM();
