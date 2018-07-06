@@ -19,7 +19,7 @@ public class DontLookAtMe {
 //		File f1 = new File(GenerateFSM.createNewDeterministicFSM(4, 3, 2, 3, "fil1", GRAEME_WORKING_FOLDER));
 //		File f2 = new File(GenerateFSM.createNewDeterministicFSM(4, 2, 2, 3, "fil2", GRAEME_WORKING_FOLDER));
 ////		File f1 = new File(GRAEME_WORKING_FOLDER + "/fil1.fsm");
-		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/simpledet.fsm");
+		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/cantdeterminize.fsm");
 		File f2 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/simpledet2.fsm");
 		File f3 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/simpledet3.fsm");
 //		DetFSM fsm1 = new DetFSM(f1, "fs1");
@@ -31,12 +31,13 @@ public class DontLookAtMe {
 //		FSMToDot.createImgFromFSM(fsm3, GRAEME_WORKING_FOLDER + "test4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
 		
-		DetObsContFSM fsm1 = new DetObsContFSM(f1, "OK");
-		DetObsContFSM fsm2 = new DetObsContFSM(f2, "OK");
-		DetObsContFSM fsm3 = new DetObsContFSM(f3, "OK");
-		DetObsContFSM fsm4 = fsm1.product(fsm2);
+		NonDetObsContFSM fsm1 = new NonDetObsContFSM(f1, "OK");
+		//DetObsContFSM fsm2 = new DetObsContFSM(f2, "OK");
+		//DetObsContFSM fsm3 = new DetObsContFSM(f3, "OK");
+		DetObsContFSM fsm4 = fsm1.determinize();
 		
-		FSMToDot.createImgFromFSM(fsm4, GRAEME_WORKING_FOLDER + "/" + "unobservable-uncontrollable-transition", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "/" + "coolbeansb4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(fsm4, GRAEME_WORKING_FOLDER + "/" + "coolbeans", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 //		fsm1.addTransition("1", "a", "2");
 //		fsm1.addTransition("2", "b", "3");
 //		fsm1.addTransition("2", "a", "10");

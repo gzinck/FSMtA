@@ -104,7 +104,7 @@ public class ModalSpecification
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
 		// TODO: How can we make this parameterized? It doesn't seem to like me...
-		FSM newFSM = fsm.determinize();
+		FSM newFSM = (FSM)((Observability)fsm).createObserverView();
 		
 		DetObsContFSM specFSM = new DetObsContFSM();
 		// Make the underlying FSM of the specification

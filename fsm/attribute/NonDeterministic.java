@@ -25,6 +25,6 @@ public interface NonDeterministic<S extends State, T extends NonDetTransition<S,
 	 * @return - Returns a NonDetObsContFSM object corresponding to the deterministic version of the calling DetObsContFSM object.
 	 */
 	
-//	public abstract <fsm extends FSM> fsm determinize();
+	public abstract <fsm extends FSM> fsm determinize();
 	
 }

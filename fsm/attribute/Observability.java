@@ -30,7 +30,7 @@ public interface Observability<S extends State, T extends Transition<S, E>, E ex
 	 * @return - Returns a NonDeterministic object representing the Observer-View version of the original FSM, removing Unobservable events.
 	 */
 	
-	public abstract NonDeterministic createObserverView();
+	public abstract Deterministic createObserverView();
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	

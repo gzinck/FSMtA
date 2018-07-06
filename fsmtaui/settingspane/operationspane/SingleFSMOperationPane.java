@@ -99,7 +99,7 @@ public class SingleFSMOperationPane extends VBox {
 			} else {
 				if(operation.equals(SINGLE_FSM_OPERATIONS.get(0))) {
 					// Determinize
-					addFSM(currFSM.determinize(), id);
+					addFSM((FSM)((Observability)currFSM).createObserverView(), id);
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(1))) {
 					// Accessible
 					addFSM(currFSM.makeAccessible(), id);

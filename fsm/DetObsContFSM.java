@@ -141,7 +141,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public NonDetObsContFSM createObserverView() {
+	public DetObsContFSM createObserverView() {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();			//Create new FSM to hold result of operation
 		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();	//Maps a State to all States it is attached to
 		HashMap<String, String> name = new HashMap<String, String>();		//Maps all State names to their new names via attached States
@@ -217,13 +217,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		
 		newFSM.addInitialState(name.get(this.getInitialState().getStateName()));	//And assign the new Initial State
 		
-		return newFSM;						//Good work!
-	}
-	
-	@Override
-	public DetObsContFSM determinize() {
-		NonDetObsContFSM newFSM1 = this.createObserverView();
-		return newFSM1.determinize();
+		return newFSM.determinize();						//Good work!
 	}
 
 	@Override
