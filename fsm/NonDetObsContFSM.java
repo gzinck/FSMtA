@@ -259,7 +259,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			if(!e.getEventObservability())
 				unob.add(e.getEventName());
 			if(!e.getEventControllability())
-				priv.add(e.getEventName());
+				cont.add(e.getEventName());
 		}
 		special += init.size() + "\n";
 		for(String s : init)
@@ -503,29 +503,15 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM<S1, T1, E1> other) {
-		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		unionHelper(other, newFSM);
-		return newFSM;
-	}
-
-	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM<S1, T1, E1> ... other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		for(FSM<S1, T1, E1> fsm : other)
 			unionHelper(fsm, newFSM);
 		return newFSM;
 	}
-	
-	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM<S1, T1, E1> other) {
-		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		productHelper(other, newFSM);
-		return newFSM;
-	}
 
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM<S1, T1, E1> ... other) {
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		for(FSM<S1, T1, E1> fsm : other)
 			productHelper(fsm, newFSM);
@@ -533,14 +519,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	}
 	
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM<S1, T1, E1> other) {
-		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		parallelCompositionHelper(other, newFSM);
-		return newFSM;
-	}
-	
-	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM<S1, T1, E1> ... other){
+	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM ... other){
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		for(FSM<S1, T1, E1> fsm : other)
 			parallelCompositionHelper(fsm, newFSM);
