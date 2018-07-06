@@ -129,7 +129,7 @@ public class FileSettingsPane extends VBox {
 	private VBox makeOpenFSMBox() {
 		Label openFSMBoxLabel = new Label("Open FSMs:");
 		openFSMBox = new ListView<String>(model.getOpenFSMStrings());
-		openFSMBox.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		openFSMBox.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		
 		return new VBox(openFSMBoxLabel, openFSMBox);
 	} // makeOpenFSMBox()
@@ -214,6 +214,7 @@ public class FileSettingsPane extends VBox {
 						// Do nothing, since error message already produced in another method.
 					} catch(Exception exception) {
 						// Show error that file format was not legal.
+						exception.printStackTrace();
 						Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
 					} // try/catch
 				} // if valid FSM name and type
