@@ -179,6 +179,10 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 											
 											// Add the state, then add the transition
 											S newToState = newFSM.states.addState(thisToState, otherToState);
+											if(thisToState.getStateInitial() && otherToState.getStateInitial()) {
+												newFSM.addInitialState(newToState);
+												newToState.setStateInitial(true);
+											}
 											newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
 										} // for every state in other transition
 									} // for every state in this transition
