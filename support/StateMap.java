@@ -247,7 +247,6 @@ public class StateMap<S extends State> {
 		}
 	}
 	
-	
 	public State addState(State ... states) {
 		State st = new State(states);
 		return st;

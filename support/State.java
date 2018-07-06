@@ -121,7 +121,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		id = replace.getStateName();
 		initial = replace.getStateInitial();
 		marked = replace.getStateMarked();
-		privacy = replace.getStatePrivacy();
+		privacy = replace.getStatePrivate();
 		badState = false;
 	}
 	
