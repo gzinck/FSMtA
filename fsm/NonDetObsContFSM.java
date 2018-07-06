@@ -148,7 +148,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
 	@Override
-	public NonDetObsContFSM createObserverView() {
+	public DetObsContFSM createObserverView() {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();		//See comments in DetObsContFSM for now, same process
 		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();
 		HashMap<String, String> name = new HashMap<String, String>();
@@ -232,7 +232,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		for(State sI : this.getInitialStates())
 			newFSM.addInitialState(name.get(sI.getStateName()));
 		
-		return newFSM;
+		return newFSM.determinize();
 	}
 
 	@Override
@@ -282,7 +282,6 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	@Override
 	public DetObsContFSM determinize(){
-		
 		/*
 		 * Create newFSM
 		 * Create queue to process states

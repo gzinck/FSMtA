@@ -51,7 +51,7 @@ public class CSODialog {
 			if(result != ButtonType.CANCEL) {
 				if(result == ButtonType.YES) {
 					String newId = fsmToUse.getId() + "-determinized";
-					fsmToUse = fsmToUse.determinize();
+					fsmToUse = (FSM)((Observability)fsmToUse).createObserverView();
 					fsmToUse.setId(newId);
 					newFSM = fsmToUse;
 				}
