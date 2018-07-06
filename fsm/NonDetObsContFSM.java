@@ -187,7 +187,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				State sit = iter.next();
 				if(!sit.getStateMarked())
 					on = false;
-				if(!sit.getStatePrivacy())
+				if(!sit.getStatePrivate())
 					priv = false;
 			}
 			for(int i = 0; i < nameSet.size(); i++)
@@ -252,7 +252,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				mark.add(s.getStateName());
 			if(s.getStateInitial()) 
 				init.add(s.getStateName());
-			if(s.getStatePrivacy())
+			if(s.getStatePrivate())
 				priv.add(s.getStateName());
 		}
 		for(ObsControlEvent e : this.getEvents()) {
@@ -350,7 +350,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				while(iter.hasNext()) {
 					String markCheck = iter.next();
 					mark = this.getState(markCheck).getStateMarked() ? mark : false;
-					priv = this.getState(markCheck).getStatePrivacy() ? priv : false;
+					priv = this.getState(markCheck).getStatePrivate() ? priv : false;
 					outboundStates.add(markCheck);
 				}
 				Collections.sort(outboundStates);
@@ -494,7 +494,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	public ArrayList<State> testCurrentStateOpacity(){
 		ArrayList<State> secrets = new ArrayList<State>();
 		for(State s : this.getStates()) {
-			if(s.getStatePrivacy())
+			if(s.getStatePrivate())
 				secrets.add(s);
 		}
 		return secrets;

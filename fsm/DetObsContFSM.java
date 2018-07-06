@@ -176,7 +176,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 				State sit = iter.next();
 				if(!sit.getStateMarked())
 					on = false;
-				if(!sit.getStatePrivacy())
+				if(!sit.getStatePrivate())
 					priv = false;
 			}
 			for(int i = 0; i < nameSet.size(); i++)		//Now build the new State's name via the sorted NameSet
@@ -244,7 +244,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 				mark.add(s.getStateName());
 			if(s.getStateInitial()) 
 				init.add(s.getStateName());
-			if(s.getStatePrivacy())
+			if(s.getStatePrivate())
 				priv.add(s.getStateName());
 		}
 		for(ObsControlEvent e : this.getEvents()) {
@@ -375,7 +375,7 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	public ArrayList<State> testCurrentStateOpacity(){
 		ArrayList<State> secrets = new ArrayList<State>();
 		for(State s : this.getStates()) {
-			if(s.getStatePrivacy())
+			if(s.getStatePrivate())
 				secrets.add(s);
 		}
 		return secrets;

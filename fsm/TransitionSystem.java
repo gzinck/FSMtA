@@ -732,7 +732,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		// Collect all the bad states
 		ArrayList<S> badStates = new ArrayList<S>();
 		for(S s : states.getStates())
-			if(s.stateIsBad()) badStates.add(s);
+			if(s.getStateBad()) badStates.add(s);
 		// Remove the states from the state map
 		for(S s : badStates) {
 			states.removeState(s);
@@ -774,7 +774,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	public Boolean toggleBadState(String stateName) {
 		S curr = states.getState(stateName);
 		if(curr == null) return null;
-		boolean isBad = curr.stateIsBad();
+		boolean isBad = curr.getStateBad();
 		curr.setStateBad(!isBad);
 		return !isBad;
 	}
@@ -791,7 +791,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	public Boolean toggleSecretState(String stateName) {
 		S curr = states.getState(stateName);
 		if(curr == null) return null;
-		boolean isSecret = curr.getStatePrivacy();
+		boolean isSecret = curr.getStatePrivate();
 		curr.setStatePrivate(!isSecret);
 		return !isSecret;
 	}

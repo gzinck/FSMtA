@@ -85,6 +85,31 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
+	 * 
+	 * @param states
+	 */
+	
+	public State(State ... states) {
+		boolean init = false;
+		boolean mark = true;
+		boolean bad = false;
+		boolean priv = true;
+		String name = "";
+		for(State s : states) {
+			init = s.getStateInitial() ? true : init;
+			mark = s.getStateMarked() ? mark : false;
+			bad = s.getStateBad() ? true : bad;
+			priv = s.getStatePrivate() ? priv : false;
+			name += s.getStateName() + ",";
+		}
+		id = name.substring(0, name.length()-1);
+		initial = init;
+		marked = mark;
+		badState = bad;
+		privacy = priv;
+	}
+	
+	/**
 	 * Constructor for a State object that copies the values stored in an existing State
 	 * object into this State object.
 	 * 
@@ -106,6 +131,7 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * @param state1 The first state to inherit from.
 	 * @param state2 The second state to inherit from.
 	 */
+
 	public State(State state1, State state2) {
 		id = "(" + state1.getStateName() + "," + state2.getStateName() + ")";
 		initial = (state1.initial && state2.initial);
@@ -180,6 +206,7 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * @return State representing the merge of the calling state and the parameter
 	 * state, where the AND logical operator is performed on all the properties.
 	 */
+	
 	public <S extends State> S makeStateWith(State other) {
 		return (S)new State(this, other);
 	}
@@ -255,7 +282,7 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * @return
 	 */
 	
-	public boolean getStatePrivacy() {
+	public boolean getStatePrivate() {
 		return privacy;
 	}
 	
@@ -265,7 +292,7 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * @return True if the State has been marked as a bad state.
 	 */
 	
-	public boolean stateIsBad() {
+	public boolean getStateBad() {
 		return badState;
 	}
 	

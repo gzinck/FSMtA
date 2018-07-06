@@ -218,6 +218,8 @@ public class StateMap<S extends State> {
 			return states.get(stateName);
 		S newState = state1.makeStateWith(state2); // TODO: fix the generic types here
 		states.put(newState.getStateName(), newState);
+		if(state1.getStateInitial() && state2.getStateInitial())
+			newState.setStateInitial(true);
 		return newState;
 	}
 	
@@ -243,6 +245,12 @@ public class StateMap<S extends State> {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	
+	public State addState(State ... states) {
+		State st = new State(states);
+		return st;
 	}
 	
 	/**
