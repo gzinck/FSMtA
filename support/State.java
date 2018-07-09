@@ -364,10 +364,6 @@ public class State implements Comparator<State>, Comparable<State>{
 		return st1.getStateName().compareTo(st2.getStateName());
 	}
 
-	/**
-	 * 
-	 */
-	
 	@Override
 	public int compareTo(State o) {
 		return this.getStateName().compareTo(o.getStateName());

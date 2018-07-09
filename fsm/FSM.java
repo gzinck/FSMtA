@@ -155,6 +155,8 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 					S thisState = thisNextState.poll();
 					S1 otherState = otherNextState.poll();
 					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
+					if(thisState.getStateInitial() && otherState.getStateInitial())
+						newFSM.addInitialState(newState);
 					
 					// Go through all the transitions in each, see what they have in common
 					ArrayList<T> thisTransitions = this.transitions.getTransitions(thisState);
@@ -179,10 +181,6 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 											
 											// Add the state, then add the transition
 											S newToState = newFSM.states.addState(thisToState, otherToState);
-											if(thisToState.getStateInitial() && otherToState.getStateInitial()) {
-												newFSM.addInitialState(newToState);
-												newToState.setStateInitial(true);
-											}
 											newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
 										} // for every state in other transition
 									} // for every state in this transition
