@@ -108,10 +108,13 @@ public class ModalSpecification
 	 * 
 	 * @param fsm - FSM<<r>S, T, E> object 
 	 * @return - Returns a maximally permissive controller for the original FSM.
+	 * @throws IllegalArgumentException - Throws an illegal argument exception if the
+	 * FSM defines one of the events in the modal specification as an unobservable event, which
+	 * is illegal in this implementation.
 	 */
 	
 	public <S extends State, T extends Transition<S, E>, E extends Event>
-			FSM<S, T, E> makeOptimalSupervisor(FSM<S, T, E> fsm) {
+			FSM<S, T, E> makeOptimalSupervisor(FSM<S, T, E> fsm) throws IllegalArgumentException {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
 		// TODO: How can we make this parameterized? It doesn't seem to like me...
@@ -119,7 +122,6 @@ public class ModalSpecification
 		
 		DetObsContFSM specFSM = new DetObsContFSM();
 		// Make the underlying FSM of the specification
-		// TODO: Throw an exception when the specification has some unobservable events
 		specFSM.copyEvents(this);
 		specFSM.copyStates(this);
 		specFSM.copyTransitions(this);
@@ -137,9 +139,14 @@ public class ModalSpecification
 		// Now mark the bad states
 		boolean keepGoing = true;
 		while(keepGoing) {
-			markBadStates(fsm, specFSM, product);
-			markDeadEnds(specFSM, product);
-			markDeadEnds(fsm, product);
+			HashSet<String> badStates = new HashSet<String>();
+			markBadStates(fsm, specFSM, product, badStates);
+			markDeadEnds(specFSM, product, badStates);
+			markDeadEnds(fsm, product, badStates);
+			
+			// TODO: MAKE SURE THIS LOOP DOESN'T GO FOREVER. When all the bad states are marked with the hashset, then
+			// the we should construct the supervisor by copying all the states NOT marked bad and all the transitions
+			// to states that are NOT marked bad from the product.
 		} // while
 		return null;
 	}
@@ -156,16 +163,18 @@ public class ModalSpecification
 	 * @param fsm - Original FSM which needs to be controlled.
 	 * @param specFSM - FSM underlying the modal specification object.
 	 * @param product - FSM representing the product of the determinized first FSM with the specification.
-	 * @return - Returns a HashSet of all the names of States which are bad.
+	 * @param badStates - HashMap of all the states already marked as bad, which will be further updated as
+	 * we go through this iteration.
+	 * @return - Returns true if at least one state was marked as bad, false otherwise.
 	 */
 	
 	private <S extends State, T extends Transition<S, E>, E extends Event>
-			HashSet<String> markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product) {
+			HashSet<String> markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
 		// We need to parse every state in the product, check every component state if there is some uncontrollable observable
 		// event that isn't defined in the product.
 		// Also look if must transitions exist...
-		
-		HashSet<String> badStates = new HashSet<String>();
+		boolean foundABadOne = false;
+	
 		// Go through every state in the product
 		for(S s : product.getStates()) {
 			
@@ -178,14 +187,15 @@ public class ModalSpecification
 				// Mark the state as bad if the must transition does not exist
 				if(toStates == null) {
 					badStates.add(s.getStateName());
+					foundABadOne = true;
 				} else {
 					// Mark the state as bad if all the states it leads to are bad
 					boolean itsBad = true;
 					for(S toState : toStates)
-						if(!badStates.contains(toState.getStateName()))
-							itsBad = false;
+						if(!badStates.contains(toState.getStateName())) itsBad = false;
 					if(itsBad) {
 						badStates.add(s.getStateName());
+						foundABadOne = true;
 					}
 				}
 			} // for all the state's transitions
@@ -204,6 +214,7 @@ public class ModalSpecification
 						// Mark the state as bad if the must transition does not exist
 						if(toStates == null) {
 							badStates.add(s.getStateName());
+							foundABadOne = true;
 						} else {
 							// Mark the state as bad if all the states it leads to are bad
 							boolean itsBad = true;
@@ -212,6 +223,7 @@ public class ModalSpecification
 									itsBad = false;
 							if(itsBad) {
 								badStates.add(s.getStateName());
+								foundABadOne = true;
 							}
 						}
 					} // if it's observable but NOT controllable
@@ -258,8 +270,8 @@ public class ModalSpecification
 	 */
 	
 	static protected <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
-			void markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product) {
-		
+			void markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
+		// TODO: Do something with the badStates hashset.... it's actually supposed to be used, Graeme! Sheesh.
 		// When a state is processed, add it to the map and state if it reached a marked state.
 		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
 		
