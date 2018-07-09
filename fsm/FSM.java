@@ -67,17 +67,17 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 	 */
 	
 	protected <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event, NewT extends Transition<S, E>> void unionHelper(FSM<S1, T1, E1> other, FSM<S, NewT, E> newFSM) {
+		// Add all states
+		for(S s : this.states.getStates())
+			newFSM.states.addState(s, STATE_PREFIX_1);
+		for(S1 s : other.states.getStates())
+			newFSM.states.addState(s, STATE_PREFIX_2);
+		
 		// Add initial states
 		for(State s : getInitialStates())  // Add the states from the this FSM
 			newFSM.addInitialState(STATE_PREFIX_1 + s.getStateName());
 		for(State s : other.getInitialStates())  // Add the states from the other FSM
 			newFSM.addInitialState(STATE_PREFIX_2 + s.getStateName());
-		
-		// Add other states as well
-		for(S s : this.states.getStates())
-			newFSM.states.addState(s, STATE_PREFIX_1);
-		for(S1 s : other.states.getStates())
-			newFSM.states.addState(s, STATE_PREFIX_2);
 		
 		// Add events
 		for(E e : this.events.getEvents())
