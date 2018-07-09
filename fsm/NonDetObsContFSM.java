@@ -504,14 +504,13 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		for(int i = 0; i < other.length; i++) {
+		this.unionHelper(other[0], newFSM);
+		for(int i = 1; i < other.length; i++) {
 			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
-			other[i].unionHelper(newFSM, newerFSM);
+			newFSM.unionHelper(other[i], newerFSM);
 			newFSM = newerFSM;
 		}
-		NonDetObsContFSM newerFSM = new NonDetObsContFSM();
-		this.unionHelper(newFSM, newerFSM);
-		return newerFSM;
+		return newFSM;
 	}
 
 	@Override
@@ -520,7 +519,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		this.productHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
 			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
-			other[i].productHelper(newFSM, newerFSM);
+			newFSM.productHelper(other[i], newerFSM);
 			newFSM = newerFSM;
 		}
 		return newFSM;
@@ -528,15 +527,13 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	@Override
 	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM ... other){
-		NonDetObsContFSM newFSM = new NonDetObsContFSM();
+		NonDetObsContFSM newFSM = this;
 		for(int i = 0; i < other.length; i++) {
 			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
-			other[i].parallelCompositionHelper(newFSM, newerFSM);
+			newFSM.parallelCompositionHelper(other[i], newerFSM);
 			newFSM = newerFSM;
 		}
-		NonDetObsContFSM newerFSM = new NonDetObsContFSM();
-		this.parallelCompositionHelper(newFSM, newerFSM);
-		return newerFSM;
+		return newFSM;
 	}
 
 //---  Getter Methods   -----------------------------------------------------------------------
@@ -573,7 +570,9 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	public void addInitialState(String newInitial) {
 		State curr = states.addState(newInitial);
 		curr.setStateInitial(true);
-		initialStates.add(curr);
+		// Look and see if it's already an initial state
+		if(!initialStates.contains(curr))
+			initialStates.add(curr);
 	}
 
 	@Override

@@ -239,18 +239,18 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 		// Go through all the initial states and add everything they connect to.
 		for(S thisInitial : this.getInitialStates()) {
 			for(S1 otherInitial : other.getInitialStates()) {
+				
 				// Now, start going through the paths leading out from this new initial state.
 				LinkedList<S> thisNextState = new LinkedList<S>();
 				thisNextState.add(thisInitial);
 				LinkedList<S1> otherNextState = new LinkedList<S1>();
 				otherNextState.add(otherInitial);
 				
-				
 				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
 					S thisState = thisNextState.poll();
 					S1 otherState = otherNextState.poll();
 					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
-					if(thisState.getStateInitial() && otherState.getStateInitial())
+					if(newState.getStateInitial())
 						newFSM.addInitialState(newState);
 					
 					// Go through all the transitions in each, see what they have in common
@@ -262,14 +262,14 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 								
 								// If they share the same event
 								E thisEvent = thisTrans.getTransitionEvent();
-								if(thisEvent.equals(otherTrans.getTransitionEvent())) {
+								if(thisEvent.getEventName().equals(otherTrans.getTransitionEvent().getEventName())) {
 									
 									// Then create transitions to all the combined neighbours
 									for(S thisToState : thisTrans.getTransitionStates()) {
 										for(S1 otherToState : otherTrans.getTransitionStates()) {
 											
 											// If the state doesn't exist, add to queue
-											if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherToState.getStateName() + ")")) {
+											if(!newFSM.stateExists("(" + thisToState.getStateName() + "," + otherToState.getStateName() + ")")) {
 												thisNextState.add(thisToState);
 												otherNextState.add(otherToState);
 											} // if state doesn't exist
@@ -283,7 +283,6 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 							} // for other transitions
 						} // for this transitions
 					} // if transitions are not null
-					
 					// Go through all the transitions and see what is unique
 					if(thisTransitions != null) {
 						for(T thisTrans : thisTransitions) {
@@ -294,7 +293,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 								for(S thisToState : thisTrans.getTransitionStates()) {
 									
 									// If it doesn't exist, add it to the queue
-									if(!newFSM.stateExists("(" + thisToState.getStateName() + ", " + otherState.getStateName() + ")")) {
+									if(!newFSM.stateExists("(" + thisToState.getStateName() + "," + otherState.getStateName() + ")")) {
 										thisNextState.add(thisToState);
 										otherNextState.add(otherState);
 									} // if state doesn't exist
@@ -315,7 +314,7 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 								for(S1 otherToState : otherTrans.getTransitionStates()) {
 									
 									// If it doesn't exist, add it to the queue
-									if(!newFSM.stateExists("(" + thisState.getStateName() + ", " + otherToState.getStateName() + ")")) {
+									if(!newFSM.stateExists("(" + thisState.getStateName() + "," + otherToState.getStateName() + ")")) {
 										thisNextState.add(thisState);
 										otherNextState.add(otherToState);
 									} // if state doesn't exist
