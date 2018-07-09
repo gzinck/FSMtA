@@ -4,6 +4,7 @@ import support.*;
 import support.attribute.EventControllability;
 import support.attribute.EventObservability;
 import support.event.Event;
+import support.event.ObsControlEvent;
 import support.transition.DetTransition;
 import support.transition.Transition;
 import java.util.ArrayList;
@@ -13,8 +14,12 @@ import java.util.LinkedList;
 import fsm.attribute.*;
 
 /**
- * This class models an FSM-adjacent construction called a ModalSpecification which
- * Graeme should write a brief description of for me. TODO:
+ * ModalSpecification is an enhanced version of a transition system, which defines both "may" and
+ * "must" transitions (ones which are allowed and ones which are absolutely required to satisfy the
+ * specification for the service).
+ * One central operation for the modal specification is to be able to make the optimal supervisor,
+ * which takes a modal specification and disables transitions which are blocking iteratively to
+ * create the supervisor that steps in the least frequently (it is maximally permissive).
  * 
  * This class is a part of the fsm package.
  * 
@@ -49,13 +54,11 @@ public class ModalSpecification
 		events = new EventMap<Event>(Event.class);
 		transitions = new TransitionFunction<State, DetTransition<State, Event>, Event>(new DetTransition<State, Event>());
 		
-		copyStates(other); // Add in all the states
+		copyStates(other); // Add in all the states (also sets up the initial states)
 		copyEvents(other); // Add in all the events
 		copyTransitions(other); // Add in all the transitions
 		
-		if(other instanceof ModalSpecification) {
-			
-		} // if it's a ModalSpecification
+		if(other instanceof ModalSpecification) copyMustTransitions((ModalSpecification)other);
 	} // ModalSpecification(TransitionSystem, String)
 	
 	/**
@@ -91,12 +94,20 @@ public class ModalSpecification
 //---  Operations   -----------------------------------------------------------------------
 	
 	/**
-	 * This method performs the operation to create the Optimal Supervisor of a supplied FSM.
+	 * This method tries to get the maximally permissive (optimal) supervisor for an fsm
+	 * (which will have certain transitions which are controllable and uncontrollable, etc.)
+	 * that satisfies the modal specification. That is, it may ONLY have "may" transitions,
+	 * and it MUST contain any "must" transitions (unless such a state does not exist, of course).
 	 * 
-	 * TODO: Graeme, explain this.
+	 * Any transitions which are illegal are removed, but if those transitions are uncontrollable,
+	 * then we have a problem and we have to remove the entire state. States which do not lead
+	 * to any marked states must also be removed. This process is done iteratively until all
+	 * no more bad states exist and we have the maximally permissive supervisor.
+	 * 
+	 * This follows the algorithm explained in Darondeau et al., 2010.
 	 * 
 	 * @param fsm - FSM<<r>S, T, E> object 
-	 * @return - Returns a 
+	 * @return - Returns a maximally permissive controller for the original FSM.
 	 */
 	
 	public <S extends State, T extends Transition<S, E>, E extends Event>
@@ -112,6 +123,14 @@ public class ModalSpecification
 		specFSM.copyEvents(this);
 		specFSM.copyStates(this);
 		specFSM.copyTransitions(this);
+		
+		// If we have unobservable events in the specification, that's illegal
+		for(ObsControlEvent e : specFSM.events.getEvents()) {
+			// See if it's visible in the FSM
+			Event otherE = fsm.events.getEvent(e);
+			if(otherE instanceof EventObservability && !((EventObservability)otherE).getEventObservability())
+				throw new IllegalArgumentException("The modal specification has the event \"" + e.getEventName() + "\", which is an unobservable event in the plant passed in for getting the supervisor. The specification should only have observable events.");
+		}
 		
 		FSM product = newFSM.product(specFSM);
 		

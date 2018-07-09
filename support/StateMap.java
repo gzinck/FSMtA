@@ -48,7 +48,7 @@ public class StateMap<S extends State> {
 		if(state == null || newName == null)
 			return false;
 		state.setStateName(newName);
-		states.remove(oldName);
+		if(states.get(oldName) == state) states.remove(oldName); // only remove the mapping if it references the right object
 		states.put(newName, state);
 		return true;
 	}
