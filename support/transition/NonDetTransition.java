@@ -18,9 +18,9 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
-	/** Event instance variable representing the Event associated to this object*/
+	/** Event extending instance variable representing the Event associated to this object*/
 	public E event;
-	/** ArrayList<<s>State> object holding all States associated to the Event associated to this NonDetTransition object*/
+	/** ArrayList<<r>State> object holding all State extending objects associated to the Event associated to this NonDetTransition object*/
 	private ArrayList<S> states;
 	
 //--- Constructors   --------------------------------------------------------------------------
@@ -29,8 +29,8 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 * Constructor for a NonDetTransition object, assigning a single Event object
 	 * and a list of States which the event can lead to.
 	 * 
-	 * @param inEvent Event object representing the event that leads to the associated transition states.
-	 * @param inStates List of State objects representing the States led to by the Event associated with this NonDetTransition object.
+	 * @param inEvent - Event object representing the event that leads to the associated transition states.
+	 * @param inStates - List of State objects representing the States led to by the Event associated with this NonDetTransition object.
 	 */
 	
 	@SafeVarargs
@@ -45,8 +45,8 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 * Constructor for a NonDetTransition object, assigning a single Event object
 	 * and a list of States which the event can lead to.
 	 * 
-	 * @param inEvent Event object representing the event that leads to the associated transition states.
-	 * @param inStates Collection of State objects representing the States led to by the Event associated with this NonDetTransition object.
+	 * @param inEvent - Event object representing the event that leads to the associated transition states.
+	 * @param inStates - Collection of State objects representing the States led to by the Event associated with this NonDetTransition object.
 	 */
 	
 	public NonDetTransition(E inEvent, Collection<S> inStates) {
@@ -111,9 +111,9 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 //--- Setter Methods   ------------------------------------------------------------------------
 	
 	/**
-	 * Setter method to replace the current ArrayList<State> of State names with the provided one
+	 * Setter method to replace the current ArrayList<<r>State> of State names with the provided one
 	 * 
-	 * @param in - ArrayList<State> object representing the list of States led to by the Event associated to this NonDetTransition object
+	 * @param in - ArrayList<<r>State> object representing the list of States led to by the Event associated to this NonDetTransition object
 	 */
 	
 	public void setTransitionState(ArrayList<S> in) {
@@ -159,7 +159,7 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 * This method appends the provided State to the ArrayList<<r>State> holding all State names led to by
 	 * the Event associated to this NonDetTransition object
 	 * 
-	 * @param stateName - State object representing the State to append to the end of the list of States associated to this object
+	 * @param stateName - State extending object representing the State to append to the end of the list of States associated to this object
 	 */
 	
 	public void addTransitionState(S stateNew) {

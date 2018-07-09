@@ -5,7 +5,7 @@ import support.transition.Transition;
 import support.event.Event;
 
 /**
- * This class models all Transitions in an FSM, storing States and an ArrayList<T> of Transitions as <Key, Value> pairs.
+ * This class models all Transitions in an FSM, storing States and an ArrayList<<r>T> of Transitions as <<r>Key, Value> pairs.
  * 
  * This class is a part of the support package.
  * 
@@ -17,7 +17,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** HashMap<String, ArrayList<Transition>> object containing all the transitions from a given state with various events that are possible. */
+	/** HashMap<<r>String, ArrayList<Transition>> object containing all the transitions from a given state with various events that are possible. */
 	protected HashMap<S, ArrayList<T>> transitions;
 	/** T object extending Transition<<r>S, E> used for reference to the object's methods in a non-static way.*/
 	private T dummyTransition;
@@ -73,7 +73,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	/**
 	 * Getter method to acquire a set of all states and its corresponding transition objects.
 	 * 
-	 * @return A set of map entries with State objects and an ArrayList of the Transitions.
+	 * @return - Returns a Set of map entries with State objects and an ArrayList of the Transitions. (Set<<r>Map, Entry<<r>S, ArrayList<<r>T>>>)
 	 */
 	 
 	public Set<Map.Entry<S, ArrayList<T>>> getAllTransitions() {
@@ -95,10 +95,11 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	/**
 	 * Getter method that retrieves if a certain event exists at a certain state.
 	 * 
-	 * @param state State object to look for transitions.
-	 * @param event Event to look for.
-	 * @return True if the state has the event in one of its transitions.
+	 * @param state - State object in whose Transitions to search for an Event in.
+	 * @param event - Event object to search for in the Transitions of the provided State object.
+	 * @return - Returns a boolean value; true if the State has the provided Event in one of its Transitions, false otherwise.
 	 */
+	
 	public boolean eventExists(State state, Event event) {
 		ArrayList<T> thisTransitions = transitions.get(state);
 		if(thisTransitions != null)
@@ -109,13 +110,13 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	}
 	
 	/**
-	 * Getter method that retrieves the transition states at a certain state.
+	 * Getter method that retrieves the Transition States at a designated State that correspond to the provided Event.
 	 * 
-	 * @param state State object to look for transitions.
-	 * @param event Event to look for.
-	 * @return ArrayList of transition states that it goes to, or null if there
-	 * are none.
+	 * @param state - State object whose Transitions are searched through.
+	 * @param event - Event object provided to denote which State Transitions to return corresponding to the provided State object.
+	 * @return - Returns an ArrayList<<r>S> of Transition States that the provided State leads to, or null if there are none.
 	 */
+	
 	public ArrayList<S> getTransitionStates(State state, Event event) {
 		ArrayList<T> thisTransitions = transitions.get(state);
 		if(thisTransitions != null)
@@ -128,11 +129,11 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Setter method that assigns a new paired <State, ArrayList<T>> data set to the Transitions data structure,
+	 * Setter method that assigns a new paired <<r>State, ArrayList<<r>T>> data set to the Transitions data structure,
 	 * overwriting any previous entry for that State.
 	 * 
-	 * @param state - State object representing the Key in the stored <Key, Value> data structure, <State, ArrayList<T>>.
-	 * @param inTransitions - ArrayList<T> of Transition objects to become the new Value stored in a <Key, Value> data structure.
+	 * @param state - State object representing the Key in the stored <<r>Key, Value> data structure, <<r>State, ArrayList<<r>T>>.
+	 * @param inTransitions - ArrayList<<r>T> of Transition objects to become the new Value stored in a <<r>Key, Value> data structure.
 	 */
 	
 	public void putTransitions(S state, ArrayList<T> inTransitions) {
@@ -142,11 +143,11 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * This method appends a new Transition object to the ArrayList<<s>T> at the specified State key.
-	 * creating the entry if it doesn't yet exist.
+	 * This method appends a new Transition object to the ArrayList<<r>T> at the specified State key,
+	 * creating the entry if it does not yet exist.
 	 * 
-	 * @param state - State object representing the Key in the stored <Key, Value> data structure, <<r>State, ArrayList<<r>T>>.
-	 * @param transition - <<s>T extends Transition> object representing the new Transition to append to the existing ArrayList<T> at Key State in <Key, Value>. 
+	 * @param state - State object representing the Key in the stored <<r>Key, Value> data structure, <<r>State, ArrayList<<r>T>>.
+	 * @param transition - <<r>T extends Transition> object representing the new Transition to append to the existing ArrayList<<r>T> at Key State in <<r>Key, Value>. 
 	 */
 	
 	public void addTransition(S state, T transition) {
@@ -167,9 +168,9 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	}
 	
 	/**
-	 * This method removes entries in the $lt;State, ArrayList&lt;T&gt;&gt; according to the provided State.
+	 * This method removes entries in the <<r>S, ArrayList<<r>T>> Map that correspond to the provided State.
 	 * 
-	 * @param state - State object representing the Key-set to remove from the &lt;State, ArrayList&lt;T&gt;&gt; data set.
+	 * @param state - State object representing the Key-set to remove from the <<r>S, ArrayList<<r>T>> data set.
 	 */
 	
 	public void removeState(State state) {
@@ -184,9 +185,9 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	}
 	
 	/**
-	 * This method removes entries in the transition function according to the provided hashset of states to remove.
+	 * This method removes entries in the transition function according to the provided Collection of states to remove.
 	 * 
-	 * @param badStates HashSet of States which are bad and must be removed from the TransitionFunction.
+	 * @param badStates - Collections<<r>S> of States which are bad and must be removed from the TransitionFunction.
 	 */
 	
 	public void removeStates(Collection<S> badStates) {
@@ -205,13 +206,13 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	}
 	
 	/**
-	 * Removes the transition from a given State and going to another State with
-	 * a certain Event.
+	 * Removes the Transition in this TransitionFunction that corresponds to the provided values in 
+	 * the form: State1 leading to State2 via an Event.
 	 * 
 	 * @param stateFrom - State object that the transition starts from.
 	 * @param event - Event object associated with the transition.
 	 * @param stateTo - State object that the transition ends at.
-	 * @return - Returns true if the transition existed and was removed; false otherwise.
+	 * @return - Returns a boolean value; true if the transition existed and was removed; false otherwise.
 	 */
 	
 	public boolean removeTransition(State stateFrom, Event event, State stateTo) {

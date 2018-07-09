@@ -25,8 +25,8 @@ public class FSMToDot {
 	 * 
 	 * @param fsm - A generic FSM object in the family descended from the abstract class FSM.
 	 * @param path - A String object denoting the path to which the file should be saved, including its name.
-	 * @param workingPath - A String denoting the path to the GraphViz working directory.
-	 * @param configPath - A String denoting the path to the GraphViz config file.
+	 * @param workingPath - A String object denoting the path to the GraphViz working directory.
+	 * @param configPath - A String object denoting the path to the GraphViz config file.
 	 */
 	
 	public static void createImgFromFSM(FSM fsm, String path, String workingPath, String configPath){

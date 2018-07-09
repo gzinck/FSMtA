@@ -70,7 +70,7 @@ public class ObsControlEvent extends Event implements EventObservability, EventC
 	 * Constructor for an ObservableEvent object that uses the parameter Event object's information
 	 * to construct a new event object.
 	 * 
-	 * @param oldEvent - Event object to be copied.
+	 * @param oldEvent - ObsControlEvent object provided to have its attributes copied into the new ObsControlEvent object..
 	 */
 	public ObsControlEvent(ObsControlEvent oldEvent) {
 		super(oldEvent);

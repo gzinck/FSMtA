@@ -21,7 +21,12 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 	/**
 	 * This method converts the data structures configuring the provided FSM to a File format.
 	 * 
-	 * @return - Returns a boolean value representing the result of this method'ss attempt to write to the File.
+	 * TODO: Can do special characteristics here as well? No longer have varying cases.
+	 * 
+	 * @param - String object representing the File Path to write the converted FSM to.
+	 * @param - String object representing the pre-calculated special attributes that are written before any Transitions.
+	 * @param - TransitionFunction<<r>S, T, E> object representing the Transitions that are written after the Special Attributes.
+	 * @return - Returns a boolean value representing the result of this method's attempt to write to the File.
 	 */
 	
 	public boolean writeToFile(String filePath, String special, TransitionFunction<S, T, E> transF) {
@@ -60,11 +65,11 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 	 * Events, and Transitions that are passed to this method, returning the additional information
 	 * that each class handles separately. (Initial States, Marked States, etc.)
 	 * 
-	 * @param states - StateMap<<s>S> object that represents the empty set of States to be filled.
-	 * @param events - EventMap<<s>E> object that represents the empty set of Events to be filled.
-	 * @param transitions - TransitionFunction<s>S, T, E> object that represents the empty set of Transitions to be filled.
+	 * @param states - StateMap<<r>S> object that represents the empty set of States to be filled.
+	 * @param events - EventMap<<r>E> object that represents the empty set of Events to be filled.
+	 * @param transitions - TransitionFunction<r>S, T, E> object that represents the empty set of Transitions to be filled.
 	 * @param file - File object that holds the provided information instructing how to construct the FSM object.
-	 * @return - Returns an ArrayList<<s>ArrayList<<s>String>> object that contains the additional information about this FSM object based on its type.
+	 * @return - Returns an ArrayList<<r>ArrayList<<r>String>> object that contains the additional information about this FSM object based on its type.
 	 */
 	
 	public ArrayList<ArrayList<String>> readFromFile(StateMap<S> states, EventMap<E> events, TransitionFunction<S, T, E> transitions, File file){
