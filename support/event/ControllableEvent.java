@@ -17,7 +17,7 @@ public class ControllableEvent extends Event implements EventControllability{
 
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** boolean instance variable representing the status of this Event's being Controllable*/
+	/** boolean instance variable representing the status of this ControllableEvent object's being Controllable*/
 	private boolean controllability;
 	
 //---  Constructors   -------------------------------------------------------------------------
@@ -63,7 +63,7 @@ public class ControllableEvent extends Event implements EventControllability{
 	 * Constructor for a ControllableEvent object that uses the provided Event object's information
 	 * to construct a new Event object.
 	 * 
-	 * @param oldEvent - Event object to be copied.
+	 * @param oldEvent - Event object provided to have its attributes copied into the new ControllableEvent object.
 	 */
 	
 	public ControllableEvent(ControllableEvent oldEvent) {
@@ -109,6 +109,7 @@ public class ControllableEvent extends Event implements EventControllability{
 		return controllability;
 	}
 	
+	@Override
 	public int getEventType() {
 		return controllability ? 2 : 0;
 	}

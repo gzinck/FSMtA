@@ -17,17 +17,17 @@ public class EventMap<E extends Event> {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** HashMap mapping String names of events to their corresponding Event objects. */
+	/** HashMap<<r>String, E extends Event> mapping String names of events to their corresponding Event objects. */
 	private HashMap<String, E> events;
-	/** Holds the precise class of the generic Event class. */
+	/** Class<<r>E extends Event> object that holds the precise class of the generic Event class. */
 	private Class<E> eventClass;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for an EventMap that initializes the events HashMap<String, E>.
+	 * Constructor for an EventMap that initializes the events HashMap<<r>String, E>.
 	 * 
-	 * @param inClass - The class of Event the map will hold, used for instantiation.
+	 * @param inClass - Class<<r>E extends Event> object representing the class of Event the map will hold, used for instantiation.
 	 */
 	
 	public EventMap(Class<E> inEventClass) {
@@ -41,8 +41,8 @@ public class EventMap<E extends Event> {
 	/**
 	 * Renames the Event corresponding to the oldName String with the newName String.
 	 * 
-	 * @param oldName - String representing the name of the Event.
-	 * @param newName - String representing the desired new name of the Event.
+	 * @param oldName - String object representing the name of the Event.
+	 * @param newName - String object representing the desired new name of the Event.
 	 */
 	
 	public void renameEvent(String oldName, String newName) {
@@ -55,10 +55,11 @@ public class EventMap<E extends Event> {
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Gets an event using the event's String name to identify it.
+	 * Getter method that returns an Event extending object using a provided String representing the
+	 * Event's name from the information stored by this Event Map.
 	 * 
-	 * @param eventName - String object representing an Event by its id.
-	 * @return - Returns the event corresponding to the provided String object.
+	 * @param eventName - String object representing an Event object by its id.
+	 * @return - Returns the Event extending object corresponding to the provided String object.
 	 */
 	
 	public E getEvent(String eventName) {
@@ -66,7 +67,7 @@ public class EventMap<E extends Event> {
 	}
 
 	/**
-	 * Gets an event using an event object from another FSM.
+	 * Getter method that returns an Event extending object using an Event object from another FSM.
 	 * 
 	 * @param event - Event object from another FSM (but not necessarily the current FSM).
 	 * @return - Returns the corresponding Event object from the current FSM, which has the same event name String as the input event.
@@ -78,9 +79,9 @@ public class EventMap<E extends Event> {
 	}
 	
 	/**
-	 * Gets all the events and returns them as a Collection.
+	 * Getter method that returns all the Event extending objects in this Event Map as a Collection<<r>E>.
 	 * 
-	 * @return - Returns a Collection of Event objects.
+	 * @return - Returns a Collection<<r>E> of Event extending objects.
 	 */
 	
 	public Collection<E> getEvents() {
@@ -88,10 +89,11 @@ public class EventMap<E extends Event> {
 	}
 	
 	/**
-	 * Checks if an event exists in the map.
+	 * Getter method that returns a boolean value describing whether or not a given Event extending
+	 * object exists within this EventMap as denoted by a provided String object.
 	 * 
-	 * @param eventName - String representing the Event to look for.
-	 * @return - Returns a boolean value; true if the Event exists in the map, false otherwise.
+	 * @param eventName - String object representing the Event extending object to look for.
+	 * @return - Returns a boolean value; true if the Event extending object exists in the map, false otherwise.
 	 */
 	
 	public boolean eventExists(String eventName) {
@@ -107,8 +109,7 @@ public class EventMap<E extends Event> {
 	 * in the map is.
 	 * 
 	 * @param oldEvent - Event object provided as a new entry in the HashMap<String, E>; the Event object is not copied.
-	 * @return - Event object which corresponds to the oldEvent's id, and which is currently
-	 * stored in the EventMap.
+	 * @return - Returns an Event extending object which corresponds to the oldEvent's id (be it new or otherwise).
 	 */
 	
 	public E addEvent(Event oldEvent) {
@@ -131,9 +132,9 @@ public class EventMap<E extends Event> {
 	 * the property values by taking the AND operation of the two events. This is done whenever
 	 * two FSMs are combined in some operation and their set of events is amalgamated.
 	 * 
-	 * @param event1 Event object from some other FSM to use for creating the new Event.
-	 * @param event2 Another Event object from yet another FSM to use for creating the new Event.
-	 * @return
+	 * @param event1 - Event object from an FSM to use for creating the new Event.
+	 * @param event2 - Event object from a second FSM to use for creating the new Event.
+	 * @return - Returns an Event extending object derived from the two provided Events.
 	 */
 	
 	public E addEvent(Event event1, Event event2) {
@@ -156,9 +157,9 @@ public class EventMap<E extends Event> {
 	 * the default settings for the given Event class. If the event already existed, no new object is
 	 * created.
 	 * 
-	 * @param eventName - The String name of the event to add.
-	 * @return - The newly created event if the event existed, the event that existed already, or null
-	 * if there was an error instantiating the event.
+	 * @param eventName - String object representing the name of the Event extending object to add to this EventMap object.
+	 * @return - Returns an Event extending object representing the Event in three cases: the Event already existed,
+	 * the Event was newly made, or null if there was an error instantiating the event.
 	 */
 	
 	public E addEvent(String eventName) {
@@ -178,7 +179,7 @@ public class EventMap<E extends Event> {
 	/**
 	 * Removes the Event from the mapping.
 	 * 
-	 * @param event - Event object to remove from the HashMap<String, E> events object.
+	 * @param event - Event extending object to remove from the HashMap<<r>String, E> events object.
 	 */
 	
 	public void removeEvent(E event) {
@@ -188,7 +189,7 @@ public class EventMap<E extends Event> {
 	/**
 	 * Removes the Event corresponding to the provided String from the mapping if present.
 	 * 
-	 * @param eventName - String object representing the name of the event to remove.
+	 * @param eventName - String object representing the name of the Event to remove from this Event Map.
 	 */
 	
 	public void removeEvent(String eventName) {

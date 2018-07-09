@@ -18,9 +18,9 @@ import support.event.Event;
 
 public class DetTransition<S extends State, E extends Event> implements Transition<S, E> {
 
-	/** Event instance variable representing the Event associated to this object*/
+	/** Event extending instance variable representing the Event associated to this object*/
 	public E event;
-	/** State instance variable representing the target State associated to this object*/
+	/** State extending instance variable representing the target State associated to this object*/
 	protected S state;
 	
 //---  Constructors   -------------------------------------------------------------------------

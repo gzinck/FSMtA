@@ -38,8 +38,8 @@ public class Event {
 	}
 	
 	/**
-	 * Constructor for Event objects that uses the parameter Event object's information
-	 * to contruct a new event object.
+	 * Constructor for Event objects that uses the provided Event object's information
+	 * to construct a new event object.
 	 * 
 	 * @param oldEvent - Event object to be copied.
 	 */
@@ -76,7 +76,7 @@ public class Event {
 	 * Copies the data from another Event into this Event. Useful when creating a copy of only
 	 * the information visible to a given (perhaps less sophisticated) Event.
 	 * 
-	 * @param other Event to copy data from.
+	 * @param other - Event object provided to copy data from into the calling Event object.
 	 */
 	
 	public void copyDataFrom(Event other) {
@@ -88,8 +88,8 @@ public class Event {
 	 * the information visible to a given (perhaps less sophisticated) Event.
 	 * Performs the AND operation on all the properties for the two events put in as parameters.
 	 * 
-	 * @param other1 First event to copy data from.
-	 * @param other2 Second event to copy data from.
+	 * @param other1 - First Event object provided to copy data from into the calling Event object.
+	 * @param other2 - Second Event object provided to copy data from into the calling Event object.
 	 */
 	
 	public void copyDataFrom(Event other1, Event other2) {
@@ -100,8 +100,8 @@ public class Event {
 	 * Makes a new event that performs the AND operation on all the properties.
 	 * If the current class is just Event, then there are no properties to copy anyways.
 	 * 
-	 * @param other The Event to combine with.
-	 * @return New Event object which has the AND of the properties.
+	 * @param other - The Event object provided to combine its properties with the calling Event.
+	 * @return - Returns a new Event extending object which has the AND of the properties in the provided and calling Event objects.
 	 */
 
 	public <E extends Event> E makeEventWith(E other) {
@@ -110,9 +110,10 @@ public class Event {
 
 	/**
 	 * This method returns an integer value describing the type of Event during the
-	 * creation of a visualization of an FSM.
+	 * creation of a visualization of an FSM with respect to the attributes attached
+	 * to the Event.
 	 * 
-	 * @return - Returns an integer value representing the type of Event
+	 * @return - Returns an integer value representing the condition of the Event with respect to its attributes.
 	 */
 	
 	public int getEventType() {

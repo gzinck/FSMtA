@@ -26,7 +26,7 @@ public class State implements Comparator<State>, Comparable<State>{
 	private boolean initial;
 	/** boolean instance variable representing the status of this State's being marked*/
 	private boolean marked;
-	/** boolean instance variable representing if the State is tagged as a bad state*/
+	/** boolean instance variable representing that status of this State's being bad*/
 	private boolean badState;
 	/** boolean instance variable representing the status of this State's being private*/
 	private boolean privacy;
@@ -86,8 +86,10 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
+	 * Constructor for a State object that takes in a State variable argument and processes it
+	 * to create an aggregate State composed of all the provided States in that parameter.
 	 * 
-	 * @param states
+	 * @param states - State ... object whose variable contents are used to generate a new State object.
 	 */
 	
 	public State(State ... states) {
@@ -96,6 +98,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		boolean bad = false;
 		boolean priv = true;
 		String name = "";
+		Arrays.sort(states);
 		for(State s : states) {
 			init = s.getStateInitial() ? true : init;
 			mark = s.getStateMarked() ? mark : false;
@@ -130,8 +133,8 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * States. It has the initial/marked properties only if both state1 and state2 have the
 	 * property. This is useful when creating states during product operations, etc.
 	 * 
-	 * @param state1 The first state to inherit from.
-	 * @param state2 The second state to inherit from.
+	 * @param state1 - The first State object to inherit from.
+	 * @param state2 - The second State object to inherit from.
 	 */
 
 	public State(State state1, State state2) {
@@ -154,6 +157,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		initial = false;
 		marked = false;
 		badState = false;
+		privacy = false;
 	}
 	
 	/**
@@ -168,6 +172,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		initial = false;
 		marked = false;
 		badState = false;
+		privacy = false;
 	}
 
 //---  Operations   ---------------------------------------------------------------------------
@@ -189,7 +194,8 @@ public class State implements Comparator<State>, Comparable<State>{
 	/**
 	 * Copies the data from another state into this state. Useful when creating a copy of only
 	 * the information visible to a given (perhaps less sophisticated) State.
-	 * @param other
+	 * 
+	 * @param other - State object that's attributes are copied into the calling State object.
 	 */
 	
 	public void copyDataFrom(State other) {
@@ -202,12 +208,12 @@ public class State implements Comparator<State>, Comparable<State>{
 	
 	/**
 	 * Makes a new state that performs the AND operation on all the properties
-	 * and adopts the name of the calling state combined with the other state,
-	 * like (1, 2) if the the two states are 1 and 2.
+	 * and adopts the name of the calling state combined with the other state;
+	 * i.e, (1, 2) if the the two States were 1 and 2.
 	 * 
-	 * @param other The State to combine with.
-	 * @return State representing the merge of the calling state and the parameter
-	 * state, where the AND logical operator is performed on all the properties.
+	 * @param other - The State object provided to combine with the calling State object.
+	 * @return - Returns a State object representing the merge of the calling state and the parameter
+	 * state, where the AND logical operator is performed on all its properties.
 	 */
 	
 	public <S extends State> S makeStateWith(State other) {
@@ -251,9 +257,9 @@ public class State implements Comparator<State>, Comparable<State>{
 //--- Getter Methods   ------------------------------------------------------------------------
 	
 	/**
-	 * Getter method to access the State object's name
+	 * Getter method to access the State object's name.
 	 * 
-	 * @return - Returns a String object representing the State object's name
+	 * @return - Returns a String object representing the State object's name.
 	 */
 	
 	public String getStateName() {
@@ -281,8 +287,9 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
+	 * Getter method to request the status of this State being private
 	 * 
-	 * @return
+	 * @return - Returns a boolean value representing the status of this State being private
 	 */
 	
 	public boolean getStatePrivate() {
@@ -290,9 +297,9 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
-	 * Getter method to request if the State is marked as a bad state.
+	 * Getter method to request the status of this State being bad
 	 * 
-	 * @return True if the State has been marked as a bad state.
+	 * @return - Returns a boolean value representing the status of this State being bad
 	 */
 	
 	public boolean getStateBad() {
@@ -332,8 +339,9 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
+	 * Setter method to assign a new boolean value to this State object's private boolean instance variable
 	 * 
-	 * @param init
+	 * @param init - boolean value representing the new status of this State object's being Private
 	 */
 	
 	public void setStatePrivate(boolean init) {
@@ -341,13 +349,13 @@ public class State implements Comparator<State>, Comparable<State>{
 	}
 	
 	/**
-	 * Setter method to set if the State should be marked as a bad state.
+	 * Setter method to assign a new boolean value to this State object's bad boolean instance variable
 	 * 
-	 * @param Boolean representing if the state should be marked as bad or not.
+	 * @param init - boolean value representing the new status of this State object's being Bad
 	 */
 	
-	public void setStateBad(boolean badness) {
-		badState = badness;
+	public void setStateBad(boolean init) {
+		badState = init;
 	}
 
 //---  Miscellaneous   ------------------------------------------------------------------------
