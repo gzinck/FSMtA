@@ -245,10 +245,13 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 				LinkedList<S1> otherNextState = new LinkedList<S1>();
 				otherNextState.add(otherInitial);
 				
+				
 				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
 					S thisState = thisNextState.poll();
 					S1 otherState = otherNextState.poll();
 					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
+					if(thisState.getStateInitial() && otherState.getStateInitial())
+						newFSM.addInitialState(newState);
 					
 					// Go through all the transitions in each, see what they have in common
 					ArrayList<T> thisTransitions = this.transitions.getTransitions(thisState);
