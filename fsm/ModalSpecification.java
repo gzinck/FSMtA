@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+
 import fsm.attribute.*;
 
 /**
@@ -30,8 +32,17 @@ import fsm.attribute.*;
 public class ModalSpecification
 		extends TransitionSystem<State, DetTransition<State, Event>, Event> {
 	
+//--- Constants  ----------------------------------------------------------------------
+	
+	/** String used to separate the two states visited when checking coaccessibility and keeping
+	 * track of which state combinations have been visited in a HashSet. This string should be different
+	 * from anything the user might use as names for states (though even if the user uses it, it's unlikely
+	 * to cause huge issues).
+	 */
+	private static final String VISITED_STATE_SEPARATOR = "*h$#ksfUJF8;8s2%";
+	
 //--- Instance Variables  ----------------------------------------------------------------------
-
+	
 	/** ArrayList<<j>State> object that holds a list of Initial States for this Modal Specification object. */
 	protected ArrayList<State> initialStates;
 	/** TransitionFunction object mapping states to sets of "must" transitions for the Modal Specification.
@@ -164,9 +175,12 @@ public class ModalSpecification
 			boolean keepGoing1 = markBadStates(newFSM, specFSM, product, badStates);
 			System.out.println(badStates.toString());
 //			boolean keepGoing2 = markDeadEnds(specFSM, product, badStates);
+//			System.out.println(badStates.toString());
 //			boolean keepGoing3 = markDeadEnds(newFSM, product, badStates);
+//			System.out.println(badStates.toString());
 			
 			keepGoing = keepGoing1;
+//			keepGoing = keepGoing1 || keepGoing2 || keepGoing3;
 			
 			// TODO: MAKE SURE THIS LOOP DOESN'T GO FOREVER. When all the bad states are marked with the hashset, then
 			// the we should construct the supervisor by copying all the states NOT marked bad and all the transitions
@@ -270,9 +284,19 @@ public class ModalSpecification
 	 */
 	
 	static private String getObserverState(String aggregateStateName) {
-		// TODO: make this parse the product better.
-		String[] productHalves = aggregateStateName.split(",");
-		return productHalves[0].substring(1, productHalves[0].length());
+		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
+		int numBrackets = 0;
+		int i = 0;
+		while(i < name.length()) {
+			char character = name.charAt(i++);
+			if(character == '(' || character == '{')
+				numBrackets++;
+			else if(character == ')' || character == '}')
+				numBrackets--;
+			else if(numBrackets == 0 && character == ',')
+				return name.substring(0, i);
+		}
+		return null;
 	}
 	
 	/**
@@ -284,9 +308,19 @@ public class ModalSpecification
 	 */
 	
 	static private String getSpecificationState(String aggregateStateName) {
-		// TODO: make this parse the product better.
-		String[] productHalves = aggregateStateName.split(",");
-		return productHalves[1].substring(0, productHalves[1].length() - 1); // Take out the braces
+		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
+		int numBrackets = 0;
+		int i = 0;
+		while(i < name.length()) {
+			char character = name.charAt(i++);
+			if(character == '(' || character == '{')
+				numBrackets++;
+			else if(character == ')' || character == '}')
+				numBrackets--;
+			else if(numBrackets == 0 && character == ',')
+				return name.substring(i, name.length());
+		}
+		return null;
 	}
 	
 	/**
@@ -301,22 +335,23 @@ public class ModalSpecification
 	 */
 	
 	static protected <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
-			void markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
-		// When a state is processed, add it to the map and say if it reached a marked state. If it did not, then
-		// we have a problem...
+			boolean markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
+		// When a state is processed, add it to the map and say if it reached a marked state. True means the
+		// state is OK.
 		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
+		boolean foundABadOne = false;
 		
 		for(S1 curr : product.states.getStates()) {
 			String observerStateName = getObserverState(curr.getStateName());
 			for(S subState : fsm.states.getStateComposition(fsm.getState(observerStateName))) {
 				// Check for a path to a marked state.
-				boolean isCoaccessible = stateIsCoAccessible(fsm.getState(subState), curr, results, fsm, product);
-				if(!isCoaccessible) {
-					curr.setStateBad(true); // Mark it as a bad state if it's not coaccessible.
-					break;
-				} // if not coaccessible
+				System.out.println(subState.getStateName());
+				boolean isCoaccessible = stateIsCoAccessible(fsm.getState(subState), curr, results, badStates, fsm, product);
+				if(!isCoaccessible) foundABadOne = true;
 			} // for every substate
 		} // for every state
+		
+		return foundABadOne;
 	} // markDeadEnds
 	
 	/**
@@ -334,60 +369,67 @@ public class ModalSpecification
 	 */
 	
 	static private <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
-			boolean stateIsCoAccessible(S fsmState, S1 prodState, HashMap<String, Boolean> results, FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product) {
+			boolean stateIsCoAccessible(S fsmState, S1 prodState, HashMap<String, Boolean> results, HashSet<String> badStates, FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product) {
 		HashSet<String> visited = new HashSet<String>();
-		visited.add(fsmState.getStateName() + prodState.getStateName()); // We visit the combo to catch loops (BUT THIS HAS A HIGH COMPLEXITY)
+		visited.add(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName()); // We visit the combo to catch loops (BUT THIS HAS A HIGH COMPLEXITY)
 		
-		// Base cases when already checked if the state was coaccessible
+		// Base case when already checked if the state was coaccessible
 		Boolean check = results.get(fsmState.getStateName());
 		if(check != null)
 			return check;
 		
+		// Base case when we actually have a bad state here...
+		if(badStates.contains(prodState.getStateName()))
+			return false;
+		
 		// If the state is marked, return true
 		if(fsmState.getStateMarked()) {
-			results.put(fsmState.getStateName(), true);
+			results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), true);
 			return true;
 		}
 		
 		// Go through all the accessible states and find something marked using bfs
-		LinkedList<State> statesToProcess = new LinkedList<State>();
-		statesToProcess.add(fsmState);
-		statesToProcess.add(prodState);
-		while(!statesToProcess.isEmpty()) {
-			State fsmState1 = statesToProcess.poll();
-			State prodState1 = statesToProcess.poll();
+		LinkedList<S> fsmStatesToProcess = new LinkedList<S>();
+		LinkedList<S1> prodStatesToProcess = new LinkedList<S1>();
+		fsmStatesToProcess.add(fsmState);
+		prodStatesToProcess.add(prodState);
+		while(!fsmStatesToProcess.isEmpty() && !prodStatesToProcess.isEmpty()) {
+			S currFSMState = fsmStatesToProcess.poll();
+			S1 currProdState = prodStatesToProcess.poll();
 			
 			// Go through the neighbours of fsmState
-			ArrayList<T> thisTransitions = fsm.transitions.getTransitions((S)fsmState1);
+			ArrayList<T> thisTransitions = fsm.transitions.getTransitions(currFSMState);
 			if(thisTransitions != null) for(T t : thisTransitions) {
 				// Only proceed if the event is acceptable in the product as well
-				ArrayList<S1> prodNextList = product.transitions.getTransitionStates(prodState1, product.events.getEvent(t.getTransitionEvent()));
-				if(prodNextList != null) {
-					
-					// TODO: Make sure it NEVER returns a list of dead states.
+				ArrayList<S1> prodNextList = product.transitions.getTransitionStates(currProdState, product.events.getEvent(t.getTransitionEvent()));
+				if(prodNextList != null && prodNextList.size() != 0) {
 					
 					S1 prodNext = prodNextList.get(0);
-					// Go through all the transition states
-					for(S toState : t.getTransitionStates()) {
-						// Return true if it's marked
-						if(toState.getStateMarked()) {
-							results.put(fsmState1.getStateName() + prodState1.getStateName(), false);
-							return true;
-						} // if it's marked
-						// Return true if it's already known to be good
-						if(results.get(toState.getStateName() + prodNext.getStateName()) == true)
-							return true;
-						if(!visited.contains(toState.getStateName() + prodNext.getStateName())) {
-							statesToProcess.add(toState);
-							statesToProcess.add(prodNext);
-						} // if haven't visited the nodes
-					} // for all the toStates
+					// Check if the state is dead/bad in the product.
+					boolean dead = (badStates.contains(prodNext.getStateName())) ? true : false;
+					if(!dead) {
+						// Go through all the transition states (there should only be one, but anyways...)
+						for(S toState : t.getTransitionStates()) {
+							// Return true if it's marked
+							if(toState.getStateMarked()) {
+								results.put(currFSMState.getStateName() + VISITED_STATE_SEPARATOR + currProdState.getStateName(), true);
+								return true;
+							} // if it's marked
+							// Return true if it's already known to be good
+							if(results.get(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName()) == true)
+								return true;
+							if(!visited.contains(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName())) {
+								fsmStatesToProcess.add(toState);
+								prodStatesToProcess.add(prodNext);
+							} // if haven't visited the nodes
+						} // for all the toStates
+					} // if not all states are dead
 				} // if event is OK in product
 			} // for all the transitions
 		} // while queue is not empty
 		
 		// If made it here, it's not accessible.
-		results.put(fsmState.getStateName() + prodState.getStateName(), false);
+		results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), false);
 		return false;
 	} // recursivelyFindMarked
 	
