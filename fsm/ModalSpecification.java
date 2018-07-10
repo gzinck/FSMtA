@@ -104,6 +104,21 @@ public class ModalSpecification
 	}
 	
 	/**
+	 * Gets the underlying FSM representation of the Modal Specification by copying all the
+	 * data to a new deterministic FSM. It loses information about the must transitions.
+	 * 
+	 * @return DetObsContFSM which uses the underlying transition system of the modal specification.
+	 */
+	public DetObsContFSM getUnderlyingFSM() {
+		DetObsContFSM specFSM = new DetObsContFSM();
+		// Make the underlying FSM of the specification
+		specFSM.copyEvents(this);
+		specFSM.copyStates(this);
+		specFSM.copyTransitions(this);
+		return specFSM;
+	}
+	
+	/**
 	 * This method tries to get the maximally permissive (optimal) supervisor for an fsm
 	 * (which will have certain transitions which are controllable and uncontrollable, etc.)
 	 * that satisfies the modal specification. That is, it may ONLY have "may" transitions,
@@ -129,12 +144,7 @@ public class ModalSpecification
 		// Step 1: Create the reachable part of the combo
 		// TODO: How can we make this parameterized? It doesn't seem to like me...
 		FSM newFSM = (FSM)((Observability)fsm).createObserverView();
-		
-		DetObsContFSM specFSM = new DetObsContFSM();
-		// Make the underlying FSM of the specification
-		specFSM.copyEvents(this);
-		specFSM.copyStates(this);
-		specFSM.copyTransitions(this);
+		DetObsContFSM specFSM = getUnderlyingFSM();
 		
 		// If we have unobservable events in the specification, that's illegal
 		for(ObsControlEvent e : specFSM.events.getEvents()) {
@@ -146,13 +156,14 @@ public class ModalSpecification
 		
 		FSM product = newFSM.product(specFSM);
 		
-		// Now mark the bad states
+		//--------------------------------------------
+		// Step 2: Mark the bad states
 		boolean keepGoing = true;
 //		while(keepGoing) {
 			HashSet<String> badStates = new HashSet<String>();
-			markBadStates(fsm, specFSM, product, badStates);
+			markBadStates(newFSM, specFSM, product, badStates);
 //			markDeadEnds(specFSM, product, badStates);
-//			markDeadEnds(fsm, product, badStates);
+//			markDeadEnds(newFSM, product, badStates);
 			
 			// TODO: MAKE SURE THIS LOOP DOESN'T GO FOREVER. When all the bad states are marked with the hashset, then
 			// the we should construct the supervisor by copying all the states NOT marked bad and all the transitions
@@ -191,7 +202,6 @@ public class ModalSpecification
 			
 			// If a must transition does not exist at the state, mark the state
 			String specStateName = getSpecificationState(s.getStateName());
-			System.out.println(specStateName);
 			ArrayList<DetTransition<State, Event>> specTransitions = this.mustTransitions.getTransitions(this.getState(specStateName));
 			if(specTransitions != null) for(DetTransition<State, Event> t : specTransitions) {
 				Event event = t.getTransitionEvent();
@@ -214,13 +224,15 @@ public class ModalSpecification
 			
 			// If an uncontrollable observable event exists from any of the states in the original fsm, and
 			// the event not allowed in the product, then UH-NO NOT HAP'NIN (mark the state
-			String[] origStateNames = getOriginalComponentStates(s.getStateName());
-			System.out.println(Arrays.toString(origStateNames));
-			for(int i = 0; i < origStateNames.length; i++) {
+			String observerStateName = getObserverState(s.getStateName());
+			ArrayList<S> origStates = fsm.states.getStateComposition(fsm.getState(observerStateName));
+			System.out.println(origStates.toString());
+			for(S fromState : origStates) {
 				// Go through all the original transitions
-				ArrayList<T> origTransitions = fsm.transitions.getTransitions(fsm.getState(origStateNames[i]));
+				ArrayList<T> origTransitions = fsm.transitions.getTransitions(fromState);
 				if(origTransitions != null) for(T t : origTransitions) {
 					E event = t.getTransitionEvent();
+					System.out.println(event.getEventName());
 					if(event instanceof EventObservability && ((EventObservability)event).getEventObservability() && event instanceof EventControllability && !((EventControllability)event).getEventControllability()) {
 						// Then the event must be present in the product
 						ArrayList<S> toStates = product.transitions.getTransitionStates(product.getState(specStateName), product.events.getEvent(event));
@@ -247,23 +259,22 @@ public class ModalSpecification
 	} // markBadStates(FSM, FSM, HashSet) 
 	
 	/**
-	 * Gets the original state names for the fsm using the product state names (which is in the form of
-	 * ({state1,state2}, specState) and we want the array of states in the first set).
+	 * Gets the observer's state name for the fsm using the product state names (which is in the form of
+	 * ({state1,state2},specState) and we want the aggregate of states in the first set).
 	 * 
 	 * @param aggregateStateName - String object representing the state to break apart.
-	 * @return - Returns an array of String objects with all the states from the original FSM represented in the input String.
+	 * @return - Returns a String object with the state name from the observer.
 	 */
 	
-	static private String[] getOriginalComponentStates(String aggregateStateName) {
+	static private String getObserverState(String aggregateStateName) {
 		// TODO: make this parse the product better.
 		String[] productHalves = aggregateStateName.split(",");
-		aggregateStateName = productHalves[0].substring(2, productHalves[0].length() - 1); // Take out the braces
-		return aggregateStateName.split(","); // Get the individual state names
+		return productHalves[0].substring(1, productHalves[0].length());
 	}
 	
 	/**
 	 * Gets the original state name for the specification using the product state names (which is in the form of
-	 * ({state1,state2}, specState) and we want the second entry in the product).
+	 * ({state1,state2},specState) and we want the second entry in the product).
 	 * 
 	 * @param aggregateStateName - String representing the state to break apart.
 	 * @return - Returns a String object with the state name from the specification.
@@ -291,7 +302,8 @@ public class ModalSpecification
 		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
 		
 		for(S1 curr : product.states.getStates()) {
-			for(String subState : getOriginalComponentStates(curr.getStateName())) {
+			String observerStateName = getObserverState(curr.getStateName());
+			for(S subState : fsm.states.getStateComposition(fsm.getState(observerStateName))) {
 				// Check for a path to a marked state.
 				boolean isCoaccessible = stateIsCoAccessible(fsm.getState(subState), curr, results, fsm, product);
 				if(!isCoaccessible) {

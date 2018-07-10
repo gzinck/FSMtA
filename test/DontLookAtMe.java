@@ -39,12 +39,9 @@ public class DontLookAtMe {
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "test", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		ModalSpecification ms = new ModalSpecification("OK");
 		ms.addState("1");
-		ms.addMustTransition("1", "a", "2");
-		ms.addTransition("1", "b", "3");
 		ms.addInitialState("1");
 		FSMToDot.createImgFromFSM(ms, GRAEME_WORKING_FOLDER + "testms", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
-		
-//		ms.makeOptimalSupervisor(fsm1);
+		ms.makeOptimalSupervisor(fsm1);
 		
 //		fsm1.addTransition("1", "a", "2");
 //		fsm1.addTransition("2", "b", "3");
