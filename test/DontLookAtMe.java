@@ -17,14 +17,14 @@ public class DontLookAtMe {
 	@Test
 	public void test() {
 		// (int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath)
-		File f1 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
-		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));
+//		File f1 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
+//		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));
 ////		File f1 = new File(GRAEME_WORKING_FOLDER + "/fil1.fsm");
 //		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/cantdeterminize.fsm");
 //		File f2 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/simpledet2.fsm");
 //		File f3 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/simpledet3.fsm");
-		NonDetObsContFSM fsm1 = new NonDetObsContFSM(f1, "fs1");
-		NonDetObsContFSM fsm2 = new NonDetObsContFSM(f2, "fs2");
+//		NonDetObsContFSM fsm1 = new NonDetObsContFSM(f1, "fs1");
+//		NonDetObsContFSM fsm2 = new NonDetObsContFSM(f2, "fs2");
 //		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "test2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 //		FSMToDot.createImgFromFSM(fsm2, GRAEME_WORKING_FOLDER + "test3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 //		System.out.println(fsm2.makeDotString());
@@ -32,16 +32,19 @@ public class DontLookAtMe {
 //		FSMToDot.createImgFromFSM(fsm3, GRAEME_WORKING_FOLDER + "test4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
 		
-//		NonDetObsContFSM fsm1 = new NonDetObsContFSM(f1, "OK");
-		//DetObsContFSM fsm2 = new DetObsContFSM(f2, "OK");
-		//DetObsContFSM fsm3 = new DetObsContFSM(f3, "OK");
+		DetObsContFSM fsm1 = new DetObsContFSM("OK");
+		fsm1.addTransition("1", "a", "2");
+		fsm1.setEventControllability("a", false);
+		fsm1.addInitialState("1");
+		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "test", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		ModalSpecification ms = new ModalSpecification("OK");
+		ms.addState("1");
+		ms.addMustTransition("1", "a", "2");
+		ms.addTransition("1", "b", "3");
+		ms.addInitialState("1");
+		FSMToDot.createImgFromFSM(ms, GRAEME_WORKING_FOLDER + "testms", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
-		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "/" + "coolbeansb4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(fsm2, GRAEME_WORKING_FOLDER + "/" + "coolbeans", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
-		
-		NonDetObsContFSM fsm3 = fsm1.parallelComposition(fsm2);
-		NonDetObsContFSM fsm4 = fsm3.parallelComposition(fsm1, fsm2);
-		FSMToDot.createImgFromFSM(fsm4, GRAEME_WORKING_FOLDER + "/" + "coolbeansaftR", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+//		ms.makeOptimalSupervisor(fsm1);
 		
 //		fsm1.addTransition("1", "a", "2");
 //		fsm1.addTransition("2", "b", "3");

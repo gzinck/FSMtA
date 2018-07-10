@@ -8,6 +8,7 @@ import support.event.ObsControlEvent;
 import support.transition.DetTransition;
 import support.transition.Transition;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -93,6 +94,15 @@ public class ModalSpecification
 	
 //---  Operations   -----------------------------------------------------------------------
 	
+	// Overrides the method from TransitionSystem to include the must transitions.
+	@Override
+	public String makeDotString() {
+		String statesInDot = states.makeDotString();	//Have the StateMap do its thing
+		String transitionsInDot = transitions.makeDotStringExcluding(mustTransitions);	//Have the TransitionFunction do its thing
+		String mustTransitionsInDot = mustTransitions.makeDotString();
+		return statesInDot + transitionsInDot + mustTransitionsInDot;	//Return 'em all
+	}
+	
 	/**
 	 * This method tries to get the maximally permissive (optimal) supervisor for an fsm
 	 * (which will have certain transitions which are controllable and uncontrollable, etc.)
@@ -138,16 +148,17 @@ public class ModalSpecification
 		
 		// Now mark the bad states
 		boolean keepGoing = true;
-		while(keepGoing) {
+//		while(keepGoing) {
 			HashSet<String> badStates = new HashSet<String>();
 			markBadStates(fsm, specFSM, product, badStates);
-			markDeadEnds(specFSM, product, badStates);
-			markDeadEnds(fsm, product, badStates);
+//			markDeadEnds(specFSM, product, badStates);
+//			markDeadEnds(fsm, product, badStates);
 			
 			// TODO: MAKE SURE THIS LOOP DOESN'T GO FOREVER. When all the bad states are marked with the hashset, then
 			// the we should construct the supervisor by copying all the states NOT marked bad and all the transitions
 			// to states that are NOT marked bad from the product.
-		} // while
+//		} // while
+		System.out.println(badStates.toString());
 		return null;
 	}
 	
@@ -169,7 +180,7 @@ public class ModalSpecification
 	 */
 	
 	private <S extends State, T extends Transition<S, E>, E extends Event>
-			HashSet<String> markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
+			boolean markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
 		// We need to parse every state in the product, check every component state if there is some uncontrollable observable
 		// event that isn't defined in the product.
 		// Also look if must transitions exist...
@@ -180,6 +191,7 @@ public class ModalSpecification
 			
 			// If a must transition does not exist at the state, mark the state
 			String specStateName = getSpecificationState(s.getStateName());
+			System.out.println(specStateName);
 			ArrayList<DetTransition<State, Event>> specTransitions = this.mustTransitions.getTransitions(this.getState(specStateName));
 			if(specTransitions != null) for(DetTransition<State, Event> t : specTransitions) {
 				Event event = t.getTransitionEvent();
@@ -203,6 +215,7 @@ public class ModalSpecification
 			// If an uncontrollable observable event exists from any of the states in the original fsm, and
 			// the event not allowed in the product, then UH-NO NOT HAP'NIN (mark the state
 			String[] origStateNames = getOriginalComponentStates(s.getStateName());
+			System.out.println(Arrays.toString(origStateNames));
 			for(int i = 0; i < origStateNames.length; i++) {
 				// Go through all the original transitions
 				ArrayList<T> origTransitions = fsm.transitions.getTransitions(fsm.getState(origStateNames[i]));
@@ -230,7 +243,7 @@ public class ModalSpecification
 				} // for all the transitions
 			} // for every component state in the original fsm
 		} // for every state
-		return badStates;
+		return foundABadOne;
 	} // markBadStates(FSM, FSM, HashSet) 
 	
 	/**
@@ -242,7 +255,8 @@ public class ModalSpecification
 	 */
 	
 	static private String[] getOriginalComponentStates(String aggregateStateName) {
-		String[] productHalves = aggregateStateName.split(", ");
+		// TODO: make this parse the product better.
+		String[] productHalves = aggregateStateName.split(",");
 		aggregateStateName = productHalves[0].substring(2, productHalves[0].length() - 1); // Take out the braces
 		return aggregateStateName.split(","); // Get the individual state names
 	}
@@ -256,8 +270,9 @@ public class ModalSpecification
 	 */
 	
 	static private String getSpecificationState(String aggregateStateName) {
-		String[] productHalves = aggregateStateName.split(", ");
-		return productHalves[1].substring(1, productHalves[1].length() - 2); // Take out the braces
+		// TODO: make this parse the product better.
+		String[] productHalves = aggregateStateName.split(",");
+		return productHalves[1].substring(0, productHalves[1].length() - 1); // Take out the braces
 	}
 	
 	/**

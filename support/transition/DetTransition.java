@@ -2,6 +2,7 @@ package support.transition;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import support.State;
 import support.event.Event;
@@ -72,6 +73,40 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 			break;
 		default: break;
 		}
+		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];";
+	}
+	
+	/**
+	 * Generates a String object which has the dot representation of this Transition, but
+	 * with a dotted line to indicate that it is a may transition, which
+	 * can be used for converting an Modal Specification to a .jpg image via GraphViz.
+	 * 
+	 * @param firstState - State object associated to this Transition. This is used to
+	 * determine the exact text for the dot representation.
+	 * @return - Returns a String object containing the dot representation of this Transition.
+	 */
+	public String makeDotStringMayTransition(State firstState) {
+		String eventDeal = "";
+		switch(event.getEventType()) {
+		case 0:
+			// Observable and controllable
+			eventDeal = "color = \"black\"";
+			break;
+		case 1:
+			// Unobservable but controllable
+			eventDeal = "color = \"red\" arrowhead = \"normalicurve\"";
+			break;
+		case 2:
+			// Observable and uncontrollable
+			eventDeal = "color = \"blue\" arrowhead = \"normaldiamond\"";
+			break;
+		case 3:
+			// Unobservable and uncontrollable
+			eventDeal = "color = \"purple\" arrowhead = \"normalodot\"";
+			break;
+		default: break;
+		}
+		eventDeal += "; style=dotted";
 		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];";
 	}
 	

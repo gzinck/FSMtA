@@ -1,6 +1,9 @@
 package support;
 
 import java.util.*;
+
+import support.transition.DetTransition;
+import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
 
@@ -52,6 +55,34 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 			ArrayList<T> thisTransitions = entry.getValue();
 			for(T aTransition : thisTransitions) {
 				sb.append(aTransition.makeDotString(firstState));
+			} // for aTransition
+		} // for entry
+		return sb.toString();
+	}
+	
+	/**
+	 * This method converts the information stored in this TransitionFunction object into the dot-form
+	 * representation for use with GraphViz. It excludes the transitions which are present in the other
+	 * transition function passed as a parameter.
+	 * 
+	 * @param other - TransitionFunction which uses the same FSM's states mapping to different things.
+	 * @return - Returns a String object representing the dot-form version of the information stored by
+	 * this TransitionFunction object, excluding any transitions in the other transition function.
+	 */
+	
+	public String makeDotStringExcluding(TransitionFunction<S, T, E> other) {
+		StringBuilder sb = new StringBuilder();
+		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
+			State firstState = entry.getKey();
+			ArrayList<T> thisTransitions = entry.getValue();
+			for(T aTransition : thisTransitions) {
+				ArrayList<S> otherTransitionStates = other.getTransitionStates(firstState, aTransition.getTransitionEvent());
+				if(otherTransitionStates == null || otherTransitionStates.size() == 0) {
+					if(aTransition instanceof DetTransition)
+						sb.append(((DetTransition)aTransition).makeDotStringMayTransition(firstState)); // only append if the transition does not exist in other.
+					else
+						sb.append(aTransition.makeDotString(firstState));
+				} // if
 			} // for aTransition
 		} // for entry
 		return sb.toString();

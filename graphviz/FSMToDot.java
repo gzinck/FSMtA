@@ -29,7 +29,7 @@ public class FSMToDot {
 	 * @param configPath - A String object denoting the path to the GraphViz config file.
 	 */
 	
-	public static void createImgFromFSM(FSM fsm, String path, String workingPath, String configPath){
+	public static void createImgFromFSM(TransitionSystem fsm, String path, String workingPath, String configPath){
 	    GraphViz gv=new GraphViz(workingPath, configPath);
 	    gv.addln(gv.start_graph());
 	    gv.add(fsm.makeDotString());
