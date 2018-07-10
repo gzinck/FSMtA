@@ -170,27 +170,25 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 			StringBuilder sb = new StringBuilder();	//Better than a String, try it in Kattis problems that are too slow.
 			
 			Iterator<State> iter = thisSet.iterator();	//HashSet used to avoid duplicates, now process the State objects
+			ArrayList<State> composed = new ArrayList<State>();
 			boolean on = true;							//Should be Marked?
 			boolean priv = true;							//Should be Secret?
 			while(iter.hasNext()) {						//For all States, check each's Status as Marked/Secret. If ever no, negate.
 				State sit = iter.next();
+				composed.addAll(newFSM.getStateComposition(sit));
 				if(!sit.getStateMarked())
 					on = false;
 				if(!sit.getStatePrivate())
 					priv = false;
 			}
 			for(int i = 0; i < nameSet.size(); i++)		//Now build the new State's name via the sorted NameSet
-				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? ", " : "}"));
+				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? "," : "}"));
 			name.put(s.getStateName(), "{" + sb.toString());		//Preferred nomenclature is to use brackets,
 			map.put(s, thisSet);				//Keep track of pairings between States and their new Names or all included States
-			if(on) {							//If no included State were found to be unmarked, the aggregate is Marked
-				State in = newFSM.addState(name.get(s.getStateName()));
-				in.setStateMarked(true);
-			}
-			if(priv) {						//If no included State were found to be not secret, the aggregate is Secret
-				State in = newFSM.addState(name.get(s.getStateName()));
-				in.setStatePrivate(true);
-			}
+			State in = newFSM.addState(name.get(s.getStateName()));
+			in.setStateMarked(on);
+			in.setStatePrivate(priv);
+			newFSM.setStateComposition(in, composed.toArray(new State[composed.size()]));
 		}
 		
 		for(State ar : map.keySet()) {						//For all States (which have been paired to aggregates)

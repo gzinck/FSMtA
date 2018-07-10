@@ -181,10 +181,12 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			StringBuilder sb = new StringBuilder();
 			
 			Iterator<State> iter = thisSet.iterator();
+			ArrayList<State> composed = new ArrayList<State>();
 			boolean on = true;
 			boolean priv = true;
 			while(iter.hasNext()) {
 				State sit = iter.next();
+				composed.addAll(newFSM.getStateComposition(sit));
 				if(!sit.getStateMarked())
 					on = false;
 				if(!sit.getStatePrivate())
@@ -194,15 +196,10 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				sb.append(nameSet.get(i) + (i + 1 < nameSet.size() ? "," : "}"));
 			name.put(s.getStateName(), "{" + sb.toString());
 			map.put(s, thisSet);
-			if(on) {
-				State in = newFSM.addState(name.get(s.getStateName()));
-				in.setStateMarked(true);
-			}
-			if(priv) {
-				State in = newFSM.addState(name.get(s.getStateName()));
-				in.setStatePrivate(true);
-			}
-				
+			State in = newFSM.addState(name.get(s.getStateName()));
+			in.setStateMarked(on);
+			in.setStatePrivate(priv);
+			newFSM.setStateComposition(in, composed.toArray(new State[composed.size()]));
 		}
 		
 		for(State ar : map.keySet()) {
@@ -298,6 +295,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		 */
 		
 		DetObsContFSM fsmOut = new DetObsContFSM("Determinized " + this.getId());
+		fsmOut.setCompositionStates(this.getComposedStates());
 		LinkedList<String> queue = new LinkedList<String>();
 		StringBuilder init = new StringBuilder();
 		Collections.sort(getInitialStates());
@@ -305,16 +303,18 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 		
 		// Make the initial state
 		Iterator<State> itr = getInitialStates().iterator();
+		ArrayList<State> composed = new ArrayList<State>();
 		while(itr.hasNext()) {
 			State curr = itr.next();
+			composed.addAll(fsmOut.getStateComposition(curr));
 			init.append(curr.getStateName());
 			if(itr.hasNext()) 
-				init.append("-"); // Add a comma if there is another item to add
+				init.append("-"); // Add a break if there is another item to add
 			mark1 = curr.getStateMarked() ? mark1 : false; 
 		}
 		queue.add(init.toString());
 		fsmOut.addInitialState("{" + init.toString() + "}");
-		
+		fsmOut.setStateComposition(fsmOut.getState("{"+init+"}"), composed.toArray(new State[composed.size()]));
 		// Mark the initial state if all of the states are marked
 		if(mark1)
 			fsmOut.getState("{"+init+"}").setStateMarked(true);
@@ -346,8 +346,10 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				boolean mark = true;
 				boolean priv = true;
 				Iterator<String> iter = eventStates.get(event).iterator();
+				composed = new ArrayList<State>();
 				while(iter.hasNext()) {
 					String markCheck = iter.next();
+					composed.addAll(fsmOut.getStateComposition(this.getState(markCheck)));
 					mark = this.getState(markCheck).getStateMarked() ? mark : false;
 					priv = this.getState(markCheck).getStatePrivate() ? priv : false;
 					outboundStates.add(markCheck);
@@ -365,6 +367,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 					fsmOut.getState("{"+collec+"}").setStateMarked(true);
 				if(priv)
 					fsmOut.getState("{"+collec+"}").setStatePrivate(true);
+				fsmOut.setStateComposition(fsmOut.getState("{"+collec+"}"), composed.toArray(new State[composed.size()]));
 			}
 		}
 		return fsmOut;

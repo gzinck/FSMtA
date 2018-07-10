@@ -158,6 +158,8 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 					if(thisState.getStateInitial() && otherState.getStateInitial())
 						newFSM.addInitialState(newState);
 					
+					newFSM.setStateComposition(newState, thisState, (S)otherState);
+					
 					// Go through all the transitions in each, see what they have in common
 					ArrayList<T> thisTransitions = this.transitions.getTransitions(thisState);
 					ArrayList<T1> otherTransitions = other.transitions.getTransitions(otherState);
@@ -252,6 +254,8 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 					S newState = newFSM.states.addState(thisState, otherState); // Add the new state
 					if(newState.getStateInitial())
 						newFSM.addInitialState(newState);
+					
+					newFSM.setStateComposition(newState, thisState, (S)otherState);
 					
 					// Go through all the transitions in each, see what they have in common
 					ArrayList<T> thisTransitions = this.transitions.getTransitions(thisState);

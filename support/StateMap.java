@@ -66,6 +66,7 @@ public class StateMap<S extends State> {
 		states.values().toArray(stateArr);
 		for(int i = 0; i < states.size(); i++)
 			renameState((S)stateArr[i], i + "");
+		composition = null;
 	}
 	
 	/**
@@ -86,14 +87,22 @@ public class StateMap<S extends State> {
 	
 	/**
 	 * Getter method that returns a list of States which compose the provided State. (Through operations
-	 * such as Determinization or generating the Observer View.)
+	 * such as Determinization or generating the Observer View.) In the event that the provided State is
+	 * not found, but there is a mapping of some States to a list of States, then return a single-entry
+	 * list containing the querying State. If there is no mapping, return null. 
 	 * 
 	 * @param provided - State extending object provided to request a specific State's set of composing States.
 	 * @return - Returns an ArrayList<<r>S> representing all the States that are designated as composing the provided State.
 	 */
 	
 	public ArrayList<S> getStateComposition(S provided){
-		return composition.get(provided);
+		if(composition == null || composition.get(provided) == null) {
+			ArrayList<S> out = new ArrayList<S>();
+			out.add(provided);
+			return out;
+		}
+		else
+			return composition.get(provided);
 	}
 	
 	/**
@@ -206,10 +215,14 @@ public class StateMap<S extends State> {
 	public void setStateComposition(S keyState, ArrayList<S> composedStates) {
 		if(composition == null)
 			composition = new HashMap<S, ArrayList<S>>();
+		HashSet<S> hash = new HashSet<S>(composedStates);
+		composedStates.clear();
+		composedStates.addAll(hash);
+		Collections.sort(composedStates);
 		composition.put(keyState, composedStates);
 	}
 	
-//---  Manipulations   ------------------------------------------------------------------------
+//---  Manipulations - Adding   ---------------------------------------------------------------
 	
 	/**
 	 * This method adds a copy of the parameter state to the HashMap<<r>String, <<r>S extends State>> mapping.
@@ -317,6 +330,8 @@ public class StateMap<S extends State> {
 	 * 
 	 * @param state - State object to remove from the HashMap<<r>String, State> mapping.
 	 */
+	
+//---  Manipulations - Removing   -------------------------------------------------------------
 	
 	public void removeState(State state) {
 		states.remove(state.getStateName());

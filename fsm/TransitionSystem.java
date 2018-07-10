@@ -357,6 +357,29 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
+	 * 
+	 * 
+	 * @param aggregate
+	 * @param pieces
+	 */
+	
+	public void setStateComposition(S aggregate, S ... pieces) {
+		ArrayList<S> composed = new ArrayList<S>();
+		for(S in : pieces)
+			composed.add(in);
+		states.setStateComposition(aggregate, composed);
+	}
+	
+	/**
+	 * 
+	 * @param composed
+	 */
+	
+	public void setCompositionStates(HashMap<S, ArrayList<S>> composed) {
+		states.setCompositionStates(composed);
+	}
+	
+	/**
 	 * Setter method that assigns a new StateMap<<r>S> to replace the previously assigned set of States.
 	 * 
 	 * @param inState - StateMap<<r>S> object that assigns a new set of Events to this FSM object
@@ -411,6 +434,26 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	
 	public String getId() {
 		return id;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @return
+	 */
+	
+	public HashMap<S, ArrayList<S>> getComposedStates(){
+		return states.getComposedStates();
+	}
+	
+	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	
+	public ArrayList<S> getStateComposition(S state){
+		return states.getStateComposition(state);
 	}
 	
 	/**
