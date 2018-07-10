@@ -158,18 +158,20 @@ public class ModalSpecification
 		
 		//--------------------------------------------
 		// Step 2: Mark the bad states
+		HashSet<String> badStates = new HashSet<String>();
 		boolean keepGoing = true;
-//		while(keepGoing) {
-			HashSet<String> badStates = new HashSet<String>();
-			markBadStates(newFSM, specFSM, product, badStates);
-//			markDeadEnds(specFSM, product, badStates);
-//			markDeadEnds(newFSM, product, badStates);
+		while(keepGoing) {
+			boolean keepGoing1 = markBadStates(newFSM, specFSM, product, badStates);
+			System.out.println(badStates.toString());
+//			boolean keepGoing2 = markDeadEnds(specFSM, product, badStates);
+//			boolean keepGoing3 = markDeadEnds(newFSM, product, badStates);
+			
+			keepGoing = keepGoing1;
 			
 			// TODO: MAKE SURE THIS LOOP DOESN'T GO FOREVER. When all the bad states are marked with the hashset, then
 			// the we should construct the supervisor by copying all the states NOT marked bad and all the transitions
 			// to states that are NOT marked bad from the product.
-//		} // while
-		System.out.println(badStates.toString());
+		} // while
 		return null;
 	}
 	
@@ -199,6 +201,8 @@ public class ModalSpecification
 	
 		// Go through every state in the product
 		for(S s : product.getStates()) {
+			// Don't process the state if it's already bad
+			if(badStates.contains(s.getStateName())) continue;
 			
 			// If a must transition does not exist at the state, mark the state
 			String specStateName = getSpecificationState(s.getStateName());
@@ -223,20 +227,19 @@ public class ModalSpecification
 			} // for all the state's transitions
 			
 			// If an uncontrollable observable event exists from any of the states in the original fsm, and
-			// the event not allowed in the product, then UH-NO NOT HAP'NIN (mark the state
+			// the event not allowed in the product, then UH-NO NOT HAP'NIN (mark the state)
 			String observerStateName = getObserverState(s.getStateName());
 			ArrayList<S> origStates = fsm.states.getStateComposition(fsm.getState(observerStateName));
-			System.out.println(origStates.toString());
 			for(S fromState : origStates) {
 				// Go through all the original transitions
 				ArrayList<T> origTransitions = fsm.transitions.getTransitions(fromState);
 				if(origTransitions != null) for(T t : origTransitions) {
 					E event = t.getTransitionEvent();
-					System.out.println(event.getEventName());
+					// If the event is observable but NOT controllable, we have a problem
 					if(event instanceof EventObservability && ((EventObservability)event).getEventObservability() && event instanceof EventControllability && !((EventControllability)event).getEventControllability()) {
 						// Then the event must be present in the product
-						ArrayList<S> toStates = product.transitions.getTransitionStates(product.getState(specStateName), product.events.getEvent(event));
-						// Mark the state as bad if the must transition does not exist
+						ArrayList<S> toStates = product.transitions.getTransitionStates(product.getState(s), product.events.getEvent(event));
+						// Mark the state as bad if the event is not allowed in the product.
 						if(toStates == null) {
 							badStates.add(s.getStateName());
 							foundABadOne = true;
@@ -256,7 +259,7 @@ public class ModalSpecification
 			} // for every component state in the original fsm
 		} // for every state
 		return foundABadOne;
-	} // markBadStates(FSM, FSM, HashSet) 
+	} // markBadStates(FSM, FSM, FSM, HashSet)
 	
 	/**
 	 * Gets the observer's state name for the fsm using the product state names (which is in the form of
@@ -293,12 +296,14 @@ public class ModalSpecification
 	 * 
 	 * @param fsm - FSM that has all the possible states and transitions.
 	 * @param product - FSM that defines what events are allowed at a given state in fsm.
+	 * @param badStates - HashSet of Strings which holds the names of the product's states
+	 * which are considered to be bad states.
 	 */
 	
 	static protected <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
 			void markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
-		// TODO: Do something with the badStates hashset.... it's actually supposed to be used, Graeme! Sheesh.
-		// When a state is processed, add it to the map and state if it reached a marked state.
+		// When a state is processed, add it to the map and say if it reached a marked state. If it did not, then
+		// we have a problem...
 		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
 		
 		for(S1 curr : product.states.getStates()) {

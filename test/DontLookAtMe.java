@@ -34,12 +34,16 @@ public class DontLookAtMe {
 		
 		DetObsContFSM fsm1 = new DetObsContFSM("OK");
 		fsm1.addTransition("1", "a", "2");
+		fsm1.addTransition("2", "b", "3");
 		fsm1.setEventControllability("a", false);
+		fsm1.setEventControllability("b", false);
 		fsm1.addInitialState("1");
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "test", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		ModalSpecification ms = new ModalSpecification("OK");
 		ms.addState("1");
 		ms.addInitialState("1");
+		ms.addTransition("1", "a", "2");
+		ms.addMustTransition("1", "b", "5");
 		FSMToDot.createImgFromFSM(ms, GRAEME_WORKING_FOLDER + "testms", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		ms.makeOptimalSupervisor(fsm1);
 		
