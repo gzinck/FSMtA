@@ -4,6 +4,7 @@ import java.util.*;
 import support.*;
 import support.transition.Transition;
 import support.event.Event;
+import support.attribute.EventObservability;
 
 /**
  * This abstract class models a Finite State Machine with some of the essential elements.
@@ -334,4 +335,14 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 			} // for otherInitial
 		} // for thisInitial
 	} // parallelCompositionHelper(FSM)
+
+	/**
+	 * 
+	 * TODO:
+	 * 
+	 * @return
+	 */
+	
+	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM buildObserver();
+	
 } // class FSM

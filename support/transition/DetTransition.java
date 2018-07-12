@@ -159,6 +159,13 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 	
 //---  Manipulations   -----------------------------------------------------------------------
 
+	public boolean addTransitionState(S inState) {
+		if(state != null)
+			return false;
+		state = inState;
+		return true;
+	}
+	
 	@Override
 	public boolean removeTransitionState(String stateName) {
 		if(state.getStateName().equals(stateName)) {

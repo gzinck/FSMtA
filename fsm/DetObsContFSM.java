@@ -1,9 +1,7 @@
 package fsm;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+
 import fsm.attribute.*;
 import support.event.Event;
 import support.event.ObsControlEvent;
@@ -218,6 +216,113 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 		return newFSM.determinize();						//Good work!
 	}
 
+	@Override
+	public DetObsContFSM buildObserver() {
+		DetObsContFSM newFSM = new DetObsContFSM();
+		
+		HashMap<State, ArrayList<State>> compose = new HashMap<State, ArrayList<State>>();
+		HashMap<String, ArrayList<State>> map = new HashMap<String, ArrayList<State>>();
+		
+		StringBuilder sb = new StringBuilder();
+		
+		for(State s : this.getStates()) {							//Finding Unobservable Event Reach
+			LinkedList<State> queue = new LinkedList<State>();
+			HashSet<State> traversed = new HashSet<State>();
+			HashSet<State> member = new HashSet<State>();
+			queue.add(s);
+			member.add(s);
+			while(!queue.isEmpty()) {
+			  State state = queue.poll();
+			  if(traversed.contains(state))
+				continue;
+			  traversed.add(state);
+			  for(DetTransition<State, ObsControlEvent> t : getStateTransitions(state)) {
+				  if(!t.getTransitionEvent().getEventObservability()) {
+					  queue.add(t.getTransitionState());
+					  member.add(t.getTransitionState());
+				  }
+			  }
+			}
+			ArrayList<State> arr = new ArrayList<State>(member);
+			Collections.sort(arr);
+			compose.put(s, arr);
+			sb = new StringBuilder();
+			for(State s1 : arr)
+				sb.append(s1.getStateName() + ",");
+			sb.delete(sb.length()-1, sb.length());
+			map.put(s.getStateName(), arr);
+		}
+		
+		ArrayList<State> start = this.getInitialStates();				//Initial State Handling
+		Collections.sort(start);
+		ArrayList<State> built = new ArrayList<State>(start);
+		for(State st : start) {
+			for(State se : map.get(st.getStateName())) {
+				sb.append(se.getStateName() +",");
+				built.add(se);	
+			}
+		}
+		sb.delete(sb.length()-1, sb.length());
+		State init = newFSM.addState("{"+sb.toString()+"}");
+		newFSM.addInitialState(init);
+		init.setStateInitial(true);
+		newFSM.setStateComposition(init, built.toArray(new State[start.size()]));
+		
+		for(State s : compose.keySet()) {							//Adding Unobservable Event Reach States
+			ArrayList<State> aggregate = compose.get(s);
+			Collections.sort(aggregate);
+			sb = new StringBuilder();
+			for(State component : aggregate)
+				sb.append(component.getStateName()+",");
+			sb.delete(sb.length()-1, sb.length());
+			State added = newFSM.addState("{"+sb.toString()+"}");
+			newFSM.setStateComposition(added, aggregate.toArray(new State[aggregate.size()]));
+		}
+		
+		LinkedList<State> queue = new LinkedList<State>(newFSM.getStates());
+		HashSet<State> visited = new HashSet<State>();
+		
+		while(!queue.isEmpty()) {									//Process all States' Transitions, create new States as necessary.
+			State n = queue.poll();
+			if(visited.contains(n))
+				continue;
+			visited.add(n);
+			TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> t = new TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>(new NonDetTransition<State, ObsControlEvent>());
+			for(State s : newFSM.getStateComposition(n)) {
+				for(DetTransition<State, ObsControlEvent> tra : getTransitions().getTransitions(s)) {
+					for(State out : tra.getTransitionStates()) {
+						sb = new StringBuilder();
+						for(State sf : map.get(out.getStateName()))
+							sb.append(sf.getStateName()+",");
+						sb.delete(sb.length()-1,  sb.length());
+						boolean exist = newFSM.stateExists(sb.toString());
+						State target = newFSM.addState(exist ? "" : "{" + sb.toString() + (exist ? "" : "}"));
+						t.addTransitionState(n, tra.getTransitionEvent(), target);
+					}
+				}
+			}
+			for(NonDetTransition<State, ObsControlEvent> states : t.getTransitions(n)) {
+				ArrayList<State> composed = states.getTransitionStates();
+				Collections.sort(composed);
+				sb = new StringBuilder();
+				for(State s : composed) {
+					sb.append(s.getStateName()+",");
+				}
+				sb.delete(sb.length()-1, sb.length());
+				
+				State ref = newFSM.addState("{"+sb.toString()+"}");
+				
+				newFSM.addTransition(n, states.getTransitionEvent(), ref);
+				newFSM.setStateComposition(ref, composed.toArray(new State[composed.size()]));
+				queue.add(ref);
+			}
+		}
+																	//Calculate Transitions from States, produce new States if NonDet
+		
+		return newFSM;
+		
+	}
+	
 	@Override
 	public void toTextFile(String filePath, String name) {
 		//Initial, Marked, Private, ObservableEvent, ControllableEvent.

@@ -457,6 +457,16 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	
+	public ArrayList<T> getStateTransitions(S state){
+		return transitions.getTransitions(state);
+	}
+	
+	/**
 	 * Getter method that searches within the FSM object's StateMap for a State extending object which corresponds
 	 * to the provided State extending object; it searches by the name associated to the State extending object, which
 	 * may find a match while being distinctly separate objects.
@@ -671,6 +681,10 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		} catch(Exception e1) {
 			e1.printStackTrace();
 		}
+	}
+	
+	public void addTransition(S state, E event, S state2) {
+		transitions.addTransitionState(state,  event, state2);
 	}
 	
 //---  Manipulations - Removing   -------------------------------------------------------------

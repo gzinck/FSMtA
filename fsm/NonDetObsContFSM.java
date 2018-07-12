@@ -233,51 +233,6 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	}
 
 	@Override
-	public void toTextFile(String filePath, String name) {
-		if(name == null)
-			name = id;
-		String truePath = "";
-		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
-		String special = "5\n";
-		ArrayList<String> init = new ArrayList<String>();
-		ArrayList<String> mark = new ArrayList<String>();
-		ArrayList<String> priv = new ArrayList<String>();
-		ArrayList<String> unob = new ArrayList<String>();
-		ArrayList<String> cont = new ArrayList<String>();
-		for(State s : this.getStates()) {
-			if(s.getStateMarked()) 
-				mark.add(s.getStateName());
-			if(s.getStateInitial()) 
-				init.add(s.getStateName());
-			if(s.getStatePrivate())
-				priv.add(s.getStateName());
-		}
-		for(ObsControlEvent e : this.getEvents()) {
-			if(!e.getEventObservability())
-				unob.add(e.getEventName());
-			if(!e.getEventControllability())
-				cont.add(e.getEventName());
-		}
-		special += init.size() + "\n";
-		for(String s : init)
-			special += s + "\n";
-		special += mark.size() + "\n";
-		for(String s : mark)
-			special += s + "\n";
-		special += priv.size() + "\n";
-		for(String s : priv)
-			special += s + "\n";
-		special += unob.size() + "\n";
-		for(String s : unob)
-			special += s + "\n";
-		special += cont.size() + "\n";
-		for(String s : cont)
-			special += s + "\n";
-		ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>();
-		rdWrt.writeToFile(truePath,  special, this.getTransitions());
-	}
-	
-	@Override
 	public DetObsContFSM determinize(){
 		/*
 		 * Create newFSM
@@ -371,6 +326,60 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			}
 		}
 		return fsmOut;
+	}
+
+	@Override
+	public DetObsContFSM buildObserver() {
+		DetObsContFSM newFSM = new DetObsContFSM();
+		
+		
+		
+		return newFSM;
+	}
+	
+	@Override
+	public void toTextFile(String filePath, String name) {
+		if(name == null)
+			name = id;
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "5\n";
+		ArrayList<String> init = new ArrayList<String>();
+		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> priv = new ArrayList<String>();
+		ArrayList<String> unob = new ArrayList<String>();
+		ArrayList<String> cont = new ArrayList<String>();
+		for(State s : this.getStates()) {
+			if(s.getStateMarked()) 
+				mark.add(s.getStateName());
+			if(s.getStateInitial()) 
+				init.add(s.getStateName());
+			if(s.getStatePrivate())
+				priv.add(s.getStateName());
+		}
+		for(ObsControlEvent e : this.getEvents()) {
+			if(!e.getEventObservability())
+				unob.add(e.getEventName());
+			if(!e.getEventControllability())
+				cont.add(e.getEventName());
+		}
+		special += init.size() + "\n";
+		for(String s : init)
+			special += s + "\n";
+		special += mark.size() + "\n";
+		for(String s : mark)
+			special += s + "\n";
+		special += priv.size() + "\n";
+		for(String s : priv)
+			special += s + "\n";
+		special += unob.size() + "\n";
+		for(String s : unob)
+			special += s + "\n";
+		special += cont.size() + "\n";
+		for(String s : cont)
+			special += s + "\n";
+		ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions());
 	}
 	
 	@Override

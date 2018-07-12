@@ -155,16 +155,12 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	
 //--- Manipulations   -------------------------------------------------------------------------
 	
-	/**
-	 * This method appends the provided State to the ArrayList<<r>State> holding all State names led to by
-	 * the Event associated to this NonDetTransition object
-	 * 
-	 * @param stateName - State extending object representing the State to append to the end of the list of States associated to this object
-	 */
-	
-	public void addTransitionState(S stateNew) {
-		if(states.indexOf(stateNew) == -1)
+	public boolean addTransitionState(S stateNew) {
+		if(states.indexOf(stateNew) == -1) {
 			states.add(stateNew);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
