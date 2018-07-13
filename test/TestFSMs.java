@@ -28,36 +28,28 @@ public class TestFSMs {
 	
 	@Test
 	public void test() {
-		File f1 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 3, 1, 1, 2, false, "fileName1", MAC_WORKING_FOLDER));
-		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 3, 1, 1, 2, false, "fileName2", MAC_WORKING_FOLDER));
-		File f3 = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 1, 1, 2, false, "fileName3", MAC_WORKING_FOLDER));
+		File f1 = new File(GenerateFSM.createNewFSM(10, 2, 5, 2, 2, 1, 1, 1, false, "fileName1", MAC_WORKING_FOLDER));
+		File f2 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName2", MAC_WORKING_FOLDER));
+		File f3 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName3", MAC_WORKING_FOLDER));
+		File f4 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName4", MAC_WORKING_FOLDER));
 		
 			DetObsContFSM fsm = new DetObsContFSM(f1, "fsm");
 		
 		System.out.println(fsm.makeDotString());
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			DetObsContFSM fsm2 = new DetObsContFSM(f2, "fsm2");
+			DetObsContFSM fsm2 = fsm.createObserverView();
 		
 		//System.out.println(fsm2.makeDotString());
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			DetObsContFSM fsm3 = fsm.parallelComposition(fsm2);
+			DetObsContFSM fsm3 = fsm.buildObserver();
 		
 		System.out.println(fsm3.getComposedStates());
 		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
 			DetObsContFSM fsm4 = fsm.createObserverView();
 			//fsm4 = fsm4.product(fsm);
-			
-		HashMap<State, ArrayList<State>> map = fsm4.getComposedStates();
-		for(State s : map.keySet()) {
-			System.out.print(s.getStateName() + " ");
-			for(State s1 : map.get(s)) {
-				System.out.print(s1.getStateName() + " ");
-			}
-			System.out.println();
-		}
 		
 		System.out.println(fsm4.getComposedStates());
 		FSMToDot.createImgFromFSM(fsm4, MAC_WORKING_FOLDER + "test4", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);

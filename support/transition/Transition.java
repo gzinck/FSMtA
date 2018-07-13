@@ -102,6 +102,14 @@ public interface Transition<S extends State, E extends Event> {
 //---  Manipulations   ------------------------------------------------------------------------	
 
 	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	
+	public boolean addTransitionState(S state);
+	
+	/**
 	 * Removes a State from the Transition object as described by a provided String; or, if the State is
 	 * the only item in the Transition object (as it is for the base Transition object), it returns true
 	 * to indicate that the Transition object should be deleted entirely.

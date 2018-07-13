@@ -237,6 +237,34 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	}
 	
 	/**
+	 * 
+	 * @param state
+	 * @param event
+	 */
+	
+	public void addTransitionState(S inState, E event, S outState) {
+		ArrayList<T> currT = transitions.get(inState);
+		if(currT == null) {
+			transitions.put(inState, new ArrayList<T>());
+			currT = transitions.get(inState);
+		}
+		boolean did = false;
+		for(T t : currT) {
+			if(t.getTransitionEvent().equals(event)) {
+				t.addTransitionState(outState);
+				did = true;
+				break;
+			}
+		}
+		if(!did) {
+			T trans = getEmptyTransition();
+			trans.setTransitionEvent(event);
+			trans.addTransitionState(outState);
+			currT.add(trans);
+		}
+	}
+	
+	/**
 	 * This method removes entries in the <<r>S, ArrayList<<r>T>> Map that correspond to the provided State.
 	 * 
 	 * @param state - State object representing the Key-set to remove from the <<r>S, ArrayList<<r>T>> data set.
