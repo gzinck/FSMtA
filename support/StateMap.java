@@ -213,6 +213,7 @@ public class StateMap<S extends State> {
 	 */
 	
 	public void setStateComposition(S keyState, ArrayList<S> composedStates) {
+		System.out.println(keyState.getStateName());
 		if(composition == null)
 			composition = new HashMap<S, ArrayList<S>>();
 		HashSet<S> hash = new HashSet<S>(composedStates);

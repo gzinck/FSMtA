@@ -6,6 +6,8 @@ import support.transition.DetTransition;
 import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
+import support.event.ObsControlEvent;
+import support.attribute.*;
 
 /**
  * This class models all Transitions in an FSM, storing States and an ArrayList<<r>T> of Transitions as <<r>Key, Value> pairs.
@@ -87,6 +89,42 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 		} // for entry
 		return sb.toString();
 	}
+	
+	/**
+	 * This gets the epsilon reaches of all each state, mapping the state to a set
+	 * of states which are reachable with unobservable events.
+	 * 
+	 * @param fsmStates Collection of states which exists in the FSM.
+	 * @return Hashmap mapping each state to a hashset of states (which are all reachable
+	 */
+	public HashMap<S, HashSet<S>> getEpsilonReaches(Collection<S> fsmStates) {
+		HashMap<S, HashSet<S>> epsilonReach = new HashMap<S, HashSet<S>>();	//Maps a State to all States it is attached to
+		for(S s : fsmStates) {						//For all States in the FSM:
+			HashSet<S> thisSet = new HashSet<S>();			//Keeps track of all States attached to this State
+			thisSet.add(s);										//Add the original State as one in the group
+			LinkedList<S> queue = new LinkedList<S>();		//Queue to process all States connected via Unobservable Events
+			queue.add(s);											//First Queue entry is the original State
+			HashSet<S> visited = new HashSet<S>();			//Keeps track of revisited States
+			// Go through all the states connected by unobservable events
+			while(!queue.isEmpty()) {
+				S top = queue.poll();					//Get the next State
+				if(visited.contains(top))					//If already processed, don't re-process the State
+					continue;
+				visited.add(top);							//Mark it as visited
+				for(T t : this.getTransitions(top)) {	//Process all the State's Transitions
+					// If it's an unobservable event, go through all transition states
+					if(!((EventObservability)t.getTransitionEvent()).getEventObservability()) for(S sr : t.getTransitionStates()) {
+						if(!thisSet.contains(sr)) {
+					 		thisSet.add(sr); //If the Event is unobservable and has not yet been seen, add the State
+							queue.add(sr); //As the State is a part of the new aggregated State, check its transitions too
+						} // if it doesn't contain it
+					} // if we have an unobservable event, go through all the transition states
+				} // for each transition
+			} // while queue not empty
+			epsilonReach.put(s, thisSet);
+		} // for each state
+		return epsilonReach;
+	} // getEpsilonReaches(Collection<S>)
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	

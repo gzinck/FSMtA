@@ -374,6 +374,8 @@ public class State implements Comparator<State>, Comparable<State>{
 
 	@Override
 	public int compareTo(State o) {
+//		if(this.getStateName() == null) return 1;
+//		if(o.getStateName() == null) return -1;
 		return this.getStateName().compareTo(o.getStateName());
 	}
 }

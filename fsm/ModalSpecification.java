@@ -9,8 +9,11 @@ import support.transition.DetTransition;
 import support.transition.Transition;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -171,16 +174,17 @@ public class ModalSpecification
 		// Step 2: Mark the bad states
 		HashSet<String> badStates = new HashSet<String>();
 		boolean keepGoing = true;
+		
+		DetObsContFSM universalObserverView = new DetObsContFSM("UniObsView");
+		HashMap<String, String>universalObserverViewMap = createUniversalObserverView(fsm, universalObserverView);
+		
 		while(keepGoing) {
 			boolean keepGoing1 = markBadStates(newFSM, specFSM, product, badStates);
 			System.out.println(badStates.toString());
-//			boolean keepGoing2 = markDeadEnds(specFSM, product, badStates);
-//			System.out.println(badStates.toString());
-//			boolean keepGoing3 = markDeadEnds(newFSM, product, badStates);
-//			System.out.println(badStates.toString());
+			boolean keepGoing2 = markDeadEnds(universalObserverView, universalObserverViewMap, product, badStates);
+			System.out.println(badStates.toString());
 			
-			keepGoing = keepGoing1;
-//			keepGoing = keepGoing1 || keepGoing2 || keepGoing3;
+			keepGoing = keepGoing1 || keepGoing2;
 			
 			// TODO: MAKE SURE THIS LOOP DOESN'T GO FOREVER. When all the bad states are marked with the hashset, then
 			// the we should construct the supervisor by copying all the states NOT marked bad and all the transitions
@@ -294,9 +298,45 @@ public class ModalSpecification
 			else if(character == ')' || character == '}')
 				numBrackets--;
 			else if(numBrackets == 0 && character == ',')
-				return name.substring(0, i);
+				return name.substring(0, i - 1);
 		}
 		return null;
+	}
+	
+	/**
+	 * Gets the original states in the first FSM which compose the states in the observer view, which is
+	 * the first entry in the product entries of the state name.
+	 * 
+	 * @param aggregateStateName String representing the name of the state, like ({4,5,{3,5}},8).
+	 * @return ArrayList of Strings that represent the original states in the first FSM, so in the
+	 * above example, they would be ["4", "5", "{3,5}"].
+	 */
+	
+	static private ArrayList<String> getOriginalStates(String aggregateStateName) {
+		String observer = getObserverState(aggregateStateName); // remove the main brackets
+		System.out.println(observer);
+		if(observer.length() < 3) return null; 
+		String name = observer.substring(1, observer.length() - 1);
+		ArrayList<String> states = new ArrayList<String>();
+		int numBrackets = 0;
+		int lastSplice = 0; // Keep track of where the last splice was done to create a state name.
+		int i = 0;
+		while(i < name.length()) {
+			char character = name.charAt(i++);
+			if(character == '(' || character == '{')
+				numBrackets++;
+			else if(character == ')' || character == '}')
+				numBrackets--;
+			// If we reached an end condition, make it into a String representing the state.
+			if(numBrackets == 0 && character == ',') {
+				states.add(name.substring(lastSplice, i - 1));
+				lastSplice = i;
+			} else if(numBrackets == 0 && i == name.length()) {
+				states.add(name.substring(lastSplice, i));
+				lastSplice = i;
+			}
+		}
+		return states;
 	}
 	
 	/**
@@ -323,115 +363,303 @@ public class ModalSpecification
 		return null;
 	}
 	
+	static public <S extends State, E extends Event, S1 extends State, E1 extends Event>
+			boolean markDeadEnds(FSM<S, DetTransition<S, E>, E> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
+		// For every combo of states (q,(P,s)) such that q is an element of P and (P,s) is the product, we want to
+		// perform the product with initial states being the parameter product and every possible q. If it is
+		// possible to reach a marked state in the product from this initial point, then it's ok! If there's one
+		// q for the state which cannot reach a good state, then we have to add the state to the bad states.
+		
+		boolean removedAState = false;
+		
+		// To recover after operations:
+		ArrayList<S1> productInitialStates = product.getInitialStates();
+		
+		// Go through all the good product states
+		for(S1 productState : product.getStates()) if(!badStates.contains(productState.getStateName())) {
+			// Get all the states in the original FSM
+			ArrayList<String> originalStates = getOriginalStates(productState.getStateName());
+			System.out.println("Original states include: " + productState.getStateName());
+			System.out.println("Universal map has: " + universalObserverViewMap.toString());
+			boolean stateIsOK = true;
+			for(String q : originalStates) {
+				String universalInitial = universalObserverViewMap.get(q);
+				universalObserverView.addInitialState(universalInitial);
+				System.out.println(q);
+				product.addInitialState(productState);
+				FSM<S, DetTransition<S, E>, E> massiveProduct = universalObserverView.product(product);
+				// Now, we get to look through the massive product for a marked state
+				boolean reachesMarked = canReachMarked(massiveProduct, massiveProduct.getInitialStates().get(0), badStates);
+				if(!reachesMarked) {
+					badStates.add(productState.getStateName());
+					removedAState = true;
+					break;
+				} // if cannot reach a marked state
+			} // for every state q in the product's initial states
+		} // for every product state that isn't marked as bad
+		
+		// Recover original properties of FSMs:
+		product.addInitialState(productInitialStates.get(0));
+		
+		return removedAState;
+	} // markDeadEnds(FSM, HashMap, FSM, HashSet)
+	
+	static protected <S extends State, E extends Event>
+			boolean canReachMarked(FSM<S, DetTransition<S, E>, E> fsm, S state, HashSet<String> badStates) {
+		String name = getSpecificationState(state.getStateName());
+		if(badStates.contains(name)) return false;
+		
+		HashSet<S> visited = new HashSet<S>();
+		LinkedList<S> queue = new LinkedList<S>();
+		visited.add(state);
+		queue.add(state);
+		
+		while(!queue.isEmpty()) {
+			// Go through all neighbours in BFS
+			S curr = queue.poll();
+			for(DetTransition<S, E> t : fsm.transitions.getTransitions(curr)) for(S toState : t.getTransitionStates()) {
+				name = getSpecificationState(toState.getStateName());
+				if(!badStates.contains(name)) {
+					if(toState.getStateMarked()) return true; // if marked, we're all good!
+					if(!visited.contains(toState)) { // if it hasn't been visited yet, add to queue
+						queue.add(toState);
+						visited.add(toState);
+					} // if not yet visited
+				} // if it's not a bad state
+			} // for every transition state
+		} // while the queue still has stuff in it
+		
+		return false;
+	} // canReachMarked(FSM, HashSet)
+	
+//	/**
+//	 * Looks into all the sets of states in the first entry in the product FSM and cycles through,
+//	 * making sure that it is possible to reach some final state from each of the states based on
+//	 * what events are allowed (which is defined by the transitions in the product).
+//	 * 
+//	 * @param fsm - FSM that has all the possible states and transitions.
+//	 * @param product - FSM that defines what events are allowed at a given state in fsm.
+//	 * @param badStates - HashSet of Strings which holds the names of the product's states
+//	 * which are considered to be bad states.
+//	 */
+//	
+//	static protected <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
+//			boolean markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
+//		// When a state is processed, add it to the map and say if it reached a marked state. True means the
+//		// state is OK.
+//		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
+//		boolean foundABadOne = false;
+//		
+//		for(S1 curr : product.states.getStates()) {
+//			String observerStateName = getObserverState(curr.getStateName());
+//			for(S subState : fsm.states.getStateComposition(fsm.getState(observerStateName))) {
+//				// Check for a path to a marked state.
+//				System.out.println(subState.getStateName());
+//				boolean isCoaccessible = stateIsCoAccessible(fsm.getState(subState), curr, results, badStates, fsm, product);
+//				if(!isCoaccessible) foundABadOne = true;
+//			} // for every substate
+//		} // for every state
+//		
+//		return foundABadOne;
+//	} // markDeadEnds
+	
+//	/**
+//	 * Evaluates if a given state in an FSM (associated with a given state in a product FSM) is connected to
+//	 * a marked state.
+//	 * To do so, it performs a breadth-first search looking for a marked state in the fsm using only transitions which are
+//	 * enabled by the product.
+//	 * 
+//	 * @param fsmState - State to evaluate for coaccessibility from the fsm.
+//	 * @param prodState - State to evaluate for coaccessibility from the product.
+//	 * @param results - HashMap mapping states to either true (if known to be coaccessible) or false (if known to be NOT coaccessible).
+//	 * @param fsm - FSM which is one of the FSMs in the product and has a similar alphabet.
+//	 * @param product - FSM which is composed of the FSM and another FSM.
+//	 * @return - Returns a boolean value; true if the fsm state leads to a marked state using the product's transitions; false otherwise.
+//	 */
+//	
+//	static private <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
+//			boolean stateIsCoAccessible(S fsmState, S1 prodState, HashMap<String, Boolean> results, HashSet<String> badStates, FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product) {
+//		HashSet<String> visited = new HashSet<String>();
+//		visited.add(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName()); // We visit the combo to catch loops (BUT THIS HAS A HIGH COMPLEXITY)
+//		
+//		// Base case when already checked if the state was coaccessible
+//		Boolean check = results.get(fsmState.getStateName());
+//		if(check != null)
+//			return check;
+//		
+//		// Base case when we actually have a bad state here...
+//		if(badStates.contains(prodState.getStateName()))
+//			return false;
+//		
+//		// If the state is marked, return true
+//		if(fsmState.getStateMarked()) {
+//			results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), true);
+//			return true;
+//		}
+//		
+//		// Go through all the accessible states and find something marked using bfs
+//		LinkedList<S> fsmStatesToProcess = new LinkedList<S>();
+//		LinkedList<S1> prodStatesToProcess = new LinkedList<S1>();
+//		fsmStatesToProcess.add(fsmState);
+//		prodStatesToProcess.add(prodState);
+//		while(!fsmStatesToProcess.isEmpty() && !prodStatesToProcess.isEmpty()) {
+//			S currFSMState = fsmStatesToProcess.poll();
+//			S1 currProdState = prodStatesToProcess.poll();
+//			
+//			// Go through the neighbours of fsmState
+//			ArrayList<T> thisTransitions = fsm.transitions.getTransitions(currFSMState);
+//			if(thisTransitions != null) for(T t : thisTransitions) {
+//				// Only proceed if the event is acceptable in the product as well
+//				ArrayList<S1> prodNextList = product.transitions.getTransitionStates(currProdState, product.events.getEvent(t.getTransitionEvent()));
+//				if(prodNextList != null && prodNextList.size() != 0) {
+//					
+//					S1 prodNext = prodNextList.get(0);
+//					// Check if the state is dead/bad in the product.
+//					boolean dead = (badStates.contains(prodNext.getStateName())) ? true : false;
+//					if(!dead) {
+//						// Go through all the transition states (there should only be one, but anyways...)
+//						for(S toState : t.getTransitionStates()) {
+//							// Return true if it's marked
+//							if(toState.getStateMarked()) {
+//								results.put(currFSMState.getStateName() + VISITED_STATE_SEPARATOR + currProdState.getStateName(), true);
+//								return true;
+//							} // if it's marked
+//							// Return true if it's already known to be good
+//							if(results.get(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName()) == true)
+//								return true;
+//							if(!visited.contains(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName())) {
+//								fsmStatesToProcess.add(toState);
+//								prodStatesToProcess.add(prodNext);
+//							} // if haven't visited the nodes
+//						} // for all the toStates
+//					} // if not all states are dead
+//				} // if event is OK in product
+//			} // for all the transitions
+//		} // while queue is not empty
+//		
+//		// If made it here, it's not accessible.
+//		results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), false);
+//		return false;
+//	} // recursivelyFindMarked
+	
+//---  Operations for converting the observer view of the fsm at any given state   -----------------------------------------------------------------------
+	
 	/**
-	 * Looks into all the sets of states in the first entry in the product FSM and cycles through,
-	 * making sure that it is possible to reach some final state from each of the states based on
-	 * what events are allowed (which is defined by the transitions in the product).
+	 * Creates a universal observer view that allows you to look up possible transitions from any possible
+	 * initial state. It makes the observer view such that if AT LEAST one state is marked, then the ENTIRE
+	 * observer state is marked (which is more useful for trying to find if you can possibly reach a marked
+	 * state from a given initial state).
 	 * 
-	 * @param fsm - FSM that has all the possible states and transitions.
-	 * @param product - FSM that defines what events are allowed at a given state in fsm.
-	 * @param badStates - HashSet of Strings which holds the names of the product's states
-	 * which are considered to be bad states.
+	 * @param fsm FSM with which to create the observer view
+	 * @param newFSM FSM to fill with all the observer view states and transitions, etc.
+	 * @return HashMap mapping the name of the original states in the fsm to the name of its epsilon reach state
+	 * which is present in the resulting observer view FSM. 
 	 */
 	
-	static protected <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
-			boolean markDeadEnds(FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
-		// When a state is processed, add it to the map and say if it reached a marked state. True means the
-		// state is OK.
-		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
-		boolean foundABadOne = false;
+	public static <S extends State, T extends Transition<S, E>, E extends Event> HashMap<String, String> createUniversalObserverView(FSM<S, T, E> fsm, DetObsContFSM newFSM) {
+		// Get the epsilon reaches of each state
+		HashMap<S, HashSet<S>> epsilonReaches = fsm.transitions.getEpsilonReaches(fsm.states.getStates());
+		// Store what the name of any given state's epsilon reach is
+		HashMap<String, String> startingPositions = new HashMap<String, String>();
+		// Store what states still need to be processed
+		LinkedList<State> statesToProcess = new LinkedList<State>();
+		// Keep track of states that were already processed
+		HashSet<State> statesAlreadyCreated = new HashSet<State>();
 		
-		for(S1 curr : product.states.getStates()) {
-			String observerStateName = getObserverState(curr.getStateName());
-			for(S subState : fsm.states.getStateComposition(fsm.getState(observerStateName))) {
-				// Check for a path to a marked state.
-				System.out.println(subState.getStateName());
-				boolean isCoaccessible = stateIsCoAccessible(fsm.getState(subState), curr, results, badStates, fsm, product);
-				if(!isCoaccessible) foundABadOne = true;
-			} // for every substate
-		} // for every state
+		// Go through every single state (each could be initial)
+		for(S state : fsm.states.getStates()) {
+			// Make an initial state from the epsilon reach
+			State newState = addComposedState(newFSM, epsilonReaches.get(state));
+			if(!statesAlreadyCreated.contains(newState)) {
+				statesToProcess.add(newState);
+				statesAlreadyCreated.add(newState);
+			} // if state does not already exist
+			startingPositions.put(state.getStateName(), newState.getStateName());
+		} // for every state in the fsm
 		
-		return foundABadOne;
-	} // markDeadEnds
-	
-	/**
-	 * Evaluates if a given state in an FSM (associated with a given state in a product FSM) is connected to
-	 * a marked state.
-	 * To do so, it performs a breadth-first search looking for a marked state in the fsm using only transitions which are
-	 * enabled by the product.
-	 * 
-	 * @param fsmState - State to evaluate for coaccessibility from the fsm.
-	 * @param prodState - State to evaluate for coaccessibility from the product.
-	 * @param results - HashMap mapping states to either true (if known to be coaccessible) or false (if known to be NOT coaccessible).
-	 * @param fsm - FSM which is one of the FSMs in the product and has a similar alphabet.
-	 * @param product - FSM which is composed of the FSM and another FSM.
-	 * @return - Returns a boolean value; true if the fsm state leads to a marked state using the product's transitions; false otherwise.
-	 */
-	
-	static private <S extends State, T extends Transition<S, E>, E extends Event, S1 extends State, E1 extends Event>
-			boolean stateIsCoAccessible(S fsmState, S1 prodState, HashMap<String, Boolean> results, HashSet<String> badStates, FSM<S, T, E> fsm, FSM<S1, DetTransition<S1, E1>, E1> product) {
-		HashSet<String> visited = new HashSet<String>();
-		visited.add(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName()); // We visit the combo to catch loops (BUT THIS HAS A HIGH COMPLEXITY)
-		
-		// Base case when already checked if the state was coaccessible
-		Boolean check = results.get(fsmState.getStateName());
-		if(check != null)
-			return check;
-		
-		// Base case when we actually have a bad state here...
-		if(badStates.contains(prodState.getStateName()))
-			return false;
-		
-		// If the state is marked, return true
-		if(fsmState.getStateMarked()) {
-			results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), true);
-			return true;
+		// Go through all the observer view states that have not been processed.
+		while(!statesToProcess.isEmpty()) {
+			State currState = statesToProcess.poll();
+			// Now, go through all the OBSERVABLE transitions from all of these states
+			HashMap<ObsControlEvent, HashSet<S>> toStates = new HashMap<ObsControlEvent, HashSet<S>>();
+			for(State s : newFSM.getStateComposition(currState)) {
+				// Go through all the transitions
+				for(T t : fsm.transitions.getTransitions((S)s)) {
+					E e = t.getTransitionEvent();
+					
+					// Only continue if the event is observable (unobservable events are dealt with in epsilon reaches already)
+					if(((EventObservability)e).getEventObservability()) {
+						// Add the event, and map it to all the toStates's epsilon reaches.
+						ObsControlEvent newEvent = newFSM.events.addEvent(e);
+						HashSet<S> thisToStates = toStates.get(newEvent);
+						if(thisToStates == null) thisToStates = new HashSet<S>();
+						for(S toState : t.getTransitionStates()) {
+							HashSet<S> epsilonReach = epsilonReaches.get(toState);
+							thisToStates.addAll(epsilonReach);
+						} // for all the states the transition leads to
+						
+						// Put the new list of toStates in the hashmap, but only if it's not empty
+						if(!thisToStates.isEmpty()) toStates.put(newEvent, thisToStates);
+					} // if we have an observable event
+				} // for each transition
+			} // for each state in the composition
+			
+			// Now, we get to add the transitions from the composed state to all the state sets!
+			for(Map.Entry<ObsControlEvent, HashSet<S>> entry : toStates.entrySet()) {
+				ObsControlEvent e = entry.getKey();
+				State newState = addComposedState(newFSM, entry.getValue());
+				DetTransition<State, ObsControlEvent> newTransition = new DetTransition<State, ObsControlEvent>(e, newState);
+				newFSM.addTransition(currState, newTransition);
+				
+				if(!statesAlreadyCreated.contains(newState)) {
+					statesToProcess.add(newState);
+					statesAlreadyCreated.add(newState);
+				} // if state does not already exist
+			} // for all the observable events (with their accompanying states)
 		}
 		
-		// Go through all the accessible states and find something marked using bfs
-		LinkedList<S> fsmStatesToProcess = new LinkedList<S>();
-		LinkedList<S1> prodStatesToProcess = new LinkedList<S1>();
-		fsmStatesToProcess.add(fsmState);
-		prodStatesToProcess.add(prodState);
-		while(!fsmStatesToProcess.isEmpty() && !prodStatesToProcess.isEmpty()) {
-			S currFSMState = fsmStatesToProcess.poll();
-			S1 currProdState = prodStatesToProcess.poll();
-			
-			// Go through the neighbours of fsmState
-			ArrayList<T> thisTransitions = fsm.transitions.getTransitions(currFSMState);
-			if(thisTransitions != null) for(T t : thisTransitions) {
-				// Only proceed if the event is acceptable in the product as well
-				ArrayList<S1> prodNextList = product.transitions.getTransitionStates(currProdState, product.events.getEvent(t.getTransitionEvent()));
-				if(prodNextList != null && prodNextList.size() != 0) {
-					
-					S1 prodNext = prodNextList.get(0);
-					// Check if the state is dead/bad in the product.
-					boolean dead = (badStates.contains(prodNext.getStateName())) ? true : false;
-					if(!dead) {
-						// Go through all the transition states (there should only be one, but anyways...)
-						for(S toState : t.getTransitionStates()) {
-							// Return true if it's marked
-							if(toState.getStateMarked()) {
-								results.put(currFSMState.getStateName() + VISITED_STATE_SEPARATOR + currProdState.getStateName(), true);
-								return true;
-							} // if it's marked
-							// Return true if it's already known to be good
-							if(results.get(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName()) == true)
-								return true;
-							if(!visited.contains(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName())) {
-								fsmStatesToProcess.add(toState);
-								prodStatesToProcess.add(prodNext);
-							} // if haven't visited the nodes
-						} // for all the toStates
-					} // if not all states are dead
-				} // if event is OK in product
-			} // for all the transitions
-		} // while queue is not empty
+		return startingPositions;
+	} // createUniversalObserverView(FSM)
+	
+	/**
+	 * Adds a composed state made of all the all the states in the parameter HashSet to the parameter FSM
+	 * and returns the state.
+	 * 
+	 * @param fsm FSM to which to add a new state.
+	 * @param stateCollection HashSet of states to combine into a single state in the FSM.
+	 * @return State that was composed from the state collection and added to the FSM.
+	 */
+	private static <S extends State, S1 extends State, T extends Transition<S, E>, E extends Event> S addComposedState(FSM<S, T, E> fsm, HashSet<S1> stateCollection) {
+		// Make the new state name
+		StringBuilder sb = new StringBuilder();
+		sb.append('{');
 		
-		// If made it here, it's not accessible.
-		results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), false);
-		return false;
-	} // recursivelyFindMarked
+		// Keep track of the new state's properties
+		boolean hasAMarkedState = false; // Mark it if AT LEAST ONE state is marked.
+		boolean onlyHasSecret = true;
+		
+		ArrayList<S1> stateList = new ArrayList<S1>(stateCollection);
+		Collections.sort(stateList);
+		Iterator<S1> itr = stateList.iterator();
+		while(itr.hasNext()) {
+			S1 curr = itr.next();
+			if(curr.getStateMarked()) hasAMarkedState = true;
+			if(!curr.getStatePrivate()) onlyHasSecret = false;
+			
+			// Add the state to the name of the new state
+			sb.append(curr.getStateName());
+			if(itr.hasNext())	sb.append(',');
+			else					sb.append('}');
+		}
+		
+		// Make the new state
+		S newState = fsm.addState(sb.toString());
+		newState.setStateMarked(hasAMarkedState);
+		newState.setStatePrivate(onlyHasSecret);
+		fsm.setStateComposition(newState, (S[])stateList.toArray(new State[stateCollection.size()]));
+		
+		return newState;
+	}
 	
 //---  Copy methods that steal from other systems   -----------------------------------------------------------------------
 	
