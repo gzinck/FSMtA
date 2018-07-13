@@ -2,6 +2,7 @@ package fsm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import support.StateMap;
 import support.TransitionFunction;
 import support.event.Event;
 import support.transition.Transition;
+import java.util.*;
 
 /**
  * This abstract class provides the framework for Finite State Machine objects
@@ -366,7 +368,8 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	public void setStateComposition(S aggregate, S ... pieces) {
 		ArrayList<S> composed = new ArrayList<S>();
 		for(S in : pieces)
-			composed.add(in);
+			if(composed.indexOf(in) == -1)
+				composed.add(in); 
 		states.setStateComposition(aggregate, composed);
 	}
 	
@@ -590,6 +593,17 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
+	 * 
+	 * @param state
+	 * @return
+	 */
+	
+	public S addState(State ... state) {
+		Arrays.sort(state);
+		return (S)states.addState(state);
+	}
+	
+	/**
 	 * This method adds a new series of Transition extending objects to a given State extending object, accessing
 	 * the calling FSM object's TransitionFunction object to either create a new entry for the State or
 	 * append the new Transitions to its pre-existing entry.
@@ -682,6 +696,13 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 			e1.printStackTrace();
 		}
 	}
+	
+	/**
+	 * 
+	 * @param state
+	 * @param event
+	 * @param state2
+	 */
 	
 	public void addTransition(S state, E event, S state2) {
 		transitions.addTransitionState(state,  event, state2);

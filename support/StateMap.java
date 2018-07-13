@@ -215,10 +215,6 @@ public class StateMap<S extends State> {
 	public void setStateComposition(S keyState, ArrayList<S> composedStates) {
 		if(composition == null)
 			composition = new HashMap<S, ArrayList<S>>();
-		HashSet<S> hash = new HashSet<S>(composedStates);
-		composedStates.clear();
-		composedStates.addAll(hash);
-		Collections.sort(composedStates);
 		composition.put(keyState, composedStates);
 	}
 	
@@ -320,18 +316,18 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object representing the newly generated State object.
 	 */
 	
-	public State addState(State ... states) {
-		State st = new State(states);
+	public S addState(State ... states) {
+		S st = (S)(new State(states));
 		return st;
 	}
 	
+//---  Manipulations - Removing   -------------------------------------------------------------
+
 	/**
 	 * This method removes a State from the HashMap<<r>String, State> mapping.
 	 * 
 	 * @param state - State object to remove from the HashMap<<r>String, State> mapping.
 	 */
-	
-//---  Manipulations - Removing   -------------------------------------------------------------
 	
 	public void removeState(State state) {
 		states.remove(state.getStateName());
@@ -358,4 +354,5 @@ public class StateMap<S extends State> {
 			states.remove(s.getStateName());
 		}
 	}
+
 }
