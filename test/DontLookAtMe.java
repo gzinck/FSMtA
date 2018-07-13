@@ -3,7 +3,13 @@ package test;
 import fsm.*;
 import graphviz.FSMToDot;
 import support.GenerateFSM;
+import support.transition.DetTransition;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
 import org.junit.Test;
 
 public class DontLookAtMe {
@@ -17,7 +23,7 @@ public class DontLookAtMe {
 	@Test
 	public void test() {
 		// (int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath)
-//		File f1 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
+//		File f1 = new File(GenerateFSM.createNewFSM(7, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
 //		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));
 ////		File f1 = new File(GRAEME_WORKING_FOLDER + "/fil1.fsm");
 //		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/FSMI2/cantdeterminize.fsm");
@@ -31,6 +37,7 @@ public class DontLookAtMe {
 //		DetFSM fsm3 = fsm1.product(fsm2);
 //		FSMToDot.createImgFromFSM(fsm3, GRAEME_WORKING_FOLDER + "test4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
+//		System.out.println(ModalSpecification.getSpecificationState("(5,({1,2,{3,4}},4))").toString());
 		
 		DetObsContFSM fsm1 = new DetObsContFSM("OK");
 		fsm1.addTransition("1", "a", "2");
@@ -38,7 +45,11 @@ public class DontLookAtMe {
 		fsm1.setEventControllability("a", false);
 		fsm1.setEventControllability("b", false);
 		fsm1.addInitialState("1");
-		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "test", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "originalFSM", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+//		DetObsContFSM fsm2 = new DetObsContFSM("OK");
+//		HashMap<String, String> universalObserverViewMap = ModalSpecification.createUniversalObserverView(fsm1, fsm2);
+//		FSMToDot.createImgFromFSM(fsm2, GRAEME_WORKING_FOLDER + "universalView", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		
 		ModalSpecification ms = new ModalSpecification("OK");
 		ms.addState("1");
 		ms.addInitialState("1");
