@@ -315,8 +315,12 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object representing the newly generated State object.
 	 */
 	
-	public S addState(State ... states) {
-		S st = (S)(new State(states));
+	public S addState(State ... providedStates) {
+		S st = (S)(new State(providedStates));
+		if(states.containsKey(st.getStateName())) {
+			return states.get(st.getStateName());
+		}
+		states.put(st.getStateName(), st);
 		return st;
 	}
 	

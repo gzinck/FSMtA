@@ -153,7 +153,7 @@ public class ModalSpecification
 	 */
 	
 	public <S extends State, T extends Transition<S, E>, E extends Event>
-			DetObsContFSM makeOptimalSupervisor(FSM<S, T, E> fsm) throws IllegalArgumentException {
+	DetObsContFSM makeOptimalSupervisor(FSM<S, T, E> fsm) throws IllegalArgumentException {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
 		// TODO: How can we make this parameterized? It doesn't seem to like me...
@@ -210,7 +210,7 @@ public class ModalSpecification
 	 */
 	
 	private <S extends State, T extends Transition<S, E>, E extends Event>
-			boolean markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
+	boolean markBadStates(FSM<S, T, E> fsm, DetObsContFSM specFSM, FSM<S, DetTransition<S, E>, E> product, HashSet<String> badStates) {
 		// We need to parse every state in the product, check every component state if there is some uncontrollable observable
 		// event that isn't defined in the product.
 		// Also look if must transitions exist...
@@ -296,8 +296,9 @@ public class ModalSpecification
 	 * @param badStates HashSet of String state names which are bad and to be removed.
 	 * @return True if the method marked a bad state, false otherwise.
 	 */
+
 	static public <S extends State, E extends Event, S1 extends State, E1 extends Event>
-			boolean markDeadEnds(FSM<S, DetTransition<S, E>, E> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
+	boolean markDeadEnds(FSM<S, DetTransition<S, E>, E> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
 		// For every combo of states (q,(P,s)) such that q is an element of P and (P,s) is the product, we want to
 		// perform the product with initial states being the parameter product and every possible q. If it is
 		// possible to reach a marked state in the product from this initial point, then it's ok! If there's one
@@ -335,8 +336,16 @@ public class ModalSpecification
 		return removedAState;
 	} // markDeadEnds(FSM, HashMap, FSM, HashSet)
 	
+	/**
+	 * 
+	 * @param fsm
+	 * @param state
+	 * @param badStates
+	 * @return
+	 */
+	
 	static protected <S extends State, E extends Event>
-			boolean canReachMarked(FSM<S, DetTransition<S, E>, E> fsm, S state, HashSet<String> badStates) {
+	boolean canReachMarked(FSM<S, DetTransition<S, E>, E> fsm, S state, HashSet<String> badStates) {
 		// Get the name of the state in the right side of the product in the fsm (second part of the state).
 		String name = fsm.getStateComposition(state).get(1).getStateName();
 		if(badStates.contains(name)) return false;
@@ -562,6 +571,7 @@ public class ModalSpecification
 	 * @param stateCollection HashSet of states to combine into a single state in the FSM.
 	 * @return State that was composed from the state collection and added to the FSM.
 	 */
+
 	private static <S extends State, S1 extends State, T extends Transition<S, E>, E extends Event> S addComposedState(FSM<S, T, E> fsm, HashSet<S1> stateCollection) {
 		// Make the new state name
 		StringBuilder sb = new StringBuilder();

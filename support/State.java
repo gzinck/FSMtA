@@ -93,24 +93,20 @@ public class State implements Comparator<State>, Comparable<State>{
 	 */
 	
 	public State(State ... states) {
-		boolean init = false;
-		boolean mark = true;
-		boolean bad = false;
-		boolean priv = true;
+		initial = false;
+		marked = true;
+		badState = false;
+		privacy = true;
 		String name = "";
 		Arrays.sort(states);
 		for(State s : states) {
-			init = s.getStateInitial() ? true : init;
-			mark = s.getStateMarked() ? mark : false;
-			bad = s.getStateBad() ? true : bad;
-			priv = s.getStatePrivate() ? priv : false;
+			initial = s.getStateInitial() ? true : initial;
+			marked = s.getStateMarked() ? marked : false;
+			badState = s.getStateBad() ? true : badState;
+			privacy = s.getStatePrivate() ? privacy : false;
 			name += s.getStateName() + ",";
 		}
-		id = name.substring(0, name.length()-1);
-		initial = init;
-		marked = mark;
-		badState = bad;
-		privacy = priv;
+		id = "{"+name.substring(0, name.length()-1)+"}";
 	}
 	
 	/**
