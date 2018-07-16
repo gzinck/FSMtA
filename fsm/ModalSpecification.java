@@ -37,13 +37,6 @@ public class ModalSpecification
 	
 //--- Constants  ----------------------------------------------------------------------
 	
-	/** String used to separate the two states visited when checking coaccessibility and keeping
-	 * track of which state combinations have been visited in a HashSet. This string should be different
-	 * from anything the user might use as names for states (though even if the user uses it, it's unlikely
-	 * to cause huge issues).
-	 */
-	private static final String VISITED_STATE_SEPARATOR = "*h$#ksfUJF8;8s2%";
-	
 //--- Instance Variables  ----------------------------------------------------------------------
 	
 	/** ArrayList<<j>State> object that holds a list of Initial States for this Modal Specification object. */
@@ -157,7 +150,7 @@ public class ModalSpecification
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
 		// TODO: How can we make this parameterized? It doesn't seem to like me...
-		FSM newFSM = (FSM)((Observability)fsm).createObserverView();
+		FSM newFSM = fsm.buildObserver();
 		DetObsContFSM specFSM = getUnderlyingFSM();
 		
 		// If we have unobservable events in the specification, that's illegal
