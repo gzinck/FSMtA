@@ -232,6 +232,7 @@ public class ModalSpecification
 				ArrayList<S> toStates = product.transitions.getTransitionStates(s, product.events.getEvent(event));
 				// Mark the state as bad if the must transition does not exist
 				if(toStates == null) {
+					System.out.println("There was no must transition for an event, " + event.getEventName() + ", at state " + s.getStateName());
 					badStates.add(s.getStateName());
 					foundABadOne = true;
 				} else {

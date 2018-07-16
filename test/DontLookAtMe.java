@@ -44,13 +44,12 @@ public class DontLookAtMe {
 //		System.out.println(ModalSpecification.getSpecificationState("(5,({1,2,{3,4}},4))").toString());
 		
 		DetObsContFSM fsm1 = new DetObsContFSM("OK");
-		fsm1.addTransition("1", "a", "3");
-		fsm1.addTransition("1", "b", "5");
-		fsm1.addTransition("5", "e", "2");
-		fsm1.setEventControllability("e", false);
-		fsm1.setEventObservability("b", false);
+		fsm1.addTransition("1", "a", "2");
+		fsm1.addTransition("2", "b", "3");
+		fsm1.addTransition("1", "b", "4");
 		fsm1.addInitialState("1");
 		fsm1.toggleMarkedState("3");
+		fsm1.setEventObservability("a", false);
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "originalFSM", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		FSM obs = (FSM)((Observability)fsm1).createObserverView();
 		FSMToDot.createImgFromFSM(obs, GRAEME_WORKING_FOLDER + "observer", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
@@ -61,8 +60,9 @@ public class DontLookAtMe {
 		ModalSpecification ms = new ModalSpecification("OK");
 		ms.addState("1");
 		ms.addInitialState("1");
-		ms.addTransition("1", "a", "3");
-		ms.toggleMarkedState("3");
+		ms.addTransition("1", "b", "2");
+		ms.addMustTransition("2", "b", "3");
+		ms.toggleMarkedState("b");
 		FSMToDot.createImgFromFSM(ms, GRAEME_WORKING_FOLDER + "testms", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		ms.makeOptimalSupervisor(fsm1);
 		
