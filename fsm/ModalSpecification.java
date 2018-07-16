@@ -149,8 +149,12 @@ public class ModalSpecification
 	DetObsContFSM makeOptimalSupervisor(FSM<S, T, E> fsm) throws IllegalArgumentException {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
-		// TODO: How can we make this parameterized? It doesn't seem to like me...
-		FSM newFSM = fsm.buildObserver();
+//		FSM newFSM = fsm.buildObserver();
+		DetObsContFSM universalObserverView = new DetObsContFSM("UniObsView");
+		HashMap<String, String> universalObserverViewMap = createUniversalObserverView(fsm, universalObserverView);
+		String universalInitial = universalObserverViewMap.get(fsm.getInitialStates().get(0).getStateName());
+		universalObserverView.addInitialState(universalInitial);
+		
 		DetObsContFSM specFSM = getUnderlyingFSM();
 		
 		// If we have unobservable events in the specification, that's illegal
@@ -161,15 +165,12 @@ public class ModalSpecification
 				throw new IllegalArgumentException("The modal specification has the event \"" + e.getEventName() + "\", which is an unobservable event in the plant passed in for getting the supervisor. The specification should only have observable events.");
 		}
 		
-		FSM product = newFSM.product(specFSM);
+		FSM product = universalObserverView.product(specFSM);
 		
 		//--------------------------------------------
 		// Step 2: Mark the bad states
 		HashSet<String> badStates = new HashSet<String>();
 		boolean keepGoing = true;
-		
-		DetObsContFSM universalObserverView = new DetObsContFSM("UniObsView");
-		HashMap<String, String>universalObserverViewMap = createUniversalObserverView(fsm, universalObserverView);
 		
 		while(keepGoing) {
 			boolean keepGoing1 = markBadStates(fsm, specFSM, product, badStates);
@@ -330,9 +331,11 @@ public class ModalSpecification
 	} // markDeadEnds(FSM, HashMap, FSM, HashSet)
 	
 	/**
+	 * Checks if the FSM can reach a marked state from the initial state given. It excludes checking any
+	 * states that have a badState in the right part of the product (the second element in the state name).
 	 * 
-	 * @param fsm
-	 * @param state
+	 * @param fsm Deterministic FSM to check.
+	 * @param state State to look 
 	 * @param badStates
 	 * @return
 	 */
