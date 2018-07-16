@@ -365,8 +365,8 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param pieces
 	 */
 	
-	public void setStateComposition(S aggregate, S ... pieces) {
-		ArrayList<S> composed = new ArrayList<S>();
+	public void setStateComposition(State aggregate, S ... pieces) {
+		ArrayList<State> composed = new ArrayList<State>();
 		for(S in : pieces)
 			if(composed.indexOf(in) == -1)
 				composed.add(in); 
@@ -374,11 +374,22 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
+	 * Adds a map of states to the composition of an FSM.
+	 * @param composed HashMap mapping States to an ArrayList of States, which is
+	 * which is to be added to the state composition of the transition system.
+	 */
+	public void addStateComposition(HashMap<State, ArrayList<State>> composed) {
+		HashMap<State, ArrayList<State>> map = getComposedStates();
+		map.putAll(composed);
+		setCompositionStates(map);
+	}
+	
+	/**
 	 * 
 	 * @param composed
 	 */
 	
-	public void setCompositionStates(HashMap<S, ArrayList<S>> composed) {
+	public void setCompositionStates(HashMap<State, ArrayList<State>> composed) {
 		states.setCompositionStates(composed);
 	}
 	
@@ -445,7 +456,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return
 	 */
 	
-	public HashMap<S, ArrayList<S>> getComposedStates(){
+	public HashMap<State, ArrayList<State>> getComposedStates(){
 		return states.getComposedStates();
 	}
 	
@@ -455,7 +466,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return
 	 */
 	
-	public ArrayList<S> getStateComposition(S state){
+	public ArrayList<State> getStateComposition(State state){
 		return states.getStateComposition(state);
 	}
 	

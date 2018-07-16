@@ -194,6 +194,8 @@ public abstract class FSM<S extends State, T extends Transition<S, E>, E extends
 				} // while there are more states connected to the 2-tuple of initial states
 			} // for otherInitial
 		} // for thisInitial
+		newFSM.addStateComposition(this.getComposedStates());
+		newFSM.addStateComposition(other.getComposedStates());
 	} // productHelper(FSM)
 	
 	/**

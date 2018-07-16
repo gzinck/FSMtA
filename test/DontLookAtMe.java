@@ -45,11 +45,15 @@ public class DontLookAtMe {
 		
 		DetObsContFSM fsm1 = new DetObsContFSM("OK");
 		fsm1.addTransition("1", "a", "3");
-		fsm1.addTransition("2", "e", "2");
+		fsm1.addTransition("1", "b", "5");
+		fsm1.addTransition("5", "e", "2");
 		fsm1.setEventControllability("e", false);
+		fsm1.setEventObservability("b", false);
 		fsm1.addInitialState("1");
 		fsm1.toggleMarkedState("2");
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "originalFSM", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSM obs = fsm1.buildObserver();
+		FSMToDot.createImgFromFSM(obs, GRAEME_WORKING_FOLDER + "observer", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 //		DetObsContFSM fsm2 = new DetObsContFSM("OK");
 //		HashMap<String, String> universalObserverViewMap = ModalSpecification.createUniversalObserverView(fsm1, fsm2);
 //		FSMToDot.createImgFromFSM(fsm2, GRAEME_WORKING_FOLDER + "universalView", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
@@ -62,9 +66,9 @@ public class DontLookAtMe {
 		FSMToDot.createImgFromFSM(ms, GRAEME_WORKING_FOLDER + "testms", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		ms.makeOptimalSupervisor(fsm1);
 		
-		FSM newFSM = (FSM)((Observability)fsm1).createObserverView();
 		DetObsContFSM specFSM = ms.getUnderlyingFSM();
-		FSM product = newFSM.product(specFSM);
+		FSMToDot.createImgFromFSM(specFSM, GRAEME_WORKING_FOLDER + "testms", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSM product = obs.product(specFSM);
 		FSMToDot.createImgFromFSM(product, GRAEME_WORKING_FOLDER + "product", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
 //		fsm1.addTransition("1", "a", "2");

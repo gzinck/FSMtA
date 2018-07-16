@@ -248,15 +248,11 @@ public class ModalSpecification
 			
 			// If an uncontrollable observable event exists from any of the states in the original fsm, and
 			// the event not allowed in the product, then UH-NO NOT HAP'NIN (mark the state)
-			S observerState = product.getStateComposition(s).get(0);
-//			ArrayList<S> origStates = fsm.states.getStateComposition(observerState);
-			ArrayList<S> origStates = product.getStateComposition(observerState);
-			System.out.println(product.getComposedStates());
-			for(S fromState : origStates) {
-//				System.out.println(fromState.getStateName());
+			State observerState = product.getStateComposition(s).get(0);
+			ArrayList<State> origStates = product.getStateComposition(observerState);
+			for(State fromState : origStates) {
 				// Go through all the original transitions
-				ArrayList<T> origTransitions = fsm.transitions.getTransitions(fromState);
-//				System.out.println(fsm.states.toString());
+				ArrayList<T> origTransitions = fsm.transitions.getTransitions((S)fromState);
 				if(origTransitions != null) for(T t : origTransitions) {
 					E event = t.getTransitionEvent();
 					// If the event is observable but NOT controllable, we have a problem
@@ -265,7 +261,7 @@ public class ModalSpecification
 						ArrayList<S> toStates = product.transitions.getTransitionStates(product.getState(s), product.events.getEvent(event));
 						// Mark the state as bad if the event is not allowed in the product.
 						if(toStates == null) {
-							System.out.println("There was an uncontrollable, observable event that did not exist in the spec.");
+							System.out.println("There was an uncontrollable, observable event, " + event.getEventName() + ", that did not exist in the spec at state " + fromState.getStateName());
 							badStates.add(s.getStateName());
 							foundABadOne = true;
 						} else {
@@ -385,9 +381,9 @@ public class ModalSpecification
 		// Go through all the good product states
 		for(S1 productState : product.getStates()) if(!badStates.contains(productState.getStateName())) {
 			// Get all the states in the original FSM
-			S1 leftSideOfProduct = product.getStateComposition(productState).get(0);
-			ArrayList<S1> originalStates = product.getStateComposition(leftSideOfProduct);
-			for(S1 q : originalStates) {
+			State leftSideOfProduct = product.getStateComposition(productState).get(0);
+			ArrayList<State> originalStates = product.getStateComposition(leftSideOfProduct);
+			for(State q : originalStates) {
 				String universalInitial = universalObserverViewMap.get(q.getStateName());
 				universalObserverView.addInitialState(universalInitial);
 				product.addInitialState(productState);

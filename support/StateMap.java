@@ -18,7 +18,7 @@ public class StateMap<S extends State> {
 	/** HashMap<<r>String, <<r>S extends State>> object that maps the String object names of States to their State objects.*/
 	private HashMap<String, S> states;
 	/** HashMap<<r>S, ArrayList<<r>S>> object that maps a State extending object to a list of State extending objects which compose it.*/
-	private HashMap<S, ArrayList<S>> composition;
+	private HashMap<State, ArrayList<State>> composition;
 	/** Holds the precise class of the generic State class describing the generic variable S. */
 	private Class<S> stateClass;
 	
@@ -32,6 +32,7 @@ public class StateMap<S extends State> {
 	
 	public StateMap(Class<S> inClass) {
 		states = new HashMap<String, S>();
+		composition = new HashMap<State, ArrayList<State>>();
 		stateClass = inClass;
 	}
 	
@@ -92,12 +93,12 @@ public class StateMap<S extends State> {
 	 * list containing the querying State. If there is no mapping, return null. 
 	 * 
 	 * @param provided - State extending object provided to request a specific State's set of composing States.
-	 * @return - Returns an ArrayList<<r>S> representing all the States that are designated as composing the provided State.
+	 * @return - Returns an ArrayList<<r>State> representing all the States that are designated as composing the provided State.
 	 */
 	
-	public ArrayList<S> getStateComposition(S provided){
+	public ArrayList<State> getStateComposition(State provided){
 		if(composition == null || composition.get(provided) == null) {
-			ArrayList<S> out = new ArrayList<S>();
+			ArrayList<State> out = new ArrayList<State>();
 			out.add(provided);
 			return out;
 		}
@@ -106,13 +107,13 @@ public class StateMap<S extends State> {
 	}
 	
 	/**
-	 * Getter method that returns a HashMap<<r>S, ArrayList<<r>S>> representing the full set of States
+	 * Getter method that returns a HashMap<<r>State, ArrayList<<r>State>> representing the full set of States
 	 * and the list of States which compose each one after operations that aggregate States together.
 	 * 
-	 * @return - Returns a HashMap<<r>S, ArrayList<<r>S>> object holding paired States and lists of composing States.
+	 * @return - Returns a HashMap<<r>State, ArrayList<<r>State>> object holding paired States and lists of composing States.
 	 */
 	
-	public HashMap<S, ArrayList<S>> getComposedStates(){
+	public HashMap<State, ArrayList<State>> getComposedStates(){
 		return composition;
 	}
 	
@@ -194,12 +195,12 @@ public class StateMap<S extends State> {
 	
 	/**
 	 * Setter method that assigns a new set of State extending objects to individual lists of State extending objects
-	 * which represent the States that have been aggregated to compose the key State in <<r>State, ArrayList<<r>S>> pairs.
+	 * which represent the States that have been aggregated to compose the key State in <<r>State, ArrayList<<r>State>> pairs.
 	 * 
-	 * @param newComposed - HashMap<S, ArrayList<S>> object representing the new set of States and their composing States.
+	 * @param newComposed - HashMap<State, ArrayList<State>> object representing the new set of States and their composing States.
 	 */
 	
-	public void setCompositionStates(HashMap<S, ArrayList<S>> newComposed) {
+	public void setCompositionStates(HashMap<State, ArrayList<State>> newComposed) {
 		composition = newComposed;
 	}
 	
@@ -209,12 +210,10 @@ public class StateMap<S extends State> {
 	 * singular State. 
 	 * 
 	 * @param keyState - State extending object whose entry in the set of States and their composing States will be adjusted.
-	 * @param composition - ArrayList<<r>S> object containing the State extending objects which compose the designated State extending object.
+	 * @param composition - ArrayList<<r>State> object containing the State extending objects which compose the designated State extending object.
 	 */
 	
-	public void setStateComposition(S keyState, ArrayList<S> composedStates) {
-		if(composition == null)
-			composition = new HashMap<S, ArrayList<S>>();
+	public void setStateComposition(State keyState, ArrayList<State> composedStates) {
 		composition.put(keyState, composedStates);
 	}
 	
