@@ -330,10 +330,77 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 
 	@Override
 	public DetObsContFSM buildObserver() {
-		DetObsContFSM newFSM = new DetObsContFSM();
+DetObsContFSM newFSM = new DetObsContFSM();
 		
+		/*
+		 * Collapse Unobservable
+		 *  - Map singular States to their Collectives
+		 * Calculate Transitions from Collective Groups
+		 *  - Will produce new States, need to then process these as well
+		 * 
+		 */
 		
+		HashMap<State, State> map = new HashMap<State, State>();
 		
+		for(State s : getStates()) {
+			
+			HashSet<State> reach = new HashSet<State>();
+			LinkedList<State> queue = new LinkedList<State>();
+			queue.add(s);
+			
+			while(!queue.isEmpty()) {
+				State top = queue.poll();
+				if(reach.contains(top))
+					continue;
+				reach.add(top);
+			    for(NonDetTransition<State, ObsControlEvent> t : getTransitions().getTransitions(top)) {
+				   if(!t.getTransitionEvent().getEventObservability()) {
+					  queue.addAll(t.getTransitionStates());
+			 	  }
+			  }
+			}
+			ArrayList<State> composite = new ArrayList<State>(reach);
+			Collections.sort(composite);
+			State made = newFSM.addState(composite.toArray(new State[composite.size()]));
+			newFSM.setStateComposition(made, composite.toArray(new State[composite.size()]));
+			map.put(s, made);
+		}
+		
+		LinkedList<State> queue = new LinkedList<State>(newFSM.getComposedStates().keySet());
+		HashSet<String> visited = new HashSet<String>();
+		
+		HashSet<State> initialStates = new HashSet<State>();
+		for(State s : getInitialStates())
+			initialStates.addAll(newFSM.getStateComposition(map.get(s)));
+		State init = newFSM.addState(initialStates.toArray(new State[initialStates.size()]));
+		newFSM.setStateComposition(init,  initialStates.toArray(new State[initialStates.size()]));
+		queue.addFirst(init);
+		newFSM.addInitialState(init);
+		
+		while(!queue.isEmpty()) {
+			State top = queue.poll();
+			if(visited.contains(top.getStateName()))
+				continue;
+			visited.add(top.getStateName());
+			HashMap<ObsControlEvent, HashSet<State>> tran = new HashMap<ObsControlEvent, HashSet<State>>();
+			for(State s : newFSM.getStateComposition(top)) {
+				for(NonDetTransition<State, ObsControlEvent> t : getTransitions().getTransitions(s)) {
+					if(t.getTransitionEvent().getEventObservability()) {
+						if(tran.get(t.getTransitionEvent()) == null) {
+							tran.put(t.getTransitionEvent(), new HashSet<State>());
+						}
+						for(State led : t.getTransitionStates())
+							tran.get(t.getTransitionEvent()).addAll(newFSM.getStateComposition(map.get(led)));
+					}
+				}
+			}
+			for(ObsControlEvent e : tran.keySet()) {
+				State bot = newFSM.addState(tran.get(e).toArray(new State[tran.get(e).size()]));
+				newFSM.setStateComposition(bot, tran.get(e).toArray(new State[tran.get(e).size()]));
+				queue.add(bot);
+				newFSM.addTransition(top, e, bot);
+			}
+		}
 		return newFSM;
 	}
 	

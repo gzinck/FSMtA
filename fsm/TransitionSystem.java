@@ -378,6 +378,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param composed HashMap mapping States to an ArrayList of States, which is
 	 * which is to be added to the state composition of the transition system.
 	 */
+
 	public void addStateComposition(HashMap<State, ArrayList<State>> composed) {
 		HashMap<State, ArrayList<State>> map = getComposedStates();
 		map.putAll(composed);

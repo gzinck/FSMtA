@@ -100,7 +100,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		String name = "";
 		Arrays.sort(states);
 		for(State s : states) {
-			initial = s.getStateInitial() ? true : initial;
+			//initial = s.getStateInitial() ? true : initial;
 			marked = s.getStateMarked() ? marked : false;
 			badState = s.getStateBad() ? true : badState;
 			privacy = s.getStatePrivate() ? privacy : false;

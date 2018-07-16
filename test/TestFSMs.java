@@ -33,12 +33,12 @@ public class TestFSMs {
 		File f3 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName3", MAC_WORKING_FOLDER));
 		File f4 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName4", MAC_WORKING_FOLDER));
 		
-			DetObsContFSM fsm = new DetObsContFSM(f1, "fsm");
+			NonDetObsContFSM fsm = new NonDetObsContFSM(f1, "fsm");
 		
 		System.out.println(fsm.makeDotString());
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			DetObsContFSM fsm2 = fsm.trim();
+			NonDetObsContFSM fsm2 = fsm.trim();
 		
 		//System.out.println(fsm2.makeDotString());
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
