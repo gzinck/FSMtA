@@ -109,6 +109,42 @@ public class DetObsContFSM extends FSM<State, DetTransition<State, ObsControlEve
 	} // DetFSM(FSM, String)
 	
 	/**
+	 * Constructor for a DetObsContFSM that takes any FSM as a parameter and creates a new
+	 * DetFSM using that as the basis. Any information which is not permissible in a
+	 * DetObsContFSM is thrown away, because it does not have any means to handle it.
+	 * 
+	 * @param other - FSM object to copy as a DetObsContFSM (can be any kind of FSM).
+	 * @param inId - String object representing the id for the new FSM.
+	 */
+	
+	public DetObsContFSM(FSM<State, Transition<State, Event>, Event> other, HashSet<String> badStates, String inId) {
+		id = inId;
+		states = new StateMap<State>(State.class);
+		events = new EventMap<ObsControlEvent>(ObsControlEvent.class);
+		transitions = new TransitionFunction<State, DetTransition<State, ObsControlEvent>, ObsControlEvent>(new DetTransition<State, ObsControlEvent>());
+		
+		// Add in all the states NOT in the badStates set
+		for(State s : other.states.getStates())
+			if(!badStates.contains(s.getStateName())) this.states.addState(s).setStateInitial(false);
+		// Add in all the events
+		for(Event e : other.events.getEvents())
+			this.events.addEvent(e);
+		// Add in all the transitions (but only take the first state it transitions to) IF NOT in badStates set
+		for(State s : other.states.getStates()) {
+			for(Transition<State, Event> t : other.transitions.getTransitions(s)) {
+				String toStateName = t.getTransitionStates().get(0).getStateName();
+				if(!badStates.contains(toStateName))
+					this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toStateName);
+			} // for every transition
+		} // for every state
+		// Add in the initial state
+		ArrayList<State> initial = other.getInitialStates();
+		initialState = this.getState(initial.get(0));
+		if(initialState != null)
+			initialState.setStateInitial(true);
+	} // DetFSM(FSM, String)
+	
+	/**
 	 * Constructor for an FSM object that contains no transitions or states, allowing the
 	 * user to add those elements themselves.
 	 * 

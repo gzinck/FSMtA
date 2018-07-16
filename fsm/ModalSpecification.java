@@ -153,7 +153,7 @@ public class ModalSpecification
 	 */
 	
 	public <S extends State, T extends Transition<S, E>, E extends Event>
-			FSM<S, T, E> makeOptimalSupervisor(FSM<S, T, E> fsm) throws IllegalArgumentException {
+			DetObsContFSM makeOptimalSupervisor(FSM<S, T, E> fsm) throws IllegalArgumentException {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
 		// TODO: How can we make this parameterized? It doesn't seem to like me...
@@ -185,12 +185,11 @@ public class ModalSpecification
 			System.out.println(badStates.toString());
 			
 			keepGoing = keepGoing1 || keepGoing2;
-			
-			// TODO: MAKE SURE THIS LOOP DOESN'T GO FOREVER. When all the bad states are marked with the hashset, then
-			// the we should construct the supervisor by copying all the states NOT marked bad and all the transitions
-			// to states that are NOT marked bad from the product.
 		} // while
-		return null;
+		
+		// Now, we have to actually create our FSM
+		DetObsContFSM supervisor = new DetObsContFSM(product, badStates, fsm.id + " Supervisor");
+		return supervisor;
 	}
 	
 	/**
@@ -284,89 +283,19 @@ public class ModalSpecification
 	} // markBadStates(FSM, FSM, FSM, HashSet)
 	
 	/**
-	 * Gets the observer's state name for the fsm using the product state names (which is in the form of
-	 * ({state1,state2},specState) and we want the aggregate of states in the first set).
+	 * Marks the dead ends where there is some state q in the set of states P in the product (P, s)
+	 * that cannot reach a marked state in the universalObserverView using only transitions that are
+	 * allowed in the product.
 	 * 
-	 * @param aggregateStateName - String object representing the state to break apart.
-	 * @return - Returns a String object with the state name from the observer.
+	 * @param universalObserverView Observer view of the original FSM with states for every possible
+	 * starting state (for instance, if the FSM had a state 2, then there will be a state representing
+	 * the epsilon-reach of 2 in this universal view).
+	 * @param universalObserverViewMap Map between the original FSM's states and their epsilon reach state
+	 * name, which is present in the universalObserverView.
+	 * @param product Product FSM between the observer view of the original fsm and the specification.
+	 * @param badStates HashSet of String state names which are bad and to be removed.
+	 * @return True if the method marked a bad state, false otherwise.
 	 */
-	
-//	static private String getObserverState(String aggregateStateName) {
-//		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
-//		int numBrackets = 0;
-//		int i = 0;
-//		while(i < name.length()) {
-//			char character = name.charAt(i++);
-//			if(character == '(' || character == '{')
-//				numBrackets++;
-//			else if(character == ')' || character == '}')
-//				numBrackets--;
-//			else if(numBrackets == 0 && character == ',')
-//				return name.substring(0, i - 1);
-//		}
-//		return null;
-//	}
-	
-	/**
-	 * Gets the original states in the first FSM which compose the states in the observer view, which is
-	 * the first entry in the product entries of the state name.
-	 * 
-	 * @param aggregateStateName String representing the name of the state, like ({4,5,{3,5}},8).
-	 * @return ArrayList of Strings that represent the original states in the first FSM, so in the
-	 * above example, they would be ["4", "5", "{3,5}"].
-	 */
-	
-//	static private ArrayList<String> getOriginalStates(String aggregateStateName) {
-//		String observer = getObserverState(aggregateStateName); // remove the main brackets
-//		System.out.println(observer);
-//		if(observer.length() < 3) return null; 
-//		String name = observer.substring(1, observer.length() - 1);
-//		ArrayList<String> states = new ArrayList<String>();
-//		int numBrackets = 0;
-//		int lastSplice = 0; // Keep track of where the last splice was done to create a state name.
-//		int i = 0;
-//		while(i < name.length()) {
-//			char character = name.charAt(i++);
-//			if(character == '(' || character == '{')
-//				numBrackets++;
-//			else if(character == ')' || character == '}')
-//				numBrackets--;
-//			// If we reached an end condition, make it into a String representing the state.
-//			if(numBrackets == 0 && character == ',') {
-//				states.add(name.substring(lastSplice, i - 1));
-//				lastSplice = i;
-//			} else if(numBrackets == 0 && i == name.length()) {
-//				states.add(name.substring(lastSplice, i));
-//				lastSplice = i;
-//			}
-//		}
-//		return states;
-//	}
-	
-	/**
-	 * Gets the original state name for the specification using the product state names (which is in the form of
-	 * ({state1,state2},specState) and we want the second entry in the product).
-	 * 
-	 * @param aggregateStateName - String representing the state to break apart.
-	 * @return - Returns a String object with the state name from the specification.
-	 */
-	
-//	static private String getSpecificationState(String aggregateStateName) {
-//		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
-//		int numBrackets = 0;
-//		int i = 0;
-//		while(i < name.length()) {
-//			char character = name.charAt(i++);
-//			if(character == '(' || character == '{')
-//				numBrackets++;
-//			else if(character == ')' || character == '}')
-//				numBrackets--;
-//			else if(numBrackets == 0 && character == ',')
-//				return name.substring(i, name.length());
-//		}
-//		return null;
-//	}
-	
 	static public <S extends State, E extends Event, S1 extends State, E1 extends Event>
 			boolean markDeadEnds(FSM<S, DetTransition<S, E>, E> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
 		// For every combo of states (q,(P,s)) such that q is an element of P and (P,s) is the product, we want to
