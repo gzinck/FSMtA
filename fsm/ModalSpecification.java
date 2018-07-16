@@ -391,6 +391,7 @@ public class ModalSpecification
 				// Now, we get to look through the massive product for a marked state
 				boolean reachesMarked = canReachMarked(massiveProduct, massiveProduct.getInitialStates().get(0), badStates);
 				if(!reachesMarked) {
+					System.out.println(massiveProduct.getInitialStates().get(0).getStateName() + " could not reach a marked state.");
 					badStates.add(productState.getStateName());
 					removedAState = true;
 					break;
@@ -409,6 +410,7 @@ public class ModalSpecification
 		// Get the name of the state in the right side of the product in the fsm (second part of the state).
 		String name = fsm.getStateComposition(state).get(1).getStateName();
 		if(badStates.contains(name)) return false;
+		if(state.getStateMarked()) return true;
 		
 		HashSet<S> visited = new HashSet<S>();
 		LinkedList<S> queue = new LinkedList<S>();
