@@ -179,7 +179,7 @@ public class ModalSpecification
 		HashMap<String, String>universalObserverViewMap = createUniversalObserverView(fsm, universalObserverView);
 		
 		while(keepGoing) {
-			boolean keepGoing1 = markBadStates(newFSM, specFSM, product, badStates);
+			boolean keepGoing1 = markBadStates(fsm, specFSM, product, badStates);
 			System.out.println(badStates.toString());
 			boolean keepGoing2 = markDeadEnds(universalObserverView, universalObserverViewMap, product, badStates);
 			System.out.println(badStates.toString());
@@ -216,6 +216,8 @@ public class ModalSpecification
 		// event that isn't defined in the product.
 		// Also look if must transitions exist...
 		boolean foundABadOne = false;
+		
+		System.out.println("Going through bad states");
 	
 		// Go through every state in the product
 		for(S s : product.getStates()) {
@@ -223,7 +225,7 @@ public class ModalSpecification
 			if(badStates.contains(s.getStateName())) continue;
 			
 			// If a must transition does not exist at the state, mark the state
-			String specStateName = getSpecificationState(s.getStateName());
+			String specStateName = product.getStateComposition(s).get(1).getStateName(); // Gets the specification
 			ArrayList<DetTransition<State, Event>> specTransitions = this.mustTransitions.getTransitions(this.getState(specStateName));
 			if(specTransitions != null) for(DetTransition<State, Event> t : specTransitions) {
 				Event event = t.getTransitionEvent();
@@ -246,11 +248,15 @@ public class ModalSpecification
 			
 			// If an uncontrollable observable event exists from any of the states in the original fsm, and
 			// the event not allowed in the product, then UH-NO NOT HAP'NIN (mark the state)
-			String observerStateName = getObserverState(s.getStateName());
-			ArrayList<S> origStates = fsm.states.getStateComposition(fsm.getState(observerStateName));
+			S observerState = product.getStateComposition(s).get(0);
+//			ArrayList<S> origStates = fsm.states.getStateComposition(observerState);
+			ArrayList<S> origStates = product.getStateComposition(observerState);
+			System.out.println(product.getComposedStates());
 			for(S fromState : origStates) {
+//				System.out.println(fromState.getStateName());
 				// Go through all the original transitions
 				ArrayList<T> origTransitions = fsm.transitions.getTransitions(fromState);
+//				System.out.println(fsm.states.toString());
 				if(origTransitions != null) for(T t : origTransitions) {
 					E event = t.getTransitionEvent();
 					// If the event is observable but NOT controllable, we have a problem
@@ -259,6 +265,7 @@ public class ModalSpecification
 						ArrayList<S> toStates = product.transitions.getTransitionStates(product.getState(s), product.events.getEvent(event));
 						// Mark the state as bad if the event is not allowed in the product.
 						if(toStates == null) {
+							System.out.println("There was an uncontrollable, observable event that did not exist in the spec.");
 							badStates.add(s.getStateName());
 							foundABadOne = true;
 						} else {
@@ -287,21 +294,21 @@ public class ModalSpecification
 	 * @return - Returns a String object with the state name from the observer.
 	 */
 	
-	static private String getObserverState(String aggregateStateName) {
-		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
-		int numBrackets = 0;
-		int i = 0;
-		while(i < name.length()) {
-			char character = name.charAt(i++);
-			if(character == '(' || character == '{')
-				numBrackets++;
-			else if(character == ')' || character == '}')
-				numBrackets--;
-			else if(numBrackets == 0 && character == ',')
-				return name.substring(0, i - 1);
-		}
-		return null;
-	}
+//	static private String getObserverState(String aggregateStateName) {
+//		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
+//		int numBrackets = 0;
+//		int i = 0;
+//		while(i < name.length()) {
+//			char character = name.charAt(i++);
+//			if(character == '(' || character == '{')
+//				numBrackets++;
+//			else if(character == ')' || character == '}')
+//				numBrackets--;
+//			else if(numBrackets == 0 && character == ',')
+//				return name.substring(0, i - 1);
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Gets the original states in the first FSM which compose the states in the observer view, which is
@@ -312,32 +319,32 @@ public class ModalSpecification
 	 * above example, they would be ["4", "5", "{3,5}"].
 	 */
 	
-	static private ArrayList<String> getOriginalStates(String aggregateStateName) {
-		String observer = getObserverState(aggregateStateName); // remove the main brackets
-		System.out.println(observer);
-		if(observer.length() < 3) return null; 
-		String name = observer.substring(1, observer.length() - 1);
-		ArrayList<String> states = new ArrayList<String>();
-		int numBrackets = 0;
-		int lastSplice = 0; // Keep track of where the last splice was done to create a state name.
-		int i = 0;
-		while(i < name.length()) {
-			char character = name.charAt(i++);
-			if(character == '(' || character == '{')
-				numBrackets++;
-			else if(character == ')' || character == '}')
-				numBrackets--;
-			// If we reached an end condition, make it into a String representing the state.
-			if(numBrackets == 0 && character == ',') {
-				states.add(name.substring(lastSplice, i - 1));
-				lastSplice = i;
-			} else if(numBrackets == 0 && i == name.length()) {
-				states.add(name.substring(lastSplice, i));
-				lastSplice = i;
-			}
-		}
-		return states;
-	}
+//	static private ArrayList<String> getOriginalStates(String aggregateStateName) {
+//		String observer = getObserverState(aggregateStateName); // remove the main brackets
+//		System.out.println(observer);
+//		if(observer.length() < 3) return null; 
+//		String name = observer.substring(1, observer.length() - 1);
+//		ArrayList<String> states = new ArrayList<String>();
+//		int numBrackets = 0;
+//		int lastSplice = 0; // Keep track of where the last splice was done to create a state name.
+//		int i = 0;
+//		while(i < name.length()) {
+//			char character = name.charAt(i++);
+//			if(character == '(' || character == '{')
+//				numBrackets++;
+//			else if(character == ')' || character == '}')
+//				numBrackets--;
+//			// If we reached an end condition, make it into a String representing the state.
+//			if(numBrackets == 0 && character == ',') {
+//				states.add(name.substring(lastSplice, i - 1));
+//				lastSplice = i;
+//			} else if(numBrackets == 0 && i == name.length()) {
+//				states.add(name.substring(lastSplice, i));
+//				lastSplice = i;
+//			}
+//		}
+//		return states;
+//	}
 	
 	/**
 	 * Gets the original state name for the specification using the product state names (which is in the form of
@@ -347,21 +354,21 @@ public class ModalSpecification
 	 * @return - Returns a String object with the state name from the specification.
 	 */
 	
-	static private String getSpecificationState(String aggregateStateName) {
-		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
-		int numBrackets = 0;
-		int i = 0;
-		while(i < name.length()) {
-			char character = name.charAt(i++);
-			if(character == '(' || character == '{')
-				numBrackets++;
-			else if(character == ')' || character == '}')
-				numBrackets--;
-			else if(numBrackets == 0 && character == ',')
-				return name.substring(i, name.length());
-		}
-		return null;
-	}
+//	static private String getSpecificationState(String aggregateStateName) {
+//		String name = aggregateStateName.substring(1, aggregateStateName.length() - 1); // remove the main brackets
+//		int numBrackets = 0;
+//		int i = 0;
+//		while(i < name.length()) {
+//			char character = name.charAt(i++);
+//			if(character == '(' || character == '{')
+//				numBrackets++;
+//			else if(character == ')' || character == '}')
+//				numBrackets--;
+//			else if(numBrackets == 0 && character == ',')
+//				return name.substring(i, name.length());
+//		}
+//		return null;
+//	}
 	
 	static public <S extends State, E extends Event, S1 extends State, E1 extends Event>
 			boolean markDeadEnds(FSM<S, DetTransition<S, E>, E> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<S1, DetTransition<S1, E1>, E1> product, HashSet<String> badStates) {
@@ -378,14 +385,11 @@ public class ModalSpecification
 		// Go through all the good product states
 		for(S1 productState : product.getStates()) if(!badStates.contains(productState.getStateName())) {
 			// Get all the states in the original FSM
-			ArrayList<String> originalStates = getOriginalStates(productState.getStateName());
-			System.out.println("Original states include: " + productState.getStateName());
-			System.out.println("Universal map has: " + universalObserverViewMap.toString());
-			boolean stateIsOK = true;
-			for(String q : originalStates) {
-				String universalInitial = universalObserverViewMap.get(q);
+			S1 leftSideOfProduct = product.getStateComposition(productState).get(0);
+			ArrayList<S1> originalStates = product.getStateComposition(leftSideOfProduct);
+			for(S1 q : originalStates) {
+				String universalInitial = universalObserverViewMap.get(q.getStateName());
 				universalObserverView.addInitialState(universalInitial);
-				System.out.println(q);
 				product.addInitialState(productState);
 				FSM<S, DetTransition<S, E>, E> massiveProduct = universalObserverView.product(product);
 				// Now, we get to look through the massive product for a marked state
@@ -406,7 +410,8 @@ public class ModalSpecification
 	
 	static protected <S extends State, E extends Event>
 			boolean canReachMarked(FSM<S, DetTransition<S, E>, E> fsm, S state, HashSet<String> badStates) {
-		String name = getSpecificationState(state.getStateName());
+		// Get the name of the state in the right side of the product in the fsm (second part of the state).
+		String name = fsm.getStateComposition(state).get(1).getStateName();
 		if(badStates.contains(name)) return false;
 		
 		HashSet<S> visited = new HashSet<S>();
@@ -418,7 +423,7 @@ public class ModalSpecification
 			// Go through all neighbours in BFS
 			S curr = queue.poll();
 			for(DetTransition<S, E> t : fsm.transitions.getTransitions(curr)) for(S toState : t.getTransitionStates()) {
-				name = getSpecificationState(toState.getStateName());
+				name = fsm.getStateComposition(toState).get(1).getStateName();
 				if(!badStates.contains(name)) {
 					if(toState.getStateMarked()) return true; // if marked, we're all good!
 					if(!visited.contains(toState)) { // if it hasn't been visited yet, add to queue

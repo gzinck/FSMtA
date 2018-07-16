@@ -1,8 +1,12 @@
 package test;
 
 import fsm.*;
+import fsm.attribute.Observability;
 import graphviz.FSMToDot;
 import support.GenerateFSM;
+import support.attribute.EventObservability;
+import support.event.Event;
+import support.event.ObsControlEvent;
 import support.transition.DetTransition;
 
 import java.io.*;
@@ -40,11 +44,11 @@ public class DontLookAtMe {
 //		System.out.println(ModalSpecification.getSpecificationState("(5,({1,2,{3,4}},4))").toString());
 		
 		DetObsContFSM fsm1 = new DetObsContFSM("OK");
-		fsm1.addTransition("1", "a", "2");
-		fsm1.addTransition("2", "b", "3");
-		fsm1.setEventControllability("a", false);
-		fsm1.setEventControllability("b", false);
+		fsm1.addTransition("1", "a", "3");
+		fsm1.addTransition("2", "e", "2");
+		fsm1.setEventControllability("e", false);
 		fsm1.addInitialState("1");
+		fsm1.toggleMarkedState("2");
 		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "originalFSM", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 //		DetObsContFSM fsm2 = new DetObsContFSM("OK");
 //		HashMap<String, String> universalObserverViewMap = ModalSpecification.createUniversalObserverView(fsm1, fsm2);
@@ -53,10 +57,15 @@ public class DontLookAtMe {
 		ModalSpecification ms = new ModalSpecification("OK");
 		ms.addState("1");
 		ms.addInitialState("1");
-		ms.addTransition("1", "a", "2");
-		ms.addMustTransition("1", "b", "5");
+		ms.addTransition("1", "a", "3");
+		ms.toggleMarkedState("3");
 		FSMToDot.createImgFromFSM(ms, GRAEME_WORKING_FOLDER + "testms", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		ms.makeOptimalSupervisor(fsm1);
+		
+		FSM newFSM = (FSM)((Observability)fsm1).createObserverView();
+		DetObsContFSM specFSM = ms.getUnderlyingFSM();
+		FSM product = newFSM.product(specFSM);
+		FSMToDot.createImgFromFSM(product, GRAEME_WORKING_FOLDER + "product", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		
 //		fsm1.addTransition("1", "a", "2");
 //		fsm1.addTransition("2", "b", "3");
