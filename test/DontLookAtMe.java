@@ -6,7 +6,6 @@ import graphviz.FSMToDot;
 import support.GenerateFSM;
 import support.attribute.EventObservability;
 import support.event.Event;
-import support.event.ObsControlEvent;
 import support.transition.DetTransition;
 
 import java.io.*;

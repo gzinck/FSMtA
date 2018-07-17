@@ -57,7 +57,7 @@ public class CSODialog {
 				}
 				ArrayList<State> states = null;
 				if(fsmToUse instanceof OpacityTest) {
-					states = ((OpacityTest<State>)fsmToUse).testCurrentStateOpacity();
+					states = ((OpacityTest)fsmToUse).testCurrentStateOpacity();
 				}
 				if(states == null)
 					System.err.println("Error: when testing for current state opacity, null was returned. There should have been at least an empty arraylist of states.");
