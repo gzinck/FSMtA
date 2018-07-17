@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import fsm.attribute.*;
+import graphviz.FSMToDot;
 
 /**
  * ModalSpecification is an enhanced version of a transition system, which defines both "may" and
@@ -167,6 +168,8 @@ public class ModalSpecification
 		
 		FSM product = universalObserverView.product(specFSM);
 		
+		FSMToDot.createImgFromFSM(product, "/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/" + "product", "/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/", "/Users/graemezinck/Documents/OneDrive/Documents/Personal/Eclipse Workspace/Summer Research/config.properties");
+		
 		//--------------------------------------------
 		// Step 2: Mark the bad states
 		HashSet<String> badStates = new HashSet<String>();
@@ -183,7 +186,7 @@ public class ModalSpecification
 		
 		// Now, we have to actually create our FSM
 		DetObsContFSM supervisor = new DetObsContFSM(product, badStates, fsm.id + " Supervisor");
-		return supervisor;
+		return supervisor.makeAccessible();
 	}
 	
 	/**
@@ -255,7 +258,7 @@ public class ModalSpecification
 						ArrayList<S> toStates = product.transitions.getTransitionStates(product.getState(s), product.events.getEvent(event));
 						// Mark the state as bad if the event is not allowed in the product.
 						if(toStates == null) {
-							System.out.println("There was an uncontrollable, observable event, " + event.getEventName() + ", that did not exist in the spec at state " + fromState.getStateName());
+							System.out.println("There was an uncontrollable, observable event, " + event.getEventName() + ", that did not exist in the spec at state " + s.getStateName());
 							badStates.add(s.getStateName());
 							foundABadOne = true;
 						} else {

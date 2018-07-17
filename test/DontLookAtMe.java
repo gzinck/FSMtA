@@ -82,9 +82,35 @@ public class DontLookAtMe {
 		FSMToDot.createImgFromFSM(product, GRAEME_WORKING_FOLDER + "product", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 	}
 	
+	public void modalTest3() {
+		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/coffee-machine.fsm");
+		DetObsContFSM fsm1 = new DetObsContFSM(f1, "OK");
+		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "plant", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		
+		ModalSpecification ms = new ModalSpecification("OK");
+		ms.addMustTransition("s0", "?E", "s1");
+		ms.addMustTransition("s1", "?T", "s2");
+		ms.addTransition("s1", "?C", "s3");
+		ms.addTransition("s3", "!C", "s0");
+		ms.addTransition("s2", "!T", "s0");
+		ms.addTransition("s3", "!E", "s5");
+		ms.addTransition("s2", "!E", "s5");
+		ms.addTransition("s5", "?E", "s4");
+		ms.addTransition("s4", "?T", "s2");
+		ms.addTransition("s4", "?C", "s3");
+		
+		ms.toggleMarkedState("s0");
+		ms.toggleMarkedState("s5");
+		ms.addInitialState("s0");
+		FSMToDot.createImgFromFSM(ms, GRAEME_WORKING_FOLDER + "specification", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		
+		DetObsContFSM supervisor = ms.makeOptimalSupervisor(fsm1);
+		FSMToDot.createImgFromFSM(supervisor, GRAEME_WORKING_FOLDER + "supervisor", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+	}
+	
 	@Test
 	public void test() {
-		modalTest2();
+		modalTest3();
 		// (int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath)
 //		File f1 = new File(GenerateFSM.createNewFSM(7, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
 //		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));
