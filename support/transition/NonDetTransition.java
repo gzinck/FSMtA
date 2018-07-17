@@ -14,14 +14,14 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetTransition<S extends State, E extends Event> implements Transition<S, E> {
+public class NonDetTransition implements Transition {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
 	/** Event extending instance variable representing the Event associated to this object*/
-	public E event;
+	public Event event;
 	/** ArrayList<<r>State> object holding all State extending objects associated to the Event associated to this NonDetTransition object*/
-	private ArrayList<S> states;
+	private ArrayList<State> states;
 	
 //--- Constructors   --------------------------------------------------------------------------
 	
@@ -34,9 +34,9 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 */
 	
 	@SafeVarargs
-	public NonDetTransition(E inEvent, S ... inStates) {
+	public NonDetTransition(Event inEvent, State ... inStates) {
 		event = inEvent;
-		states = new ArrayList<S>();
+		states = new ArrayList<State>();
 		for(int i = 0; i < inStates.length; i++)
 			states.add(inStates[i]);
 	}
@@ -49,9 +49,9 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 * @param inStates - Collection of State objects representing the States led to by the Event associated with this NonDetTransition object.
 	 */
 	
-	public NonDetTransition(E inEvent, Collection<S> inStates) {
+	public NonDetTransition(Event inEvent, Collection<State> inStates) {
 		event = inEvent;
-		states = new ArrayList<S>(inStates);
+		states = new ArrayList<State>(inStates);
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	
 	public NonDetTransition() {
 		event = null;
-		states = new ArrayList<S>();
+		states = new ArrayList<State>();
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -90,9 +90,9 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("\"" + firstState.getStateName() + "\"->{\"");
-		Iterator<S> itr = states.iterator();
+		Iterator<State> itr = states.iterator();
 		while(itr.hasNext()) {
-			S s = itr.next();
+			State s = itr.next();
 			sb.append(s.getStateName());
 			if(itr.hasNext())
 				sb.append("\",\"");
@@ -103,8 +103,8 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	}
 	
 	@Override
-	public NonDetTransition<S, E> generateTransition(){
-		NonDetTransition<S, E> outbound = new NonDetTransition<S, E>();
+	public NonDetTransition generateTransition(){
+		NonDetTransition outbound = new NonDetTransition();
 		return outbound;
 	}
 
@@ -116,30 +116,30 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	 * @param in - ArrayList<<r>State> object representing the list of States led to by the Event associated to this NonDetTransition object
 	 */
 	
-	public void setTransitionState(ArrayList<S> in) {
+	public void setTransitionState(ArrayList<State> in) {
 		states = in;
 	}
 	
 	@Override
-	public void setTransitionState(S in) {
+	public void setTransitionState(State in) {
 		if(!states.contains(in))
 			states.add(in);
 	}
 	
 	@Override
-	public void setTransitionEvent(E in) {
+	public void setTransitionEvent(Event in) {
 		event = in;
 	}
 	
 //--- Getter Methods   ------------------------------------------------------------------------
 	
 	@Override
-	public E getTransitionEvent() {
+	public Event getTransitionEvent() {
 		return event;
 	}
 	
 	@Override
-	public ArrayList<S> getTransitionStates() {
+	public ArrayList<State> getTransitionStates() {
 		return states;
 	}
 	
@@ -155,7 +155,7 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	
 //--- Manipulations   -------------------------------------------------------------------------
 	
-	public boolean addTransitionState(S stateNew) {
+	public boolean addTransitionState(State stateNew) {
 		if(states.indexOf(stateNew) == -1) {
 			states.add(stateNew);
 			return true;
@@ -176,7 +176,7 @@ public class NonDetTransition<S extends State, E extends Event> implements Trans
 	}
 	
 	@Override
-	public boolean removeTransitionStates(Collection<S> inStates) {
+	public boolean removeTransitionStates(Collection<State> inStates) {
 		states.removeAll(inStates);
 		return (states.size() == 0);
 	}

@@ -14,7 +14,7 @@ import java.io.*;
  * @author Mac Clevinger and Graeme Zinck 
  */
 
-public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Event> {
+public class ReadWrite <T extends Transition>{
 
 //---  Operations   ---------------------------------------------------------------------------
 	
@@ -29,7 +29,7 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 	 * @return - Returns a boolean value representing the result of this method's attempt to write to the File.
 	 */
 	
-	public boolean writeToFile(String filePath, String special, TransitionFunction<S, T, E> transF) {
+	public boolean writeToFile(String filePath, String special, TransitionFunction<T> transF) {
 		try {
 			File f = new File(filePath + ".fsm");
 			f.delete();
@@ -37,9 +37,9 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 			try {
 			  raf.writeBytes(special);
 			  String build = "";
-			  for(S state1 : transF.transitions.keySet()) {
+			  for(State state1 : transF.transitions.keySet()) {
 				for(T trans : transF.getTransitions(state1)) {
-					for(S state2 : trans.getTransitionStates()) {
+					for(State state2 : trans.getTransitionStates()) {
 						build += state1.getStateName() + " " + state2.getStateName() + " " + trans.getTransitionEvent().getEventName() + "\n";
 				  }
 				}
@@ -72,7 +72,7 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 	 * @return - Returns an ArrayList<<r>ArrayList<<r>String>> object that contains the additional information about this FSM object based on its type.
 	 */
 	
-	public ArrayList<ArrayList<String>> readFromFile(StateMap<S> states, EventMap<E> events, TransitionFunction<S, T, E> transitions, File file){
+	public ArrayList<ArrayList<String>> readFromFile(StateMap states, EventMap events, TransitionFunction<T> transitions, File file){
 		try {
 			Scanner sc = new Scanner(file);
 			int numSpec = sc.nextInt();
@@ -87,9 +87,9 @@ public class ReadWrite<S extends State, T extends Transition<S, E>, E extends Ev
 			}
 			while(sc.hasNextLine()) {
 				String[] in = sc.nextLine().split(" ");
-				S fromState = states.addState(in[0]);
-				S toState = states.addState(in[1]);
-				E event = events.addEvent(in[2]);
+				State fromState = states.addState(in[0]);
+				State toState = states.addState(in[1]);
+				Event event = events.addEvent(in[2]);
 				
 				// See if there is already a transition with the event...
 				ArrayList<T> thisTransitions = transitions.getTransitions(fromState);

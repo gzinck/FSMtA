@@ -18,7 +18,7 @@ import support.event.Event;
  * @param <E> - Event extending object used to permit generic uses of this branch of classes to allow code re-use.
  */
 
-public interface Transition<S extends State, E extends Event> {
+public interface Transition {
 	
 //---  Operations   ---------------------------------------------------------------------------
 	
@@ -44,7 +44,7 @@ public interface Transition<S extends State, E extends Event> {
 	 * @param in - State extending object representing the Transition object's Event's new target State
 	 */
 	
-	public void setTransitionState(S in);
+	public void setTransitionState(State in);
 	
 	/**
 	 * Setter method to assign an Event object as the Event associated to this Transition object
@@ -52,7 +52,7 @@ public interface Transition<S extends State, E extends Event> {
 	 * @param in - Event object provided to replace the value stored previously in this Transition object
 	 */
 	
-	public void setTransitionEvent(E in);
+	public void setTransitionEvent(Event in);
 
 //--- Getter Methods   ------------------------------------------------------------------------
 	
@@ -80,7 +80,7 @@ public interface Transition<S extends State, E extends Event> {
 	 * @return - Returns an Event extending object representing the Event associated to this Transition object
 	 */
 	
-	public E getTransitionEvent();
+	public Event getTransitionEvent();
 	
 	/**
 	 * Getter method to access the ArrayList of State names led to by the Event associated to this Transition object
@@ -88,7 +88,7 @@ public interface Transition<S extends State, E extends Event> {
 	 * @return - Returns an ArrayList object containing the States led to by the Event associated to this Transition object
 	 */
 	
-	public ArrayList<S> getTransitionStates();
+	public ArrayList<State> getTransitionStates();
 	
 	/**
 	 * Getter method that requests a blank-slate Transition object of a type that matches that of the object
@@ -97,7 +97,7 @@ public interface Transition<S extends State, E extends Event> {
 	 * @return - Returns an object extending the Transition<<r>S, E> interface that is empty.
 	 */
 	
-	public <T extends Transition<S, E>> T generateTransition();
+	public <T extends Transition> T generateTransition();
 	
 //---  Manipulations   ------------------------------------------------------------------------	
 
@@ -107,7 +107,7 @@ public interface Transition<S extends State, E extends Event> {
 	 * @return
 	 */
 	
-	public boolean addTransitionState(S state);
+	public boolean addTransitionState(State state);
 	
 	/**
 	 * Removes a State from the Transition object as described by a provided String; or, if the State is
@@ -139,5 +139,5 @@ public interface Transition<S extends State, E extends Event> {
 	 * @return - Returns a boolean value; true if the Transition object has no States to which it points, otherwise false.
 	 */
 	
-	public boolean removeTransitionStates(Collection<S> inStates);
+	public boolean removeTransitionStates(Collection<State> inStates);
 }

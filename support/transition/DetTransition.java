@@ -17,12 +17,12 @@ import support.event.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetTransition<S extends State, E extends Event> implements Transition<S, E> {
+public class DetTransition implements Transition {
 
 	/** Event extending instance variable representing the Event associated to this object*/
-	public E event;
+	public Event event;
 	/** State extending instance variable representing the target State associated to this object*/
-	protected S state;
+	protected State state;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -34,7 +34,7 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 	 * @param inState - State object representing the State being led to by the Event of this Transition
 	 */
 	
-	public DetTransition(E inEvent, S inState) {
+	public DetTransition(Event inEvent, State inState) {
 		event = inEvent;
 		state = inState;
 	}
@@ -123,13 +123,13 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 	}
 	
 	@Override
-	public E getTransitionEvent() {
+	public Event getTransitionEvent() {
 		return event;
 	}
 	
 	@Override
-	public ArrayList<S> getTransitionStates() {
-		ArrayList<S> list = new ArrayList<S>();
+	public ArrayList<State> getTransitionStates() {
+		ArrayList<State> list = new ArrayList<State>();
 		if(state != null)
 			list.add(state);
 		return list;
@@ -148,18 +148,18 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
-	public void setTransitionEvent(E in) {
+	public void setTransitionEvent(Event in) {
 		event = in;
 	}
 	
 	@Override 
-	public void setTransitionState(S in) {
+	public void setTransitionState(State in) {
 		state = in;
 	}
 	
 //---  Manipulations   -----------------------------------------------------------------------
 
-	public boolean addTransitionState(S inState) {
+	public boolean addTransitionState(State inState) {
 		if(state != null)
 			return false;
 		state = inState;
@@ -183,15 +183,15 @@ public class DetTransition<S extends State, E extends Event> implements Transiti
 	}
 	
 	@Override
-	public boolean removeTransitionStates(Collection<S> inStates) {
+	public boolean removeTransitionStates(Collection<State> inStates) {
 		if(inStates.contains(state))
 			state = null;
 		return (state == null);
 	}
 	
 	@Override
-	public DetTransition<S, E> generateTransition(){
-		DetTransition<S, E> outbound = new DetTransition<S, E>();
+	public DetTransition generateTransition(){
+		DetTransition outbound = new DetTransition();
 		return outbound;
 	}
 }

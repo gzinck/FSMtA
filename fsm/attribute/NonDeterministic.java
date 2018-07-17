@@ -14,7 +14,7 @@ import support.transition.NonDetTransition;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface NonDeterministic<S extends State, T extends NonDetTransition<S, E>, E extends Event> {
+public interface NonDeterministic<T extends NonDetTransition> {
 	
 //---  Operations   ---------------------------------------------------------------------------
 	

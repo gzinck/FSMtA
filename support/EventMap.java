@@ -13,14 +13,12 @@ import support.event.Event;
  * @param <E> Classes that extends Event.
  */
 
-public class EventMap<E extends Event> {
+public class EventMap {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** HashMap<<r>String, E extends Event> mapping String names of events to their corresponding Event objects. */
-	private HashMap<String, E> events;
-	/** Class<<r>E extends Event> object that holds the precise class of the generic Event class. */
-	private Class<E> eventClass;
+	private HashMap<String, Event> events;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -30,10 +28,8 @@ public class EventMap<E extends Event> {
 	 * @param inClass - Class<<r>E extends Event> object representing the class of Event the map will hold, used for instantiation.
 	 */
 	
-	public EventMap(Class<E> inEventClass) {
-		eventClass = inEventClass;
-		events = new HashMap<String, E>();
-		eventClass = inEventClass;
+	public EventMap() {
+		events = new HashMap<String, Event>();
 	}
 
 //---  Operations   ---------------------------------------------------------------------------
@@ -46,7 +42,7 @@ public class EventMap<E extends Event> {
 	 */
 	
 	public void renameEvent(String oldName, String newName) {
-		E event = events.get(oldName);
+		Event event = events.get(oldName);
 		event.setEventName(newName);
 		events.remove(oldName);
 		events.put(newName, event);
@@ -62,7 +58,7 @@ public class EventMap<E extends Event> {
 	 * @return - Returns the Event extending object corresponding to the provided String object.
 	 */
 	
-	public E getEvent(String eventName) {
+	public Event getEvent(String eventName) {
 		return events.get(eventName);
 	}
 
@@ -73,7 +69,7 @@ public class EventMap<E extends Event> {
 	 * @return - Returns the corresponding Event object from the current FSM, which has the same event name String as the input event.
 	 */
 	
-	public E getEvent(Event event) {
+	public Event getEvent(Event event) {
 		String name = event.getEventName();
 		return events.get(name);
 	}
@@ -84,7 +80,7 @@ public class EventMap<E extends Event> {
 	 * @return - Returns a Collection<<r>E> of Event extending objects.
 	 */
 	
-	public Collection<E> getEvents() {
+	public Collection<Event> getEvents() {
 		return events.values();
 	}
 	
@@ -112,18 +108,14 @@ public class EventMap<E extends Event> {
 	 * @return - Returns an Event extending object which corresponds to the oldEvent's id (be it new or otherwise).
 	 */
 	
-	public E addEvent(Event oldEvent) {
-		E newEvent = null;
-		try {
-			String eventName = oldEvent.getEventName();
-			if(events.containsKey(eventName))
-				return events.get(eventName);
-			newEvent = eventClass.newInstance();
-			newEvent.copyDataFrom(oldEvent);
-			events.put(eventName, newEvent);
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+	public Event addEvent(Event oldEvent) {
+		Event newEvent = null;
+		String eventName = oldEvent.getEventName();
+		if(events.containsKey(eventName))
+			return events.get(eventName);
+		newEvent.copyDataFrom(oldEvent);
+		events.put(eventName, newEvent);
+		
 		return newEvent;
 	}
 	
@@ -137,18 +129,13 @@ public class EventMap<E extends Event> {
 	 * @return - Returns an Event extending object derived from the two provided Events.
 	 */
 	
-	public E addEvent(Event event1, Event event2) {
-		E newEvent = null;
-		try {
-			String eventName = event1.getEventName();
-			if(events.containsKey(eventName))
-				return events.get(eventName);
-			newEvent = eventClass.newInstance();
-			newEvent.copyDataFrom(event1, event2);
-			events.put(eventName, newEvent);
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+	public Event addEvent(Event event1, Event event2) {
+		Event newEvent = null;
+		String eventName = event1.getEventName();
+		if(events.containsKey(eventName))
+			return events.get(eventName);
+		newEvent.copyDataFrom(event1, event2);
+		events.put(eventName, newEvent);
 		return newEvent;
 	}
 	
@@ -162,18 +149,13 @@ public class EventMap<E extends Event> {
 	 * the Event was newly made, or null if there was an error instantiating the event.
 	 */
 	
-	public E addEvent(String eventName) {
+	public Event addEvent(String eventName) {
 		if(events.containsKey(eventName))
 			return events.get(eventName);
-		try {
-			E newEvent = eventClass.newInstance();
-			newEvent.setEventName(eventName);
-			events.put(eventName, newEvent);
-			return newEvent;
-		} catch(Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+		Event newEvent = new Event();
+		newEvent.setEventName(eventName);
+		events.put(eventName, newEvent);
+		return newEvent;
 	}
 
 	/**
@@ -182,7 +164,7 @@ public class EventMap<E extends Event> {
 	 * @param event - Event extending object to remove from the HashMap<<r>String, E> events object.
 	 */
 	
-	public void removeEvent(E event) {
+	public void removeEvent(Event event) {
 		events.remove(event.getEventName());
 	}
 	

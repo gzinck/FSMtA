@@ -26,21 +26,21 @@ import java.util.*;
  * 
  * @author Mac Clevinger and Graeme Zinck
  *
- * @param <<r>S> - Generic object with the stipulation that it extend the State class.
+ * @param <<r>State> - Generic object with the stipulation that it extend the State class.
  * @param <<r>T> - Generic object with the stipulation that it extend the Transition class.
- * @param <<r>E> - Generic object with the stipulation that it extend the Event class.
+ * @param <<r>Event> - Generic object with the stipulation that it extend the Event class.
  */
 
-public abstract class TransitionSystem<S extends State, T extends Transition<S, E>, E extends Event> {
+public abstract class TransitionSystem<T extends Transition> {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 
-	/** StateMap<<r>S> object possessing all the States associated to this FSM object */
-	protected StateMap<S> states;
-	/** EventMap<<r>E> object possessing all the Events associated to this FSM object */
-	protected EventMap<E> events;
-	/** TransitionFunction<<r>S, T, E> object mapping states to sets of transitions (which contain the state names). */
-	protected TransitionFunction<S, T, E> transitions;
+	/** StateMap<<r>State> object possessing all the States associated to this FSM object */
+	protected StateMap states;
+	/** EventMap<<r>Event> object possessing all the Events associated to this FSM object */
+	protected EventMap events;
+	/** TransitionFunction<<r>State, T, Event> object mapping states to sets of transitions (which contain the state names). */
+	protected TransitionFunction<T> transitions;
 	/** String object possessing the identification for this FSM object. */
 	protected String id;
 	
@@ -75,10 +75,10 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * that are reachable from Initial States and can reach Marked States are
 	 * included.
 	 * 
-	 * @return - Returns an FSM<<r>S, T, E> extending object representing the trimmed version of the calling FSM object.
+	 * @return - Returns an FSM<<r>State, T, Event> extending object representing the trimmed version of the calling FSM object.
 	 */
 	
-	public <fsm extends FSM<S, T, E>> fsm trim() {
+	public <fsm extends FSM<T>> fsm trim() {
 		fsm newFSM = this.makeAccessible();
 		return newFSM.makeCoAccessible();
 	}
@@ -94,30 +94,30 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * 
 	 * Some post-processing may be required by more advanced types of FSM.
 	 * 
-	 * @return - Returns an FSM<<r>S, T, E> extending object representing the accessible version of the calling FSM object. 
+	 * @return - Returns an FSM<<r>State, T, Event> extending object representing the accessible version of the calling FSM object. 
 	 */
 	
-	public <fsm extends FSM<S, T, E>> fsm makeAccessible() {
+	public <fsm extends FSM<T>> fsm makeAccessible() {
 		// Make a queue to keep track of states that are accessible and their neighbours.
-		LinkedList<S> queue = new LinkedList<S>();
+		LinkedList<State> queue = new LinkedList<State>();
 		
 		// Initialize a new FSM with initial states.
 		try {
-			TransitionSystem<S, T, E> newFSM = this.getClass().newInstance();
-			for(S initial : getInitialStates()) {
+			TransitionSystem<T> newFSM = this.getClass().newInstance();
+			for(State initial : getInitialStates()) {
 				newFSM.addInitialState(initial);
 				queue.add(initial);
 			} // for initial state
 			
 			while(!queue.isEmpty()) {
-				S stateName = queue.poll();
+				State stateName = queue.poll();
 				newFSM.addState(stateName);
 				// Go through the transitions
 				ArrayList<T> currTransitions = this.transitions.getTransitions(getState(stateName));
 				if(currTransitions != null) {
 					for(T t : currTransitions) {
 						// Add the states; it goes to to the queue if not already present in the newFSM
-						for(S s : t.getTransitionStates())
+						for(State s : t.getTransitionStates())
 							if(!newFSM.stateExists(s.getStateName()))
 								queue.add(s);
 						// Add the transition by copying the old one.
@@ -144,12 +144,12 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * after which the contents of the old FSM object are processed with respect to this list as they construct
 	 * the new FSM object.
 	 * 
-	 * @return - Returns an FSM<<r>S, T, E> extending object representing the CoAccessible version of the original FSM.
+	 * @return - Returns an FSM<<r>State, T, Event> extending object representing the CoAccessible version of the original FSM.
 	 */
 	
-	public <fsm extends FSM<S, T, E>> fsm makeCoAccessible() {
+	public <fsm extends FSM<T>> fsm makeCoAccessible() {
 		try {
-			TransitionSystem<S, T, E> newFSM = this.getClass().newInstance();
+			TransitionSystem<T> newFSM = this.getClass().newInstance();
 			// First, find what states we need to add.
 			HashMap<String, Boolean> processedStates = getCoAccessibleMap();	//Use helper method to generate list of legal/illegal States
 
@@ -157,13 +157,13 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 			for(Map.Entry<String, Boolean> entry : processedStates.entrySet()) {
 				// If the state is coaccessible, add it!
 				if(entry.getValue()) {
-					S oldState = getState(entry.getKey());
+					State oldState = getState(entry.getKey());
 					newFSM.addState(oldState);
 					if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
 						for(T t : transitions.getTransitions(oldState)) {
 							T trans = t.generateTransition();
 							trans.setTransitionEvent(t.getTransitionEvent());
-							for(S state : t.getTransitionStates()) {
+							for(State state : t.getTransitionStates()) {
 								if(processedStates.get(state.getStateName()))
 									trans.setTransitionState(state);
 							}
@@ -175,7 +175,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 			} // for processed state
 		
 			// Finally, add the initial state
-			for(S state : this.getInitialStates()) {
+			for(State state : this.getInitialStates()) {
 				if(processedStates.get(state.getStateName()))
 					newFSM.addInitialState(state.getStateName());
 			}
@@ -202,7 +202,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		// When a state is processed, add it to the map and state if it reached a marked state.
 		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
 		
-		for(S curr : this.states.getStates()) {
+		for(State curr : this.states.getStates()) {
 			// Recursively check for a marked state, and keep track of a HashSet of states
 			// which have already been visited to avoid loops.
 			boolean isCoaccessible = recursivelyFindMarked(curr, results, new HashSet<String>());
@@ -229,7 +229,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a boolean value: true if the State extending object curr is coaccessible, false otherwise.
 	 */
 	
-	private boolean recursivelyFindMarked(S curr, HashMap<String, Boolean> results, HashSet<String> visited) {
+	private boolean recursivelyFindMarked(State curr, HashMap<String, Boolean> results, HashSet<String> visited) {
 		visited.add(curr.getStateName());
 		
 		// If the state is marked, return true
@@ -247,7 +247,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 		ArrayList<T> thisTransitions = transitions.getTransitions(curr);
 		if(thisTransitions == null) return false;
 		for(T t : thisTransitions) {
-			for(S next : (ArrayList<S>)t.getTransitionStates()) {
+			for(State next : (ArrayList<State>)t.getTransitionStates()) {
 				if(!visited.contains(next.getStateName())) { // If not already visited
 					// If next is coaccessible, so is curr.
 					if(recursivelyFindMarked(next, results, visited)) {
@@ -258,7 +258,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 			} // for each transition state
 		} // for each transition object
 		return false;
-	} // recursivelyFindMarked(S, HashMap<String, Boolean>, HashSet<String>)
+	} // recursivelyFindMarked(State, HashMap<String, Boolean>, HashSet<String>)
 	
 	/**
 	 * Gets if the FSM is blocking—that is, if there are possible words which are not
@@ -300,7 +300,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param prefix - String object representing the prefix for the new state names (can be the empty string).
 	 */
 	
-	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyStates(TransitionSystem<S1, T1, E1> other, String prefix) {
+	public <T1 extends Transition> void copyStates(TransitionSystem<T1> other, String prefix) {
 		for(State s : other.getStates())
 			states.addState(s, prefix);
 		for(State s : other.getInitialStates())
@@ -313,7 +313,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param other - FSM object whose states are copied.
 	 */
 	
-	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyStates(TransitionSystem<S1, T1, E1> other) {
+	public <T1 extends Transition> void copyStates(TransitionSystem<T1> other) {
 		copyStates(other, "");
 	} // copyStates(FSM)
 	
@@ -323,8 +323,8 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param other - An FSM object whose events are copied.
 	 */
 	
-	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyEvents(TransitionSystem<S1, T1, E1> other) {
-		for(E1 e : other.events.getEvents())
+	public <T1 extends Transition> void copyEvents(TransitionSystem<T1> other) {
+		for(Event e : other.events.getEvents())
 			events.addEvent(e);
 	} // copyEvents(FSM)
 	
@@ -334,13 +334,13 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param other - An FSM object whose transitions are copied.
 	 */
 	
-	public <S1 extends State, E1 extends Event, T1 extends Transition<S1, E1>> void copyTransitions(TransitionSystem<S1, T1, E1> other) {
-		for(S1 s : other.states.getStates()) {
+	public <T1 extends Transition> void copyTransitions(TransitionSystem<T1> other) {
+		for(State s : other.states.getStates()) {
 			ArrayList<T1> thisTransitions = other.transitions.getTransitions(s);
 			if(thisTransitions != null)
 				for(T1 t : thisTransitions) {
 					// Add every state the transition leads to
-					for(S1 toState : t.getTransitionStates())
+					for(State toState : t.getTransitionStates())
 						this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toState.getStateName());
 				} // for every transition
 		} // for every state
@@ -365,9 +365,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param pieces
 	 */
 	
-	public void setStateComposition(State aggregate, S ... pieces) {
+	public void setStateComposition(State aggregate, State ... pieces) {
 		ArrayList<State> composed = new ArrayList<State>();
-		for(S in : pieces)
+		for(State in : pieces)
 			if(composed.indexOf(in) == -1)
 				composed.add(in); 
 		states.setStateComposition(aggregate, composed);
@@ -395,32 +395,32 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	}
 	
 	/**
-	 * Setter method that assigns a new StateMap<<r>S> to replace the previously assigned set of States.
+	 * Setter method that assigns a new StateMap<<r>State> to replace the previously assigned set of States.
 	 * 
-	 * @param inState - StateMap<<r>S> object that assigns a new set of Events to this FSM object
+	 * @param inState - StateMap<<r>State> object that assigns a new set of Events to this FSM object
 	 */
 	
-	public void setFSMStateMap(StateMap<S> inState) {
+	public void setFSMStateMap(StateMap inState) {
 		states = inState;
 	}
 	
 	/**
-	 * Setter method that assigns a new EventMap<<r>E> object to replace the previously assigned set of Events.
+	 * Setter method that assigns a new EventMap<<r>Event> object to replace the previously assigned set of Events.
 	 * 
-	 * @param inEvent - EventMap<<r>E> object that assigns a new set of Events to this FSM object
+	 * @param inEvent - EventMap<<r>Event> object that assigns a new set of Events to this FSM object
 	 */
 	
-	public void setFSMEventMap(EventMap<E> inEvent) {
+	public void setFSMEventMap(EventMap inEvent) {
 		events = inEvent;
 	}
 	
 	/**
-	 * Setter method that assigns a new TransitionFunction<<r>S, T, E> object to replace the previously assigned set of Transitions.
+	 * Setter method that assigns a new TransitionFunction<<r>State, T, Event> object to replace the previously assigned set of Transitions.
 	 * 
-	 * @param inTrans - TransitionFunction<<r>S, T, E> object that assigns a new set of Transitions to this FSM object
+	 * @param inTrans - TransitionFunction<<r>State, T, Event> object that assigns a new set of Transitions to this FSM object
 	 */
 	
-	public void setFSMTransitionFunction(TransitionFunction<S, T, E> inTrans) {
+	public void setFSMTransitionFunction(TransitionFunction<T> inTrans) {
 		transitions = inTrans;
 	}
 	
@@ -428,12 +428,12 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * Setter method that aggregates the other setter methods to assign new values to the instance variables containing
 	 * information about the State, Transitions, and Events.
 	 * 
-	 * @param inStates - StateMap<<r>S> object that stores a new set of States to assign to this FSM object
-	 * @param inEvents - TransitionFunction<<r>S, T, E> object that stores a new set of Transitions to assign to this FSM object
-	 * @param inTrans - EventMap<<r>E> object that stores a new set of Events to assign to this FSM object
+	 * @param inStates - StateMap<<r>State> object that stores a new set of States to assign to this FSM object
+	 * @param inEvents - TransitionFunction<<r>State, T, Event> object that stores a new set of Transitions to assign to this FSM object
+	 * @param inTrans - EventMap<<r>Event> object that stores a new set of Events to assign to this FSM object
 	 */
 	
-	public void constructFSM(StateMap<S> inStates, TransitionFunction<S, T, E> inTrans, EventMap<E> inEvents) {
+	public void constructFSM(StateMap inStates, TransitionFunction<T> inTrans, EventMap inEvents) {
 		setFSMStateMap(inStates);
 		setFSMEventMap(inEvents);
 		setFSMTransitionFunction(inTrans);
@@ -477,7 +477,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return
 	 */
 	
-	public ArrayList<T> getStateTransitions(S state){
+	public ArrayList<T> getStateTransitions(State state){
 		return transitions.getTransitions(state);
 	}
 	
@@ -490,27 +490,27 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a State extending object that corresponds to the provided State extending object's name in the current FSM.
 	 */
 	
-	public S getState(State state) {
+	public State getState(State state) {
 		return states.getState(state);
 	}
 	
 	/**
 	 * Getter method that obtains the Collection of State extending objects stored within this FSM object's StateMap.
 	 * 
-	 * @return - Returns a Collection<<r>S> object representing the State extending objects associated to this FSM object.
+	 * @return - Returns a Collection<<r>State> object representing the State extending objects associated to this FSM object.
 	 */
 	
-	public Collection<S> getStates() {
+	public Collection<State> getStates() {
 		return states.getStates();
 	}
 	
 	/**
 	 * Getter method that obtains the Collection of Event extending objects stored within this FSM object's EventMap.
 	 * 
-	 * @return - Returns a Collection<<r>E> object representing the Event extending objects associated to this FSM object.
+	 * @return - Returns a Collection<<r>Event> object representing the Event extending objects associated to this FSM object.
 	 */
 	
-	public Collection<E> getEvents(){
+	public Collection<Event> getEvents(){
 		return events.getEvents();
 	}
 	
@@ -521,17 +521,17 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns the State extending object in this FSM object's StateMap corresponding to the provided String name.
 	 */
 	
-	public S getState(String stateName) {
+	public State getState(String stateName) {
 		return states.getState(stateName);
 	}
 	
 	/**
 	 * Getter method that returns all of the Initial States in the FSM object as an ArrayList of State extending objects.
 	 * 
-	 * @return - Returns an ArrayList<<r>S> of State extending objects which are the Initial States associated to this FSM object.
+	 * @return - Returns an ArrayList<<r>State> of State extending objects which are the Initial States associated to this FSM object.
 	 */
 	
-	public abstract ArrayList<S> getInitialStates();
+	public abstract ArrayList<State> getInitialStates();
 	
 	/**
 	 * Getter method that requests whether the calling FSM object possesses an Initial State with
@@ -562,7 +562,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a TransitionFunction<<r>T> object containing all the Transitions associated to this FSM object.
 	 */
 	
-	public TransitionFunction<S, T, E> getTransitions() {
+	public TransitionFunction<T> getTransitions() {
 		return transitions;
 	}
 	
@@ -587,7 +587,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a State object representing the corresponding State in the FSM that was just added.
 	 */
 	
-	public S addState(String stateName) {
+	public State addState(String stateName) {
 		return states.addState(stateName);
 	}
 	
@@ -600,7 +600,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return - Returns a State object representing the corresponding State in the FSM that was just added.
 	 */
 	
-	public S addState(State state) {
+	public State addState(State state) {
 		return states.addState(state);
 	}
 	
@@ -610,9 +610,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @return
 	 */
 	
-	public S addState(State ... state) {
+	public State addState(State ... state) {
 		Arrays.sort(state);
-		return (S)states.addState(state);
+		return (State)states.addState(state);
 	}
 	
 	/**
@@ -624,7 +624,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param newTransitions - ArrayList of Transition objects describing what Transitions belong to the provided State extending object.
 	 */
 	
-	public void addStateTransitions(S state, ArrayList<T> newTransitions) {
+	public void addStateTransitions(State state, ArrayList<T> newTransitions) {
 		transitions.putTransitions(state, newTransitions);
 	}
 	
@@ -646,7 +646,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param newState - State extending object representing the State being introduced as an Initial State.
 	 */
 	
-	public abstract void addInitialState(S newState);
+	public abstract void addInitialState(State newState);
 	
 	/**
 	 * This method handles the adding of a new Transition to the calling FSM object via a format
@@ -660,11 +660,11 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	
 	public void addTransition(String state1, String eventName, String state2) {
 		// If they do not exist yet, add the states.
-		S s1 = states.addState(state1);
-		S s2 = states.addState(state2);
+		State s1 = states.addState(state1);
+		State s2 = states.addState(state2);
 		
 		// Get the event or make it
-		E e = events.addEvent(eventName);
+		Event e = events.addEvent(eventName);
 		
 		// See if there is already a transition with the event...
 		ArrayList<T> thisTransitions = transitions.getTransitions(s1);
@@ -693,14 +693,14 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param transition - Transition extending object representing the Transition being added to the provided State extending object.
 	 */
 	
-	public void addTransition(S state, T transition) {
-		S fromState = states.addState(state); // Get the state or make it
-		E e = events.addEvent(transition.getTransitionEvent()); // Get the event or make it
+	public void addTransition(State state, T transition) {
+		State fromState = states.addState(state); // Get the state or make it
+		Event e = events.addEvent(transition.getTransitionEvent()); // Get the event or make it
 		try {
 			T outbound = transitions.getEmptyTransition(); // New transition object
 			outbound.setTransitionEvent(e);
-			for(S s : transition.getTransitionStates()) { // Add all the transition states (make them if necessary)
-				S toState = states.addState(s);
+			for(State s : transition.getTransitionStates()) { // Add all the transition states (make them if necessary)
+				State toState = states.addState(s);
 				outbound.setTransitionState(toState);
 			} // for transition state
 			transitions.addTransition(fromState, outbound);
@@ -716,7 +716,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 * @param state2
 	 */
 	
-	public void addTransition(S state, E event, S state2) {
+	public void addTransition(State state, Event event, State state2) {
 		transitions.addTransitionState(state,  event, state2);
 	}
 	
@@ -769,9 +769,9 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 */
 		
 	public boolean removeTransition(String state1, String eventName, String state2) {
-		S s1 = getState(state1);
-		S s2 = getState(state2);
-		E e = events.getEvent(eventName);
+		State s1 = getState(state1);
+		State s2 = getState(state2);
+		Event e = events.getEvent(eventName);
 		if(s1 == null) {
 			System.out.println("First state failed");
 		}
@@ -792,7 +792,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 */
 	
 	public void markAllStates() {
-		for(S s : states.getStates())
+		for(State s : states.getStates())
 			s.setStateMarked(true);
 	}
 	
@@ -801,7 +801,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 */
 	
 	public void unmarkAllStates() {
-		for(S s : states.getStates())
+		for(State s : states.getStates())
 			s.setStateMarked(false);
 	}
 	
@@ -810,7 +810,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 */
 	
 	public void makeAllStatesGood() {
-		for(S s : states.getStates())
+		for(State s : states.getStates())
 			s.setStateBad(false);
 	}
 	
@@ -820,11 +820,11 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	
 	public void removeBadStates() {
 		// Collect all the bad states
-		ArrayList<S> badStates = new ArrayList<S>();
-		for(S s : states.getStates())
+		ArrayList<State> badStates = new ArrayList<State>();
+		for(State s : states.getStates())
 			if(s.getStateBad()) badStates.add(s);
 		// Remove the states from the state map
-		for(S s : badStates) {
+		for(State s : badStates) {
 			states.removeState(s);
 			removeInitialState(s.getStateName());
 		}
@@ -844,7 +844,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 */
 	
 	public Boolean toggleMarkedState(String stateName) {
-		S curr = states.getState(stateName);
+		State curr = states.getState(stateName);
 		if(curr == null)	
 			return null;
 		boolean isMarked = curr.getStateMarked();
@@ -862,7 +862,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 */
 	
 	public Boolean toggleBadState(String stateName) {
-		S curr = states.getState(stateName);
+		State curr = states.getState(stateName);
 		if(curr == null) return null;
 		boolean isBad = curr.getStateBad();
 		curr.setStateBad(!isBad);
@@ -879,7 +879,7 @@ public abstract class TransitionSystem<S extends State, T extends Transition<S, 
 	 */
 	
 	public Boolean toggleSecretState(String stateName) {
-		S curr = states.getState(stateName);
+		State curr = states.getState(stateName);
 		if(curr == null) return null;
 		boolean isSecret = curr.getStatePrivate();
 		curr.setStatePrivate(!isSecret);
