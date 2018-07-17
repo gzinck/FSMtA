@@ -361,12 +361,12 @@ DetObsContFSM newFSM = new DetObsContFSM();
 			}
 			ArrayList<State> composite = new ArrayList<State>(reach);
 			Collections.sort(composite);
-			State made = newFSM.addState(composite.toArray(new State[composite.size()]));
+			State made = new State(composite.toArray(new State[composite.size()]));
 			newFSM.setStateComposition(made, composite.toArray(new State[composite.size()]));
 			map.put(s, made);
 		}
 		
-		LinkedList<State> queue = new LinkedList<State>(newFSM.getComposedStates().keySet());
+		LinkedList<State> queue = new LinkedList<State>();
 		HashSet<String> visited = new HashSet<String>();
 		
 		HashSet<State> initialStates = new HashSet<State>();
@@ -376,6 +376,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 		newFSM.setStateComposition(init,  initialStates.toArray(new State[initialStates.size()]));
 		queue.addFirst(init);
 		newFSM.addInitialState(init);
+		newFSM.addState(init);
 		
 		while(!queue.isEmpty()) {
 			State top = queue.poll();
@@ -399,6 +400,8 @@ DetObsContFSM newFSM = new DetObsContFSM();
 				newFSM.setStateComposition(bot, tran.get(e).toArray(new State[tran.get(e).size()]));
 				queue.add(bot);
 				newFSM.addTransition(top, e, bot);
+				newFSM.addState(top);
+				newFSM.addState(bot);
 			}
 		}
 		return newFSM;
