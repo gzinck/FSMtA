@@ -109,11 +109,10 @@ public class EventMap {
 	 */
 	
 	public Event addEvent(Event oldEvent) {
-		Event newEvent = null;
 		String eventName = oldEvent.getEventName();
 		if(events.containsKey(eventName))
 			return events.get(eventName);
-		newEvent.copyDataFrom(oldEvent);
+		Event newEvent = new Event(oldEvent);
 		events.put(eventName, newEvent);
 		
 		return newEvent;
@@ -130,11 +129,10 @@ public class EventMap {
 	 */
 	
 	public Event addEvent(Event event1, Event event2) {
-		Event newEvent = null;
 		String eventName = event1.getEventName();
 		if(events.containsKey(eventName))
 			return events.get(eventName);
-		newEvent.copyDataFrom(event1, event2);
+		Event newEvent = new Event(event1, event2);
 		events.put(eventName, newEvent);
 		return newEvent;
 	}

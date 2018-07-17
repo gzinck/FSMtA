@@ -76,59 +76,21 @@ public class Event implements EventControllability, EventObservability{
 		id = oldEvent.getEventName();
 		controllability = oldEvent.getEventControllability();
 		observability = oldEvent.getEventObservability();
-	
-	}
-
-//---  Operations   ---------------------------------------------------------------------------	
-	
-	/**
-	 * Copies the data from another Event into this Event. Useful when creating a copy of only
-	 * the information visible to a given (perhaps less sophisticated) Event.
-	 * 
-	 * @param other - Event object provided to copy data from into the calling Event object.
-	 */
-	
-	public void copyDataFrom(Event other) {
-		id = other.id;
-		observability = ((other instanceof EventObservability) ? ((EventObservability)other).getEventObservability() : true);
-		controllability = ((other instanceof EventControllability) ? ((EventControllability)other).getEventControllability() : true);
 	}
 	
 	/**
-	 * Copies the data from another Event into this Event. Useful when creating a copy of only
-	 * the information visible to a given (perhaps less sophisticated) Event.
+	 * Constructor for an Event that copies the data from two other events.
 	 * Performs the AND operation on all the properties for the two events put in as parameters.
 	 * 
 	 * @param other1 - First Event object provided to copy data from into the calling Event object.
 	 * @param other2 - Second Event object provided to copy data from into the calling Event object.
 	 */
 
-	public void copyDataFrom(Event other1, Event other2) {
+	public Event(Event other1, Event other2) {
 		id = other1.id;
-		boolean firstIsControllable = ((other1 instanceof EventControllability) ? ((EventControllability)other1).getEventControllability() : true);
-		boolean secondIsControllable = ((other2 instanceof EventControllability) ? ((EventControllability)other2).getEventControllability() : true);
-		controllability = (firstIsControllable && secondIsControllable);
-		boolean firstIsObservable = ((other1 instanceof EventObservability) ? ((EventObservability)other1).getEventObservability() : true);
-		boolean secondIsObservable = ((other2 instanceof EventObservability) ? ((EventObservability)other2).getEventObservability() : true);
-		observability = (firstIsObservable && secondIsObservable);
+		controllability = (other1.getEventControllability() && other2.getEventControllability());
+		observability = (other1.getEventObservability() && other2.getEventObservability());
 	}
-	
-	/**
-	 * Makes a new event that performs the AND operation on all the properties.
-	 * If the current class is just Event, then there are no properties to copy anyways.
-	 * 
-	 * @param other - The Event object provided to combine its properties with the calling Event.
-	 * @return - Returns a new Event extending object which has the AND of the properties in the provided and calling Event objects.
-	 */
-
-	public Event makeEventWith(Event other) {
-		Event newEvent = new Event(this);
-		newEvent.setEventControllability(this.controllability && other.getEventControllability());
-		EventObservability obsOther = (EventObservability)other;
-		newEvent.setEventObservability(this.observability && other.getEventObservability());
-		return newEvent;
-	}
-
 	
 //---  Setter Methods   -----------------------------------------------------------------------
 	

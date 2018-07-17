@@ -29,7 +29,7 @@ public class SingleFSMOperationPane extends VBox {
 	private TextField fsmNameField;
 	/** ObservableList of Strings with all the possible operations involving
 	 * one FSM that a user can choose. */
-	private static final ObservableList<String> SINGLE_FSM_OPERATIONS = FXCollections.observableArrayList("Determinize", "Make Accessible", "Make CoAccessible", "Trim", "Make Observer View");
+	private static final ObservableList<String> SINGLE_FSM_OPERATIONS = FXCollections.observableArrayList("Determinize", "Make Accessible", "Make CoAccessible", "Trim");
 	/** Button allowing the user to perform the selection operation on the selected FSM. */
 	private Button performOperationBtn;
 	
@@ -99,7 +99,7 @@ public class SingleFSMOperationPane extends VBox {
 			} else {
 				if(operation.equals(SINGLE_FSM_OPERATIONS.get(0))) {
 					// Determinize
-					addFSM((FSM)((Observability)currFSM).createObserverView(), id);
+					addFSM(currFSM.buildObserver(), id);
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(1))) {
 					// Accessible
 					addFSM(currFSM.makeAccessible(), id);
@@ -109,13 +109,6 @@ public class SingleFSMOperationPane extends VBox {
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(3))) {
 					// Trim
 					addFSM(currFSM.trim(), id);
-				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(4))) {
-					// Make Observer View
-					if(currFSM instanceof Observability) {
-						addFSM((FSM)((Observability)currFSM).createObserverView(), id);
-					} else {
-						Alerts.makeError(Alerts.ERROR_ALREADY_OBSERVABLE);
-					} // if/else
 				} else {
 					// No option chosen
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);
