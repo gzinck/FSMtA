@@ -11,16 +11,14 @@ import java.util.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class StateMap<S extends State> {
+public class StateMap {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
 	/** HashMap<<r>String, <<r>S extends State>> object that maps the String object names of States to their State objects.*/
-	private HashMap<String, S> states;
+	private HashMap<String, State> states;
 	/** HashMap<<r>S, ArrayList<<r>S>> object that maps a State extending object to a list of State extending objects which compose it.*/
 	private HashMap<State, ArrayList<State>> composition;
-	/** Holds the precise class of the generic State class describing the generic variable S. */
-	private Class<S> stateClass;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -30,10 +28,9 @@ public class StateMap<S extends State> {
 	 * @param inClass - The class of State the map will hold, used for instantiation.
 	 */
 	
-	public StateMap(Class<S> inClass) {
-		states = new HashMap<String, S>();
+	public StateMap() {
+		states = new HashMap<String, State>();
 		composition = new HashMap<State, ArrayList<State>>();
-		stateClass = inClass;
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -46,7 +43,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns a boolean value; true if the State was successfully renamed, false otherwise.
 	 */
 	
-	public boolean renameState(S state, String newName) {
+	public boolean renameState(State state, String newName) {
 		String oldName = state.getStateName();
 		if(state == null || newName == null)
 			return false;
@@ -66,7 +63,7 @@ public class StateMap<S extends State> {
 		State[] stateArr = new State[states.size()];
 		states.values().toArray(stateArr);
 		for(int i = 0; i < states.size(); i++)
-			renameState((S)stateArr[i], i + "");
+			renameState(stateArr[i], i + "");
 		composition = null;
 	}
 	
@@ -124,7 +121,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns the State object corresponding to the provided String object.
 	 */
 	
-	public S getState(String stateName) {
+	public State getState(String stateName) {
 		return states.get(stateName);
 	}
 
@@ -135,7 +132,7 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object from this StateMap object, representing what its HashMap<<r>String, <<r>S extends State>> had stored at that position.
 	 */
 	
-	public S getState(State state) {
+	public State getState(State state) {
 		String stateName = state.getStateName();
 		return states.get(stateName);
 	}
@@ -157,18 +154,8 @@ public class StateMap<S extends State> {
 	 * @return - Returns the Collection<<r>S> of States that are stored within the HashMap<<r>String, <<r>S extends State>> object.
 	 */
 	
-	public Collection<S> getStates() {
+	public Collection<State> getStates() {
 		return states.values();
-	}
-	
-	/**
-	 * Gets the class type of the States stored in the StateMap
-	 * 
-	 * @return - Returns the Class<<r>S> type of the States.
-	 */
-	
-	public Class<S> getStateClassType(){
-		return stateClass;
 	}
 
 //---  Setter Methods   -----------------------------------------------------------------------
@@ -179,19 +166,10 @@ public class StateMap<S extends State> {
 	 * @param inHash - HashMap<<r>String, S> object that represents a matched set of Strings leading to State objects.
 	 */
 	
-	public void setStateMapStates(HashMap<String, S> inHash) {
+	public void setStateMapStates(HashMap<String, State> inHash) {
 		states = inHash;
 	}
 	
-	/**
-	 * Setter method that assigns a new Class<<r>S> object to this object's corresponding instance variable.
-	 * 
-	 * @param inClass - Class<<r>S> object that represents a Class type corresponding to the type of State stored by this StateMap.
-	 */
-	
-	public void setStateMapClass(Class<S> inClass) {
-		stateClass = inClass;
-	}
 	
 	/**
 	 * Setter method that assigns a new set of State extending objects to individual lists of State extending objects
@@ -229,19 +207,14 @@ public class StateMap<S extends State> {
 	 * already existed in the mapping).
 	 */
 	
-	public S addState(State state) {
-		try {
-			String stateName = state.getStateName();
-			if(states.containsKey(stateName))
-				return states.get(stateName);
-			S newState = stateClass.newInstance();
-			newState.copyDataFrom(state);
-			states.put(stateName, newState);
-			return newState;
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public State addState(State state) {
+		String stateName = state.getStateName();
+		if(states.containsKey(stateName))
+			return states.get(stateName);
+		State newState = new State();
+		newState.copyDataFrom(state);
+		states.put(stateName, newState);
+		return newState;
 	}
 	
 	/**
@@ -254,11 +227,11 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object representing the object added to the mapping (or the one that already existed in the mapping).
 	 */
 	
-	public S addState(State state, String prefix) {
+	public State addState(State state, String prefix) {
 		String stateName = prefix + state.getStateName();
 		if(states.containsKey(stateName))
 			return states.get(stateName);
-		S newState = state.copy();
+		State newState = state.copy();
 		newState.setStateName(stateName);
 		states.put(stateName, newState);
 		return newState;
@@ -272,11 +245,11 @@ public class StateMap<S extends State> {
 	 * @return - Returns the State object that has been added to the State Map as the concatenation of the two provided States.
 	 */
 	
-	public S addState(S state1, State state2) {
+	public State addState(State state1, State state2) {
 		String stateName = "(" + state1.getStateName() + "," + state2.getStateName() + ")";
 		if(states.containsKey(stateName))
 			return states.get(stateName);
-		S newState = state1.makeStateWith(state2); // TODO: fix the generic types here
+		State newState = state1.makeStateWith(state2); // TODO: fix the generic types here
 		states.put(newState.getStateName(), newState);
 		if(state1.getStateInitial() && state2.getStateInitial())
 			newState.setStateInitial(true);
@@ -292,11 +265,11 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object representing the object added to the mapping (or the one that already existed in the mapping).
 	 */
 	
-	public S addState(String stateName) {
+	public State addState(String stateName) {
 		if(states.containsKey(stateName))
 			return states.get(stateName);
 		try {
-			S newState = stateClass.newInstance();
+			State newState = new State();
 			newState.setStateName(stateName);
 			states.put(stateName, newState);
 			return newState;
@@ -315,8 +288,8 @@ public class StateMap<S extends State> {
 	 * @return - Returns a State object representing the newly generated State object.
 	 */
 	
-	public S addState(State ... providedStates) {
-		S st = (S)(new State(providedStates));
+	public State addState(State ... providedStates) {
+		State st = new State(providedStates);
 		if(states.containsKey(st.getStateName())) {
 			return states.get(st.getStateName());
 		}
@@ -352,7 +325,7 @@ public class StateMap<S extends State> {
 	 * @param inStates - ArrayList<<r>S> object of State objects to remove from the StateMap.
 	 */
 	
-	public void removeStates(ArrayList<S> inStates) {
+	public void removeStates(ArrayList<State> inStates) {
 		for(State s : inStates) {
 			states.remove(s.getStateName());
 		}

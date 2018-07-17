@@ -20,7 +20,7 @@ import support.State;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface Controllability<S extends State, T extends Transition<S, E>, E extends Event>{
+public interface Controllability<T extends Transition> {
 
 //---  Operations   -----------------------------------------------------------------------
 	
@@ -37,7 +37,7 @@ public interface Controllability<S extends State, T extends Transition<S, E>, E 
 	 * respect to the parameter FSM.
 	 */
 	
-	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> FSM<S, T, E> getSupremalControllableSublanguage(FSM<S1, T1, E1> other);
+	public abstract <T1 extends Transition> FSM<T> getSupremalControllableSublanguage(FSM<T1> other);
 	
 	/**
 	 * This abstract method must be implemented by any class implementing the Controllability interface.
@@ -56,7 +56,7 @@ public interface Controllability<S extends State, T extends Transition<S, E>, E 
 	 * @return - Returns a DisabledEvents object describing what needs to be disabled at any given state.
 	 */
 	
-	public abstract <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DisabledEvents getDisabledEvents(State curr, FSM<S1, T1, E1> otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap);
+	public abstract <T1 extends Transition> DisabledEvents getDisabledEvents(State curr, FSM<T1> otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap);
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	

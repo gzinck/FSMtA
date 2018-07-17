@@ -13,7 +13,7 @@ import support.transition.DetTransition;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface Deterministic<S extends State, T extends DetTransition<S, E>, E extends Event> {
+public interface Deterministic<T extends DetTransition> {
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
@@ -23,5 +23,5 @@ public interface Deterministic<S extends State, T extends DetTransition<S, E>, E
 	 * @return State object which is currently the initial state. 
 	 */
 	
-	public abstract S getInitialState();
+	public abstract State getInitialState();
 }

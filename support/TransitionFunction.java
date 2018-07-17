@@ -6,7 +6,6 @@ import support.transition.DetTransition;
 import support.transition.NonDetTransition;
 import support.transition.Transition;
 import support.event.Event;
-import support.event.ObsControlEvent;
 import support.attribute.*;
 
 /**
@@ -18,12 +17,12 @@ import support.attribute.*;
  * @param <T> - T being a class in the Transitions hierarchy from support.transition package
  */
 
-public class TransitionFunction<S extends State, T extends Transition<S, E>, E extends Event> {
+public class TransitionFunction <T extends Transition>{
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** HashMap<<r>String, ArrayList<Transition>> object containing all the transitions from a given state with various events that are possible. */
-	protected HashMap<S, ArrayList<T>> transitions;
+	protected HashMap<State, ArrayList<T>> transitions;
 	/** T object extending Transition<<r>S, E> used for reference to the object's methods in a non-static way.*/
 	private T dummyTransition;
 	
@@ -37,7 +36,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 */
 	
 	public TransitionFunction(T obj) {
-		transitions = new HashMap<S, ArrayList<T>>();
+		transitions = new HashMap<State, ArrayList<T>>();
 		dummyTransition = obj;
 	}
 	
@@ -52,7 +51,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	
 	public String makeDotString() {
 		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
+		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
 			State firstState = entry.getKey();
 			ArrayList<T> thisTransitions = entry.getValue();
 			for(T aTransition : thisTransitions) {
@@ -72,13 +71,13 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * this TransitionFunction object, excluding any transitions in the other transition function.
 	 */
 	
-	public String makeDotStringExcluding(TransitionFunction<S, T, E> other) {
+	public String makeDotStringExcluding(TransitionFunction<T> other) {
 		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
+		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
 			State firstState = entry.getKey();
 			ArrayList<T> thisTransitions = entry.getValue();
 			for(T aTransition : thisTransitions) {
-				ArrayList<S> otherTransitionStates = other.getTransitionStates(firstState, aTransition.getTransitionEvent());
+				ArrayList<State> otherTransitionStates = other.getTransitionStates(firstState, aTransition.getTransitionEvent());
 				if(otherTransitionStates == null || otherTransitionStates.size() == 0) {
 					if(aTransition instanceof DetTransition)
 						sb.append(((DetTransition)aTransition).makeDotStringMayTransition(firstState)); // only append if the transition does not exist in other.
@@ -97,26 +96,27 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @param fsmStates Collection of states which exists in the FSM.
 	 * @return Hashmap mapping each state to a hashset of states (which are all reachable
 	 */
-	public HashMap<S, HashSet<S>> getEpsilonReaches(Collection<S> fsmStates) {
-		HashMap<S, HashSet<S>> epsilonReach = new HashMap<S, HashSet<S>>();	//Maps a State to all States it is attached to
-		for(S s : fsmStates) {						//For all States in the FSM:
-			HashSet<S> thisSet = new HashSet<S>();			//Keeps track of all States attached to this State
+	public HashMap<State, HashSet<State>> getEpsilonReaches(Collection<State> fsmStates) {
+		HashMap<State, HashSet<State>> epsilonReach = new HashMap<State, HashSet<State>>();	//Maps a State to all States it is attached to
+		for(State s : fsmStates) {						//For all States in the FSM:
+			HashSet<State> thisSet = new HashSet<State>();			//Keeps track of all States attached to this State
 			thisSet.add(s);										//Add the original State as one in the group
-			LinkedList<S> queue = new LinkedList<S>();		//Queue to process all States connected via Unobservable Events
+			LinkedList<State> queue = new LinkedList<State>();		//Queue to process all States connected via Unobservable Events
 			queue.add(s);											//First Queue entry is the original State
-			HashSet<S> visited = new HashSet<S>();			//Keeps track of revisited States
+			HashSet<State> visited = new HashSet<State>();			//Keeps track of revisited States
 			// Go through all the states connected by unobservable events
 			while(!queue.isEmpty()) {
-				S top = queue.poll();					//Get the next State
+				State top = queue.poll();					//Get the next State
 				if(visited.contains(top))					//If already processed, don't re-process the State
 					continue;
 				visited.add(top);							//Mark it as visited
 				for(T t : this.getTransitions(top)) {	//Process all the State's Transitions
 					// If it's an unobservable event, go through all transition states
-					if(!((EventObservability)t.getTransitionEvent()).getEventObservability()) for(S sr : t.getTransitionStates()) {
-						if(!thisSet.contains(sr)) {
-					 		thisSet.add(sr); //If the Event is unobservable and has not yet been seen, add the State
-							queue.add(sr); //As the State is a part of the new aggregated State, check its transitions too
+					if(!((EventObservability)t.getTransitionEvent()).getEventObservability()) 
+						for(State sr : t.getTransitionStates()) {
+							if(!thisSet.contains(sr)) {
+								thisSet.add(sr); //If the Event is unobservable and has not yet been seen, add the State
+								queue.add(sr); //As the State is a part of the new aggregated State, check its transitions too
 						} // if it doesn't contain it
 					} // if we have an unobservable event, go through all the transition states
 				} // for each transition
@@ -135,7 +135,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @return - Returns an ArrayList<<r>T> of Transition objects that are associated to a defined State in an FSM
 	 */
 	
-	public ArrayList<T> getTransitions(S state) {
+	public ArrayList<T> getTransitions(State state) {
 		return transitions.get(state) != null ? transitions.get(state) : new ArrayList<T>();
 	}
 	
@@ -145,7 +145,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @return - Returns a Set of map entries with State objects and an ArrayList of the Transitions. (Set<<r>Map, Entry<<r>S, ArrayList<<r>T>>>)
 	 */
 	 
-	public Set<Map.Entry<S, ArrayList<T>>> getAllTransitions() {
+	public Set<Map.Entry<State, ArrayList<T>>> getAllTransitions() {
 		return transitions.entrySet();
 	}
 	
@@ -186,7 +186,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @return - Returns an ArrayList<<r>S> of Transition States that the provided State leads to, or null if there are none.
 	 */
 	
-	public ArrayList<S> getTransitionStates(State state, Event event) {
+	public ArrayList<State> getTransitionStates(State state, Event event) {
 		ArrayList<T> thisTransitions = transitions.get(state);
 		if(thisTransitions != null)
 			for(T t : thisTransitions)
@@ -205,7 +205,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @param inTransitions - ArrayList<<r>T> of Transition objects to become the new Value stored in a <<r>Key, Value> data structure.
 	 */
 	
-	public void putTransitions(S state, ArrayList<T> inTransitions) {
+	public void putTransitions(State state, ArrayList<T> inTransitions) {
 		transitions.put(state, inTransitions);
 	}
 	
@@ -219,7 +219,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @param transition - <<r>T extends Transition> object representing the new Transition to append to the existing ArrayList<<r>T> at Key State in <<r>Key, Value>. 
 	 */
 	
-	public void addTransition(S state, T transition) {
+	public void addTransition(State state, T transition) {
 		ArrayList<T> currT = transitions.get(state);
 		if(currT == null) {
 			transitions.put(state, new ArrayList<T>());
@@ -242,7 +242,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @param event
 	 */
 	
-	public void addTransitionState(S inState, E event, S outState) {
+	public void addTransitionState(State inState, Event event, State outState) {
 		ArrayList<T> currT = transitions.get(inState);
 		if(currT == null) {
 			transitions.put(inState, new ArrayList<T>());
@@ -272,7 +272,7 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	
 	public void removeState(State state) {
 		transitions.remove(state);
-		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
+		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
 			ArrayList<T> tToRemove = new ArrayList<T>();
 			for(T transition : entry.getValue())
 				if(transition.removeTransitionState(state))
@@ -287,13 +287,13 @@ public class TransitionFunction<S extends State, T extends Transition<S, E>, E e
 	 * @param badStates - Collections<<r>S> of States which are bad and must be removed from the TransitionFunction.
 	 */
 	
-	public void removeStates(Collection<S> badStates) {
+	public void removeStates(Collection<State> badStates) {
 		// Remove the transitions from the bad states
-		Iterator<S> itr = badStates.iterator();
+		Iterator<State> itr = badStates.iterator();
 		while(itr.hasNext()) transitions.remove(itr.next());
 		
 		// Remove the transitions that go to the bad states
-		for(Map.Entry<S, ArrayList<T>> entry : transitions.entrySet()) {
+		for(Map.Entry<State, ArrayList<T>> entry : transitions.entrySet()) {
 			ArrayList<T> tToRemove = new ArrayList<T>();
 			for(T transition : entry.getValue())
 				if(transition.removeTransitionStates(badStates))

@@ -12,7 +12,7 @@ import support.State;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface OpacityTest <S extends State>{
+public interface OpacityTest {
 
 //---  Operations   ---------------------------------------------------------------------------
 	
@@ -27,6 +27,6 @@ public interface OpacityTest <S extends State>{
 	 * @return - Returns an ArrayList<<r>S> object containing any States that were found to be Private; if none, successful test. 
 	 */
 	
-	public abstract ArrayList<S> testCurrentStateOpacity();
+	public abstract ArrayList<State> testCurrentStateOpacity();
 	
 }

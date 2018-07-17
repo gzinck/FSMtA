@@ -16,7 +16,7 @@ import fsm.NonDetObsContFSM;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface Observability<S extends State, T extends Transition<S, E>, E extends Event>{
+public interface Observability<T extends Transition> {
 
 //---  Operations   ---------------------------------------------------------------------------
 	

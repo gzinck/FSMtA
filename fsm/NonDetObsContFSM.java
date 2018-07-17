@@ -25,11 +25,11 @@ import support.transition.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>
-		implements NonDeterministic<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>,
-		Observability<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>,
-		Controllability<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>,
-		OpacityTest<State>{
+public class NonDetObsContFSM extends FSM<NonDetTransition>
+		implements NonDeterministic<NonDetTransition>,
+		Observability<NonDetTransition>,
+		Controllability<NonDetTransition>,
+		OpacityTest{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -54,12 +54,12 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	public NonDetObsContFSM(File in, String inId) {
 		id = inId;									//Assign id
-		states = new StateMap<State>(State.class);	//Initialize the storage for States, Event, and Transitions
-		events = new EventMap<ObsControlEvent>(ObsControlEvent.class);	//51: Create a ReadWrite object for file reading/writing (reading in this case), denote generics
-		transitions = new TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>(new NonDetTransition<State, ObsControlEvent>());
+		states = new StateMap();	//Initialize the storage for States, Event, and Transitions
+		events = new EventMap();	//51: Create a ReadWrite object for file reading/writing (reading in this case), denote generics
+		transitions = new TransitionFunction<NonDetTransition>(new NonDetTransition());
 		initialStates = new ArrayList<State>();
 		
-		ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> redWrt = new ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>();
+		ReadWrite<NonDetTransition> redWrt = new ReadWrite<NonDetTransition>();
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
 		
 		for(int i = 0; i < special.get(0).size(); i++) {	//Special ArrayList 0-entry is InitialState
@@ -91,11 +91,11 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	 * @param inId - String object representing the Id for the new FSM to carry.
 	 */
 	
-	public NonDetObsContFSM(FSM<State, Transition<State, Event>, Event> other, String inId) {
+	public NonDetObsContFSM(FSM<Transition> other, String inId) {
 		id = inId;
-		states = new StateMap<State>(State.class);
-		events = new EventMap<ObsControlEvent>(ObsControlEvent.class);
-		transitions = new TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>(new NonDetTransition<State, ObsControlEvent>());
+		states = new StateMap();
+		events = new EventMap();
+		transitions = new TransitionFunction<NonDetTransition>(new NonDetTransition());
 		
 		// Add in all the states
 		for(State s : other.states.getStates())
@@ -105,7 +105,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			this.events.addEvent(e);
 		// Add in all the transitions
 		for(State s : other.states.getStates()) {
-			for(Transition<State, Event> t : other.transitions.getTransitions(s)) {
+			for(Transition t : other.transitions.getTransitions(s)) {
 				// Add every state the transition leads to
 				for(State toState : t.getTransitionStates())
 					this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toState.getStateName());
@@ -126,9 +126,9 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	public NonDetObsContFSM(String inId) {
 		id = inId;
-		events = new EventMap<ObsControlEvent>(ObsControlEvent.class);
-		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>(new NonDetTransition<State, ObsControlEvent>());
+		events = new EventMap();
+		states = new StateMap();
+		transitions = new TransitionFunction<NonDetTransition>(new NonDetTransition());
 		initialStates = new ArrayList<State>();
 	} // DetFSM()
 	
@@ -139,9 +139,9 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 	
 	public NonDetObsContFSM() {
 		id = "";
-		events = new EventMap<ObsControlEvent>(ObsControlEvent.class);
-		states = new StateMap<State>(State.class);
-		transitions = new TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>(new NonDetTransition<State, ObsControlEvent>());
+		events = new EventMap();
+		states = new StateMap();
+		transitions = new TransitionFunction<NonDetTransition>(new NonDetTransition());
 		initialStates = new ArrayList<State>();
 	} // NonDetObsContFSM()
 
@@ -165,7 +165,7 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 				if(visited.contains(top))
 					continue;
 				visited.add(top);
-				for(NonDetTransition<State, ObsControlEvent> t : this.getTransitions().getTransitions(top)) {
+				for(NonDetTransition t : this.getTransitions().getTransitions(top)) {
 				  if(!t.getTransitionEvent().getEventObservability()) {
 					for(State sr : t.getTransitionStates()) {
 						if(!thisSet.contains(sr)) {
@@ -209,9 +209,9 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			while(iter.hasNext()) {
 				State s = iter.next();
 				aggregate.add(s);
-				for(NonDetTransition<State, ObsControlEvent> dT : this.getTransitions().getTransitions(s)) {
+				for(NonDetTransition dT : this.getTransitions().getTransitions(s)) {
 					if(dT.getTransitionEvent().getEventObservability()) {
-					  NonDetTransition<State, ObsControlEvent> newTrans = new NonDetTransition<State, ObsControlEvent>();
+					  NonDetTransition newTrans = new NonDetTransition();
 					  newTrans.setTransitionEvent(dT.getTransitionEvent());
 					  for(State sr : dT.getTransitionStates()) {
 						newTrans.addTransitionState(newFSM.addState(name.get(sr.getStateName())));
@@ -283,12 +283,12 @@ public class NonDetObsContFSM extends FSM<State, NonDetTransition<State, ObsCont
 			processed.add(aggregate);
 			String[] states = aggregate.split("-"); // Break up the states into separate ones
 			HashMap<String, HashSet<String>> eventStates = new HashMap<String, HashSet<String>>();
-			TransitionFunction<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> allTrans = this.getTransitions();
+			TransitionFunction<NonDetTransition> allTrans = this.getTransitions();
 			
 			// Go through every state and add 
 			for(String targetState : states) {
-				ArrayList<NonDetTransition<State, ObsControlEvent>> transitions = allTrans.getTransitions(getState(targetState));
-				for(NonDetTransition<State, ObsControlEvent> oneTransition : transitions) {
+				ArrayList<NonDetTransition> transitions = allTrans.getTransitions(getState(targetState));
+				for(NonDetTransition oneTransition : transitions) {
 					if(eventStates.get(oneTransition.getTransitionEvent().getEventName()) == null) {
 						eventStates.put(oneTransition.getTransitionEvent().getEventName(), new HashSet<String>());
 					}
@@ -353,7 +353,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 				if(reach.contains(top))
 					continue;
 				reach.add(top);
-			    for(NonDetTransition<State, ObsControlEvent> t : getTransitions().getTransitions(top)) {
+			    for(NonDetTransition t : getTransitions().getTransitions(top)) {
 				   if(!t.getTransitionEvent().getEventObservability()) {
 					  queue.addAll(t.getTransitionStates());
 			 	  }
@@ -383,9 +383,9 @@ DetObsContFSM newFSM = new DetObsContFSM();
 			if(visited.contains(top.getStateName()))
 				continue;
 			visited.add(top.getStateName());
-			HashMap<ObsControlEvent, HashSet<State>> tran = new HashMap<ObsControlEvent, HashSet<State>>();
+			HashMap<Event, HashSet<State>> tran = new HashMap<Event, HashSet<State>>();
 			for(State s : newFSM.getStateComposition(top)) {
-				for(NonDetTransition<State, ObsControlEvent> t : getTransitions().getTransitions(s)) {
+				for(NonDetTransition t : getTransitions().getTransitions(s)) {
 					if(t.getTransitionEvent().getEventObservability()) {
 						if(tran.get(t.getTransitionEvent()) == null) {
 							tran.put(t.getTransitionEvent(), new HashSet<State>());
@@ -395,7 +395,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 					}
 				}
 			}
-			for(ObsControlEvent e : tran.keySet()) {
+			for(Event e : tran.keySet()) {
 				State bot = newFSM.addState(tran.get(e).toArray(new State[tran.get(e).size()]));
 				newFSM.setStateComposition(bot, tran.get(e).toArray(new State[tran.get(e).size()]));
 				queue.add(bot);
@@ -427,7 +427,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 			if(s.getStatePrivate())
 				priv.add(s.getStateName());
 		}
-		for(ObsControlEvent e : this.getEvents()) {
+		for(Event e : this.getEvents()) {
 			if(!e.getEventObservability())
 				unob.add(e.getEventName());
 			if(!e.getEventControllability())
@@ -448,12 +448,12 @@ DetObsContFSM newFSM = new DetObsContFSM();
 		special += cont.size() + "\n";
 		for(String s : cont)
 			special += s + "\n";
-		ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent> rdWrt = new ReadWrite<State, NonDetTransition<State, ObsControlEvent>, ObsControlEvent>();
+		ReadWrite<NonDetTransition> rdWrt = new ReadWrite<NonDetTransition>();
 		rdWrt.writeToFile(truePath,  special, this.getTransitions());
 	}
 	
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM getSupremalControllableSublanguage(FSM<S1, T1, E1> other) {
+	public <T1 extends Transition> NonDetObsContFSM getSupremalControllableSublanguage(FSM<T1> other) {
 		// Store what events are disabled in the map.
 		HashMap<String, DisabledEvents> disabledMap = new HashMap<String, DisabledEvents>();
 		// Parse the graph and identify disabled states and disabled events
@@ -473,11 +473,11 @@ DetObsContFSM newFSM = new DetObsContFSM();
 			if(disabled.stateIsDisabled()) {
 				statesToRemove.add(s);
 			} else {
-				ArrayList<NonDetTransition<State, ObsControlEvent>> allowedTransitions = new ArrayList<NonDetTransition<State, ObsControlEvent>>();
-				ArrayList<NonDetTransition<State, ObsControlEvent>> transitions = this.transitions.getTransitions(getState(s));
+				ArrayList<NonDetTransition> allowedTransitions = new ArrayList<NonDetTransition>();
+				ArrayList<NonDetTransition> transitions = this.transitions.getTransitions(getState(s));
 				if(transitions != null) {
-					for(NonDetTransition<State, ObsControlEvent> t : transitions) {
-						ObsControlEvent e = t.getTransitionEvent();
+					for(NonDetTransition t : transitions) {
+						Event e = t.getTransitionEvent();
 						if(disabled.eventIsEnabled(e.getEventName())) {
 							// Create a list of the states the event leads to
 							ArrayList<State> toStates = new ArrayList<State>();
@@ -486,7 +486,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 									toStates.add(getState(toS.getStateName()));
 							} // for every toState
 							if(toStates.size() > 0)
-								allowedTransitions.add(new NonDetTransition<State, ObsControlEvent>(e, toStates));
+								allowedTransitions.add(new NonDetTransition(e, toStates));
 						} // if the event is enabled
 					} // for every transition
 				} // if there are any transitions
@@ -501,7 +501,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	} // getSupremalControllableSublanguage(FSM)
 	
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> DisabledEvents getDisabledEvents(State curr, FSM<S1, T1, E1> otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap) {
+	public <T1 extends Transition> DisabledEvents getDisabledEvents(State curr, FSM<T1> otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap) {
 		String currName = curr.getStateName();
 		State otherCurr = otherFSM.getState(currName);
 		
@@ -522,16 +522,16 @@ DetObsContFSM newFSM = new DetObsContFSM();
 		
 		// Otherwise, go through the neighbours and identify which events we need to disable.
 		DisabledEvents currDE = new DisabledEvents(false);
-		ArrayList<NonDetTransition<State, ObsControlEvent>> thisTransitions = transitions.getTransitions(curr);
+		ArrayList<NonDetTransition> thisTransitions = transitions.getTransitions(curr);
 		if(thisTransitions != null)
-		for(NonDetTransition<State, ObsControlEvent> t : thisTransitions) {
+		for(NonDetTransition t : thisTransitions) {
 			DisabledEvents tempDE = new DisabledEvents(false);
 			boolean transitionEventDisabled = false;
 			
 			loopThroughTransitionStates:
 			for(State s : (ArrayList<State>)(t.getTransitionStates())) {
 				DisabledEvents nextDE = getDisabledEvents(s, otherFSM, visitedStates, disabledMap);
-				ObsControlEvent e = t.getTransitionEvent();
+				Event e = t.getTransitionEvent();
 				
 				// If the event is not present in the specification, then break
 				if(!otherFSM.transitions.eventExists(otherFSM.getState(s), e)) {
@@ -584,7 +584,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM union(FSM ... other) {
+	public <T1 extends Transition> NonDetObsContFSM union(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		this.unionHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
@@ -596,7 +596,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	}
 
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM product(FSM ... other) {
+	public <T1 extends Transition> NonDetObsContFSM product(FSM ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		this.productHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
@@ -608,7 +608,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	}
 	
 	@Override
-	public <S1 extends State, T1 extends Transition<S1, E1>, E1 extends Event> NonDetObsContFSM parallelComposition(FSM ... other){
+	public <T1 extends Transition> NonDetObsContFSM parallelComposition(FSM ... other){
 		NonDetObsContFSM newFSM = this;
 		for(int i = 0; i < other.length; i++) {
 			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
@@ -632,7 +632,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	
 	@Override
 	public Boolean getEventObservability(String eventName) {
-		ObsControlEvent curr = events.getEvent(eventName);
+		Event curr = events.getEvent(eventName);
 		if(curr != null)
 			return curr.getEventObservability();
 		return null;
@@ -640,7 +640,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	
 	@Override
 	public Boolean getEventControllability(String eventName) {
-		ObsControlEvent curr = events.getEvent(eventName);
+		Event curr = events.getEvent(eventName);
 		if(curr != null)
 			return curr.getEventControllability();
 		return null;
@@ -676,7 +676,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 
 	@Override
 	public boolean setEventObservability(String eventName, boolean status) {
-		ObsControlEvent curr = events.getEvent(eventName);
+		Event curr = events.getEvent(eventName);
 		if(curr != null) {
 			curr.setEventObservability(status);
 			return true;
@@ -686,7 +686,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	
 	@Override
 	public void setEventControllability(String eventName, boolean value) {
-		ObsControlEvent curr = events.getEvent(eventName);
+		Event curr = events.getEvent(eventName);
 		if(curr != null)
 			curr.setEventControllability(value);
 	}
