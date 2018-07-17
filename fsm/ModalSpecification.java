@@ -7,17 +7,12 @@ import support.event.Event;
 import support.transition.DetTransition;
 import support.transition.Transition;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-
-import fsm.attribute.*;
-import graphviz.FSMToDot;
 
 /**
  * ModalSpecification is an enhanced version of a transition system, which defines both "may" and
@@ -166,8 +161,6 @@ public class ModalSpecification
 		}
 		
 		FSM product = universalObserverView.product(specFSM);
-		
-		FSMToDot.createImgFromFSM(product, "/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/" + "product", "/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/", "/Users/graemezinck/Documents/OneDrive/Documents/Personal/Eclipse Workspace/Summer Research/config.properties");
 		
 		//--------------------------------------------
 		// Step 2: Mark the bad states
