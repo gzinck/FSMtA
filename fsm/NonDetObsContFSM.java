@@ -25,11 +25,10 @@ import support.transition.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetObsContFSM extends FSM<NonDetTransition>
-		implements NonDeterministic<NonDetTransition>,
-		Observability<NonDetTransition>,
-		Controllability<NonDetTransition>,
-		OpacityTest{
+public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterministic<NonDetTransition>,
+																	  Observability<NonDetTransition>,
+																	  Controllability<NonDetTransition>,
+																	  OpacityTest{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -38,7 +37,7 @@ public class NonDetObsContFSM extends FSM<NonDetTransition>
 			
 //--- Instance Variables  ----------------------------------------------------------------------
 			
-	/** ArrayList<<j>State> object that holds a list of Initial States for this Non Deterministic FSM object. */
+	/** ArrayList<<r>State> object that holds a list of Initial States for this Non Deterministic FSM object. */
 	protected ArrayList<State> initialStates;
 	
 //--- Constructors  ----------------------------------------------------------------------
@@ -63,13 +62,21 @@ public class NonDetObsContFSM extends FSM<NonDetTransition>
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
 		
 		for(int i = 0; i < special.get(0).size(); i++) {	//Special ArrayList 0-entry is InitialState
+			if(states.getState(special.get(0).get(i)) == null)
+				states.addState(new State(special.get(0).get(i)));
 			states.getState(special.get(0).get(i)).setStateInitial(true);
 			initialStates.add(states.addState(special.get(0).get(i)));
 		}
-		for(int i = 0; i < special.get(1).size(); i++)			//Special ArrayList 1-entry is MarkedState
+		for(int i = 0; i < special.get(1).size(); i++) {			//Special ArrayList 1-entry is MarkedState
+			if(states.getState(special.get(1).get(i)) == null)
+				states.addState(new State(special.get(1).get(i)));
 			states.getState(special.get(1).get(i)).setStateMarked(true);
-		for(int i = 0; i < special.get(2).size(); i++)			//Special ArrayList 2-entry is Private State
+		}
+		for(int i = 0; i < special.get(2).size(); i++) {			//Special ArrayList 2-entry is Private State
+			if(states.getState(special.get(2).get(i)) == null)
+				states.addState(new State(special.get(2).get(i)));
 			states.getState(special.get(2).get(i)).setStatePrivate(true);
+		}
 		for(int i = 0; i < special.get(3).size(); i++) {			//Special ArrayList 3-entry is ObservableEvent
 			if(events.getEvent(special.get(3).get(i)) == null)
 				events.addEvent(special.get(3).get(i));
@@ -646,6 +653,25 @@ DetObsContFSM newFSM = new DetObsContFSM();
 		return null;
 	}
 
+//---  Setter Methods   -----------------------------------------------------------------------
+	
+	@Override
+	public boolean setEventObservability(String eventName, boolean status) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null) {
+			curr.setEventObservability(status);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public void setEventControllability(String eventName, boolean value) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			curr.setEventControllability(value);
+	}
+
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	@Override
@@ -674,20 +700,4 @@ DetObsContFSM newFSM = new DetObsContFSM();
 		return false;
 	}
 
-	@Override
-	public boolean setEventObservability(String eventName, boolean status) {
-		Event curr = events.getEvent(eventName);
-		if(curr != null) {
-			curr.setEventObservability(status);
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public void setEventControllability(String eventName, boolean value) {
-		Event curr = events.getEvent(eventName);
-		if(curr != null)
-			curr.setEventControllability(value);
-	}
 }

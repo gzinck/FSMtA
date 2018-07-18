@@ -44,7 +44,8 @@ public class ReadWrite <T extends Transition>{
 				  }
 				}
 			  }
-			  build = build.substring(0, build.length()-1);
+			  if(build.length() > 0)
+			  	build = build.substring(0, build.length()-1);
 			  raf.writeBytes(build);
 			  raf.close();
 			}

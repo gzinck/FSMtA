@@ -28,31 +28,47 @@ public class TestFSMs {
 	
 	@Test
 	public void test() {
-		File f1 = new File(GenerateFSM.createNewFSM(7, 4, 4, 2, 2, 1, 1, 1, false, "fileName1", MAC_WORKING_FOLDER));
-		File f2 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName2", MAC_WORKING_FOLDER));
-		File f3 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName3", MAC_WORKING_FOLDER));
+		int count = 0;
+	while(true) {
+		System.out.println(count++);
+		File f1 = new File(GenerateFSM.createNewFSM(7, 4, 4, 2, 1, 1, 1, 1, false, "fileName1", MAC_WORKING_FOLDER));
+		File f2 = new File(GenerateFSM.createNewFSM(7, 4, 4, 2, 2, 1, 1, 1, false, "fileName2", MAC_WORKING_FOLDER));
+		File f3 = new File(GenerateFSM.createNewFSM(4, 2, 2, 2, 2, 1, 1, 1, false, "fileName3", MAC_WORKING_FOLDER));
 		File f4 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName4", MAC_WORKING_FOLDER));
 		
 			DetObsContFSM fsm = new DetObsContFSM(f1, "fsm");
 		
-		System.out.println(fsm.makeDotString());
+		//System.out.println(fsm.makeDotString());
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			NonDetObsContFSM fsm2 = new NonDetObsContFSM(f1, "fsm2");
+			NonDetObsContFSM fsm2 = new NonDetObsContFSM(f2, "fsm2");
+			
+			NonDetObsContFSM fsm5 = new NonDetObsContFSM(f3, "fsm3");
 		
 		//System.out.println(fsm2.makeDotString());
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			DetObsContFSM fsm3 = fsm.buildObserver();
+			DetObsContFSM fsm3 = fsm.getSupremalControllableSublanguage(fsm);
 		
-		System.out.println(fsm3.getComposedStates());
+		//System.out.println(fsm3.getComposedStates());
 		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-			DetObsContFSM fsm4 = fsm2.buildObserver();
+			NonDetObsContFSM fsm4 = fsm2.getSupremalControllableSublanguage(fsm2);
 			//fsm4 = fsm4.product(fsm);
 		
-		System.out.println(fsm4.getComposedStates());
+		//System.out.println(fsm4.getComposedStates());
 		FSMToDot.createImgFromFSM(fsm4, MAC_WORKING_FOLDER + "test4", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		fsm.toTextFile(MAC_WORKING_FOLDER, fsm.getId());
+		fsm2.toTextFile(MAC_WORKING_FOLDER, fsm2.getId());
+		fsm3.setId("fsm3");
+		fsm3.toTextFile(MAC_WORKING_FOLDER, fsm3.getId());
+		fsm4.setId("fsm4");
+		fsm4.toTextFile(MAC_WORKING_FOLDER, fsm4.getId());
+		fsm = new DetObsContFSM(new File(MAC_WORKING_FOLDER + fsm.getId() + ".fsm"), fsm.getId());
+		fsm2 = new NonDetObsContFSM(new File(MAC_WORKING_FOLDER + fsm2.getId() + ".fsm"), fsm2.getId());
+		fsm3 = new DetObsContFSM(new File(MAC_WORKING_FOLDER + fsm3.getId() + ".fsm"), fsm3.getId());
+		fsm4 = new NonDetObsContFSM(new File(MAC_WORKING_FOLDER + fsm4.getId() + ".fsm"), fsm4.getId());
+	}
 	/*
 		FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		DetFSM fsm2 = fsm1.determinize();
