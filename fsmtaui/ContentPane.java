@@ -36,7 +36,7 @@ class ContentPane extends BorderPane {
 		model = inModel;
 		HBox zoomBtns = makeBtns();
 		
-		setCenter(model.getOpenFSMTabs());
+		setCenter(model.getOpenTSTabs());
 		BorderPane.setAlignment(zoomBtns, Pos.BOTTOM_RIGHT);
 		setBottom(zoomBtns);
 		

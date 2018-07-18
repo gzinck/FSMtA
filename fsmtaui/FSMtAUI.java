@@ -10,6 +10,7 @@ import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
+import support.transition.Transition;
 import javafx.scene.layout.*;
 import java.io.*;
 
@@ -43,8 +44,8 @@ public class FSMtAUI extends Application {
 	/** String used for the title when notifying the user that choosing a working directory failed. */
 	private static final String CHOOSE_WORKING_DIRECTORY_FAIL_TITLE = "Choose Working Directory Failed";
 	
-	/** Observable ArrayList of FSM objects that are open at any given time, as shown in the settings sidebar. */
-	private ObservableList<FSM> openFSMs;
+	/** Observable ArrayList of TransitionSystem objects that are open at any given time, as shown in the settings sidebar. */
+	private ObservableList<TransitionSystem<? extends Transition>> openTSs;
 	/** 
 	 * Observable ArrayList of the names of the FSM objects in openFSMs, used for various UI elements. It is
 	 * automatically updated whenever the original FSM list is updated.
@@ -88,9 +89,9 @@ public class FSMtAUI extends Application {
 	public void start(Stage inStage)
 	{
 		// Create a list of FSMs
-		ArrayList<FSM> fsmSet = new ArrayList<FSM>();
+		ArrayList<TransitionSystem<? extends Transition>> tsSet = new ArrayList<TransitionSystem<? extends Transition>>();
         // ... and add observability by wrapping it with ObservableList.
-		openFSMs = FXCollections.observableList(fsmSet);
+		openTSs = FXCollections.observableList(tsSet);
 		
 		stage = inStage;
 		root = new BorderPane();
@@ -108,7 +109,7 @@ public class FSMtAUI extends Application {
 			graphVizConfigPath = this.getClass().getClassLoader().getResource("config.properties").getPath().replaceAll("%20", " ");
 			
 			// Make the model to pass to all the elements of the UI
-			model = new Model(openFSMs, openFSMStrings, workingDirectory, graphVizConfigPath);
+			model = new Model(openTSs, openFSMStrings, workingDirectory, graphVizConfigPath);
 			
 			// Set up the pane for all the tabs of settings
 			settingsPane = new SettingsPane(model);

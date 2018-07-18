@@ -56,6 +56,8 @@ public class Alerts {
 	
 	public static final String[] ERROR_INCOMPATIBLE_FSM_OBSCONT = {"Incompatible FSM Type Error", "To perform the operation, you must have a compatible FSM type (must have observability and controllability enabled)."};
 	
+	public static final String[] ERROR_OPERATION_ONLY_FOR_FSMS = {"Incompatible Transition System Type Error", "To perform the operation, you must use a FSM. The current transition system did not work."};
+	
 	//--------------------------------------------------------------------------------
 	// For the FileSettingsPane
 	//--------------------------------------------------------------------------------

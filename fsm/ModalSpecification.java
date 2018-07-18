@@ -261,7 +261,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 				throw new IllegalArgumentException("The modal specification has the event \"" + e.getEventName() + "\", which is an unobservable event in the plant passed in for getting the supervisor. The specification should only have observable events.");
 		}
 		
-		FSM product = universalObserverView.product(specFSM);
+		DetObsContFSM product = universalObserverView.product(specFSM);
 		
 		//--------------------------------------------
 		// Step 2: Mark the bad states
@@ -279,7 +279,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		
 		// Now, we have to actually create our FSM
 		DetObsContFSM supervisor = new DetObsContFSM(product, badStates, fsm.id + " Supervisor");
-		return supervisor.makeAccessible();
+		return (DetObsContFSM)supervisor.makeAccessible();
 	}
 	
 	/**
@@ -407,7 +407,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 				String universalInitial = universalObserverViewMap.get(q.getStateName());
 				universalObserverView.addInitialState(universalInitial);
 				product.addInitialState(productState);
-				FSM<DetTransition> massiveProduct = universalObserverView.product(product);
+				DetObsContFSM massiveProduct = (DetObsContFSM)universalObserverView.product(product);
 				// Now, we get to look through the massive product for a marked state
 				boolean reachesMarked = canReachMarked(massiveProduct, massiveProduct.getInitialStates().get(0), badStates);
 				if(!reachesMarked) {

@@ -1,10 +1,13 @@
 package fsm;
 
 import java.util.*;
+
+import fsm.attribute.Controllability;
+import fsm.attribute.Observability;
+import fsm.attribute.OpacityTest;
 import support.*;
 import support.transition.Transition;
 import support.event.Event;
-import support.attribute.EventObservability;
 
 /**
  * This abstract class models a Finite State Machine with some of the essential elements.
@@ -16,7 +19,10 @@ import support.attribute.EventObservability;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public abstract class FSM<T extends Transition> extends TransitionSystem<T> {
+public abstract class FSM<T extends Transition> extends TransitionSystem<T> 
+		implements Observability<T>,
+		Controllability<T>,
+		OpacityTest {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 	
@@ -40,7 +46,7 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> {
 	 * @return - Returns a FSM<<r>State, T, Event> extending object representing the result of all union operation.
 	 */
 	
-	public abstract <T1 extends Transition> FSM union(FSM ... other);
+	public abstract FSM<? extends Transition> union(FSM<?> ... other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Union operation
@@ -105,7 +111,7 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> {
 	 * @return - Returns a FSM<<r>State, T, Event> extending object representing the FSM object resulting from all Product operations.
 	 */
 	
-	public abstract <T1 extends Transition> FSM product(FSM ... other);
+	public abstract FSM<? extends Transition> product(FSM<?> ... other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Product operation
@@ -193,7 +199,7 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> {
 	 * @return - Returns a FSM<<r>State, T, Event> extending object representing the result of all Parallel Composition operations.
 	 */
 	
-	public abstract <T1 extends Transition> FSM<T> parallelComposition(FSM ... other);
+	public abstract FSM<? extends Transition> parallelComposition(FSM<?> ... other);
 	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Parallel Composition
@@ -332,6 +338,6 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> {
 	 * @return
 	 */
 	
-	public abstract <T1 extends Transition> FSM buildObserver();
+	public abstract <T1 extends Transition> FSM<?> buildObserver();
 	
 } // class FSM

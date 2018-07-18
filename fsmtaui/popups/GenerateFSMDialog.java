@@ -3,8 +3,6 @@ package fsmtaui.popups;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import fsmtaui.settingspane.FileSettingsPane;
-import fsmtaui.settingspane.FileSettingsPane.FSM_TYPE;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;

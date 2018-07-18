@@ -4,7 +4,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.TabPane.*;
 import javafx.scene.layout.*;
 import fsmtaui.Model;
-import fsmtaui.settingspane.modifyfsmpane.ModifyFSMPane;
+import fsmtaui.settingspane.modifyfsmpane.ModifyTSPane;
 import fsmtaui.settingspane.operationspane.FSMOperationPane;
 import javafx.collections.*;
 
@@ -26,7 +26,7 @@ public class SettingsPane extends VBox {
 	/** FileSettingsPane with all the options to open/close/save files. */
 	FileSettingsPane fileSettingsPane;
 	/** ModifyFSMPane with all the options to modify an FSM. */
-	ModifyFSMPane modifyFSMPane;
+	ModifyTSPane modifyFSMPane;
 	/** FSMOperationsPane with all the options to perform operations on FSMs. */
 	FSMOperationPane fsmOperationsPane;
 	
@@ -53,7 +53,7 @@ public class SettingsPane extends VBox {
 		ObservableList<Tab> tabs = tabPane.getTabs();
 		
 		fileSettingsPane = new FileSettingsPane(model);
-		modifyFSMPane = new ModifyFSMPane(model);
+		modifyFSMPane = new ModifyTSPane(model);
 		fsmOperationsPane = new FSMOperationPane(model);
 		
 		tabs.add(new Tab(TAB_NAMES[0], fileSettingsPane));

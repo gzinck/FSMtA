@@ -1,15 +1,15 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
-import fsm.FSM;
+import fsm.TransitionSystem;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import support.transition.Transition;
 
 /**
  * Class extending the javafx VBox element which stores all the
@@ -18,7 +18,7 @@ import javafx.scene.layout.VBox;
  * @author Mac Clevinger and Graeme Zinck
  *
  */
-public class ModifyFSMStatesPane extends VBox {
+public class ModifyTSStatesPane extends VBox {
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
 	
@@ -35,7 +35,7 @@ public class ModifyFSMStatesPane extends VBox {
 	 * @param inModel - Model with the important information all GUI elements
 	 * need access to.
 	 */
-	public ModifyFSMStatesPane(Model inModel) {
+	public ModifyTSStatesPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
 		
@@ -72,12 +72,12 @@ public class ModifyFSMStatesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_NAME);
 			} else {
 				// Then no errors
-				FSM currFSM = model.getCurrFSM();
-				if(currFSM == null) {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
 					// Then cannot add an event
 					Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
 				} else {
-					currFSM.addState(stateToAdd);
+					currTS.addState(stateToAdd);
 					stateNameField.setText("");
 					stateNameField.requestFocus();
 					model.refreshViewport();
@@ -99,12 +99,12 @@ public class ModifyFSMStatesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_REMOVE_STATE_NO_NAME);
 			} else {
 				// Then no errors
-				FSM currFSM = model.getCurrFSM();
-				if(currFSM == null) {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
 					// Then cannot remove event
 					Alerts.makeError(Alerts.ERROR_REMOVE_STATE_NO_FSM);
 				} else {
-					currFSM.removeState(stateToRemove);
+					currTS.removeState(stateToRemove);
 					stateNameField.setText("");
 					stateNameField.requestFocus();
 					model.refreshViewport();

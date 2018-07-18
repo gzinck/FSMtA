@@ -2,23 +2,23 @@ package fsmtaui;
 
 import java.io.File;
 
-import fsm.FSM;
+import fsm.TransitionSystem;
 import graphviz.FSMToDot;
 import javafx.geometry.Bounds;
 import javafx.scene.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.*;
-import javafx.scene.layout.StackPane;
+import support.transition.Transition;
 
 /**
- * FSMViewport is a Parent javafx node which holds an FSM and its image representation
+ * TSViewport is a Parent javafx node which holds a TransitionSystem and its image representation
  * inside of it. It also keeps track of the image files produced through GraphViz.
  * 
  * @author Mac Clevinger and Graeme Zinck
  *
  */
-public class FSMViewport extends Parent {
+public class TSViewport extends Parent {
 	/** Default width of image. */
 	private static int WIDTH = 600;
 	/** Default height of image. */
@@ -26,13 +26,13 @@ public class FSMViewport extends Parent {
 	private static double ZOOM_SPEED = 1.4;
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
-	/** DeterministicFSM object which is being displayed in the viewport. */
-	private FSM fsm;
-	/** ScrollPane object which allows the user to view the GraphViz image of the fsm. */
+	/** TransitionSystem object which is being displayed in the viewport. */
+	private TransitionSystem<? extends Transition> ts;
+	/** ScrollPane object which allows the user to view the GraphViz image of the TransitionSystem. */
 	private ScrollPane scrollPane;
-	/** ImageView object which shows the GraphViz image of the fsm. */
+	/** ImageView object which shows the GraphViz image of the TransitionSystem. */
 	private ImageView imageView;
-	/** Image object which contains the GraphViz image of the fsm. */
+	/** Image object which contains the GraphViz image of the TransitionSystem. */
 	private Image image;
 	/** Ratio for the zoom of the image. */
 	private double ratio;
@@ -42,17 +42,17 @@ public class FSMViewport extends Parent {
 	 * of a JPG image in the working directory in order to visualize the FSM
 	 * in the viewport.
 	 * 
-	 * @param inFSM - FSM to be displayed.
+	 * @param inTS - TransitionSystem to be displayed.
 	 * @param inModel - Model with all the important information to
 	 * display in the GUI.
 	 */
-	public FSMViewport(FSM inFSM, Model inModel) {
-		fsm = inFSM;
+	public TSViewport(TransitionSystem<? extends Transition> inTS, Model inModel) {
+		ts = inTS;
 		model = inModel;
 		
 		// Create the image representation
-		String imageName = model.getWorkingDirectoryString() + "/" + fsm.getId();
-		FSMToDot.createImgFromFSM(fsm, imageName, model.getWorkingDirectoryString(), model.getGraphVizConfigPath());
+		String imageName = model.getWorkingDirectoryString() + "/" + ts.getId();
+		FSMToDot.createImgFromFSM(ts, imageName, model.getWorkingDirectoryString(), model.getGraphVizConfigPath());
 		
 		// Show the image in the ImageView
 		image = new Image("file:" + imageName + ".jpg");
@@ -81,25 +81,25 @@ public class FSMViewport extends Parent {
 	 * @return - String representing the FSM's id.
 	 */
 	public String getFSMId() {
-		return fsm.getId();
+		return ts.getId();
 	} // getFSMId()
 	
 	/**
-	 * Gets the FSM being represented.
+	 * Gets the TransitionSystem being represented.
 	 * 
-	 * @return - DeterministicFSM which is being represented.
+	 * @return - TransitionSystem which is being represented.
 	 */
-	public FSM getFSM() {
-		return fsm;
+	public TransitionSystem<? extends Transition> getFSM() {
+		return ts;
 	} // getFSM()
 	
 	/**
-	 * Recomputes the image based on the FSM.
+	 * Recomputes the image based on the TransitionSystem.
 	 */
 	public void refreshImage() {
 		// Create the image representation
-		String imageName = model.getWorkingDirectoryString() + "/" + fsm.getId();
-		FSMToDot.createImgFromFSM(fsm, imageName, model.getWorkingDirectoryString(), model.getGraphVizConfigPath());
+		String imageName = model.getWorkingDirectoryString() + "/" + ts.getId();
+		FSMToDot.createImgFromFSM(ts, imageName, model.getWorkingDirectoryString(), model.getGraphVizConfigPath());
 		// Show the image in the ImageView
 		image = new Image("file:" + imageName + ".jpg");
 		imageView.setImage(image);

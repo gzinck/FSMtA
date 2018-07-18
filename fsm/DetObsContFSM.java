@@ -20,10 +20,7 @@ import java.util.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<DetTransition>, 
-																Observability<DetTransition>, 
-																Controllability<DetTransition>,
-																OpacityTest {
+public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<DetTransition>{
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -87,11 +84,11 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 	 * DetFSM using that as the basis. Any information which is not permissible in a
 	 * DetObsContFSM is thrown away, because it does not have any means to handle it.
 	 * 
-	 * @param other - FSM object to copy as a DetObsContFSM (can be any kind of FSM).
+	 * @param other - TransitionSystem object to copy as a DetObsContFSM (can be any kind of TS).
 	 * @param inId - String object representing the id for the new FSM.
 	 */
 	
-	public DetObsContFSM(FSM<Transition> other, String inId) {
+	public DetObsContFSM(TransitionSystem<?> other, String inId) {
 		id = inId;
 		states = new StateMap();
 		events = new EventMap();
@@ -125,7 +122,7 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 	 * @param inId - String object representing the id for the new FSM.
 	 */
 	
-	public DetObsContFSM(FSM<Transition> other, HashSet<String> badStates, String inId) {
+	public DetObsContFSM(FSM<?> other, HashSet<String> badStates, String inId) {
 		id = inId;
 		states = new StateMap();
 		events = new EventMap();
@@ -495,7 +492,7 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
 	@Override
-	public <T1 extends Transition> NonDetObsContFSM union(FSM ... other) {
+	public NonDetObsContFSM union(FSM<?> ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		this.unionHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
@@ -509,7 +506,7 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 	//TODO: Figure out product Det x NonDet, produces multiple initial States but only accesses one due to Det nature.
 	
 	@Override
-	public <T1 extends Transition> DetObsContFSM product(FSM ... other) {
+	public DetObsContFSM product(FSM<?> ... other) {
 		DetObsContFSM newFSM = new DetObsContFSM();
 		this.productHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
@@ -521,7 +518,7 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 	}
 
 	@Override
-	public <T1 extends Transition> DetObsContFSM parallelComposition(FSM ... other){
+	public DetObsContFSM parallelComposition(FSM<?> ... other){
 		DetObsContFSM newFSM = this;
 		for(int i = 0; i < other.length; i++) {
 			DetObsContFSM newerFSM = new DetObsContFSM();

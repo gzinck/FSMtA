@@ -1,6 +1,5 @@
 package fsmtaui.settingspane.operationspane;
 
-import fsm.attribute.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
 import fsm.*;
@@ -9,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import support.transition.Transition;
 
 /**
  * Javafx VBox element which has all the options to perform
@@ -88,27 +88,28 @@ public class SingleFSMOperationPane extends VBox {
 		});
 		performOperationBtn.setOnAction(e -> {
 			String id = fsmNameField.getText();
-			FSM currFSM = model.getCurrFSM();
+			TransitionSystem<? extends Transition> currTS = model.getCurrTS();
 			String operation = operationChoiceBox.getSelectionModel().getSelectedItem();
-			if(id.equals("") || model.fsmExists(id)) {
+			if(id.equals("") || model.tsExists(id)) {
 				// Then must force the user to name the FSM
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
-			} else if(currFSM == null) {
+			} else if(currTS == null) {
 				// Then cannot perform operation
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_FSM);
 			} else {
 				if(operation.equals(SINGLE_FSM_OPERATIONS.get(0))) {
 					// Determinize
-					addFSM(currFSM.buildObserver(), id);
+					if(currTS instanceof FSM<?>) addTS(((FSM<?>)currTS).buildObserver(), id);
+					else Alerts.makeError(Alerts.ERROR_OPERATION_ONLY_FOR_FSMS);
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(1))) {
 					// Accessible
-					addFSM(currFSM.makeAccessible(), id);
+					addTS(currTS.makeAccessible(), id);
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(2))) {
 					// CoAccessible
-					addFSM(currFSM.makeCoAccessible(), id);
+					addTS(currTS.makeCoAccessible(), id);
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(3))) {
 					// Trim
-					addFSM(currFSM.trim(), id);
+					addTS(currTS.trim(), id);
 				} else {
 					// No option chosen
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);
@@ -120,12 +121,12 @@ public class SingleFSMOperationPane extends VBox {
 	/**
 	 * Helper method o add an FSM to the model and reset the text field.
 	 * 
-	 * @param newFSM - DeterministicFSM to add to the model.
+	 * @param newTS - TransitionSystem to add to the model.
 	 * @param id - String representing the id of the FSM.
 	 */
-	private void addFSM(FSM newFSM, String id) {
-		newFSM.setId(id);
-		model.addFSM(newFSM);
+	private void addTS(TransitionSystem<? extends Transition> newTS, String id) {
+		newTS.setId(id);
+		model.addTS(newTS);
 		fsmNameField.setText("");
 		fsmNameField.requestFocus();
 	} // addFSM(DeterministicFSM, String)

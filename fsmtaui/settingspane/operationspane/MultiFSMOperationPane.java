@@ -1,17 +1,16 @@
 package fsmtaui.settingspane.operationspane;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
 import fsm.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
-import fsmtaui.popups.SelectFSMDialog;
+import fsmtaui.popups.SelectTSDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import support.transition.Transition;
 
 /**
  * Class extends the JavaFX VBox class, providing options
@@ -110,15 +109,15 @@ public class MultiFSMOperationPane extends VBox {
 			if(operation == null) {
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
 			} else {
-				SelectFSMDialog selectionDialog = new SelectFSMDialog(model, "Operation Selection Options", "Write a name for the new FSM, and select the FSMs to perform the operation.");
-				LinkedList<FSM> fsmList = selectionDialog.getFSMs();
+				SelectTSDialog selectionDialog = new SelectTSDialog(model, "Operation Selection Options", "Write a name for the new FSM, and select the FSMs to perform the operation.");
+				LinkedList<FSM<? extends Transition>> fsmList = selectionDialog.getTSs();
 				
 				// Exit if there was a problem
-				if(fsmList == null) return;
+				if(fsmList == null || fsmList.size() < 2) return;
 				
 				String id = selectionDialog.getId();
-				FSM fsm1 = fsmList.removeFirst();
-				FSM[] fsms = fsmList.toArray(new FSM[fsmList.size()]);
+				FSM<?> fsm1 = fsmList.removeFirst();
+				FSM<?>[] fsms = fsmList.toArray(new FSM<?>[fsmList.size()]);
 				if(operation.equals(MULTI_FSM_OPERATIONS.get(0))) {
 					// Perform union
 					addFSM(fsm1.union(fsms), id);
@@ -145,11 +144,11 @@ public class MultiFSMOperationPane extends VBox {
 	/**
 	 * Helper method o add an FSM to the model and reset the text field.
 	 * 
-	 * @param newFSM - DeterministicFSM to add to the model.
+	 * @param newTS - TransitionSystem to add to the model.
 	 * @param id - String representing the id of the FSM.
 	 */
-	private void addFSM(FSM newFSM, String id) {
-		newFSM.setId(id);
-		model.addFSM(newFSM);
-	} // addFSM(DeterministicFSM, String)
+	private void addFSM(TransitionSystem<?> newTS, String id) {
+		newTS.setId(id);
+		model.addTS(newTS);
+	} // addFSM(TransitionSystem, String)
 } // class MultiFSMOperationPane

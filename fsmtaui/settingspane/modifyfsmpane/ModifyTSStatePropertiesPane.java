@@ -2,26 +2,24 @@ package fsmtaui.settingspane.modifyfsmpane;
 
 import fsm.*;
 import fsm.attribute.*;
-import fsmtaui.FSMViewport;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import support.transition.Transition;
 
 /**
  * Class extending the javafx VBox element which stores all the
- * options for adding and removing states from the open FSM.
+ * options for adding and removing states from the open TransitionSystem.
  * 
  * @author Mac Clevinger and Graeme Zinck
  *
  */
-public class ModifyFSMStatePropertiesPane extends VBox {
+public class ModifyTSStatePropertiesPane extends VBox {
 	/** String title for the section. */
 	private static final String LABEL_STR = "Modify State Properties";
 	/** String name for the button to toggle initial states. */
@@ -77,7 +75,7 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 	 * @param inModel - Model containing all the important information
 	 * to display in the GUI.
 	 */
-	public ModifyFSMStatePropertiesPane(Model inModel) {
+	public ModifyTSStatePropertiesPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
 		
@@ -138,21 +136,21 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_NAME);
 			} else {
 				// Then no errors
-				FSM currFSM = model.getCurrFSM();
-				if(currFSM == null) {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
 					// Then cannot add an event
 					Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_FSM);
 				} else {
 					// If nondeterministic, then add/remove the initial state;
 					// otherwise, replace the pre-existing initial state.
-					if(currFSM instanceof NonDeterministic) {
-						if(currFSM.hasInitialState(state)) {
-							currFSM.removeInitialState(state);
+					if(currTS instanceof NonDeterministic) {
+						if(currTS.hasInitialState(state)) {
+							currTS.removeInitialState(state);
 						} else {
-							currFSM.addInitialState(state);
+							currTS.addInitialState(state);
 						} // if/else
 					} else {
-						currFSM.addInitialState(state);
+						currTS.addInitialState(state);
 					} // if/else
 					stateNameField.setText("");
 					stateNameField.requestFocus();
@@ -175,13 +173,13 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_NAME);
 			} else {
 				// Then no errors
-				FSM currFSM = model.getCurrFSM();
-				if(currFSM == null) {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
 					// Then cannot toggle
 					Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_FSM);
 				} else {
 					// Toggle the marked property
-					currFSM.toggleMarkedState(state);
+					currTS.toggleMarkedState(state);
 					stateNameField.setText("");
 					stateNameField.requestFocus();
 					model.refreshViewport();
@@ -203,13 +201,13 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_NAME);
 			} else {
 				// Then no errors
-				FSM currFSM = model.getCurrFSM();
-				if(currFSM == null) {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
 					// Then cannot toggle
 					Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_FSM);
 				} else {
 					// Toggle the secret property
-					currFSM.toggleSecretState(state);
+					currTS.toggleSecretState(state);
 					stateNameField.setText("");
 					stateNameField.requestFocus();
 					model.refreshViewport();
@@ -231,13 +229,13 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_NAME);
 			} else {
 				// Then no errors
-				FSM currFSM = model.getCurrFSM();
-				if(currFSM == null) {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
 					// Then cannot toggle
 					Alerts.makeError(Alerts.ERROR_TOGGLE_STATE_NO_FSM);
 				} else {
 					// Toggle the secret property
-					currFSM.toggleBadState(state);
+					currTS.toggleBadState(state);
 					stateNameField.setText("");
 					stateNameField.requestFocus();
 					model.refreshViewport();
@@ -255,12 +253,12 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 		});
 		markAllBtn.setOnAction(e -> {
 			// Then no errors
-			FSM currFSM = model.getCurrFSM();
-			if(currFSM == null) {
+			TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+			if(currTS == null) {
 				// Then cannot toggle
 				Alerts.makeError(Alerts.ERROR_NO_FSM);
 			} else {
-				currFSM.markAllStates();
+				currTS.markAllStates();
 				stateNameField.requestFocus();
 				model.refreshViewport();
 			} // if/else
@@ -276,12 +274,12 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 		});
 		unmarkAllBtn.setOnAction(e -> {
 			// Then no errors
-			FSM currFSM = model.getCurrFSM();
-			if(currFSM == null) {
+			TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+			if(currTS == null) {
 				// Then cannot toggle
 				Alerts.makeError(Alerts.ERROR_NO_FSM);
 			} else {
-				currFSM.unmarkAllStates();
+				currTS.unmarkAllStates();
 				stateNameField.requestFocus();
 				model.refreshViewport();
 			} // if/else
@@ -297,12 +295,12 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 		});
 		makeAllGoodBtn.setOnAction(e -> {
 			// Then no errors
-			FSM currFSM = model.getCurrFSM();
-			if(currFSM == null) {
+			TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+			if(currTS == null) {
 				// Then cannot toggle
 				Alerts.makeError(Alerts.ERROR_NO_FSM);
 			} else {
-				currFSM.makeAllStatesGood();
+				currTS.makeAllStatesGood();
 				stateNameField.requestFocus();
 				model.refreshViewport();
 			} // if/else
@@ -318,12 +316,12 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 		});
 		removeAllBadBtn.setOnAction(e -> {
 			// Then no errors
-			FSM currFSM = model.getCurrFSM();
-			if(currFSM == null) {
+			TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+			if(currTS == null) {
 				// Then cannot toggle
 				Alerts.makeError(Alerts.ERROR_NO_FSM);
 			} else {
-				currFSM.removeBadStates();
+				currTS.removeBadStates();
 				stateNameField.requestFocus();
 				model.refreshViewport();
 			} // if/else
@@ -339,12 +337,12 @@ public class ModifyFSMStatePropertiesPane extends VBox {
 			if(e.getCode() == KeyCode.ENTER) renameStatesBtn.fire();
 		});
 		renameStatesBtn.setOnAction(e -> {
-			FSM currFSM = model.getCurrFSM();
-			if(currFSM == null) {
+			TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+			if(currTS == null) {
 				// Then cannot remove event
 				Alerts.makeError(Alerts.ERROR_NO_FSM);
 			} else {
-				currFSM.renameStates();
+				currTS.renameStates();
 				stateNameField.requestFocus();
 				model.refreshViewport();
 			} // if/else

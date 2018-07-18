@@ -25,10 +25,7 @@ import support.transition.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterministic<NonDetTransition>,
-																	  Observability<NonDetTransition>,
-																	  Controllability<NonDetTransition>,
-																	  OpacityTest{
+public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterministic<NonDetTransition> {
 	
 //--- Constant Values  -------------------------------------------------------------------------
 
@@ -94,11 +91,11 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 	 * NonDetObsContFSM using that as the basis. Any information which is not permissible in a
 	 * NonDetObsContFSM is thrown away, because it does not have any means to handle it.
 	 * 
-	 * @param other - FSM object to copy as a NonDetObsContFSM (can be any kind of FSM).
+	 * @param other - TransitionSysem object to copy as a NonDetObsContFSM (can be any kind of TS).
 	 * @param inId - String object representing the Id for the new FSM to carry.
 	 */
 	
-	public NonDetObsContFSM(FSM<Transition> other, String inId) {
+	public NonDetObsContFSM(TransitionSystem<?> other, String inId) {
 		id = inId;
 		states = new StateMap();
 		events = new EventMap();
@@ -337,7 +334,7 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 
 	@Override
 	public DetObsContFSM buildObserver() {
-DetObsContFSM newFSM = new DetObsContFSM();
+		DetObsContFSM newFSM = new DetObsContFSM();
 		
 		/*
 		 * Collapse Unobservable
@@ -591,7 +588,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	@Override
-	public <T1 extends Transition> NonDetObsContFSM union(FSM ... other) {
+	public NonDetObsContFSM union(FSM<?> ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		this.unionHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
@@ -603,7 +600,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	}
 
 	@Override
-	public <T1 extends Transition> NonDetObsContFSM product(FSM ... other) {
+	public NonDetObsContFSM product(FSM<?> ... other) {
 		NonDetObsContFSM newFSM = new NonDetObsContFSM();
 		this.productHelper(other[0], newFSM);
 		for(int i = 1; i < other.length; i++) {
@@ -615,7 +612,7 @@ DetObsContFSM newFSM = new DetObsContFSM();
 	}
 	
 	@Override
-	public <T1 extends Transition> NonDetObsContFSM parallelComposition(FSM ... other){
+	public NonDetObsContFSM parallelComposition(FSM<?> ... other){
 		NonDetObsContFSM newFSM = this;
 		for(int i = 0; i < other.length; i++) {
 			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
