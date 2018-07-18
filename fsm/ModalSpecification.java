@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.io.*;
+import fsm.attribute.Deterministic;
 
 /**
  * ModalSpecification is an enhanced version of a transition system, which defines both "may" and
@@ -27,20 +29,65 @@ import java.util.Map;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class ModalSpecification
-		extends TransitionSystem<DetTransition> {
+public class ModalSpecification extends TransitionSystem<DetTransition> implements Deterministic<DetTransition> {
 	
 //--- Constants  ----------------------------------------------------------------------
 	
+	public static final String MODAL_EXTENSION = ".mdl";
+	
 //--- Instance Variables  ----------------------------------------------------------------------
 	
-	/** ArrayList<<j>State> object that holds a list of Initial States for this Modal Specification object. */
-	protected ArrayList<State> initialStates;
+	/** ArrayList<<r>State> object that holds a list of Initial States for this Modal Specification object. */
+	protected State initialState;
 	/** TransitionFunction object mapping states to sets of "must" transitions for the Modal Specification.
 	 * These are transitions which must be present in the controlled FSM in order to satisfy the spec. */
 	protected TransitionFunction<DetTransition> mustTransitions;
 	
 //---  Constructors  --------------------------------------------------------------------------
+	
+	/**
+	 * 
+	 * 
+	 * @param in
+	 * @param inId
+	 */
+	
+	public ModalSpecification(File in, String inId) {
+		id = inId;
+		events = new EventMap();
+		states = new StateMap();
+		transitions = new TransitionFunction<DetTransition>(new DetTransition());
+		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
+
+		ReadWrite<DetTransition> redWrt = new ReadWrite<DetTransition>();
+		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
+		
+		if(special.get(0).size() > 0) {
+			if(states.getState(special.get(0).get(0)) == null)
+				states.addState(new State(special.get(0).get(0)));
+			initialState = states.getState(special.get(0).get(0));	//Special ArrayList 0-entry is InitialState
+			states.getState(initialState).setStateInitial(true);
+		}
+		for(int i = 0; i < special.get(1).size(); i++) {			//Special ArrayList 1-entry is MarkedState
+			if(states.getState(special.get(1).get(i)) == null)
+				states.addState(new State(special.get(1).get(i)));
+			states.getState(special.get(1).get(i)).setStateMarked(true);
+		}
+		for(int i = 0; i <  special.get(2).size(); i++) {			//Special ArrayList 2-entry is PrivateState
+			if(states.getState(special.get(2).get(i)) == null)
+				states.addState(new State(special.get(2).get(i)));
+			states.getState(special.get(2).get(i)).setStatePrivate(true);
+		}
+		for(int i = 0; i < special.get(3).size(); i++) {			//Special ArrayList 4-entry is Controllable Event
+			if(events.getEvent(special.get(3).get(i)) == null)
+				events.addEvent(special.get(3).get(i));
+			events.getEvent(special.get(3).get(i)).setEventControllability(false);
+		}
+		for(int i = 0; i < special.get(4).size(); i++) {
+			String grab[] = special.get(4).get(i).split(" ");
+			mustTransitions.addTransitionState(states.getState(grab[0]), events.getEvent(grab[2]), states.getState(grab[1]));
+		}	
+	}
 	
 	/**
 	 * Constructor for a ModalSpecification that takes any TransitionSystem as a parameter and
@@ -61,7 +108,8 @@ public class ModalSpecification
 		copyEvents(other); // Add in all the events
 		copyTransitions(other); // Add in all the transitions
 		
-		if(other instanceof ModalSpecification) copyMustTransitions((ModalSpecification)other);
+		if(other instanceof ModalSpecification) 
+			copyMustTransitions((ModalSpecification)other);
 	} // ModalSpecification(TransitionSystem, String)
 	
 	/**
@@ -77,7 +125,6 @@ public class ModalSpecification
 		states = new StateMap();
 		transitions = new TransitionFunction<DetTransition>(new DetTransition());
 		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
-		initialStates = new ArrayList<State>();
 	} // ModalSpecification()
 	
 	/**
@@ -91,12 +138,65 @@ public class ModalSpecification
 		states = new StateMap();
 		transitions = new TransitionFunction<DetTransition>(new DetTransition());
 		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
-		initialStates = new ArrayList<State>();
 	} // ModalSpecification()
 	
 //---  Operations   -----------------------------------------------------------------------
 	
-	// Overrides the method from TransitionSystem to include the must transitions.
+	@Override
+	public void toTextFile(String filePath, String name) {
+		//Initial, Marked, Secret, Must-Transition
+		if(name == null)
+			name = id;
+		String truePath = "";
+		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
+		String special = "5\n";
+		
+		ArrayList<String> init = new ArrayList<String>();
+		ArrayList<String> mark = new ArrayList<String>();
+		ArrayList<String> priv = new ArrayList<String>();
+		ArrayList<String> cont = new ArrayList<String>();
+		ArrayList<String> must = new ArrayList<String>();
+		
+		for(State s : this.getStates()) {
+			if(s.getStateMarked()) 
+				mark.add(s.getStateName());
+			if(s.getStateInitial()) 
+				init.add(s.getStateName());
+			if(s.getStatePrivate())
+				priv.add(s.getStateName());
+		}
+		
+		for(Event e : this.getEvents()) {
+			if(!e.getEventControllability())
+				cont.add(e.getEventName());
+		}
+		
+		for(Map.Entry<State, ArrayList<DetTransition>> map : mustTransitions.getAllTransitions()) {
+			for(DetTransition t : map.getValue()) {
+				must.add(map.getKey() + " " + t.getTransitionState().getStateName() + " " + t.getTransitionEvent().getEventName());
+			}
+		}
+		
+		special += init.size() + "\n";
+		for(String s : init)
+			special += s + "\n";
+		special += mark.size() + "\n";
+		for(String s : mark)
+			special += s + "\n";
+		special += priv.size() + "\n";
+		for(String s : priv)
+			special += s + "\n";
+		special += cont.size() + "\n";
+		for(String s : cont)
+			special += s + "\n";
+		special += must.size() + "\n";
+		for(String s : must)
+			special += s + "\n";
+
+		ReadWrite<DetTransition> rdWrt = new ReadWrite<DetTransition>();
+		rdWrt.writeToFile(truePath,  special, this.getTransitions(), MODAL_EXTENSION);
+	}
+	
 	@Override
 	public String makeDotString() {
 		String statesInDot = states.makeDotString();	//Have the StateMap do its thing
@@ -111,6 +211,7 @@ public class ModalSpecification
 	 * 
 	 * @return DetObsContFSM which uses the underlying transition system of the modal specification.
 	 */
+
 	public DetObsContFSM getUnderlyingFSM() {
 		DetObsContFSM specFSM = new DetObsContFSM();
 		// Make the underlying FSM of the specification
@@ -285,8 +386,7 @@ public class ModalSpecification
 	 * @return True if the method marked a bad state, false otherwise.
 	 */
 
-	static public 
-	boolean markDeadEnds(FSM<DetTransition> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<DetTransition> product, HashSet<String> badStates) {
+	static public boolean markDeadEnds(FSM<DetTransition> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<DetTransition> product, HashSet<String> badStates) {
 		// For every combo of states (q,(P,s)) such that q is an element of P and (P,s) is the product, we want to
 		// perform the product with initial states being the parameter product and every possible q. If it is
 		// possible to reach a marked state in the product from this initial point, then it's ok! If there's one
@@ -363,116 +463,6 @@ public class ModalSpecification
 		
 		return false;
 	} // canReachMarked(FSM, HashSet)
-	
-//	/**
-//	 * Looks into all the sets of states in the first entry in the product FSM and cycles through,
-//	 * making sure that it is possible to reach some final state from each of the states based on
-//	 * what events are allowed (which is defined by the transitions in the product).
-//	 * 
-//	 * @param fsm - FSM that has all the possible states and transitions.
-//	 * @param product - FSM that defines what events are allowed at a given state in fsm.
-//	 * @param badStates - HashSet of Strings which holds the names of the product's states
-//	 * which are considered to be bad states.
-//	 */
-//	
-//	static protected <State extends State, T extends Transition<State, Event>, Event extends Event, State extends State, Event extends Event>
-//			boolean markDeadEnds(FSM<T> fsm, FSM<DetTransition> product, HashSet<String> badStates) {
-//		// When a state is processed, add it to the map and say if it reached a marked state. True means the
-//		// state is OK.
-//		HashMap<String, Boolean> results = new HashMap<String, Boolean>();
-//		boolean foundABadOne = false;
-//		
-//		for(State curr : product.states.getStates()) {
-//			String observerStateName = getObserverState(curr.getStateName());
-//			for(State subState : fsm.states.getStateComposition(fsm.getState(observerStateName))) {
-//				// Check for a path to a marked state.
-//				System.out.println(subState.getStateName());
-//				boolean isCoaccessible = stateIsCoAccessible(fsm.getState(subState), curr, results, badStates, fsm, product);
-//				if(!isCoaccessible) foundABadOne = true;
-//			} // for every substate
-//		} // for every state
-//		
-//		return foundABadOne;
-//	} // markDeadEnds
-	
-//	/**
-//	 * Evaluates if a given state in an FSM (associated with a given state in a product FSM) is connected to
-//	 * a marked state.
-//	 * To do so, it performs a breadth-first search looking for a marked state in the fsm using only transitions which are
-//	 * enabled by the product.
-//	 * 
-//	 * @param fsmState - State to evaluate for coaccessibility from the fsm.
-//	 * @param prodState - State to evaluate for coaccessibility from the product.
-//	 * @param results - HashMap mapping states to either true (if known to be coaccessible) or false (if known to be NOT coaccessible).
-//	 * @param fsm - FSM which is one of the FSMs in the product and has a similar alphabet.
-//	 * @param product - FSM which is composed of the FSM and another FSM.
-//	 * @return - Returns a boolean value; true if the fsm state leads to a marked state using the product's transitions; false otherwise.
-//	 */
-//	
-//	static private <State extends State, T extends Transition<State, Event>, Event extends Event, State extends State, Event extends Event>
-//			boolean stateIsCoAccessible(State fsmState, State prodState, HashMap<String, Boolean> results, HashSet<String> badStates, FSM<T> fsm, FSM<DetTransition> product) {
-//		HashSet<String> visited = new HashSet<String>();
-//		visited.add(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName()); // We visit the combo to catch loops (BUT THIS HAS A HIGH COMPLEXITY)
-//		
-//		// Base case when already checked if the state was coaccessible
-//		Boolean check = results.get(fsmState.getStateName());
-//		if(check != null)
-//			return check;
-//		
-//		// Base case when we actually have a bad state here...
-//		if(badStates.contains(prodState.getStateName()))
-//			return false;
-//		
-//		// If the state is marked, return true
-//		if(fsmState.getStateMarked()) {
-//			results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), true);
-//			return true;
-//		}
-//		
-//		// Go through all the accessible states and find something marked using bfs
-//		LinkedList<State> fsmStatesToProcess = new LinkedList<State>();
-//		LinkedList<State> prodStatesToProcess = new LinkedList<State>();
-//		fsmStatesToProcess.add(fsmState);
-//		prodStatesToProcess.add(prodState);
-//		while(!fsmStatesToProcess.isEmpty() && !prodStatesToProcess.isEmpty()) {
-//			State currFSMState = fsmStatesToProcess.poll();
-//			State currProdState = prodStatesToProcess.poll();
-//			
-//			// Go through the neighbours of fsmState
-//			ArrayList<T> thisTransitions = fsm.transitions.getTransitions(currFSMState);
-//			if(thisTransitions != null) for(T t : thisTransitions) {
-//				// Only proceed if the event is acceptable in the product as well
-//				ArrayList<State> prodNextList = product.transitions.getTransitionStates(currProdState, product.events.getEvent(t.getTransitionEvent()));
-//				if(prodNextList != null && prodNextList.size() != 0) {
-//					
-//					State prodNext = prodNextList.get(0);
-//					// Check if the state is dead/bad in the product.
-//					boolean dead = (badStates.contains(prodNext.getStateName())) ? true : false;
-//					if(!dead) {
-//						// Go through all the transition states (there should only be one, but anyways...)
-//						for(State toState : t.getTransitionStates()) {
-//							// Return true if it's marked
-//							if(toState.getStateMarked()) {
-//								results.put(currFSMState.getStateName() + VISITED_STATE_SEPARATOR + currProdState.getStateName(), true);
-//								return true;
-//							} // if it's marked
-//							// Return true if it's already known to be good
-//							if(results.get(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName()) == true)
-//								return true;
-//							if(!visited.contains(toState.getStateName() + VISITED_STATE_SEPARATOR + prodNext.getStateName())) {
-//								fsmStatesToProcess.add(toState);
-//								prodStatesToProcess.add(prodNext);
-//							} // if haven't visited the nodes
-//						} // for all the toStates
-//					} // if not all states are dead
-//				} // if event is OK in product
-//			} // for all the transitions
-//		} // while queue is not empty
-//		
-//		// If made it here, it's not accessible.
-//		results.put(fsmState.getStateName() + VISITED_STATE_SEPARATOR + prodState.getStateName(), false);
-//		return false;
-//	} // recursivelyFindMarked
 	
 //---  Operations for converting the observer view of the fsm at any given state   -----------------------------------------------------------------------
 	
@@ -618,13 +608,21 @@ public class ModalSpecification
 	
 	@Override
 	public ArrayList<State> getInitialStates() {
-		return initialStates;
+		ArrayList<State> s = new ArrayList<State>();
+		if(initialState != null)
+			s.add(initialState);
+		return s;
+	}
+	
+	@Override
+	public State getInitialState() {
+		return initialState;
 	}
 
 	@Override
 	public boolean hasInitialState(String stateName) {
 		State s = getState(stateName);
-		return initialStates.contains(s);
+		return initialState.equals(s);
 	}
 
 //---  Manipulations   -----------------------------------------------------------------------
@@ -672,14 +670,14 @@ public class ModalSpecification
 	public void addInitialState(String newInitial) {
 		State theState = states.addState(newInitial);
 		theState.setStateInitial(true);
-		initialStates.add(theState);
+		initialState = theState;
 	}
 
 	@Override
 	public void addInitialState(State newState) {
 		State theState = states.addState(newState);
 		theState.setStateInitial(true);
-		initialStates.add(theState);
+		initialState = theState;
 	}
 
 	@Override
@@ -687,7 +685,8 @@ public class ModalSpecification
 		State theState = states.getState(stateName);
 		if(theState != null) {
 			theState.setStateInitial(false);
-			if(initialStates.remove(theState)) return true;
+			initialState = null;
+			return true;
 		}
 		return false;
 	}

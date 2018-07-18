@@ -453,7 +453,7 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 		for(String s : cont)
 			special += s + "\n";
 		ReadWrite<NonDetTransition> rdWrt = new ReadWrite<NonDetTransition>();
-		rdWrt.writeToFile(truePath,  special, this.getTransitions());
+		rdWrt.writeToFile(truePath,  special, this.getTransitions(), FSM_EXTENSION);
 	}
 	
 	@Override

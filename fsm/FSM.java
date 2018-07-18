@@ -37,18 +37,6 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 	
 //---  Single-FSM Operations   ----------------------------------------------------------------
 	
-	/**
-	 * This method converts an FSM object into a text file which can be read back in and used to recreate
-	 * an FSM later, or used for analytical purposes. A helper class, ReadWrite, manages the brunt
-	 * of this process, but for the various special features of FSM objects, each has to handle
-	 * itself separately.
-	 * 
-	 * @param filePath - String object representing the path to the folder to place the text file.
-	 * @param name - String object representing the name of the text file to create.
-	 */
-	
-	public abstract void toTextFile(String filePath, String name);
-
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	/**

@@ -1,4 +1,4 @@
-package test;
+	package test;
 
 import java.util.*;
 import fsm.*;
@@ -31,10 +31,29 @@ public class TestFSMs {
 		int count = 0;
 	while(true) {
 		System.out.println(count++);
+		
+		File m1 = new File(GenerateFSM.createModalSpec(5, 2, 3, 3, 2, 1, 3, "modalSpec1", MAC_WORKING_FOLDER));
+		
+		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
+
+		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "mod1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		mod1.toTextFile(MAC_WORKING_FOLDER, "modalSpec2");
+		
+		ModalSpecification mod2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "modalSpec2" + ".mdl"), "mod2");
+		
+		FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "mod2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		System.out.println(count);
+	}
+		
+	/*
+	
 		File f1 = new File(GenerateFSM.createNewFSM(7, 4, 4, 2, 1, 1, 1, 1, false, "fileName1", MAC_WORKING_FOLDER));
 		File f2 = new File(GenerateFSM.createNewFSM(7, 4, 4, 2, 2, 1, 1, 1, false, "fileName2", MAC_WORKING_FOLDER));
 		File f3 = new File(GenerateFSM.createNewFSM(4, 2, 2, 2, 2, 1, 1, 1, false, "fileName3", MAC_WORKING_FOLDER));
 		File f4 = new File(GenerateFSM.createNewFSM(5, 2, 2, 2, 3, 1, 1, 1, false, "fileName4", MAC_WORKING_FOLDER));
+		
+		
+		
 		
 			DetObsContFSM fsm = new DetObsContFSM(f1, "fsm");
 		
@@ -68,7 +87,7 @@ public class TestFSMs {
 		fsm2 = new NonDetObsContFSM(new File(MAC_WORKING_FOLDER + fsm2.getId() + ".fsm"), fsm2.getId());
 		fsm3 = new DetObsContFSM(new File(MAC_WORKING_FOLDER + fsm3.getId() + ".fsm"), fsm3.getId());
 		fsm4 = new NonDetObsContFSM(new File(MAC_WORKING_FOLDER + fsm4.getId() + ".fsm"), fsm4.getId());
-	}
+	//}
 	/*
 		FSMToDot.createImgFromFSM(fsm1, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		DetFSM fsm2 = fsm1.determinize();
