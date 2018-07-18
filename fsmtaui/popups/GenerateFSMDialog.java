@@ -3,6 +3,7 @@ package fsmtaui.popups;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import fsmtaui.settingspane.FileSettingsPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -22,8 +23,7 @@ public class GenerateFSMDialog {
 	
 	Dialog<FSMParameters> dialog;
 	GridPane optionGrid;
-	TextField sizeStates, sizeMarked, sizeEvents, sizePaths, sizeInitial, sizeSecret, sizeUnobserv, sizeUncontrol;
-	boolean deterministic;
+	TextField sizeStates, sizeMarked, sizeEvents, sizePaths, sizeInitial, sizeSecret, sizeUnobserv, sizeUncontrol, sizeMay, sizeMust;
 	
 	/**
 	 * Creates a dialog box for getting information on what kind
@@ -33,8 +33,7 @@ public class GenerateFSMDialog {
 	 * only one initial state and no repeat states).
 	 */
 	
-	public GenerateFSMDialog(boolean inDeterministic) {
-		deterministic = inDeterministic;
+	public GenerateFSMDialog(String fsmClass) {
 		// Create the dialog box
 		dialog = new Dialog<FSMParameters>();
 		dialog.setTitle("Select FSM Parameters");
@@ -56,16 +55,27 @@ public class GenerateFSMDialog {
 		sizeUnobserv = new TextField("1");
 		Label sizeUncontrolLabel = new Label("Number of Uncontrollable Events");
 		sizeUncontrol = new TextField("2");
-		
-		optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel);
-		optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeUncontrol);
+		Label sizeInitialLabel = new Label("Number of Initial States");
+		sizeInitial = new TextField("3");
+		Label sizeMayLabel = new Label("Max number of may transitions per state");
+		sizeMay = new TextField("2");
+		Label sizeMustLabel = new Label("Max number of must transitions per state");
+		sizeMust = new TextField("1");
 		
 		// Add extra option if the type is non-deterministic:
-		if(!deterministic) {
-			Label sizeInitialLabel = new Label("Number of Initial States");
-			sizeInitial = new TextField("3");
-			optionGrid.addRow(7, sizeInitialLabel, sizeInitial);
-		} // if non-deterministic
+		if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(0))) {
+			// If deterministic
+			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel);
+			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeUncontrol);
+		} else if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(1))) {
+			// If nondeterministic
+			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel, sizeInitialLabel);
+			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeUncontrol, sizeInitial);
+		} else if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(2))) {
+			// If modal specification
+			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizeSecretLabel, sizeUncontrolLabel, sizeMayLabel, sizeMustLabel);
+			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizeSecret, sizeUncontrol, sizeMay, sizeMust);
+		}
 		
 		// Add the options and buttons.
 		DialogPane dPane = dialog.getDialogPane();
@@ -76,18 +86,28 @@ public class GenerateFSMDialog {
 		dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
             		try {
+            			FSMParameters param = new FSMParameters();
             			// Use certain default parameters for deterministic FSMs
-            			if(deterministic) {
-	            			return new FSMParameters(sizeStates.getText(),
-	            					sizeMarked.getText(), sizeEvents.getText(),
-	            					sizePaths.getText(), sizeSecret.getText(),
-	            					sizeUnobserv.getText(), sizeUncontrol.getText(), "1");
-            			} else {
-            				return new FSMParameters(sizeStates.getText(),
+            			if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(0))) {
+            				// Deterministic
+            				return param.setDeterministicParameters(
+            						sizeStates.getText(), sizeMarked.getText(),
+            						sizeEvents.getText(), sizePaths.getText(),
+            						sizeSecret.getText(), sizeUnobserv.getText(),
+            						sizeUncontrol.getText());
+            			} else if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(1))) {
+            				// Non-deterministic
+            				return param.setNonDeterministicParameters(sizeStates.getText(),
 	            					sizeMarked.getText(), sizeEvents.getText(),
 	            					sizePaths.getText(), sizeSecret.getText(),
 	            					sizeUnobserv.getText(), sizeUncontrol.getText(), sizeInitial.getText());
-            			} // if/else if
+            			} else if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(2))) {
+            				// Modal specification
+            				return param.setModalSpecParameters(sizeStates.getText(),
+            						sizeMarked.getText(), sizeEvents.getText(),
+            						sizeSecret.getText(), sizeUncontrol.getText(),
+            						sizeMay.getText(), sizeMust.getText());
+            			}
             		} catch (NumberFormatException e) {
             			// If some parameters were NAN, error box
             			Alerts.makeError(Alerts.ERROR_ILLEGAL_FSM_PARAMETERS);
@@ -128,8 +148,14 @@ public class GenerateFSMDialog {
 		public int sizeUnobserv;
 		public int sizeUncontrol;
 		public int sizeInitial;
+		public int sizeMay;
+		public int sizeMust;
 		
-		FSMParameters(String states, String marked, String events, String paths, String secret, String unobservable, String uncontrollable, String initial) {
+		FSMParameters() {
+			// Do nothing
+		}
+		
+		FSMParameters setNonDeterministicParameters(String states, String marked, String events, String paths, String secret, String unobservable, String uncontrollable, String initial) {
 			sizeStates = Integer.parseInt(states);
 			sizeMarked = Integer.parseInt(marked);
 			sizeEvents = Integer.parseInt(events);
@@ -138,6 +164,29 @@ public class GenerateFSMDialog {
 			sizeUnobserv = Integer.parseInt(unobservable);
 			sizeUncontrol = Integer.parseInt(uncontrollable);
 			sizeInitial = Integer.parseInt(initial);
-		} // FSMParameters
+			return this;
+		} // setNonDeterministicParameters()
+		
+		FSMParameters setDeterministicParameters(String states, String marked, String events, String paths, String secret, String unobservable, String uncontrollable) {
+			sizeStates = Integer.parseInt(states);
+			sizeMarked = Integer.parseInt(marked);
+			sizeEvents = Integer.parseInt(events);
+			sizePaths = Integer.parseInt(paths);
+			sizeSecret = Integer.parseInt(secret);
+			sizeUnobserv = Integer.parseInt(unobservable);
+			sizeUncontrol = Integer.parseInt(uncontrollable);
+			return this;
+		} // setDeterministicParameters()
+		
+		FSMParameters setModalSpecParameters(String states, String marked, String events, String secret, String uncontrollable, String may, String must) {
+			sizeStates = Integer.parseInt(states);
+			sizeMarked = Integer.parseInt(marked);
+			sizeEvents = Integer.parseInt(events);
+			sizeSecret = Integer.parseInt(secret);
+			sizeUncontrol = Integer.parseInt(uncontrollable);
+			sizeMay = Integer.parseInt(may);
+			sizeMust = Integer.parseInt(must);
+			return this;
+		}
 	} // static class FSMParameters
 } // class GenerateFSMDialog

@@ -27,7 +27,7 @@ import javafx.stage.FileChooser;
 public class FileSettingsPane extends VBox {
 	/** String for requesting an FSM text file. */
 	private static final String CHOOSE_FSM_FILE_MSG = "Choose a FSM text file";
-	private static final ObservableList<String> TS_TYPES = FXCollections.observableArrayList("Deterministic", "Non-Deterministic", "Modal Specification");
+	public static final ObservableList<String> TS_TYPES = FXCollections.observableArrayList("Deterministic", "Non-Deterministic", "Modal Specification");
 
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -206,8 +206,7 @@ public class FileSettingsPane extends VBox {
 					} else if(fsmClass.equals(TS_TYPES.get(2))) {
 						// Modal Specification
 						Alerts.makeError(new String[] {"WHOOPS", "Haven't implemented file I/O yet."});
-						// TODO: uncomment this.
-						// newFSM = new ModalSpecification(file, newFSMName);
+						newFSM = new ModalSpecification(file, newFSMName);
 					}
 					model.addTS(newFSM);
 					tsNameField.setText("");
@@ -261,17 +260,33 @@ public class FileSettingsPane extends VBox {
 				TransitionSystem<? extends Transition> newTS = null;
 				
 				String tsClass = tsTypeChoiceBox.getSelectionModel().getSelectedItem();
-				GenerateFSMDialog dialog = new GenerateFSMDialog(tsClass.equals("Deterministic")); // pass boolean of whether the FSM is deterministic or not
+				GenerateFSMDialog dialog = new GenerateFSMDialog(tsClass); // pass boolean of whether the FSM is deterministic or not
 				GenerateFSMDialog.FSMParameters parameters = dialog.getFSMParametersFromUser();
 				if(parameters != null) {
-					File fsmFile = new File(GenerateFSM.createNewFSM(
-							parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-							parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
-							parameters.sizeUnobserv, parameters.sizeUncontrol, tsClass.equals("Deterministic"),
-							newTSName, model.getWorkingDirectoryString() + "/"));
-					if(tsClass.equals("Deterministic")) newTS = new DetObsContFSM(fsmFile, newTSName);
-					else	 newTS = new NonDetObsContFSM(fsmFile, newTSName);
-					fsmFile.delete();
+					File tsFile = null;
+					if(tsClass.equals(TS_TYPES.get(2))) {
+						// Modal specification
+						tsFile = new File(GenerateFSM.createModalSpec(
+								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
+								parameters.sizeMay, parameters.sizeSecret, parameters.sizeUncontrol,
+								parameters.sizeMust, newTSName, model.getWorkingDirectoryString() + "/"));
+					} else {
+						tsFile = new File(GenerateFSM.createNewFSM(
+								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
+								parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
+								parameters.sizeUnobserv, parameters.sizeUncontrol, tsClass.equals("Deterministic"),
+								newTSName, model.getWorkingDirectoryString() + "/"));
+					}
+					// If deterministic
+					if(tsClass.equals(TS_TYPES.get(0)))
+						newTS = new DetObsContFSM(tsFile, newTSName);
+					// If nondeterministic
+					else	 if(tsClass.equals(TS_TYPES.get(1)))
+						newTS = new NonDetObsContFSM(tsFile, newTSName);
+					// If modal specification
+					else
+						newTS = new ModalSpecification(tsFile, newTSName);
+					tsFile.delete();
 				} // if
 				if(newTS != null) {
 					model.addTS(newTS);
@@ -331,8 +346,7 @@ public class FileSettingsPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
 				return;
 			} // if
-			// TODO: FIX THIS!!!
-			//tsToSave.toTextFile(file.getParent(), file.getName());
+			tsToSave.toTextFile(file.getParent(), file.getName());
 		}); // setOnMouseClicked
 		
 		saveJPGBtn.setOnMouseClicked(e -> {
