@@ -5,10 +5,10 @@ import fsm.attribute.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Optional;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import support.State;
+import support.transition.Transition;
 
 public class CSODialog {
 	/** String for the prompt title. */
@@ -34,8 +34,8 @@ public class CSODialog {
 	 * @param fsmToUse FSM object for checking current state opacity.
 	 * @return Determinized version of the FSM, if the user asked to determinize the old FSM.
 	 */
-	public static FSM testCSO(FSM fsmToUse) {
-		FSM newFSM = null;
+	public static FSM<? extends Transition> testCSO(FSM<?> fsmToUse) {
+		FSM<? extends Transition> newFSM = null;
 		
 		if(fsmToUse == null)
 			Alerts.makeError(Alerts.ERROR_NO_FSM);
@@ -51,7 +51,7 @@ public class CSODialog {
 			if(result != ButtonType.CANCEL) {
 				if(result == ButtonType.YES) {
 					String newId = fsmToUse.getId() + "-determinized";
-					fsmToUse = (FSM)((Observability)fsmToUse).createObserverView();
+					fsmToUse = (FSM<?>)((Observability<?>)fsmToUse).createObserverView();
 					fsmToUse.setId(newId);
 					newFSM = fsmToUse;
 				}

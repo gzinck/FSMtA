@@ -1,6 +1,5 @@
 package fsmtaui.settingspane.operationspane;
 
-import fsm.attribute.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
 import fsmtaui.popups.CSODialog;
@@ -10,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import support.transition.Transition;
 
 /**
  * Javafx VBox element which has all the options for evaluating the
@@ -78,7 +78,7 @@ public class EvaluateFSMOperationPane extends VBox {
 			if(e.getCode() == KeyCode.ENTER) evaluateBtn.fire();
 		});
 		evaluateBtn.setOnAction(e -> {
-			FSM currFSM = model.getCurrFSM();
+			TransitionSystem<? extends Transition> currFSM = model.getCurrTS();
 			String operation = evaluationChoiceBox.getSelectionModel().getSelectedItem();
 			if(currFSM == null) {
 				// Then cannot perform evaluation
@@ -92,8 +92,12 @@ public class EvaluateFSMOperationPane extends VBox {
 					Alerts.makeInfoBox(RESULT_TITLE, message);
 				} else if(operation.equals(EVALUATION_OPTIONS.get(1))) {
 					// Check if current state opaque
-					FSM newFSM = CSODialog.testCSO(currFSM);
-					if(newFSM != null) model.addFSM(newFSM);
+					if(currFSM instanceof FSM<?>) {
+						FSM<? extends Transition> newFSM = CSODialog.testCSO((FSM<?>)currFSM);
+						if(newFSM != null) model.addTS(newFSM);
+					} else {
+						Alerts.makeError(Alerts.ERROR_OPERATION_ONLY_FOR_FSMS);
+					}
 				} else {
 					// No option chosen
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);

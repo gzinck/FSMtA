@@ -3,16 +3,14 @@ package fsmtaui.settingspane.operationspane;
 import fsm.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
-import fsmtaui.settingspane.FileSettingsPane;
-import fsmtaui.settingspane.FileSettingsPane.FSM_TYPE;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import support.transition.Transition;
 
 public class ConvertFSMOperationPane extends VBox {
 	/** String message for what the section does. */
@@ -82,9 +80,9 @@ public class ConvertFSMOperationPane extends VBox {
 		});
 		convertBtn.setOnAction(e -> {
 			String id = fsmNameField.getText();
-			FSM currFSM = model.getCurrFSM();
+			TransitionSystem<? extends Transition> currFSM = model.getCurrTS();
 			String type = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-			if(id.equals("") || model.fsmExists(id)) {
+			if(id.equals("") || model.tsExists(id)) {
 				// Then must force the user to name the FSM
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
 			} else if(currFSM == null) {
@@ -111,10 +109,10 @@ public class ConvertFSMOperationPane extends VBox {
 	/**
 	 * Helper method o add an FSM to the model and reset the text field.
 	 * 
-	 * @param newFSM - DeterministicFSM to add to the model.
+	 * @param newFSM - TransitionSystem to add to the model.
 	 */
-	private void addFSM(FSM newFSM) {
-		model.addFSM(newFSM);
+	private void addFSM(TransitionSystem<? extends Transition> newFSM) {
+		model.addTS(newFSM);
 		fsmNameField.setText("");
 		fsmNameField.requestFocus();
 	} // addFSM(DeterministicFSM, String)

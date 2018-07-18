@@ -1,6 +1,6 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
-import fsm.FSM;
+import fsm.TransitionSystem;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
 import javafx.event.ActionEvent;
@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import support.transition.Transition;
 
 /**
  * Class extending the javafx VBox element which stores all the
@@ -17,7 +18,7 @@ import javafx.scene.layout.VBox;
  * @author Mac Clevinger and Graeme Zinck
  *
  */
-public class ModifyFSMEventsPane extends VBox {
+public class ModifyTSEventsPane extends VBox {
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
 	
@@ -38,7 +39,7 @@ public class ModifyFSMEventsPane extends VBox {
 	 * @param inModel - Model with the important information all GUI elements
 	 * need access to.
 	 */
-	public ModifyFSMEventsPane(Model inModel) {
+	public ModifyTSEventsPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
 		
@@ -96,13 +97,13 @@ public class ModifyFSMEventsPane extends VBox {
 						Alerts.makeError(Alerts.ERROR_ADD_EVENT_NO_NAME);
 					} else {
 						// Then check if an FSM is open in a viewport
-						FSM currFSM = model.getCurrFSM();
-						if(currFSM == null) {
+						TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+						if(currTS == null) {
 							// Then cannot add an event
 							Alerts.makeError(Alerts.ERROR_ADD_EVENT_NO_FSM);
 						} else {
 							// Then create the event
-							currFSM.addTransition(stateFromField.getText(), eventNameField.getText(), stateToField.getText());
+							currTS.addTransition(stateFromField.getText(), eventNameField.getText(), stateToField.getText());
 							stateFromField.setText("");
 							stateFromField.requestFocus();
 							stateToField.setText("");
@@ -119,35 +120,32 @@ public class ModifyFSMEventsPane extends VBox {
 		removeEventBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) removeEventBtn.fire();
 		});
-		removeEventBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				if(stateFromField.getText().equals("") || stateToField.getText().equals("")) {
-					// Then must force the user to define states
-					Alerts.makeError(Alerts.ERROR_REMOVE_EVENT_NO_STATES);
+		removeEventBtn.setOnAction(e -> {
+			if(stateFromField.getText().equals("") || stateToField.getText().equals("")) {
+				// Then must force the user to define states
+				Alerts.makeError(Alerts.ERROR_REMOVE_EVENT_NO_STATES);
+			} else {
+				// Then check if the user defined an event
+				if(eventNameField.getText().equals("")) {
+					// Then must force the user to define name
+					Alerts.makeError(Alerts.ERROR_REMOVE_EVENT_NO_NAME);
 				} else {
-					// Then check if the user defined an event
-					if(eventNameField.getText().equals("")) {
-						// Then must force the user to define name
-						Alerts.makeError(Alerts.ERROR_REMOVE_EVENT_NO_NAME);
+					// Then check if a TransitionSystem is open in a viewport
+					TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+					if(currTS == null) {
+						// Then cannot remove an event
+						Alerts.makeError(Alerts.ERROR_REMOVE_EVENT_NO_FSM);
 					} else {
-						// Then check if an FSM is open in a viewport
-						FSM currFSM = model.getCurrFSM();
-						if(currFSM == null) {
-							// Then cannot remove an event
-							Alerts.makeError(Alerts.ERROR_REMOVE_EVENT_NO_FSM);
-						} else {
-							// Then remove the event
-							currFSM.removeTransition(stateFromField.getText(), eventNameField.getText(), stateToField.getText());
-							stateFromField.setText("");
-							stateFromField.requestFocus();
-							stateToField.setText("");
-							eventNameField.setText("");
-							model.refreshViewport();
-						} // if/else
+						// Then remove the event
+						currTS.removeTransition(stateFromField.getText(), eventNameField.getText(), stateToField.getText());
+						stateFromField.setText("");
+						stateFromField.requestFocus();
+						stateToField.setText("");
+						eventNameField.setText("");
+						model.refreshViewport();
 					} // if/else
 				} // if/else
-			} // handle(ActionEvent)
-		}); // setOnAction(EventHandler<ActionEvent>)
+			} // if/else
+		}); // setOnAction()
 	} // makeRemoveEventHandler()
 }

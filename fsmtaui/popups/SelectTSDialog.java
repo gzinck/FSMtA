@@ -3,20 +3,22 @@ package fsmtaui.popups;
 import java.util.*;
 
 import fsm.FSM;
+import fsm.TransitionSystem;
 import fsmtaui.Model;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import support.transition.Transition;
 
 /**
- * Allows the program to create a dialog box where the user can select various open FSMs.
+ * Allows the program to create a dialog box where the user can select various open TransitionSystems.
  *  
  * @author Mac Clevinger and Graeme Zinck
  *
  */
 
-public class SelectFSMDialog {
-	Dialog<LinkedList<FSM>> dialog;
+public class SelectTSDialog {
+	Dialog<LinkedList<FSM<? extends Transition>>> dialog;
 	ListView<String> openFSMBox;
 	TextField fsmNameField;
 	String id;
@@ -29,8 +31,8 @@ public class SelectFSMDialog {
 	 * @param title Title for the dialog box.
 	 * @param header Header for the dialog box.
 	 */
-	public SelectFSMDialog(Model model, String title, String header) {
-		dialog = new Dialog<LinkedList<FSM>>();
+	public SelectTSDialog(Model model, String title, String header) {
+		dialog = new Dialog<LinkedList<FSM<? extends Transition>>>();
 		dialog.setTitle(title);
 		dialog.setHeaderText(header);
 		
@@ -48,15 +50,15 @@ public class SelectFSMDialog {
 		dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
             		Collection<String> fsmNames = openFSMBox.getSelectionModel().getSelectedItems();
-            		LinkedList<FSM> fsms = new LinkedList<FSM>();
+            		LinkedList<FSM<? extends Transition>> tsList = new LinkedList<FSM<? extends Transition>>();
             		for(String n : fsmNames) {
-            			FSM fsm = model.getFSM(n);
-            			if(fsm != null) fsms.add(fsm);
+            			TransitionSystem<? extends Transition> fsm = model.getTS(n);
+            			if(fsm != null && fsm instanceof FSM<?>) tsList.add((FSM<?>)fsm); // Add the fsm, if it exists
             		} // for each fsm name
             		
             		// Must have an id
             		id = fsmNameField.getText();
-            		return fsms;
+            		return tsList;
             }// if
             return null;
         });
@@ -70,7 +72,7 @@ public class SelectFSMDialog {
 			if (openFSMBox.getSelectionModel().getSelectedItems().size() < 2) {
 				Alerts.makeError(Alerts.ERROR_MULTI_OPERATION_NO_FSM);
 	        		event.consume();
-	        } else if(id.equals("") || model.fsmExists(id)) {
+	        } else if(id.equals("") || model.tsExists(id)) {
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
 				event.consume();
 	    		} // if illegal name
@@ -93,9 +95,9 @@ public class SelectFSMDialog {
 	 * 
 	 * @return Collection of FSM objects to perform the operation.
 	 */
-	public LinkedList<FSM> getFSMs() {
+	public LinkedList<FSM<? extends Transition>> getTSs() {
 		// Shows the dialog and returns results
-		Optional<LinkedList<FSM>> optionalResult = dialog.showAndWait();
+		Optional<LinkedList<FSM<? extends Transition>>> optionalResult = dialog.showAndWait();
 		try {
 			return optionalResult.get();
 		} catch(NoSuchElementException e) {

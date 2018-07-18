@@ -1,6 +1,8 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
+import fsm.TransitionSystem;
 import fsm.attribute.*;
+import support.transition.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
 import javafx.scene.control.*;
@@ -14,7 +16,7 @@ import javafx.scene.input.KeyCode;
  * @author Mac Clevinger and Graeme Zinck
  *
  */
-public class ModifyFSMEventPropertiesPane extends VBox {
+public class ModifyTSEventPropertiesPane extends VBox {
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -33,7 +35,7 @@ public class ModifyFSMEventPropertiesPane extends VBox {
 	 * @param inModel - Model with the important information all GUI elements
 	 * need access to.
 	 */
-	public ModifyFSMEventPropertiesPane(Model inModel) {
+	public ModifyTSEventPropertiesPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
 		
@@ -70,20 +72,22 @@ public class ModifyFSMEventPropertiesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
 			} else {
 				// Then no errors
-				try {
-					Observability currFSM = (Observability) model.getCurrFSM();
-					if(currFSM == null) {
-						// Then cannot add an event
-						Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
-					} else {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
+					Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
+				} else if(currTS instanceof Observability<?>) {
+					try {
+						Observability<?> currObs = (Observability<?>) model.getCurrTS();
 						// Toggle the observability of the event.
-						currFSM.setEventObservability(event, !currFSM.getEventObservability(event));
+						currObs.setEventObservability(event, !currObs.getEventObservability(event));
 						eventNameField.setText("");
 						eventNameField.requestFocus();
 						model.refreshViewport();
-					} // if/else
-				} catch(NullPointerException err) {
-					Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
+					} catch(NullPointerException err) {
+						Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
+					}
+				} else {
+					System.err.println("Error: the options for observable events were available for a TransitionSystem that did not have them enabled.");
 				}
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
@@ -102,20 +106,22 @@ public class ModifyFSMEventPropertiesPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
 			} else {
 				// Then no errors
-				try {
-					Controllability currFSM = (Controllability) model.getCurrFSM();
-					if(currFSM == null) {
-						// Then cannot add an event
-						Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
-					} else {
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
+					Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
+				} else if(currTS instanceof Controllability<?>) {
+					try {
+						Controllability<?> currControl = (Controllability<?>) model.getCurrTS();
 						// Toggle the observability of the event.
-						currFSM.setEventControllability(event, !currFSM.getEventControllability(event));
+						currControl.setEventControllability(event, !currControl.getEventControllability(event));
 						eventNameField.setText("");
 						eventNameField.requestFocus();
 						model.refreshViewport();
-					} // if/else
-				} catch(NullPointerException err) {
-					Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
+					} catch(NullPointerException err) {
+						Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
+					}
+				} else {
+					System.err.println("Error: the options for controllable events were available for a TransitionSystem that did not have them enabled.");
 				}
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)

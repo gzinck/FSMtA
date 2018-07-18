@@ -19,10 +19,10 @@ public class windows {
 		System.out.println(fsm.makeDotString());
 		
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		DetObsContFSM fsm2 = fsm.makeAccessible();
+		DetObsContFSM fsm2 = (DetObsContFSM)fsm.makeAccessible();
 		System.out.println(fsm2.makeDotString());
 		FSMToDot.createImgFromFSM(fsm2, MAC_WORKING_FOLDER + "test2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		DetObsContFSM fsm3 = fsm2.makeCoAccessible();
+		DetObsContFSM fsm3 = (DetObsContFSM)fsm2.makeCoAccessible();
 		System.out.println(fsm3.makeDotString());
 		FSMToDot.createImgFromFSM(fsm3, MAC_WORKING_FOLDER + "test3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		

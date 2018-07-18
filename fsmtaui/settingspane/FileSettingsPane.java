@@ -5,6 +5,8 @@ import fsmtaui.Model;
 import fsmtaui.popups.*;
 import graphviz.FSMToDot;
 import support.*;
+import support.transition.Transition;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -42,11 +44,11 @@ public class FileSettingsPane extends VBox {
 	/** Button for reading in a file. */
 	private Button readInFileBtn;
 	/** Button for creating a new FSM. */
-	private Button newFSMBtn;
+	private Button newTSBtn;
 	/** Button for generating a new FSM file which is read in. */
 	private Button genFSMBtn;
 	/** Button for closing the selected FSMs. */
-	private Button closeFSMBtn;
+	private Button closeTSBtn;
 	/** Button for saving the selected FSMs as FSM files. */
 	private Button saveFSMBtn;
 	/** Button for saving the selected FSMs as JPG files. */
@@ -55,7 +57,7 @@ public class FileSettingsPane extends VBox {
 	 * Box with all the openFSMs listed. Double clicking on an element opens
 	 * the FSM as a viewport, if it is not already.
 	 */
-	ListView<String> openFSMBox;
+	ListView<String> openTSBox;
 	
 	/**
 	 * Creates a FileSettingsPane with all the options to open and save FSMs.
@@ -86,11 +88,11 @@ public class FileSettingsPane extends VBox {
 		
 		// Event handlers
 		makeNewFSMFromFileEventHandler();
-		makeNewFSMEventHandler();
-		makeGenFSMEventHandler();
-		makeSelectFSMEventHandler();
-		makeCloseFSMEventHandler();
-		makeSaveFSMEventHandler();
+		makeNewTSEventHandler();
+		makeGenTSEventHandler();
+		makeSelectTSEventHandler();
+		makeCloseTSEventHandler();
+		makeSaveTSEventHandler();
 	} // SettingsPane()
 	
 	/**
@@ -114,9 +116,9 @@ public class FileSettingsPane extends VBox {
 		
 		// Buttons to pull in new FSM
 		readInFileBtn = new Button("Read In File");
-		newFSMBtn = new Button("Create Empty FSM");
+		newTSBtn = new Button("Create Empty FSM");
 		genFSMBtn = new Button("Generate New FSM");
-		HBox fileBtns = new HBox(readInFileBtn, newFSMBtn, genFSMBtn);
+		HBox fileBtns = new HBox(readInFileBtn, newTSBtn, genFSMBtn);
 		
 		return new VBox(fsmName, fsmType, fileBtns);
 	} // makeMainFileOptions()
@@ -128,10 +130,10 @@ public class FileSettingsPane extends VBox {
 	 */
 	private VBox makeOpenFSMBox() {
 		Label openFSMBoxLabel = new Label("Open FSMs:");
-		openFSMBox = new ListView<String>(model.getOpenFSMStrings());
-		openFSMBox.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		openTSBox = new ListView<String>(model.getOpenTSStrings());
+		openTSBox.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		
-		return new VBox(openFSMBoxLabel, openFSMBox);
+		return new VBox(openFSMBoxLabel, openTSBox);
 	} // makeOpenFSMBox()
 	
 	/**
@@ -141,10 +143,10 @@ public class FileSettingsPane extends VBox {
 	 * @return - VBox with all the buttons for closing/saving FSMs.
 	 */
 	private VBox makeSaveBtns() {
-		closeFSMBtn = new Button("Close selected FSM");
+		closeTSBtn = new Button("Close selected FSM");
 		saveFSMBtn = new Button("Save selected FSM as FSM file");
 		saveJPGBtn = new Button("Save selected FSM as JPG file");
-		return new VBox(closeFSMBtn, saveFSMBtn, saveJPGBtn);
+		return new VBox(closeTSBtn, saveFSMBtn, saveJPGBtn);
 	} // makeSaveBtns()
 	
 	/**
@@ -171,11 +173,11 @@ public class FileSettingsPane extends VBox {
 	} // getFileFromUser()
 	
 	/**
-	 * Checks if the FSM type was selected; if not, return false.
+	 * Checks if the TransitionSystem type was selected; if not, return false.
 	 * 
-	 * @return - True if the user selected an FSM type; else, false.
+	 * @return - True if the user selected an TransitionSystem type; else, false.
 	 */
-	private boolean checkIfValidFSMType() {
+	private boolean checkIfValidTSType() {
 		String selected = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
 		// If not selected, show error
 		if(selected == null || selected.equals("")) {
@@ -190,93 +192,86 @@ public class FileSettingsPane extends VBox {
 	 * a file gets read in.
 	 */
 	private void makeNewFSMFromFileEventHandler() {
-		readInFileBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				// Get the name of the new FSM being read in, and if the name
-				// is unique continue to add it
-				String newFSMName = fsmNameField.getText();
-				if(model.checkIfValidFSMId(newFSMName) && checkIfValidFSMType()) {
-					try {
-						// Get the FSM file and create the FSM
-						File file = getFileFromUser();
-						FSM newFSM = null;
-						
-						String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-						if(fsmClass.equals("Deterministic")) {
-							newFSM = new DetObsContFSM(file, newFSMName);
-						} else if(fsmClass.equals("Non-Deterministic")) {
-							newFSM = new NonDetObsContFSM(file, newFSMName);
-						}
-						model.addFSM(newFSM);
-						fsmNameField.setText("");
-					} catch(FileNotFoundException exception) {
-						// Do nothing, since error message already produced in another method.
-					} catch(Exception exception) {
-						// Show error that file format was not legal.
-						exception.printStackTrace();
-						Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
-					} // try/catch
-				} // if valid FSM name and type
-			} // handle()
+		readInFileBtn.setOnAction(e -> {
+			// Get the name of the new FSM being read in, and if the name
+			// is unique continue to add it
+			String newFSMName = fsmNameField.getText();
+			if(model.checkIfValidTSId(newFSMName) && checkIfValidTSType()) {
+				try {
+					// Get the FSM file and create the FSM
+					File file = getFileFromUser();
+					TransitionSystem<? extends Transition> newFSM = null;
+					
+					String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
+					if(fsmClass.equals("Deterministic")) {
+						newFSM = new DetObsContFSM(file, newFSMName);
+					} else if(fsmClass.equals("Non-Deterministic")) {
+						newFSM = new NonDetObsContFSM(file, newFSMName);
+					}
+					model.addTS(newFSM);
+					fsmNameField.setText("");
+				} catch(FileNotFoundException exception) {
+					// Do nothing, since error message already produced in another method.
+				} catch(Exception exception) {
+					// Show error that file format was not legal.
+					exception.printStackTrace();
+					Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
+				} // try/catch
+			} // if valid FSM name and type
 		}); // setOnAction()
 	} // makeNewFSMFromFileEventHandler()
 	
 	/**
-	 * Makes an event handler when clicking on the newFSMBtn such that
-	 * it creates a new, empty FSM with the specified name.
+	 * Makes an event handler when clicking on the newTSBtn such that
+	 * it creates a new, empty TransitionSystem with the specified name.
 	 */
-	private void makeNewFSMEventHandler() {
-		newFSMBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				String newFSMName = fsmNameField.getText();
-				// If the new FSM name is unique and the type is valid, make the new FSM.
-				if(model.checkIfValidFSMId(newFSMName) && checkIfValidFSMType()) {
-					FSM newFSM = null;
-					
-					String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-					if(fsmClass.equals("Deterministic")) {
-						newFSM = new DetObsContFSM(newFSMName);
-					} else if(fsmClass.equals("Non-Deterministic")) {
-						newFSM = new NonDetObsContFSM(newFSMName);
-					}
-					if(newFSM != null) {
-						model.addFSM(newFSM);
-						fsmNameField.setText("");
-					}
-				} // if
-			} // handle(ActionEvent)
-		}); // setOnAction()
-	} // makeNewFSMEventHandler()
-	
-	/**
-	 * Generates a new FSM by asking the user various parameters (number of states,
-	 * number of marked states, number of initial states).
-	 */
-	private void makeGenFSMEventHandler() {
-		genFSMBtn.setOnAction(e -> {
+	private void makeNewTSEventHandler() {
+		newTSBtn.setOnAction(e -> {
 			String newFSMName = fsmNameField.getText();
 			// If the new FSM name is unique and the type is valid, make the new FSM.
-			if(model.checkIfValidFSMId(newFSMName) && checkIfValidFSMType()) {
-				FSM newFSM = null;
+			if(model.checkIfValidTSId(newFSMName) && checkIfValidTSType()) {
+				TransitionSystem<? extends Transition> newFSM = null;
 				
 				String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-				GenerateFSMDialog dialog = new GenerateFSMDialog(fsmClass.equals("Deterministic")); // pass boolean of whether the FSM is deterministic or not
+				if(fsmClass.equals("Deterministic")) {
+					newFSM = new DetObsContFSM(newFSMName);
+				} else if(fsmClass.equals("Non-Deterministic")) {
+					newFSM = new NonDetObsContFSM(newFSMName);
+				}
+				if(newFSM != null) {
+					model.addTS(newFSM);
+					fsmNameField.setText("");
+				}
+			} // if
+		}); // setOnAction()
+	} // makeNewTSEventHandler()
+	
+	/**
+	 * Generates a new TransitionSystem by asking the user various parameters (number of states,
+	 * number of marked states, number of initial states).
+	 */
+	private void makeGenTSEventHandler() {
+		genFSMBtn.setOnAction(e -> {
+			String newTSName = fsmNameField.getText();
+			// If the new FSM name is unique and the type is valid, make the new FSM.
+			if(model.checkIfValidTSId(newTSName) && checkIfValidTSType()) {
+				TransitionSystem<? extends Transition> newTS = null;
+				
+				String tsClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
+				GenerateFSMDialog dialog = new GenerateFSMDialog(tsClass.equals("Deterministic")); // pass boolean of whether the FSM is deterministic or not
 				GenerateFSMDialog.FSMParameters parameters = dialog.getFSMParametersFromUser();
 				if(parameters != null) {
 					File fsmFile = new File(GenerateFSM.createNewFSM(
 							parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
 							parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
-							parameters.sizeUnobserv, parameters.sizeUncontrol, fsmClass.equals("Deterministic"),
-							newFSMName, model.getWorkingDirectoryString() + "/"));
-					if(fsmClass.equals("Deterministic"))
-						newFSM = new DetObsContFSM(fsmFile, newFSMName);
-					else	 newFSM = new NonDetObsContFSM(fsmFile, newFSMName);
+							parameters.sizeUnobserv, parameters.sizeUncontrol, tsClass.equals("Deterministic"),
+							newTSName, model.getWorkingDirectoryString() + "/"));
+					if(tsClass.equals("Deterministic")) newTS = new DetObsContFSM(fsmFile, newTSName);
+					else	 newTS = new NonDetObsContFSM(fsmFile, newTSName);
 					fsmFile.delete();
 				} // if
-				if(newFSM != null) {
-					model.addFSM(newFSM);
+				if(newTS != null) {
+					model.addTS(newTS);
 					fsmNameField.setText("");
 				} // if
 			} // if
@@ -285,54 +280,46 @@ public class FileSettingsPane extends VBox {
 	
 	/**
 	 * Creates an event handler to deal with when a user double-clicks
-	 * on an openFSM in the openFSMBox in the FileSettingsPane.
+	 * on a TransitionSystem in the openFSMBox in the FileSettingsPane.
 	 * When this occurs, handle() is called, which gets the selected FSMs
 	 * and opens them in the ContentPane as viewports for their graphs
 	 * computed by GraphViz.
 	 */
-	private void makeSelectFSMEventHandler() {
-		openFSMBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				if(e.getButton() == MouseButton.PRIMARY && e.getClickCount() > 1) {
-					ObservableList<String> selected = openFSMBox.getSelectionModel().getSelectedItems();
-					for(String curr : selected) {
-						FSM currFSM = model.getFSM(curr);
-						if(currFSM != null) {
-							model.addViewport(currFSM, curr);
-						} // if
-					} // for
-				} // if
-			} // handle(MouseEvent)
-		}); // setOnMouseClicked(EventHandler<MouseEvent>)
-	} // makeSelectFSMEventHandler()
+	private void makeSelectTSEventHandler() {
+		openTSBox.setOnMouseClicked(e -> {
+			if(e.getButton() == MouseButton.PRIMARY && e.getClickCount() > 1) {
+				ObservableList<String> selected = openTSBox.getSelectionModel().getSelectedItems();
+				for(String curr : selected) {
+					TransitionSystem<? extends Transition> currTS = model.getTS(curr);
+					if(currTS != null) model.addViewport(currTS, curr);
+				} // for
+			} // if
+		}); // setOnMouseClicked()
+	} // makeSelectTSEventHandler()
 	
 	/**
-	 * Creates an event handler for the closeFSMBtn that removes all the
-	 * FSMs the user selected in the openFSMBox (a ListView object) from
-	 * the openFSMs list.
+	 * Creates an event handler for the closeTSBtn that removes all the
+	 * TransitionSystems the user selected in the openTSBox (a ListView object) from
+	 * the openTSs list.
 	 */
-	private void makeCloseFSMEventHandler() {
-		closeFSMBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				ObservableList<String> selected = openFSMBox.getSelectionModel().getSelectedItems();
-				model.removeFSM(selected.get(0));
-			} // handle(ActionEvent)
-		}); // setOnAction(EventHandler<ActionEvent>)
-	} // makeCloseFSMEventHandler()
+	private void makeCloseTSEventHandler() {
+		closeTSBtn.setOnAction(e -> {
+			ObservableList<String> selected = openTSBox.getSelectionModel().getSelectedItems();
+			model.removeTS(selected.get(0));
+		}); // setOnAction()
+	} // makeCloseTSEventHandler()
 	
 	/**
 	 * Creates an event handler for the saveFSMBtn to save an FSM as a
 	 * FSM file in the proprietary FSM format.
 	 * This can be used to read in the FSM into FSMtA later on.
 	 */
-	private void makeSaveFSMEventHandler() {
+	private void makeSaveTSEventHandler() {
 		saveFSMBtn.setOnMouseClicked(e -> {
 			// Gets the selected FSMs and prompts the user for the path to save it to.
-			String fsmId = openFSMBox.getSelectionModel().getSelectedItem();
-			FSM fsmToSave = model.getFSM(fsmId);
-			if(fsmToSave == null) {
+			String tsId = openTSBox.getSelectionModel().getSelectedItem();
+			TransitionSystem<? extends Transition> tsToSave = model.getTS(tsId);
+			if(tsToSave == null) {
 				Alerts.makeError(Alerts.ERROR_NO_FSM_SELECTED);
 				return;
 			} // if
@@ -341,13 +328,13 @@ public class FileSettingsPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
 				return;
 			} // if
-			fsmToSave.toTextFile(file.getParent(), file.getName());
+			tsToSave.toTextFile(file.getParent(), file.getName());
 		}); // setOnMouseClicked
 		
 		saveJPGBtn.setOnMouseClicked(e -> {
 			// Gets the selected FSMs and prompts the user for the path to save it to.
-			String fsmId = openFSMBox.getSelectionModel().getSelectedItem();
-			FSM fsmToSave = model.getFSM(fsmId);
+			String fsmId = openTSBox.getSelectionModel().getSelectedItem();
+			TransitionSystem<? extends Transition> fsmToSave = model.getTS(fsmId);
 			if(fsmToSave == null) {
 				Alerts.makeError(Alerts.ERROR_NO_FSM_SELECTED);
 				return;
@@ -359,5 +346,5 @@ public class FileSettingsPane extends VBox {
 			} // if
 			FSMToDot.createImgFromFSM(fsmToSave, file.getName(), file.getParent(), model.getGraphVizConfigPath());
 		}); // setOnMouseClicked
-	} // makeSaveFSMEventHandler()
+	} // makeSaveTSEventHandler()
 } // class FileSettingsPane

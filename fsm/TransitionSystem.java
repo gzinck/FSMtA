@@ -2,10 +2,8 @@ package fsm;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -75,11 +73,12 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * that are reachable from Initial States and can reach Marked States are
 	 * included.
 	 * 
-	 * @return - Returns an FSM<<r>State, T, Event> extending object representing the trimmed version of the calling FSM object.
+	 * @return - Returns an TransitionSystem extending object representing the trimmed
+	 * version of the calling TransitionSystem object.
 	 */
 	
-	public <fsm extends FSM<T>> fsm trim() {
-		fsm newFSM = this.makeAccessible();
+	public TransitionSystem<T> trim() {
+		TransitionSystem<T> newFSM = this.makeAccessible();
 		return newFSM.makeCoAccessible();
 	}
 	
@@ -94,10 +93,11 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * 
 	 * Some post-processing may be required by more advanced types of FSM.
 	 * 
-	 * @return - Returns an FSM<<r>State, T, Event> extending object representing the accessible version of the calling FSM object. 
+	 * @return - Returns a TransitionSystem extending object representing the accessible
+	 * version of the calling TransitionSystem object. 
 	 */
 	
-	public <fsm extends FSM<T>> fsm makeAccessible() {
+	public TransitionSystem<T> makeAccessible() {
 		// Make a queue to keep track of states that are accessible and their neighbours.
 		LinkedList<State> queue = new LinkedList<State>();
 		
@@ -126,7 +126,7 @@ public abstract class TransitionSystem<T extends Transition> {
 				} // if not null
 			} // while
 			
-			return (fsm)newFSM;
+			return newFSM;
 		} catch(IllegalAccessException e) {
 			e.printStackTrace();
 			return null;
@@ -144,12 +144,13 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * after which the contents of the old FSM object are processed with respect to this list as they construct
 	 * the new FSM object.
 	 * 
-	 * @return - Returns an FSM<<r>State, T, Event> extending object representing the CoAccessible version of the original FSM.
+	 * @return - Returns an TransitionSystem extending object representing the CoAccessible version of the original
+	 * TransitionSystem.
 	 */
 	
-	public <fsm extends FSM<T>> fsm makeCoAccessible() {
+	public TransitionSystem<T> makeCoAccessible() {
 		try {
-			TransitionSystem<T> newFSM = this.getClass().newInstance();
+			TransitionSystem<T> newTS = this.getClass().newInstance();
 			// First, find what states we need to add.
 			HashMap<String, Boolean> processedStates = getCoAccessibleMap();	//Use helper method to generate list of legal/illegal States
 
@@ -158,7 +159,7 @@ public abstract class TransitionSystem<T extends Transition> {
 				// If the state is coaccessible, add it!
 				if(entry.getValue()) {
 					State oldState = getState(entry.getKey());
-					newFSM.addState(oldState);
+					newTS.addState(oldState);
 					if(transitions.getTransitions(oldState) != null) { // Only continue if there are transitions from the state
 						for(T t : transitions.getTransitions(oldState)) {
 							T trans = t.generateTransition();
@@ -168,7 +169,7 @@ public abstract class TransitionSystem<T extends Transition> {
 									trans.setTransitionState(state);
 							}
 							if(trans.getTransitionStates().size() != 0)
-								newFSM.addTransition(oldState, trans);
+								newTS.addTransition(oldState, trans);
 						}
 					} // if not null
 				} // if coaccessible
@@ -177,9 +178,9 @@ public abstract class TransitionSystem<T extends Transition> {
 			// Finally, add the initial state
 			for(State state : this.getInitialStates()) {
 				if(processedStates.get(state.getStateName()))
-					newFSM.addInitialState(state.getStateName());
+					newTS.addInitialState(state.getStateName());
 			}
-			return (fsm)newFSM;
+			return newTS;
 		}
 		catch(IllegalAccessException e) {
 			e.printStackTrace();
