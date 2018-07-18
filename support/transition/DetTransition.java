@@ -85,6 +85,7 @@ public class DetTransition implements Transition {
 	 * determine the exact text for the dot representation.
 	 * @return - Returns a String object containing the dot representation of this Transition.
 	 */
+	
 	public String makeDotStringMayTransition(State firstState) {
 		String eventDeal = "";
 		switch(event.getEventType()) {

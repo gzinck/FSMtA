@@ -380,7 +380,7 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 		for(String s : cont)
 			special += s + "\n";
 		ReadWrite<DetTransition> rdWrt = new ReadWrite<DetTransition>();
-		rdWrt.writeToFile(truePath,  special, this.getTransitions());
+		rdWrt.writeToFile(truePath,  special, this.getTransitions(), FSM_EXTENSION);
 	}
 	
 	@Override

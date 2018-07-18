@@ -29,9 +29,9 @@ public class ReadWrite <T extends Transition>{
 	 * @return - Returns a boolean value representing the result of this method's attempt to write to the File.
 	 */
 	
-	public boolean writeToFile(String filePath, String special, TransitionFunction<T> transF) {
+	public boolean writeToFile(String filePath, String special, TransitionFunction<T> transF, String ext) {
 		try {
-			File f = new File(filePath + ".fsm");
+			File f = new File(filePath + ext);
 			f.delete();
 			RandomAccessFile raf = new RandomAccessFile(f, "rw");
 			try {

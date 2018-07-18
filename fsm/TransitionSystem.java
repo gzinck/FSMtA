@@ -35,13 +35,13 @@ public abstract class TransitionSystem<T extends Transition> {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 
-	/** StateMap<<r>State> object possessing all the States associated to this FSM object */
+	/** StateMap object possessing all the States associated to this TransitionSystem object */
 	protected StateMap states;
-	/** EventMap<<r>Event> object possessing all the Events associated to this FSM object */
+	/** EventMap object possessing all the Events associated to this TransitionSystem object */
 	protected EventMap events;
-	/** TransitionFunction<<r>State, T, Event> object mapping states to sets of transitions (which contain the state names). */
+	/** TransitionFunction<<r>T> object mapping states to sets of transitions (which contain the state names). */
 	protected TransitionFunction<T> transitions;
-	/** String object possessing the identification for this FSM object. */
+	/** String object possessing the identification for this TransitionSystem object. */
 	protected String id;
 	
 //---  Single-FSM Operations   ----------------------------------------------------------------
@@ -290,6 +290,18 @@ public abstract class TransitionSystem<T extends Transition> {
 		return isBlocking;
 	} // isBlocking()
 	
+	/**
+	 * This method converts an FSM object into a text file which can be read back in and used to recreate
+	 * an FSM later, or used for analytical purposes. A helper class, ReadWrite, manages the brunt
+	 * of this process, but for the various special features of FSM objects, each has to handle
+	 * itself separately.
+	 * 
+	 * @param filePath - String object representing the path to the folder to place the text file.
+	 * @param name - String object representing the name of the text file to create.
+	 */
+	
+	public abstract void toTextFile(String filePath, String name);
+	
 //---  Copy Methods that steal from other FSMs   -----------------------------------------------------------------------
 
 	/**
@@ -359,10 +371,11 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
+	 * Setter method that assigns a set of States as the States that compose the single defined State; that is,
+	 * the parameter State aggregate is defined to have been made up of the parameter State ... varargs pieces.
 	 * 
-	 * 
-	 * @param aggregate
-	 * @param pieces
+	 * @param aggregate - State object that represents a State which has been previously generated as the composition of a set of States.
+	 * @param pieces - State ... varargs object that represents the set of States which compose the State aggregate.
 	 */
 	
 	public void setStateComposition(State aggregate, State ... pieces) {
@@ -372,22 +385,13 @@ public abstract class TransitionSystem<T extends Transition> {
 				composed.add(in); 
 		states.setStateComposition(aggregate, composed);
 	}
-	
-	/**
-	 * Adds a map of states to the composition of an FSM.
-	 * @param composed HashMap mapping States to an ArrayList of States, which is
-	 * which is to be added to the state composition of the transition system.
-	 */
 
-	public void addStateComposition(HashMap<State, ArrayList<State>> composed) {
-		HashMap<State, ArrayList<State>> map = getComposedStates();
-		map.putAll(composed);
-		setCompositionStates(map);
-	}
-	
 	/**
+	 * Setter method that allows for the assignation of a new HashMap<<r>State, ArrayList<<r>State>> object
+	 * as the set of States and their corresponding set of States which compose them in this TransitionSystem
+	 * object's StateMap.
 	 * 
-	 * @param composed
+	 * @param composed - A HashMap<<r>State, ArrayList<<r>State>> object to replace the StateMap's composition instance variable.  
 	 */
 	
 	public void setCompositionStates(HashMap<State, ArrayList<State>> composed) {
@@ -605,14 +609,16 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
+	 * This method adds a State to the StateMap as a newly defined State produced by the composition
+	 * of numerous States merged together, as provided as an argument.
 	 * 
-	 * @param state
-	 * @return
+	 * @param state - State ... varargs object representing a group of State objects provided as ingredients of a new State.
+	 * @return - Returns a State object built out of the provided States, its attributes the merging of those States.
 	 */
 	
 	public State addState(State ... state) {
 		Arrays.sort(state);
-		return (State)states.addState(state);
+		return states.addState(state);
 	}
 	
 	/**
@@ -626,6 +632,18 @@ public abstract class TransitionSystem<T extends Transition> {
 	
 	public void addStateTransitions(State state, ArrayList<T> newTransitions) {
 		transitions.putTransitions(state, newTransitions);
+	}
+	
+	/**
+	 * Adds a map of states to the composition of an FSM.
+	 * @param composed HashMap mapping States to an ArrayList of States, which is
+	 * which is to be added to the state composition of the transition system.
+	 */
+
+	public void addStateComposition(HashMap<State, ArrayList<State>> composed) {
+		HashMap<State, ArrayList<State>> map = getComposedStates();
+		map.putAll(composed);
+		setCompositionStates(map);
 	}
 	
 	/**
@@ -710,10 +728,13 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
+	 * This method permits the adding of a new Transition to the Transition System in the format
+	 * of two States and an Event, representing a State leading to another State by the defined
+	 * Event; a corresponding method exists within the TransitionFunction to take these arguments.
 	 * 
-	 * @param state
-	 * @param event
-	 * @param state2
+	 * @param state - State object representing the State that can lead to the other State by the defined Event.
+	 * @param event - Event object representing the Event by which the State -> State2 Transition occurs.
+	 * @param state2 - State object representing the target State that is led to by the defined Event from the defined State.
 	 */
 	
 	public void addTransition(State state, Event event, State state2) {
