@@ -51,12 +51,22 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 		
 		ReadWrite<DetTransition> redWrt = new ReadWrite<DetTransition>();
 		ArrayList<ArrayList<String>> special = redWrt.readFromFile(states, events, transitions, in);
-		initialState = states.getState(special.get(0).get(0));	//Special ArrayList 0-entry is InitialState
-		states.getState(initialState).setStateInitial(true);
-		for(int i = 0; i < special.get(1).size(); i++)			//Special ArrayList 1-entry is MarkedState
+		if(special.get(0).size() > 0) {
+			if(states.getState(special.get(0).get(0)) == null)
+				states.addState(new State(special.get(0).get(0)));
+			initialState = states.getState(special.get(0).get(0));	//Special ArrayList 0-entry is InitialState
+			states.getState(initialState).setStateInitial(true);
+		}
+		for(int i = 0; i < special.get(1).size(); i++) {			//Special ArrayList 1-entry is MarkedState
+			if(states.getState(special.get(1).get(i)) == null)
+				states.addState(new State(special.get(1).get(i)));
 			states.getState(special.get(1).get(i)).setStateMarked(true);
-		for(int i = 0; i <  special.get(2).size(); i++)			//Special ArrayList 2-entry is PrivateState
+		}
+		for(int i = 0; i <  special.get(2).size(); i++) {			//Special ArrayList 2-entry is PrivateState
+			if(states.getState(special.get(2).get(i)) == null)
+				states.addState(new State(special.get(2).get(i)));
 			states.getState(special.get(2).get(i)).setStatePrivate(true);
+		}
 		for(int i = 0; i < special.get(3).size(); i++) {			//Special ArrayList 3-entry is ObservableEvent
 			if(events.getEvent(special.get(3).get(i)) == null)
 				events.addEvent(special.get(3).get(i));
@@ -493,6 +503,8 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 		return newFSM;
 	}
 
+	//TODO: Figure out product Det x NonDet, produces multiple initial States but only accesses one due to Det nature.
+	
 	@Override
 	public DetObsContFSM product(FSM<?> ... other) {
 		DetObsContFSM newFSM = new DetObsContFSM();

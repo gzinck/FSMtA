@@ -328,7 +328,8 @@ public class FileSettingsPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
 				return;
 			} // if
-			tsToSave.toTextFile(file.getParent(), file.getName());
+			// TODO: FIX THIS!!!
+			//tsToSave.toTextFile(file.getParent(), file.getName());
 		}); // setOnMouseClicked
 		
 		saveJPGBtn.setOnMouseClicked(e -> {
