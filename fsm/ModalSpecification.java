@@ -141,10 +141,9 @@ public class ModalSpecification
 	 */
 	
 	public <T extends Transition>
-	DetObsContFSM makeOptimalSupervisor(FSM<T> fsm) throws IllegalArgumentException {
+			DetObsContFSM makeOptimalSupervisor(FSM<T> fsm) throws IllegalArgumentException {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
-//		FSM newFSM = fsm.buildObserver();
 		DetObsContFSM universalObserverView = new DetObsContFSM("UniObsView");
 		HashMap<String, String> universalObserverViewMap = createUniversalObserverView(fsm, universalObserverView);
 		String universalInitial = universalObserverViewMap.get(fsm.getInitialStates().get(0).getStateName());

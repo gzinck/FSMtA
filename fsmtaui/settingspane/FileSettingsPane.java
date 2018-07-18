@@ -11,11 +11,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import javafx.collections.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 
@@ -30,17 +27,14 @@ import javafx.stage.FileChooser;
 public class FileSettingsPane extends VBox {
 	/** String for requesting an FSM text file. */
 	private static final String CHOOSE_FSM_FILE_MSG = "Choose a FSM text file";
-	/** List of possible FSM types, which is passed to other methods. */
-	public static enum FSM_TYPE {
-		DETERMINISTIC, NON_DETERMINISTIC
-	} // FSM_TYPE
-	
+	private static final ObservableList<String> TS_TYPES = FXCollections.observableArrayList("Deterministic", "Non-Deterministic", "Modal Specification");
+
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
 	/** Instance variable for the name field for an FSM. */
-	private TextField fsmNameField;
+	private TextField tsNameField;
 	/** Box with the possible types of FSMs. */
-	private ChoiceBox<String> fsmTypeChoiceBox;
+	private ChoiceBox<String> tsTypeChoiceBox;
 	/** Button for reading in a file. */
 	private Button readInFileBtn;
 	/** Button for creating a new FSM. */
@@ -74,7 +68,7 @@ public class FileSettingsPane extends VBox {
 		titleLabel.getStyleClass().add("section-header");
 		VBox mainFileOptions = makeMainFileOptions();
 		mainFileOptions.getStyleClass().add("padded");
-		VBox openFSMBox = makeOpenFSMBox();
+		VBox openFSMBox = makeOpenTSBox();
 		openFSMBox.getStyleClass().add("padded");
 		VBox saveBtns = makeSaveBtns();
 		saveBtns.getStyleClass().add("padded");
@@ -106,13 +100,13 @@ public class FileSettingsPane extends VBox {
 	private VBox makeMainFileOptions() {
 		// Name of new FSM
 		Label fsmNameLabel = new Label("FSM Name:");
-		fsmNameField = new TextField();
-		HBox fsmName = new HBox(fsmNameLabel, fsmNameField);
+		tsNameField = new TextField();
+		HBox fsmName = new HBox(fsmNameLabel, tsNameField);
 		
 		// Type of new FSM
 		Label fsmTypeLabel = new Label("FSM Type:");
-		fsmTypeChoiceBox = new ChoiceBox<String>(FXCollections.observableArrayList("Deterministic", "Non-Deterministic"));
-		VBox fsmType = new VBox(fsmTypeLabel, fsmTypeChoiceBox);
+		tsTypeChoiceBox = new ChoiceBox<String>(TS_TYPES);
+		VBox fsmType = new VBox(fsmTypeLabel, tsTypeChoiceBox);
 		
 		// Buttons to pull in new FSM
 		readInFileBtn = new Button("Read In File");
@@ -124,16 +118,16 @@ public class FileSettingsPane extends VBox {
 	} // makeMainFileOptions()
 	
 	/**
-	 * Makes the box containing all the FSMs that are currently open.
+	 * Makes the box containing all the TransitionSystems that are currently open.
 	 * 
-	 * @return - VBox with all the FSMs currently open.
+	 * @return - VBox with all the TSs currently open.
 	 */
-	private VBox makeOpenFSMBox() {
-		Label openFSMBoxLabel = new Label("Open FSMs:");
+	private VBox makeOpenTSBox() {
+		Label openTSBoxLabel = new Label("Open FSMs:");
 		openTSBox = new ListView<String>(model.getOpenTSStrings());
 		openTSBox.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		
-		return new VBox(openFSMBoxLabel, openTSBox);
+		return new VBox(openTSBoxLabel, openTSBox);
 	} // makeOpenFSMBox()
 	
 	/**
@@ -178,7 +172,7 @@ public class FileSettingsPane extends VBox {
 	 * @return - True if the user selected an TransitionSystem type; else, false.
 	 */
 	private boolean checkIfValidTSType() {
-		String selected = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
+		String selected = tsTypeChoiceBox.getSelectionModel().getSelectedItem();
 		// If not selected, show error
 		if(selected == null || selected.equals("")) {
 			Alerts.makeError(Alerts.ERROR_NO_FSM_TYPE);
@@ -195,21 +189,28 @@ public class FileSettingsPane extends VBox {
 		readInFileBtn.setOnAction(e -> {
 			// Get the name of the new FSM being read in, and if the name
 			// is unique continue to add it
-			String newFSMName = fsmNameField.getText();
+			String newFSMName = tsNameField.getText();
 			if(model.checkIfValidTSId(newFSMName) && checkIfValidTSType()) {
 				try {
 					// Get the FSM file and create the FSM
 					File file = getFileFromUser();
 					TransitionSystem<? extends Transition> newFSM = null;
 					
-					String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-					if(fsmClass.equals("Deterministic")) {
+					String fsmClass = tsTypeChoiceBox.getSelectionModel().getSelectedItem();
+					if(fsmClass.equals(TS_TYPES.get(0))) {
+						// Deterministic
 						newFSM = new DetObsContFSM(file, newFSMName);
-					} else if(fsmClass.equals("Non-Deterministic")) {
+					} else if(fsmClass.equals(TS_TYPES.get(1))) {
+						// Non-Deterministic
 						newFSM = new NonDetObsContFSM(file, newFSMName);
+					} else if(fsmClass.equals(TS_TYPES.get(2))) {
+						// Modal Specification
+						Alerts.makeError(new String[] {"WHOOPS", "Haven't implemented file I/O yet."});
+						// TODO: uncomment this.
+						// newFSM = new ModalSpecification(file, newFSMName);
 					}
 					model.addTS(newFSM);
-					fsmNameField.setText("");
+					tsNameField.setText("");
 				} catch(FileNotFoundException exception) {
 					// Do nothing, since error message already produced in another method.
 				} catch(Exception exception) {
@@ -227,20 +228,22 @@ public class FileSettingsPane extends VBox {
 	 */
 	private void makeNewTSEventHandler() {
 		newTSBtn.setOnAction(e -> {
-			String newFSMName = fsmNameField.getText();
+			String newTSName = tsNameField.getText();
 			// If the new FSM name is unique and the type is valid, make the new FSM.
-			if(model.checkIfValidTSId(newFSMName) && checkIfValidTSType()) {
+			if(model.checkIfValidTSId(newTSName) && checkIfValidTSType()) {
 				TransitionSystem<? extends Transition> newFSM = null;
 				
-				String fsmClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
-				if(fsmClass.equals("Deterministic")) {
-					newFSM = new DetObsContFSM(newFSMName);
-				} else if(fsmClass.equals("Non-Deterministic")) {
-					newFSM = new NonDetObsContFSM(newFSMName);
+				String tsClass = tsTypeChoiceBox.getSelectionModel().getSelectedItem();
+				if(tsClass.equals(TS_TYPES.get(0))) {
+					newFSM = new DetObsContFSM(newTSName);
+				} else if(tsClass.equals(TS_TYPES.get(1))) {
+					newFSM = new NonDetObsContFSM(newTSName);
+				} else if(tsClass.equals(TS_TYPES.get(2))) {
+					newFSM = new ModalSpecification(newTSName);
 				}
 				if(newFSM != null) {
 					model.addTS(newFSM);
-					fsmNameField.setText("");
+					tsNameField.setText("");
 				}
 			} // if
 		}); // setOnAction()
@@ -252,12 +255,12 @@ public class FileSettingsPane extends VBox {
 	 */
 	private void makeGenTSEventHandler() {
 		genFSMBtn.setOnAction(e -> {
-			String newTSName = fsmNameField.getText();
+			String newTSName = tsNameField.getText();
 			// If the new FSM name is unique and the type is valid, make the new FSM.
 			if(model.checkIfValidTSId(newTSName) && checkIfValidTSType()) {
 				TransitionSystem<? extends Transition> newTS = null;
 				
-				String tsClass = fsmTypeChoiceBox.getSelectionModel().getSelectedItem();
+				String tsClass = tsTypeChoiceBox.getSelectionModel().getSelectedItem();
 				GenerateFSMDialog dialog = new GenerateFSMDialog(tsClass.equals("Deterministic")); // pass boolean of whether the FSM is deterministic or not
 				GenerateFSMDialog.FSMParameters parameters = dialog.getFSMParametersFromUser();
 				if(parameters != null) {
@@ -272,7 +275,7 @@ public class FileSettingsPane extends VBox {
 				} // if
 				if(newTS != null) {
 					model.addTS(newTS);
-					fsmNameField.setText("");
+					tsNameField.setText("");
 				} // if
 			} // if
 		}); // setOnAction()
