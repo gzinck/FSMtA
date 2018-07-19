@@ -1,7 +1,7 @@
 package support;
 
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 /**
  * This class is used to generate files readable as Finite State Machines to the constructors

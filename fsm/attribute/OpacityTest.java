@@ -1,7 +1,7 @@
 package fsm.attribute;
 
-import java.util.*;
 import support.State;
+import java.util.*;
 
 /**
  * This interface defines the capabilities of the FSM in regards to testing the

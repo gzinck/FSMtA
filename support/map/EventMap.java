@@ -1,7 +1,7 @@
-package support;
+package support.map;
 
+import support.Event;
 import java.util.*;
-import support.event.Event;
 
 /**
  * This class is a wrapper for a HashMap allowing the user to search for an event object using the corresponding name.

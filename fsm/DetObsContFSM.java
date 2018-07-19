@@ -1,13 +1,17 @@
 package fsm;
 
-import java.io.File;
-
-import fsm.attribute.*;
-import support.event.Event;
-import support.*;
 import support.attribute.EventControllability;
 import support.attribute.EventObservability;
+import support.map.TransitionFunction;
+import support.DisabledEvents;
+import support.map.StateMap;
+import support.map.EventMap;
 import support.transition.*;
+import support.ReadWrite;
+import fsm.attribute.*;
+import support.Event;
+import support.State;
+import java.io.File;
 import java.util.*;
 
 /**

@@ -1,11 +1,6 @@
 package fsm.attribute;
 
 import support.transition.Transition;
-import support.attribute.EventObservability;
-import support.State;
-import support.event.*;
-import fsm.FSM;
-import fsm.NonDetObsContFSM;
 
 /**
  * This interface defines the methods that any FSM object with the characteristic of Observable

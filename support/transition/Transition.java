@@ -1,10 +1,9 @@
 package support.transition;
 
-import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.ArrayList;
 import support.State;
-import support.event.Event;
+import support.Event;
 
 /**
  * This interface provides the framework for the structure of Transition objects, leaving
@@ -13,9 +12,6 @@ import support.event.Event;
  * This interface is part of the support.transition package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
- * @param <S> - State extending object used to permit generic uses of this branch of classes to allow code re-use.
- * @param <E> - Event extending object used to permit generic uses of this branch of classes to allow code re-use.
  */
 
 public interface Transition {

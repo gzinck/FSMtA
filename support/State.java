@@ -181,10 +181,10 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * to the original State extending object.
 	 */
 	
-	public <S extends State> S copy() {
+	public State copy() {
 		// For use in other areas, and when State is extended, this is
 		// necessary.
-		return (S)(new State(this));
+		return new State(this);
 	}
 	
 	/**
@@ -212,8 +212,8 @@ public class State implements Comparator<State>, Comparable<State>{
 	 * state, where the AND logical operator is performed on all its properties.
 	 */
 	
-	public <S extends State> S makeStateWith(State other) {
-		return (S)new State(this, other);
+	public State makeStateWith(State other) {
+		return new State(this, other);
 	}
 	
 	/**

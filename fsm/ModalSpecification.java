@@ -1,20 +1,17 @@
 package fsm;
 
-import support.*;
 import support.attribute.EventControllability;
 import support.attribute.EventObservability;
-import support.event.Event;
-import support.transition.DetTransition;
-import support.transition.Transition;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.io.*;
-import fsm.attribute.Deterministic;
+import support.map.TransitionFunction;
+import support.map.StateMap;
+import support.map.EventMap;
+import support.transition.*;
+import support.ReadWrite;
+import fsm.attribute.*;
+import support.Event;
+import support.State;
+import java.io.File;
+import java.util.*;
 
 /**
  * ModalSpecification is an enhanced version of a transition system, which defines both "may" and

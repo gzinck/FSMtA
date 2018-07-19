@@ -1,18 +1,17 @@
 package fsmtaui;
 
-import fsm.*;
 import fsmtaui.settingspane.SettingsPane;
-
-import java.io.File;
-import java.util.*;
+import support.transition.Transition;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.application.*;
 import javafx.collections.*;
 import javafx.scene.*;
-import javafx.scene.control.*;
 import javafx.stage.*;
-import support.transition.Transition;
-import javafx.scene.layout.*;
+import java.io.File;
+import java.util.*;
 import java.io.*;
+import fsm.*;
 
 /**
  * This class creates a user interface for a Finite State Machine. Key features include:
@@ -74,8 +73,9 @@ public class FSMtAUI extends Application {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Starts the application.
-	 * @param args - String[] object
+	 * This method starts the application.
+	 * 
+	 * @param args - String[] object provided as command-line input.
 	 */
 	
 	public static void main(String[] args)
@@ -86,7 +86,7 @@ public class FSMtAUI extends Application {
 	/**
 	 * Starts the application and places all the GUI elements in the window.
 	 * 
-	 * @param inStage - Stage object to place everything in the application
+	 * @param inStage - Stage object to place everything within for this application
 	 */
 	
 	public void start(Stage inStage)
@@ -137,10 +137,8 @@ public class FSMtAUI extends Application {
 	/**
 	 * Gets a directory from the user.
 	 * 
-	 * @return - The File object representing the directory that the user
-	 * chose.
-	 * @throws FileNotFoundException - Throws a FileNotFoundException if there
-	 * was no directory selected by the user. 
+	 * @return - Returns a File object representing the directory that the user chose.
+	 * @throws FileNotFoundException - Throws a FileNotFoundException if there was no directory selected by the user. 
 	 */
 
 	private File getDirectoryFromUser() throws FileNotFoundException {
@@ -155,12 +153,10 @@ public class FSMtAUI extends Application {
 	} // getDirectoryFromUser()
 	
 	/**
-	 * Gets the working directory from the user. If the user refuses to
-	 * select a working directory, it prompts the user if s/he wishes to
-	 * quit the application or try selecting again.
+	 * Gets the working directory from the user. If the user refuses to select a working directory, it prompts the user
+	 * if they wish to quit the application or try selecting again.
 	 * 
-	 * @return - A File object representing the working directory selected, or null
-	 * if the user wishes to quit.
+	 * @return - Returns a File object representing the working directory selected, or null if the user wishes to quit.
 	 */
 
 	private File getWorkingDirectory() {
@@ -192,7 +188,6 @@ public class FSMtAUI extends Application {
 				} // if
 			} // try/catch
 		} // while
-		
 		return file;
 	} // getWorkingDirectory()
 

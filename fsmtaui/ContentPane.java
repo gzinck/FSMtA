@@ -1,9 +1,9 @@
 package fsmtaui;
 
-import fsmtaui.popups.ImageLegend;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
+import fsmtaui.popups.ImageLegend;
+import javafx.event.EventHandler;
 import javafx.scene.layout.*;
 import javafx.geometry.*;
 
@@ -34,8 +34,7 @@ class ContentPane extends BorderPane {
 	/**
 	 * Creates a ContentPane to hold the tabs.
 	 * 
-	 * @param inModel - Model with all the important information to
-	 * display in the GUI.
+	 * @param inModel - Model object with all the important information to display in the GUI.
 	 */
 	
 	public ContentPane(Model inModel) {
@@ -54,9 +53,9 @@ class ContentPane extends BorderPane {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Makes buttons to zoom in and out of the image and to get the legend popup.
+	 * This method makes the buttons to zoom in and out of the image and to get the legend pop-up.
 	 * 
-	 * @return - HBox containing zoom buttons.
+	 * @return - Returns an HBox object containing zoom buttons.
 	 */
 
 	public HBox makeBtns() {
@@ -76,7 +75,7 @@ class ContentPane extends BorderPane {
 	} // makeZoomBtns()
 	
 	/**
-	 * Handles zooming into and out of FSMs via keyboard presses.
+	 * This method handles zooming into and out of FSMs via keyboard presses.
 	 */
 
 	public void makeZoomKeyboardEventHandler() {
@@ -99,7 +98,7 @@ class ContentPane extends BorderPane {
 	} // makeZoomInEventHandler()
 	
 	/**
-	 * Handles zooming into and out of FSMs via buttons on screen.
+	 * This method handles zooming into and out of FSMs via buttons on screen.
 	 */
 
 	public void makeZoomBtnEventHandler() {
@@ -113,7 +112,7 @@ class ContentPane extends BorderPane {
 	}
 	
 	/**
-	 * 
+	 * This method does something. Graeme? TODO:
 	 */
 	
 	public void makeHelpBtnEventHandler() {

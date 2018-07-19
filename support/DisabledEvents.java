@@ -11,7 +11,6 @@ import java.util.Iterator;
  * This class is a part of the support package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
 
 public class DisabledEvents {
