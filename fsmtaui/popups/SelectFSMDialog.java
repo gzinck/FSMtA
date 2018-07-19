@@ -1,22 +1,21 @@
 package fsmtaui.popups;
 
-import java.util.*;
-
-import fsm.FSM;
-import fsm.TransitionSystem;
-import fsmtaui.Model;
-import javafx.collections.FXCollections;
+import javafx.scene.input.ClipboardContent;
 import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
+import javafx.scene.input.TransferMode;
+import support.transition.Transition;
+import javafx.scene.input.Dragboard;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import support.transition.Transition;
+import fsm.TransitionSystem;
+import fsmtaui.Model;
+import java.util.*;
+import fsm.FSM;
 
 /**
- * Allows the program to create a dialog box where the user can select various open TransitionSystems.
+ * This class allows the program to create a dialog box where the user can select various open TransitionSystems.
  *  
  * This class is a part of the fsmtaui.popups package.
  *  
@@ -27,27 +26,27 @@ public class SelectFSMDialog {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Dialog which asks the user for FSMs to perform an operation upon. */
+	/** Dialog<<r>LinkedList<<r>FSM<<r>Transition>>> instance variable which asks the user for FSMs to perform an operation upon. */
 	Dialog<LinkedList<FSM<? extends Transition>>> dialog;
-	/** List of all the open FSMs when the dialog opened. */
+	/** ListView<<r>String> instance variable representing a list of all the open FSMs when the dialog opened. */
 	ListView<String> openFSMBox;
-	/** List of all the FSMs the user selects for the operation. */
+	/** ListView<<r>String> instance variable representing a list of all the FSMs the user selects for the operation. */
 	ListView<String> selectedFSMBox;
-	/** TextField for the name for the new FSM to create */
+	/** TextField instance variable for the name for the new FSM to create */
 	TextField fsmNameField;
-	/** String for the id of the FSM to create */
+	/** String instance variable for the id of the FSM to create */
 	String id;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a dialog for selecting FSMs that are open. It's possible to get the
-	 * FSMs selected as a collection from the object.
+	 * Creates a dialog for selecting FSMs that are open. It's possible to get the FSMs selected as a collection from the object.
 	 * 
-	 * @param model Model object modeling everything that happens in the UI.
-	 * @param title Title for the dialog box.
-	 * @param header Header for the dialog box.
+	 * @param model - Model object modeling everything that happens in the UI.
+	 * @param title - String object representing the title for the dialog box.
+	 * @param header - String object representing the header for the dialog box.
 	 */
+	
 	public SelectFSMDialog(Model model, String title, String header) {
 		dialog = new Dialog<LinkedList<FSM<? extends Transition>>>();
 		dialog.setTitle(title);
@@ -115,7 +114,7 @@ public class SelectFSMDialog {
 	/**
 	 * Makes a name TextField for the new FSM that is created.
 	 * 
-	 * @return - HBox containing the name TextField and its Label.
+	 * @return - Returns an HBox object containing the name TextField and its Label.
 	 */
 
 	private HBox makeFSMNameField() {
@@ -125,6 +124,12 @@ public class SelectFSMDialog {
 	} // makeFSMNameField()
 
 //---  Getter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * Getter method that TODO:
+	 * 
+	 * @param listView - ListView<<r>String> object that TODO:
+	 */
 	
 	private void addDragHandlers(ListView<String> listView) {
 		listView.setOnDragOver(e -> {
@@ -149,9 +154,9 @@ public class SelectFSMDialog {
 	}
 	
 	/**
-	 * Gets the user's FSM selection that they specify in the dialog and returns it.
+	 * Getter method that requests the user's FSM selection that they specify in the dialog and returns it.
 	 * 
-	 * @return - Returns a LinkedList Collection of FSM objects to perform the operation.
+	 * @return - Returns a LinkedList Collection of FSM objects.
 	 */
 
 	public LinkedList<FSM<? extends Transition>> getTSs() {
@@ -165,7 +170,7 @@ public class SelectFSMDialog {
 	} // getFSMs()
 	
 	/**
-	 * Gets the id of the FSM to create.
+	 * Getter method that requests the id of the FSM to create.
 	 * 
 	 * @return - Returns a String object representing the id for the FSM to create
 	 */
@@ -173,16 +178,21 @@ public class SelectFSMDialog {
 	public String getId() {
 		return id;
 	}
+
+//---  Support Classes   ----------------------------------------------------------------------
 	
 	/**
-	 * Class for each cell containing an FSM name in the fsm name lists.
-	 * This enables the contents to be copied elsewhere for drag-and-drop
-	 * operations.
+	 * This class is for each cell containing an FSM name in the fsm name lists. This enables
+	 * the contents to be copied elsewhere for drag-and-drop operations.
+	 * 
+	 * This class is a part of the fsmtaui.popups package.
 	 * 
 	 * @author Mac Clevinger and Graeme Zinck
 	 */
 	
 	public class FSMNameCell extends ListCell<String> {
+		
+	//-- Constructors  ----------------------------------
 		
 		/**
 		 * Creates a new FSMNameCell with all the event handlers
@@ -230,6 +240,9 @@ public class SelectFSMDialog {
 				}
 			});
 		}
+
+	//-- Operations  ------------------------------------
+		
 		@Override
 		protected void updateItem(String text, boolean empty) {
 	         super.updateItem(text, empty);

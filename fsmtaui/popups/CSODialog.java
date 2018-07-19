@@ -1,17 +1,16 @@
 package fsmtaui.popups;
 
-import fsm.*;
-import fsm.attribute.*;
-
+import javafx.scene.control.Alert.AlertType;
+import support.transition.Transition;
+import javafx.scene.control.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
+import fsm.attribute.*;
 import support.State;
-import support.transition.Transition;
+import fsm.*;
 
 /**
- * This class
+ * This class does something. Graeme? TODO:
  * 
  * This class is a part of the fsmtaui.popups package.
  * 
@@ -45,11 +44,11 @@ public class CSODialog {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Allows a user to check if the input FSM is current-state opaque. It requires that the input FSM
+	 * This method allows a user to check if the input FSM is current-state opaque. It requires that the input FSM
 	 * is already determinized, and it asks the user if they would like to determinize it first.
 	 * 
-	 * @param fsmToUse FSM object for checking current state opacity.
-	 * @return Determinized version of the FSM, if the user asked to determinize the old FSM.
+	 * @param fsmToUse - FSM object for checking current state opacity.
+	 * @return - Returns an FSM object: the Determinized version of the FSM, if the user asked to determinize the old FSM.
 	 */
 
 	public static FSM<? extends Transition> testCSO(FSM<?> fsmToUse) {

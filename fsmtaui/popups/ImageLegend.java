@@ -1,9 +1,9 @@
 package fsmtaui.popups;
 
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import javafx.scene.*;
-import javafx.scene.control.Label;
 
 /**
  * ImageLegend is an object which contains a whole new window that is always in front with all the
@@ -32,7 +32,7 @@ public class ImageLegend {
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a new window with the image's legend.
+	 * Constructor for an ImageLegend object that creates a new window with the image's legend.
 	 */
 
 	public ImageLegend() {
@@ -56,7 +56,7 @@ public class ImageLegend {
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * This method
+	 * This method TODO:
 	 */
 	
 	private void makeStateLegend() {
@@ -95,7 +95,7 @@ public class ImageLegend {
 	}
 
 	/**
-	 * This method
+	 * This method TODO:
 	 */
 	
 	private void makeTransitionLegend() {
@@ -126,4 +126,5 @@ public class ImageLegend {
 		Label unobservableUncontrollableTransitionLabel = new Label("Unobservable and Uncontrollable Transition");
 		transitionLegend.addRow(3, unobservableUncontrollableTransition, unobservableUncontrollableTransitionLabel);
 	}
+	
 }

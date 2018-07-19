@@ -30,38 +30,38 @@ public class FileSettingsPane extends VBox {
 	
 //---  Constants   ----------------------------------------------------------------------------
 	
-	/** String for requesting an FSM text file. */
+	/** String object constant for requesting an FSM text file. */
 	private static final String CHOOSE_FSM_FILE_MSG = "Choose a FSM text file";
-	/** */
+	/** ObservableList<<r>String> object constant for TODO:*/
 	public static final ObservableList<String> TS_TYPES = FXCollections.observableArrayList("Deterministic", "Non-Deterministic", "Modal Specification");
 
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** Instance variable for the name field for an FSM. */
+	/** TextField object instance variable for the name field for an FSM. */
 	private TextField tsNameField;
-	/** Box with the possible types of FSMs. */
+	/** ChoiceBox<<r>String> object instance variable with the possible types of FSMs. */
 	private ChoiceBox<String> tsTypeChoiceBox;
-	/** Button for reading in a file. */
+	/** Button object instance variable for reading in a file. */
 	private Button readInFileBtn;
-	/** Button for creating a new FSM. */
+	/** Button object instance variable for creating a new FSM. */
 	private Button newTSBtn;
-	/** Button for generating a new FSM file which is read in. */
+	/** Button object instance variable for generating a new FSM file which is read in. */
 	private Button genFSMBtn;
-	/** Button for closing the selected FSMs. */
+	/** Button object instance variable for closing the selected FSMs. */
 	private Button closeTSBtn;
-	/** Button for saving the selected FSMs as FSM files. */
+	/** Button object instance variable for saving the selected FSMs as FSM files. */
 	private Button saveFSMBtn;
-	/** Button for saving the selected FSMs as JPG files. */
+	/** Button object instance variable for saving the selected FSMs as JPG files. */
 	private Button saveJPGBtn;
-	/** Box with all the openFSMs listed. Double clicking on an element opens the FSM as a viewport, if it is not already. */
+	/** ListView<<r>String> object instance variable containing all the openFSMs listed. */
 	ListView<String> openTSBox;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a FileSettingsPane with all the options to open and save FSMs.
+	 * Constructor for a FileSettingsPane object that creates a FileSettingsPane with all the options to open and save FSMs.
 	 * 
 	 * @param inModel - Model object with all the important information to display in the GUI.
 	 */
@@ -99,12 +99,10 @@ public class FileSettingsPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Makes the main file options section, which includes
-	 * naming a new FSM, defining its type, and reading in
-	 * the data (i.e., read in, create new, or generate).
+	 * This method creates the main file options section, which includes naming a new FSM, defining its type, and
+	 * reading in the data (i.e., read in, create new, or generate).
 	 * 
-	 * @return - VBox with all the elements of the main file options
-	 * section.
+	 * @return - Returns a VBox object with all the elements of the main file options section.
 	 */
 
 	private VBox makeMainFileOptions() {
@@ -128,9 +126,9 @@ public class FileSettingsPane extends VBox {
 	} // makeMainFileOptions()
 	
 	/**
-	 * Makes the box containing all the TransitionSystems that are currently open.
+	 * This method creates the box containing all the TransitionSystems that are currently open.
 	 * 
-	 * @return - VBox with all the TSs currently open.
+	 * @return - Returns a VBox object with all the TSs currently open.
 	 */
 
 	private VBox makeOpenTSBox() {
@@ -142,10 +140,9 @@ public class FileSettingsPane extends VBox {
 	} // makeOpenFSMBox()
 	
 	/**
-	 * Creates a box with buttons for closing or saving the
-	 * selected FSMs from the FSMBox.
+	 * This method creates a box with buttons for closing or saving the selected FSMs from the FSMBox.
 	 * 
-	 * @return - VBox with all the buttons for closing/saving FSMs.
+	 * @return - Returns a VBox object with all the buttons for closing/saving FSMs.
 	 */
 
 	private VBox makeSaveBtns() {
@@ -158,8 +155,7 @@ public class FileSettingsPane extends VBox {
 	//-- Event Handlers  --------------------------------
 	
 	/**
-	 * Creates an event handler for clicking on the readInFileBtn so that
-	 * a file gets read in.
+	 * This method creates an event handler for clicking on the readInFileBtn so that a file gets read in.
 	 */
 
 	private void makeNewFSMFromFileEventHandler() {
@@ -199,8 +195,8 @@ public class FileSettingsPane extends VBox {
 	} // makeNewFSMFromFileEventHandler()
 	
 	/**
-	 * Makes an event handler when clicking on the newTSBtn such that
-	 * it creates a new, empty TransitionSystem with the specified name.
+	 * This method creates an event handler when clicking on the newTSBtn such that it creates a
+	 * new, empty TransitionSystem with the specified name.
 	 */
 
 	private void makeNewTSEventHandler() {
@@ -227,8 +223,8 @@ public class FileSettingsPane extends VBox {
 	} // makeNewTSEventHandler()
 	
 	/**
-	 * Generates a new TransitionSystem by asking the user various parameters (number of states,
-	 * number of marked states, number of initial states).
+	 * This method generates a new TransitionSystem by asking the user various parameters (number of states, number
+	 * of marked states, number of initial states).
 	 */
 
 	private void makeGenTSEventHandler() {
@@ -276,11 +272,9 @@ public class FileSettingsPane extends VBox {
 	} // makeNewFSMEventHandler()
 	
 	/**
-	 * Creates an event handler to deal with when a user double-clicks
-	 * on a TransitionSystem in the openFSMBox in the FileSettingsPane.
-	 * When this occurs, handle() is called, which gets the selected FSMs
-	 * and opens them in the ContentPane as viewports for their graphs
-	 * computed by GraphViz.
+	 * This method creates an event handler to deal with when a user double-clicks on a TransitionSystem in the
+	 * openFSMBox in the FileSettingsPane. When this occurs, handle() is called, which gets the selected FSMs and
+	 * opens them in the ContentPane as viewports for their graphs computed by GraphViz.
 	 */
 
 	private void makeSelectTSEventHandler() {
@@ -296,9 +290,8 @@ public class FileSettingsPane extends VBox {
 	} // makeSelectTSEventHandler()
 	
 	/**
-	 * Creates an event handler for the closeTSBtn that removes all the
-	 * TransitionSystems the user selected in the openTSBox (a ListView object) from
-	 * the openTSs list.
+	 * This method creates an event handler for the closeTSBtn that removes all the TransitionSystems the user
+	 * selected in the openTSBox (a ListView object) from the openTSs list.
 	 */
 
 	private void makeCloseTSEventHandler() {
@@ -309,9 +302,8 @@ public class FileSettingsPane extends VBox {
 	} // makeCloseTSEventHandler()
 	
 	/**
-	 * Creates an event handler for the saveFSMBtn to save an FSM as a
-	 * FSM file in the proprietary FSM format.
-	 * This can be used to read in the FSM into FSMtA later on.
+	 * This method creates an event handler for the saveFSMBtn to save an FSM as a FSM file in the proprietary
+	 * FSM format. This can be used to read in the FSM into FSMtA later on.
 	 */
 
 	private void makeSaveTSEventHandler() {
@@ -351,12 +343,10 @@ public class FileSettingsPane extends VBox {
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Gets a file from the user. Shows an error message if no
-	 * file is found.
+	 * Getter method that requests a file from the user. Shows an error message if no file is found.
 	 * 
-	 * @return - File that the user selects.
-	 * @throws FileNotFoundException - Thrown if the user did not select
-	 * a valid file.
+	 * @return - Returns a File object that the user is prompted to select.
+	 * @throws FileNotFoundException - This exception is thrown if the user did not select a valid file.
 	 */
 
 	private File getFileFromUser() throws FileNotFoundException
@@ -375,9 +365,9 @@ public class FileSettingsPane extends VBox {
 	} // getFileFromUser()
 	
 	/**
-	 * Checks if the TransitionSystem type was selected; if not, return false.
+	 * Getter method that requests if the TransitionSystem type was selected.
 	 * 
-	 * @return - True if the user selected an TransitionSystem type; else, false.
+	 * @return - Returns a boolean value; true if the user selected an TransitionSystem type, otherwise false.
 	 */
 
 	private boolean checkIfValidTSType() {

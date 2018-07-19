@@ -1,8 +1,8 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
-import fsmtaui.Model;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import fsmtaui.Model;
 
 /**
  * ModifyTSPane is a specialized javafx VBox element which contains all the settings
@@ -17,32 +17,31 @@ public class ModifyTSPane extends VBox {
 	
 //---  Constants   ----------------------------------------------------------------------------
 	
-	/** Integer for the number of pixels wide the settings sidebar will be. */
+	/** int constant for the number of pixels wide the settings sidebar will be. */
 	private static final int OPTIONS_WIDTH = 382;
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** Accordion with all the options for the pane. */
+	/** VBox object instance variable accordion with all the options for the pane. */
 	private VBox optionBoxes;
-	/** TitledPane containing all the options for the events. */
+	/** TitledPane object instance variable containing all the options for the events. */
 	private TitledPane eventOptions;
-	/** TitledPane containing all the options for adding/removing states. */
+	/** TitledPane object instance variable containing all the options for adding/removing states. */
 	private TitledPane stateOptions;
-	/** TitledPane containing all the options for the editing the properties of preexisting states. */
+	/** TitledPane object instance variable containing all the options for the editing the properties of preexisting states. */
 	private TitledPane statePropertiesOptions;
-	/** TitledPane containing all the options for editing the properties of preexisting events. */
+	/** TitledPane object instance variable containing all the options for editing the properties of preexisting events. */
 	private TitledPane eventPropertiesOptions;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a new ModifyFSMPane, which allows the user to change the
-	 * events, transitions, etc. of the currently open FSM.
+	 * Constructor for a ModifyTSPane object that creates a new ModifyFSMPane, which allows the user to change
+	 * the events, transitions, etc. of the currently open FSM.
 	 * 
-	 * @param inModel - Model with all the important information to
-	 * display in the GUI.
+	 * @param inModel - Model object with all the important information to display in the GUI.
 	 */
 	
 	public ModifyTSPane(Model inModel) {

@@ -79,9 +79,8 @@ public class Alerts {
 	/**
 	 * Makes an error dialog with a message and header.
 	 * 
-	 * @param message Array with 2 elements: the header text for
-	 * the error message, and the error message. This should be chosen
-	 * from the constants in this class, but could be from anywhere.
+	 * @param message - Array of String objects with 2 elements: the header text for the error message, and
+	 * the error message. This should be chosen from the constants in this class, but could be from anywhere.
 	 */
 
 	public static void makeError(String[] message) {
@@ -93,8 +92,8 @@ public class Alerts {
 	/**
 	 * Makes an information dialog box with a message and header.
 	 * 
-	 * @param header The title for the information box. 
-	 * @param message The message for the user in the box.
+	 * @param header - String object representing the title for the information box. 
+	 * @param message - String object representing the message for the user in the box.
 	 */
 
 	public static void makeInfoBox(String header, String message) {

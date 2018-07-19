@@ -1,16 +1,16 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
-import fsm.TransitionSystem;
-import fsm.attribute.*;
-import support.transition.*;
-import fsmtaui.Model;
-import fsmtaui.popups.Alerts;
+import javafx.scene.input.KeyCode;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.input.KeyCode;
+import fsmtaui.popups.Alerts;
+import support.transition.*;
+import fsm.TransitionSystem;
+import fsm.attribute.*;
+import fsmtaui.Model;
 
 /**
- * Class extending the javafx VBox element which stores all the options for managing observability of states.
+ * This class extends the javafx VBox element which stores all the options for managing observability of states.
  * 
  * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
  * 
@@ -21,13 +21,13 @@ public class ModifyTSEventPropertiesPane extends VBox {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** TextField to name an event to change observability. */
+	/** TextField object instance variable to name an event to change observability. */
 	private TextField eventNameField;
-	/** Button to toggle the observability of an event. */
+	/** Button object instance variable to toggle the observability of an event. */
 	private Button toggleObservabilityBtn;
-	/** Button to toggle the controllability of an event. */
+	/** Button object instance variable to toggle the controllability of an event. */
 	private Button toggleControllabilityBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
@@ -36,8 +36,7 @@ public class ModifyTSEventPropertiesPane extends VBox {
 	 * Creates a pane that controls the observability of events in
 	 * the current FSM, if the current FSM extends Observable.
 	 * 
-	 * @param inModel - Model with the important information all GUI elements
-	 * need access to.
+	 * @param inModel - Model object with the important information all GUI elements need access to.
 	 */
 	
 	public ModifyTSEventPropertiesPane(Model inModel) {
@@ -64,7 +63,7 @@ public class ModifyTSEventPropertiesPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Creates the event handler for changing observability of an event.
+	 * This method creates the event handler for changing observability of an event.
 	 */
 
 	private void makeToggleObservableEventHandler() {
@@ -102,7 +101,7 @@ public class ModifyTSEventPropertiesPane extends VBox {
 	} // makeToggleObservableEventHandler()
 	
 	/**
-	 * Creates the event handler for changing observability of an event.
+	 * This method creates the event handler for changing observability of an event.
 	 */
 
 	private void makeToggleControllableEventHandler() {

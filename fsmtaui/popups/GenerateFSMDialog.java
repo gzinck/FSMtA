@@ -12,8 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 /**
- * Provides methods to create FSM parameters from the user in order to
- * generate an FSM.
+ * This class provides methods to create FSM parameters from the user in order to generate an FSM.
  *  
  * This class is a part of the fsmtaui.popups package.
  *  
@@ -24,19 +23,22 @@ public class GenerateFSMDialog {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** */
+	//TODO: Fill in comments
+	
+	/** Dialog<<r>FSMParameters> instance variable object */
 	Dialog<FSMParameters> dialog;
-	/** */
+	/** GridPane instance variable object */
 	GridPane optionGrid;
-	/** */
+	/** TextField instance variable objects */
 	TextField sizeStates, sizeMarked, sizeEvents, sizePaths, sizeInitial, sizeSecret, sizeUnobserv, sizeUncontrol, sizeMay, sizeMust;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a dialog box for getting information on what kind of FSM should be created.
+	 * Constructor for a GenerateFSMDialog object that creates a dialog box for getting information
+	 * on what kind of FSM should be created.
 	 * 
-	 * @param fsmClass - String object
+	 * @param fsmClass - String object that TODO: Fill in
 	 */
 	
 	public GenerateFSMDialog(String fsmClass) {
@@ -126,7 +128,7 @@ public class GenerateFSMDialog {
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
-	 * Gets the user's FSM parameters that they specify in the dialog and returns it.
+	 * Getter method that requests the user's FSM parameters that they specify in the dialog and returns it.
 	 * 
 	 * @return - Returns a FSMParameters object with all the information needed to generate an FSM.
 	 */
@@ -157,31 +159,33 @@ public class GenerateFSMDialog {
 		
 		//-- Instance Variables  ------------------------
 		
-		/** */
+		//TODO: Fill these in
+		
+		/** integer instance variable */
 		public int sizeStates;
-		/** */ 
+		/** integer instance variable */ 
 		public int sizeMarked;
-		/** */
+		/** integer instance variable */
 		public int sizeEvents;
-		/** */
+		/** integer instance variable */
 		public int sizePaths;
-		/** */
+		/** integer instance variable */
 		public int sizeSecret;
-		/** */
+		/** integer instance variable */
 		public int sizeUnobserv;
-		/** */
+		/** integer instance variable */
 		public int sizeUncontrol;
-		/** */
+		/** integer instance variable */
 		public int sizeInitial;
-		/** */
+		/** integer instance variable */
 		public int sizeMay;
-		/** */
+		/** integer instance variable */
 		public int sizeMust;
 		
 		//-- Constructors  ------------------------------
 		
 		/**
-		 * 
+		 *  TODO:
 		 */
 		
 		FSMParameters() {
@@ -191,6 +195,7 @@ public class GenerateFSMDialog {
 		//-- Setter Methods  ----------------------------
 		
 		/**
+		 * TODO:
 		 * 
 		 * @param states
 		 * @param marked
@@ -216,6 +221,7 @@ public class GenerateFSMDialog {
 		} // setNonDeterministicParameters()
 		
 		/**
+		 * TODO:
 		 * 
 		 * @param states
 		 * @param marked
@@ -240,6 +246,7 @@ public class GenerateFSMDialog {
 		} // setDeterministicParameters()
 		
 		/**
+		 * TODO:
 		 * 
 		 * @param states
 		 * @param marked

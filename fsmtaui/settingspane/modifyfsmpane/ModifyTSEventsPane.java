@@ -1,18 +1,18 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
+import support.transition.Transition;
+import javafx.scene.layout.GridPane;
+import javafx.scene.input.KeyCode;
+import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import fsmtaui.popups.Alerts;
 import fsm.TransitionSystem;
 import fsmtaui.Model;
-import fsmtaui.popups.Alerts;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import support.transition.Transition;
 
 /**
- * Class extending the javafx VBox element which stores all the
+ * This class extends the javafx VBox element which stores all the
  * options for adding and removing events from the open FSM.
  * 
  * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
@@ -24,25 +24,25 @@ public class ModifyTSEventsPane extends VBox {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** TextField for the initial state for a new event the user wishes to create. */
+	/** TextField object instance variable for the initial state for a new event the user wishes to create. */
 	private TextField stateFromField;
-	/** TextField for the resulting state for a new event the user wishes to create. */
+	/** TextField object instance variable for the resulting state for a new event the user wishes to create. */
 	private TextField stateToField;
-	/** TextField for the name of the event/transition to get from the initial to the resulting state. */
+	/** TextField object instance variable for the name of the event/transition to get from the initial to the resulting state. */
 	private TextField eventNameField;
-	/** Button to add the event. */
+	/** Button object instance variable to add the event. */
 	private Button addEventBtn;
-	/** Button to remove the event. */
+	/** Button object instance variable to remove the event. */
 	private Button removeEventBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a new pane to add/remove events.
+	 * Constructor for a ModifyTSEventsPane object that creates a new pane to add/remove events.
 	 * 
-	 * @param inModel - Model with the important information all GUI elements need access to.
+	 * @param inModel - Model object with the important information all GUI elements need access to.
 	 */
 	
 	public ModifyTSEventsPane(Model inModel) {
@@ -86,7 +86,7 @@ public class ModifyTSEventsPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Creates an event handler to add a new event connecting two states.
+	 * This method creates an event handler to add a new event connecting two states.
 	 */
 	
 	private void makeAddEventHandler() {
@@ -126,7 +126,7 @@ public class ModifyTSEventsPane extends VBox {
 	} // makeAddEventHandler()
 	
 	/**
-	 * This method
+	 * This method creates an event handler to remove an event connecting two states.
 	 */
 	
 	private void makeRemoveEventHandler() {
@@ -161,4 +161,5 @@ public class ModifyTSEventsPane extends VBox {
 			} // if/else
 		}); // setOnAction()
 	} // makeRemoveEventHandler()
+	
 }

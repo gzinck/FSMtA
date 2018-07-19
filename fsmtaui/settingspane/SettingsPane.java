@@ -1,15 +1,15 @@
 package fsmtaui.settingspane;
 
-import javafx.scene.control.*;
-import javafx.scene.control.TabPane.*;
-import javafx.scene.layout.*;
-import fsmtaui.Model;
-import fsmtaui.settingspane.modifyfsmpane.ModifyTSPane;
 import fsmtaui.settingspane.operationspane.FSMOperationPane;
+import fsmtaui.settingspane.modifyfsmpane.ModifyTSPane;
+import javafx.scene.control.TabPane.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.collections.*;
+import fsmtaui.Model;
 
 /**
- * SettingsPane holds all the options to open, modify, and perform operations
+ * This class holds all the options to open, modify, and perform operations
  * on FSMs.
  * 
  * This class is a part of the fsmtaui.settingspane package.
@@ -21,29 +21,28 @@ public class SettingsPane extends VBox {
 
 //---  Constants   ----------------------------------------------------------------------------
 	
-	/** String array with all the names for settings tabs, */
+	/** String array constant with all the names for settings tabs, */
 	private static final String[] TAB_NAMES = { "File Options", "Modify FSM", "FSM Operations" };
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** TabPane for all the panes of settings. Tabs are not closable. */ 
+	/** TabPane object instance variable for all the panes of settings. Tabs are not closable. */ 
 	private TabPane tabPane;
-	/** FileSettingsPane with all the options to open/close/save files. */
+	/** FileSettingsPane object instance variable with all the options to open/close/save files. */
 	FileSettingsPane fileSettingsPane;
-	/** ModifyFSMPane with all the options to modify an FSM. */
+	/** ModifyFSMPane object instance variable with all the options to modify an FSM. */
 	ModifyTSPane modifyFSMPane;
-	/** FSMOperationsPane with all the options to perform operations on FSMs. */
+	/** FSMOperationsPane object instance variable with all the options to perform operations on FSMs. */
 	FSMOperationPane fsmOperationsPane;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a SettingsPane with all the panes of options for FSMs.
+	 * Constructor for a SettingsPane object that creates a SettingsPane with all the panes of options for FSMs.
 	 * 
-	 * @param inModel - Model with all the important information to
-	 * display in the GUI.
+	 * @param inModel - Model object with all the important information to display in the GUI.
 	 */
 	
 	public SettingsPane(Model inModel) {
