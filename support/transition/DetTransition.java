@@ -195,4 +195,10 @@ public class DetTransition implements Transition {
 		DetTransition outbound = new DetTransition();
 		return outbound;
 	}
+	
+	@Override
+	public int compareTo(Transition o) {
+		// Simply compares the names of the two tranisitons' events
+		return this.event.getEventName().compareTo(o.getTransitionEvent().getEventName());
+	}
 }

@@ -18,7 +18,7 @@ import support.event.Event;
  * @param <E> - Event extending object used to permit generic uses of this branch of classes to allow code re-use.
  */
 
-public interface Transition {
+public interface Transition extends Comparable<Transition> {
 	
 //---  Operations   ---------------------------------------------------------------------------
 	

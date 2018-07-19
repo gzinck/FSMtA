@@ -140,6 +140,20 @@ public class TransitionFunction <T extends Transition>{
 	}
 	
 	/**
+	 * Getter method for all the transitions from a given State object, sorted in order of the event names associated
+	 * 
+	 * @param state - State object in an FSM associated to the returned ArrayList<<r>T> of Transition objects
+	 * @return - Returns an ArrayList<<r>T> of sorted Transition objects that are associated to a defined State in an FSM
+	 */
+	public ArrayList<T> getSortedTransitions(State state) {
+		ArrayList<T> t = transitions.get(state);
+		if(t != null) {
+			Collections.sort(t);
+			return t;
+		} else return new ArrayList<T>();
+	}
+	
+	/**
 	 * Getter method to acquire a set of all states and its corresponding transition objects.
 	 * 
 	 * @return - Returns a Set of map entries with State objects and an ArrayList of the Transitions. (Set<<r>Map, Entry<<r>S, ArrayList<<r>T>>>)
