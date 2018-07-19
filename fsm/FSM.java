@@ -1,13 +1,12 @@
 package fsm;
 
-import java.util.*;
-
 import fsm.attribute.Controllability;
+import support.transition.Transition;
 import fsm.attribute.Observability;
 import fsm.attribute.OpacityTest;
-import support.*;
-import support.transition.Transition;
-import support.event.Event;
+import support.Event;
+import support.State;
+import java.util.*;
 
 /**
  * This abstract class models a Finite State Machine with some of the essential elements.

@@ -1,9 +1,12 @@
 package support;
 
-import java.util.*;
-import support.event.*;
+import support.map.TransitionFunction;
+import support.map.StateMap;
+import support.map.EventMap;
 import support.transition.*;
+import support.Event;
 import support.State;
+import java.util.*;
 import java.io.*;
 
 /**
@@ -37,7 +40,7 @@ public class ReadWrite <T extends Transition>{
 			try {
 			  raf.writeBytes(special);
 			  String build = "";
-			  for(State state1 : transF.transitions.keySet()) {
+			  for(State state1 : transF.getStates()) {
 				for(T trans : transF.getTransitions(state1)) {
 					for(State state2 : trans.getTransitionStates()) {
 						build += state1.getStateName() + " " + state2.getStateName() + " " + trans.getTransitionEvent().getEventName() + "\n";

@@ -1,15 +1,11 @@
 package fsm.attribute;
 
 import support.transition.Transition;
-import support.event.Event;
-
+import support.DisabledEvents;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import fsm.DetObsContFSM;
-import fsm.FSM;
-import support.DisabledEvents;
 import support.State;
+import fsm.FSM;
 
 /**
  * This interface defines the methods that any FSM with the characteristic of Controllable

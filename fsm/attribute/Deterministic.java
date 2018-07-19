@@ -1,8 +1,7 @@
 package fsm.attribute;
 
-import support.State;
-import support.event.Event;
 import support.transition.DetTransition;
+import support.State;
 
 /**
  * The Deterministic interface defines specialized methods which apply to all FSMs

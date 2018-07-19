@@ -1,9 +1,7 @@
 package fsm.attribute;
 
-import fsm.*;
-import support.State;
-import support.event.Event;
 import support.transition.NonDetTransition;
+import fsm.FSM;
 
 /**
  * The NonDeterministic interface defines specialized methods which apply to all FSMs

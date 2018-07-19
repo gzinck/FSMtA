@@ -1,18 +1,17 @@
 package fsm;
 
-import java.util.ArrayList;
+import support.map.TransitionFunction;
+import support.transition.Transition;
+import java.util.LinkedList;
 import java.util.Collection;
+import support.map.EventMap;
+import support.map.StateMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
-
-import support.EventMap;
 import support.State;
-import support.StateMap;
-import support.TransitionFunction;
-import support.event.Event;
-import support.transition.Transition;
+import support.Event;
 import java.util.*;
 
 /**

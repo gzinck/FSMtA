@@ -1,16 +1,15 @@
 package fsmtaui;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import fsm.*;
-import javafx.collections.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
 import support.transition.Transition;
+import javafx.scene.control.*;
+import javafx.collections.*;
+import java.util.ArrayList;
+import javafx.stage.*;
+import java.io.File;
+import fsm.*;
 
 /**
- * Model is a class which stores the required backend of the FSMtA GUI
+ * This class stores the required back-end of the FSMtA GUI
  * that need to be accessed throughout many components where events are
  * controlled and the model is viewed.
  * 
@@ -56,8 +55,7 @@ public class Model {
 	 * @param inWorkingDirectory - File representing the working path for the FSMtA session.
 	 */
 	
-	Model(ObservableList<TransitionSystem<? extends Transition>> inOpenTSs, ObservableList<String> inOpenTSStrings,
-			File inWorkingDirectory, String inGraphVizConfigPath) {
+	public Model(ObservableList<TransitionSystem<? extends Transition>> inOpenTSs, ObservableList<String> inOpenTSStrings, File inWorkingDirectory, String inGraphVizConfigPath) {
 		openTSs = inOpenTSs;
 		openTSStrings = inOpenTSStrings;
 		workingDirectory = inWorkingDirectory;
@@ -111,8 +109,7 @@ public class Model {
 	/**
 	 * Getter method to get the String id's of all the open TransitionSystems.
 	 * 
-	 * @return - ObservableList of Strings representing the ids
-	 * of all the open TransitionSystems.
+	 * @return - Returns an ObservableList of String objects representing the identifications of all the open TransitionSystems.
 	 */
 
 	public ObservableList<String> getOpenTSStrings() {
@@ -123,8 +120,7 @@ public class Model {
 	 * Getter method to get the String id's of all the open TransitionSystems
 	 * that also happen to be instances of the FSM class.
 	 * 
-	 * @return ObservableList of Strings representing the ids of all the open
-	 * FSMs.
+	 * @return - Returns an ObservableList of String objects representing the identifications of all the open FSMs.
 	 */
 
 	public ObservableList<String> getOpenFSMStrings() {
@@ -139,11 +135,9 @@ public class Model {
 	}
 	
 	/**
-	 * Getter method to get the open TransitionSystem tabs as a TabPane object for
-	 * display in the UI.
+	 * Getter method to get the open TransitionSystem tabs as a TabPane object for display in the UI.
 	 * 
-	 * @return - TabPane object with all the open TransitionSystem viewports and their
-	 * String ids as the tab identifiers.
+	 * @return - Returns a TabPane object with all the open TransitionSystem viewports and their String identifications as the tab identifiers.
 	 */
 
 	public TabPane getOpenTSTabs() {
@@ -153,7 +147,7 @@ public class Model {
 	/**
 	 * Gets the current TransitionSystem visible in the viewport.
 	 * 
-	 * @return - TransitionSystem that is visible in the current viewport.
+	 * @return - Returns a TransitionSystem object that is visible in the current viewport.
 	 */
 
 	public TransitionSystem<? extends Transition> getCurrTS() {
@@ -166,8 +160,8 @@ public class Model {
 	/**
 	 * Gets the TransitionSystem with the desired String id and returns it.
 	 * 
-	 * @param id - String representing the id associated with an open TransitionSystem.
-	 * @return - The TransitionSystem associated with the id.
+	 * @param id - String object representing the id associated with an open TransitionSystem.
+	 * @return - Returns a TransitionSystem object associated with the provided String object id.
 	 */
 
 	public TransitionSystem<? extends Transition> getTS(String id) {
@@ -182,8 +176,8 @@ public class Model {
 	/**
 	 * Checks if a TransitionSystem with a given id exists in the open TS list.
 	 * 
-	 * @param id - String id of the TS to look for.
-	 * @return - True if the TS exists, false otherwise.
+	 * @param id - String object id of the TS to look for.
+	 * @return - Returns a boolean value; true if the TS exists, false otherwise.
 	 */
 
 	public boolean tsExists(String id) {
@@ -194,9 +188,8 @@ public class Model {
 	 * Checks if an input String name for an FSM already exists in
 	 * the list of currently open FSMs.
 	 * 
-	 * @param id - String representing the desired name for a new FSM.
-	 * @return - True if the name is acceptable, false if it already exists
-	 * or it is an empty string.
+	 * @param id - String object representing the desired name for a new FSM.
+	 * @return - Returns a boolean value; true if the name is acceptable, false if it already exists or is an empty string.
 	 */
 
 	public boolean checkIfValidTSId(String id) {
@@ -218,10 +211,9 @@ public class Model {
 //---  Getter Methods - File Access   ---------------------------------------------------------
 	
 	/**
-	 * Getter method to get the working directory as a file.
+	 * Getter method to request the working directory as a file.
 	 * 
-	 * @return - File representing the working directory of the
-	 * FSMtA session.
+	 * @return - Returns a File object representing the working directory of the FSMtA session.
 	 */
 
 	public File getWorkingDirectoryFile() {
@@ -229,10 +221,9 @@ public class Model {
 	} // getWorkingDirectoryFile()
 	
 	/**
-	 * Getter method to get the working directory as a String.
+	 * Getter method to request the working directory as a String.
 	 * 
-	 * @return - String representing the working directory of the
-	 * FSMtA session.
+	 * @return - Returns a String object representing the working directory of the FSMtA session.
 	 */
 
 	public String getWorkingDirectoryString() {
@@ -240,10 +231,9 @@ public class Model {
 	} // getWorkingDirectoryString()
 	
 	/**
-	 * Getter method to get the GraphViz config file path as a
-	 * String.
+	 * Getter method to request the GraphViz config file path as a String.
 	 * 
-	 * @return - String representing the GraphViz config file path.
+	 * @return - Returns a String object representing the GraphViz config file path.
 	 */
 
 	public String getGraphVizConfigPath() {
@@ -251,10 +241,9 @@ public class Model {
 	} // getGraphVizConfigPath()
 
 	/**
-	 * Prompts the user for a path to save a file and returns the
-	 * corresponding File object.
+	 * Prompts the user for a path to save a file and returns the corresponding File object.
 	 * 
-	 * @return - File object representing the path for the new file.
+	 * @return - Returns a File object representing the newly generated File.
 	 */
 
 	public static File getPathToSaveFile() {
@@ -270,8 +259,7 @@ public class Model {
 	/**
 	 * Adds a new Transition System to the set of OpenTSs
 	 * 
-	 * @param ts - TransitionSystem to add to the set of
-	 * open transition systems in the GUI.
+	 * @param ts - TransitionSystem object to add to the set of open transition systems in the GUI.
 	 */
 
 	public void addTS(TransitionSystem<? extends Transition> ts) {
@@ -282,8 +270,8 @@ public class Model {
 	 * Helper method that removes an TransitionSystem with a given String id from the
 	 * list of open TSs by searching through all the open TSs.
 	 * 
-	 * @param id - String representing the id of the transition system to remove.
-	 * @return - True if the FSM was found and removed, false otherwise.
+	 * @param id - String object representing the id of the transition system to remove.
+	 * @return - Returns a boolean value; true if the FSM was found and removed, false otherwise.
 	 */
 
 	public boolean removeTS(String id) {
@@ -302,10 +290,8 @@ public class Model {
 	/**
 	 * Checks if a viewport already exists for a given TransitionSystem id.
 	 * 
-	 * @param id - String representing the id of the TS which is
-	 * being checked.
-	 * @return - True if the TS already has a viewport; false
-	 * otherwise.
+	 * @param id - String object representing the id of the TS which is being checked.
+	 * @return - Returns a boolean value; true if the TS already has a viewport; false otherwise.
 	 */
 
 	public boolean viewportExists(String id) {
@@ -319,10 +305,9 @@ public class Model {
 	/**
 	 * Adds a viewport to the ContentPane to display another FSM in a new tab.
 	 * 
-	 * @param ts - A new TransitionSystem to display.
-	 * @param name - The TransitionSystem's String id.
-	 * @return - True if the viewport was added, false if the viewport already
-	 * existed.
+	 * @param ts - A new TransitionSystem object to display.
+	 * @param name - The TransitionSystem object's String id.
+	 * @return - Returns a boolean value; true if the viewport was added, false if the viewport already existed.
 	 */
 
 	public boolean addViewport(TransitionSystem<? extends Transition> ts, String name) {
@@ -350,8 +335,8 @@ public class Model {
 	 * Removes a viewport using a String id by going through all the tabs and
 	 * closing the one with the matching id.
 	 * 
-	 * @param name - String id of the TransitionSystem tab to remove.
-	 * @return - True if the TransitionSystem was removed; false otherwise.
+	 * @param name - String object representing the id of the TransitionSystem tab to remove.
+	 * @return - Returns a boolean value; true if the TransitionSystem was removed; false otherwise.
 	 */
 
 	public boolean removeViewport(String name) {
@@ -380,7 +365,7 @@ public class Model {
 	/**
 	 * Gets the current FSM viewport.
 	 * 
-	 * @return - FSMViewport that is currently visible.
+	 * @return - Returns a FSMViewport object that is currently visible.
 	 */
 
 	public TSViewport getCurrViewport() {

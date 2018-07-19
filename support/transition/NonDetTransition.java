@@ -2,7 +2,7 @@ package support.transition;
 
 import java.util.*;
 import support.State;
-import support.event.Event;
+import support.Event;
 
 /**
  * This class models a path that connects a State to another State in an FSM, storing an

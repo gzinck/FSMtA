@@ -1,11 +1,9 @@
 package support.transition;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-
+import java.util.ArrayList;
 import support.State;
-import support.event.Event;
+import support.Event;
 
 /**
  * This class models a path that connects a State to another State in an FSM, storing an Event

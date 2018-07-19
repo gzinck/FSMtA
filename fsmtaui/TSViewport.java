@@ -1,15 +1,14 @@
 package fsmtaui;
 
-import java.io.File;
-
-import fsm.TransitionSystem;
-import graphviz.FSMToDot;
-import javafx.geometry.Bounds;
-import javafx.scene.*;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.image.*;
+import javafx.scene.control.ScrollPane;
 import support.transition.Transition;
+import javafx.geometry.Bounds;
+import fsm.TransitionSystem;
+import javafx.scene.image.*;
+import graphviz.FSMToDot;
+import javafx.scene.*;
+import java.io.File;
 
 /**
  * TSViewport is a Parent javafx node which holds a TransitionSystem and its image representation
@@ -28,7 +27,7 @@ public class TSViewport extends Parent {
 	private static int WIDTH = 600;
 	/** Default height of image. */
 	private static int HEIGHT = 500;
-	/** */
+	/** double constant value representing the rate at which zooming occurs. */
 	private static double ZOOM_SPEED = 1.4;
 	
 //---  Instance Variables   -------------------------------------------------------------------

@@ -1,4 +1,4 @@
-package support.event;
+package support;
 
 import support.attribute.EventControllability;
 import support.attribute.EventObservability;

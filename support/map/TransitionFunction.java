@@ -1,12 +1,11 @@
-package support;
-
-import java.util.*;
+package support.map;
 
 import support.transition.DetTransition;
-import support.transition.NonDetTransition;
 import support.transition.Transition;
-import support.event.Event;
 import support.attribute.*;
+import support.Event;
+import support.State;
+import java.util.*;
 
 /**
  * This class models all Transitions in an FSM, storing States and an ArrayList<<r>T> of Transitions as <<r>Key, Value> pairs.
@@ -161,6 +160,16 @@ public class TransitionFunction <T extends Transition>{
 	 
 	public Set<Map.Entry<State, ArrayList<T>>> getAllTransitions() {
 		return transitions.entrySet();
+	}
+	
+	/**
+	 * Getter method that 
+	 * 
+	 * @return - Returns a Collection<<r>State> object
+	 */
+	
+	public Collection<State> getStates(){
+		return transitions.keySet();
 	}
 	
 	/**
