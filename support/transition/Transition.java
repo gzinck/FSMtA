@@ -14,7 +14,7 @@ import support.Event;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public interface Transition {
+public interface Transition extends Comparable<Transition> {
 	
 //---  Operations   ---------------------------------------------------------------------------
 	

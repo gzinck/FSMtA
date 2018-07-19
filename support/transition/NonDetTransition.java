@@ -181,4 +181,10 @@ public class NonDetTransition implements Transition {
 		return (states.size() == 0);
 	}
 
+	@Override
+	public int compareTo(Transition o) {
+		// Simply compares the names of the two tranisitons' events
+		return this.event.getEventName().compareTo(o.getTransitionEvent().getEventName());
+	}
+
 }
