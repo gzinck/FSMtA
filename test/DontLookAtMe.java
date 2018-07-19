@@ -5,7 +5,6 @@ import fsm.attribute.Observability;
 import graphviz.FSMToDot;
 import support.GenerateFSM;
 import support.attribute.EventObservability;
-import support.event.Event;
 import support.transition.DetTransition;
 
 import java.io.*;
@@ -107,9 +106,21 @@ public class DontLookAtMe {
 		FSMToDot.createImgFromFSM(supervisor, GRAEME_WORKING_FOLDER + "supervisor", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 	}
 	
+	private void modalTest4() {
+		// Test for the modal specification lower bound operation
+		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/ModalSpecTests/modal1.mdl");
+		ModalSpecification ms1 = new ModalSpecification(f1, "OK");
+		File f2 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/ModalSpecTests/modal2.mdl");
+		ModalSpecification ms2 = new ModalSpecification(f2, "OK");
+		ms2.addMustTransition("2", "c", "4");
+		FSMToDot.createImgFromFSM(ms1, GRAEME_WORKING_FOLDER + "modal1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms2, GRAEME_WORKING_FOLDER + "modal2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms1.getPseudoLowerBound(ms2), GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+	}
+	
 	@Test
 	public void test() {
-		modalTest3();
+		modalTest4();
 		// (int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath)
 //		File f1 = new File(GenerateFSM.createNewFSM(7, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
 //		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));
