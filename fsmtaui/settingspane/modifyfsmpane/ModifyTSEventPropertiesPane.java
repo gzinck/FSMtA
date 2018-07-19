@@ -10,23 +10,27 @@ import javafx.scene.layout.*;
 import javafx.scene.input.KeyCode;
 
 /**
- * Class extending the javafx VBox element which stores all the
- * options for managing observability of states.
+ * Class extending the javafx VBox element which stores all the options for managing observability of states.
+ * 
+ * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 public class ModifyTSEventPropertiesPane extends VBox {
+	
+//---  Instance Variables   -------------------------------------------------------------------
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
-	
 	/** TextField to name an event to change observability. */
 	private TextField eventNameField;
 	/** Button to toggle the observability of an event. */
 	private Button toggleObservabilityBtn;
 	/** Button to toggle the controllability of an event. */
 	private Button toggleControllabilityBtn;
+	
+//---  Constructors   -------------------------------------------------------------------------
 	
 	/**
 	 * Creates a pane that controls the observability of events in
@@ -35,6 +39,7 @@ public class ModifyTSEventPropertiesPane extends VBox {
 	 * @param inModel - Model with the important information all GUI elements
 	 * need access to.
 	 */
+	
 	public ModifyTSEventPropertiesPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
@@ -55,10 +60,13 @@ public class ModifyTSEventPropertiesPane extends VBox {
 		makeToggleObservableEventHandler();
 		makeToggleControllableEventHandler();
 	} // ModifyFSMObservablePane()
+
+//---  Operations   ---------------------------------------------------------------------------
 	
 	/**
 	 * Creates the event handler for changing observability of an event.
 	 */
+
 	private void makeToggleObservableEventHandler() {
 		eventNameField.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) toggleObservabilityBtn.fire();
@@ -96,6 +104,7 @@ public class ModifyTSEventPropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for changing observability of an event.
 	 */
+
 	private void makeToggleControllableEventHandler() {
 		toggleControllabilityBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) toggleControllabilityBtn.fire();
@@ -126,4 +135,5 @@ public class ModifyTSEventPropertiesPane extends VBox {
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeToggleControllableEventHandler()
+
 } // class ModifyFSMObservablePane

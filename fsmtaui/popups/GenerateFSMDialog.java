@@ -15,22 +15,28 @@ import javafx.scene.layout.GridPane;
  * Provides methods to create FSM parameters from the user in order to
  * generate an FSM.
  *  
+ * This class is a part of the fsmtaui.popups package.
+ *  
  * @author Mac Clevinger and Graeme Zinck
- *
  */
 
 public class GenerateFSMDialog {
 	
+//---  Instance Variables   -------------------------------------------------------------------
+	
+	/** */
 	Dialog<FSMParameters> dialog;
+	/** */
 	GridPane optionGrid;
+	/** */
 	TextField sizeStates, sizeMarked, sizeEvents, sizePaths, sizeInitial, sizeSecret, sizeUnobserv, sizeUncontrol, sizeMay, sizeMust;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
-	 * Creates a dialog box for getting information on what kind
-	 * of FSM should be created.
+	 * Creates a dialog box for getting information on what kind of FSM should be created.
 	 * 
-	 * @param inDeterministic Boolean representing if the new FSM should be a deterministic FSM (i.e.,
-	 * only one initial state and no repeat states).
+	 * @param fsmClass - String object
 	 */
 	
 	public GenerateFSMDialog(String fsmClass) {
@@ -117,11 +123,14 @@ public class GenerateFSMDialog {
         });
 	} // GenerateFSMDialog
 	
+//---  Getter Methods   -----------------------------------------------------------------------
+	
 	/**
 	 * Gets the user's FSM parameters that they specify in the dialog and returns it.
 	 * 
-	 * @return FSMParameters object with all the information needed to generate an FSM.
+	 * @return - Returns a FSMParameters object with all the information needed to generate an FSM.
 	 */
+
 	public FSMParameters getFSMParametersFromUser() {
 		// Shows the dialog and returns results
 		Optional<FSMParameters> optionalResult = dialog.showAndWait();
@@ -132,28 +141,67 @@ public class GenerateFSMDialog {
 		} // try/catch
 	} // getFSMParametersFromUser()
 	
+//---  Supplementary Classes   ----------------------------------------------------------------
+	
 	/**
 	 * Class that allows the javafx dialog box to return a set
 	 * of parameters for a new FSM to generate.
 	 * 
+	 * This class is a part of the fsmtaui.popups package.
+	 * 
 	 * @author Mac Clevinger and Graeme Zinck
 	 *
 	 */
+
 	public class FSMParameters {
+		
+		//-- Instance Variables  ------------------------
+		
+		/** */
 		public int sizeStates;
+		/** */ 
 		public int sizeMarked;
+		/** */
 		public int sizeEvents;
+		/** */
 		public int sizePaths;
+		/** */
 		public int sizeSecret;
+		/** */
 		public int sizeUnobserv;
+		/** */
 		public int sizeUncontrol;
+		/** */
 		public int sizeInitial;
+		/** */
 		public int sizeMay;
+		/** */
 		public int sizeMust;
+		
+		//-- Constructors  ------------------------------
+		
+		/**
+		 * 
+		 */
 		
 		FSMParameters() {
 			// Do nothing
 		}
+		
+		//-- Setter Methods  ----------------------------
+		
+		/**
+		 * 
+		 * @param states
+		 * @param marked
+		 * @param events
+		 * @param paths
+		 * @param secret
+		 * @param unobservable
+		 * @param uncontrollable
+		 * @param initial
+		 * @return
+		 */
 		
 		FSMParameters setNonDeterministicParameters(String states, String marked, String events, String paths, String secret, String unobservable, String uncontrollable, String initial) {
 			sizeStates = Integer.parseInt(states);
@@ -167,6 +215,18 @@ public class GenerateFSMDialog {
 			return this;
 		} // setNonDeterministicParameters()
 		
+		/**
+		 * 
+		 * @param states
+		 * @param marked
+		 * @param events
+		 * @param paths
+		 * @param secret
+		 * @param unobservable
+		 * @param uncontrollable
+		 * @return
+		 */
+		
 		FSMParameters setDeterministicParameters(String states, String marked, String events, String paths, String secret, String unobservable, String uncontrollable) {
 			sizeStates = Integer.parseInt(states);
 			sizeMarked = Integer.parseInt(marked);
@@ -179,6 +239,18 @@ public class GenerateFSMDialog {
 			return this;
 		} // setDeterministicParameters()
 		
+		/**
+		 * 
+		 * @param states
+		 * @param marked
+		 * @param events
+		 * @param secret
+		 * @param uncontrollable
+		 * @param may
+		 * @param must
+		 * @return
+		 */
+		
 		FSMParameters setModalSpecParameters(String states, String marked, String events, String secret, String uncontrollable, String may, String must) {
 			sizeStates = Integer.parseInt(states);
 			sizeMarked = Integer.parseInt(marked);
@@ -189,5 +261,7 @@ public class GenerateFSMDialog {
 			sizeMust = Integer.parseInt(must);
 			return this;
 		}
+	
 	} // static class FSMParameters
+
 } // class GenerateFSMDialog

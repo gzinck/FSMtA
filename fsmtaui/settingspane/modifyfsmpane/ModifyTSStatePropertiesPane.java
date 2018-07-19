@@ -16,10 +16,15 @@ import support.transition.Transition;
  * Class extending the javafx VBox element which stores all the
  * options for adding and removing states from the open TransitionSystem.
  * 
+ * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 public class ModifyTSStatePropertiesPane extends VBox {
+	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/** String title for the section. */
 	private static final String LABEL_STR = "Modify State Properties";
 	/** String name for the button to toggle initial states. */
@@ -41,6 +46,8 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	private static final String REMOVE_ALL_BAD_STR = "Remove Bad States";
 	/** String name for the button to rename all states in the FSM. */
 	private static final String RENAME_ALL_STR = "Rename All States";
+	
+//---  Instance Variables   -------------------------------------------------------------------
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -68,6 +75,8 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/** Button to rename states from the FSM open in the current tab. */
 	private Button renameStatesBtn;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a box with all the initial state options in it.
 	 * Allows the user to add and remove initial states.
@@ -75,6 +84,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	 * @param inModel - Model containing all the important information
 	 * to display in the GUI.
 	 */
+	
 	public ModifyTSStatePropertiesPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
@@ -120,9 +130,12 @@ public class ModifyTSStatePropertiesPane extends VBox {
 		makeRenameStatesEventHandler();
 	} // ModifyFSMInitialStatesPane(Model)
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Creates the event handler for changing initial states.
 	 */
+	
 	private void makeToggleInitialStateEventHandler() {
 		stateNameField.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) toggleInitialStateBtn.fire();
@@ -163,6 +176,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for changing marked states.
 	 */
+
 	private void makeToggleMarkedEventHandler() {
 		toggleMarkedBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) toggleMarkedBtn.fire();
@@ -191,6 +205,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for changing bad states.
 	 */
+
 	private void makeToggleSecretEventHandler() {
 		toggleSecretBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) toggleSecretBtn.fire();
@@ -219,6 +234,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for changing bad states.
 	 */
+
 	private void makeToggleBadEventHandler() {
 		toggleBadBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) toggleBadBtn.fire();
@@ -247,6 +263,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for marking all states.
 	 */
+
 	private void makeMarkAllEventHandler() {
 		markAllBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) markAllBtn.fire();
@@ -268,6 +285,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for marking all states.
 	 */
+
 	private void makeUnmarkAllEventHandler() {
 		unmarkAllBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) unmarkAllBtn.fire();
@@ -289,6 +307,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for marking all states.
 	 */
+
 	private void makeMakeAllGoodEventHandler() {
 		makeAllGoodBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) makeAllGoodBtn.fire();
@@ -310,6 +329,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	/**
 	 * Creates the event handler for marking all states.
 	 */
+
 	private void makeRemoveAllBadEventHandler() {
 		removeAllBadBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) removeAllBadBtn.fire();
@@ -332,6 +352,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	 * Creates the event handler for when the rename states button
 	 * is pressed.
 	 */
+
 	private void makeRenameStatesEventHandler() {
 		renameStatesBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) renameStatesBtn.fire();
@@ -348,4 +369,5 @@ public class ModifyTSStatePropertiesPane extends VBox {
 			} // if/else
 		});
 	} // makeRenameStatesEventHandler()
+
 } // class ModifyFSMInitialStatesPane

@@ -21,14 +21,22 @@ import javafx.stage.FileChooser;
  * for file I/O in the GUI. It allows loading in, generating, opening, closing, and saving
  * files.
  * 
+ * This class is a part of the fsmtaui.settingspane package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 public class FileSettingsPane extends VBox {
+	
+//---  Constants   ----------------------------------------------------------------------------
+	
 	/** String for requesting an FSM text file. */
 	private static final String CHOOSE_FSM_FILE_MSG = "Choose a FSM text file";
+	/** */
 	public static final ObservableList<String> TS_TYPES = FXCollections.observableArrayList("Deterministic", "Non-Deterministic", "Modal Specification");
 
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
 	/** Instance variable for the name field for an FSM. */
@@ -47,18 +55,17 @@ public class FileSettingsPane extends VBox {
 	private Button saveFSMBtn;
 	/** Button for saving the selected FSMs as JPG files. */
 	private Button saveJPGBtn;
-	/**
-	 * Box with all the openFSMs listed. Double clicking on an element opens
-	 * the FSM as a viewport, if it is not already.
-	 */
+	/** Box with all the openFSMs listed. Double clicking on an element opens the FSM as a viewport, if it is not already. */
 	ListView<String> openTSBox;
+	
+//---  Constructors   -------------------------------------------------------------------------
 	
 	/**
 	 * Creates a FileSettingsPane with all the options to open and save FSMs.
 	 * 
-	 * @param inModel - Model with all the important information to
-	 * display in the GUI.
+	 * @param inModel - Model object with all the important information to display in the GUI.
 	 */
+	
 	public FileSettingsPane(Model inModel) {
 		super();	
 		model = inModel;
@@ -89,6 +96,8 @@ public class FileSettingsPane extends VBox {
 		makeSaveTSEventHandler();
 	} // SettingsPane()
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Makes the main file options section, which includes
 	 * naming a new FSM, defining its type, and reading in
@@ -97,6 +106,7 @@ public class FileSettingsPane extends VBox {
 	 * @return - VBox with all the elements of the main file options
 	 * section.
 	 */
+
 	private VBox makeMainFileOptions() {
 		// Name of new FSM
 		Label fsmNameLabel = new Label("FSM Name:");
@@ -122,6 +132,7 @@ public class FileSettingsPane extends VBox {
 	 * 
 	 * @return - VBox with all the TSs currently open.
 	 */
+
 	private VBox makeOpenTSBox() {
 		Label openTSBoxLabel = new Label("Open FSMs:");
 		openTSBox = new ListView<String>(model.getOpenTSStrings());
@@ -136,6 +147,7 @@ public class FileSettingsPane extends VBox {
 	 * 
 	 * @return - VBox with all the buttons for closing/saving FSMs.
 	 */
+
 	private VBox makeSaveBtns() {
 		closeTSBtn = new Button("Close selected FSM");
 		saveFSMBtn = new Button("Save selected FSM as FSM file");
@@ -143,48 +155,13 @@ public class FileSettingsPane extends VBox {
 		return new VBox(closeTSBtn, saveFSMBtn, saveJPGBtn);
 	} // makeSaveBtns()
 	
-	/**
-	 * Gets a file from the user. Shows an error message if no
-	 * file is found.
-	 * 
-	 * @return - File that the user selects.
-	 * @throws FileNotFoundException - Thrown if the user did not select
-	 * a valid file.
-	 */
-	private File getFileFromUser() throws FileNotFoundException
-	{
-		// Prompts the user for a file
-		FileChooser chooser = new FileChooser();
-		chooser.setTitle(CHOOSE_FSM_FILE_MSG);
-		File file = chooser.showOpenDialog(null);
-		
-		if(file != null) {
-			return file;
-		} else {
-			Alerts.makeError(Alerts.ERROR_FILE_NOT_FOUND);
-			throw new FileNotFoundException("No file received from user.");
-		} // if/else
-	} // getFileFromUser()
-	
-	/**
-	 * Checks if the TransitionSystem type was selected; if not, return false.
-	 * 
-	 * @return - True if the user selected an TransitionSystem type; else, false.
-	 */
-	private boolean checkIfValidTSType() {
-		String selected = tsTypeChoiceBox.getSelectionModel().getSelectedItem();
-		// If not selected, show error
-		if(selected == null || selected.equals("")) {
-			Alerts.makeError(Alerts.ERROR_NO_FSM_TYPE);
-			return false;
-		} // if
-		return true;
-	} // checkIfValidFSMType()
+	//-- Event Handlers  --------------------------------
 	
 	/**
 	 * Creates an event handler for clicking on the readInFileBtn so that
 	 * a file gets read in.
 	 */
+
 	private void makeNewFSMFromFileEventHandler() {
 		readInFileBtn.setOnAction(e -> {
 			// Get the name of the new FSM being read in, and if the name
@@ -225,6 +202,7 @@ public class FileSettingsPane extends VBox {
 	 * Makes an event handler when clicking on the newTSBtn such that
 	 * it creates a new, empty TransitionSystem with the specified name.
 	 */
+
 	private void makeNewTSEventHandler() {
 		newTSBtn.setOnAction(e -> {
 			String newTSName = tsNameField.getText();
@@ -252,6 +230,7 @@ public class FileSettingsPane extends VBox {
 	 * Generates a new TransitionSystem by asking the user various parameters (number of states,
 	 * number of marked states, number of initial states).
 	 */
+
 	private void makeGenTSEventHandler() {
 		genFSMBtn.setOnAction(e -> {
 			String newTSName = tsNameField.getText();
@@ -303,6 +282,7 @@ public class FileSettingsPane extends VBox {
 	 * and opens them in the ContentPane as viewports for their graphs
 	 * computed by GraphViz.
 	 */
+
 	private void makeSelectTSEventHandler() {
 		openTSBox.setOnMouseClicked(e -> {
 			if(e.getButton() == MouseButton.PRIMARY && e.getClickCount() > 1) {
@@ -320,6 +300,7 @@ public class FileSettingsPane extends VBox {
 	 * TransitionSystems the user selected in the openTSBox (a ListView object) from
 	 * the openTSs list.
 	 */
+
 	private void makeCloseTSEventHandler() {
 		closeTSBtn.setOnAction(e -> {
 			ObservableList<String> selected = openTSBox.getSelectionModel().getSelectedItems();
@@ -332,6 +313,7 @@ public class FileSettingsPane extends VBox {
 	 * FSM file in the proprietary FSM format.
 	 * This can be used to read in the FSM into FSMtA later on.
 	 */
+
 	private void makeSaveTSEventHandler() {
 		saveFSMBtn.setOnMouseClicked(e -> {
 			// Gets the selected FSMs and prompts the user for the path to save it to.
@@ -365,4 +347,47 @@ public class FileSettingsPane extends VBox {
 			FSMToDot.createImgFromFSM(fsmToSave, file.getName(), file.getParent(), model.getGraphVizConfigPath());
 		}); // setOnMouseClicked
 	} // makeSaveTSEventHandler()
+
+//---  Getter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * Gets a file from the user. Shows an error message if no
+	 * file is found.
+	 * 
+	 * @return - File that the user selects.
+	 * @throws FileNotFoundException - Thrown if the user did not select
+	 * a valid file.
+	 */
+
+	private File getFileFromUser() throws FileNotFoundException
+	{
+		// Prompts the user for a file
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle(CHOOSE_FSM_FILE_MSG);
+		File file = chooser.showOpenDialog(null);
+		
+		if(file != null) {
+			return file;
+		} else {
+			Alerts.makeError(Alerts.ERROR_FILE_NOT_FOUND);
+			throw new FileNotFoundException("No file received from user.");
+		} // if/else
+	} // getFileFromUser()
+	
+	/**
+	 * Checks if the TransitionSystem type was selected; if not, return false.
+	 * 
+	 * @return - True if the user selected an TransitionSystem type; else, false.
+	 */
+
+	private boolean checkIfValidTSType() {
+		String selected = tsTypeChoiceBox.getSelectionModel().getSelectedItem();
+		// If not selected, show error
+		if(selected == null || selected.equals("")) {
+			Alerts.makeError(Alerts.ERROR_NO_FSM_TYPE);
+			return false;
+		} // if
+		return true;
+	} // checkIfValidFSMType()
+
 } // class FileSettingsPane

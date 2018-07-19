@@ -12,9 +12,22 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import support.transition.Transition;
 
+/**
+ * This class
+ * 
+ * This class is a part of the fsmtaui.settingspane.operationspane package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
+
 public class ConvertFSMOperationPane extends VBox {
+	
+//---  Constants   ----------------------------------------------------------------------------
+	
 	/** String message for what the section does. */
 	private static final String TITLE_MSG = "Convert the Current FSM";
+	
+//---  Instance Variables   -------------------------------------------------------------------
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -25,10 +38,13 @@ public class ConvertFSMOperationPane extends VBox {
 	/** Button allowing the user to perform the conversion on the selected FSM. */
 	private Button convertBtn;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a DeterminizationPane with all the options
 	 * to determinize an FSM.
 	 */
+	
 	public ConvertFSMOperationPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("operations-subpane");
@@ -44,12 +60,15 @@ public class ConvertFSMOperationPane extends VBox {
 		makeConvertEventHandler();
 	} // ConvertFSMOperationPane()
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Makes a VBox with options for the type of FSM the user wishes to convert to.
 	 * 
 	 * @return - VBox with a ChoiceBox (for determinism properties) and two CheckBoxes
 	 * for enabling unobservable/uncontrollable events.
 	 */
+	
 	private HBox makeConversionSelector() {
 		Label operationLabel = new Label("Type to convert to:");
 		fsmTypeChoiceBox = new ChoiceBox<String>(FXCollections.observableArrayList("Deterministic", "Non-Deterministic"));
@@ -61,6 +80,7 @@ public class ConvertFSMOperationPane extends VBox {
 	 * 
 	 * @return - HBox containing the name TextField and its Label.
 	 */
+	
 	private HBox makeFSMNameField() {
 		Label fsmNameLabel = new Label("New FSM Name:");
 		fsmNameField = new TextField();
@@ -71,6 +91,7 @@ public class ConvertFSMOperationPane extends VBox {
 	 * Makes the event handler for when the "Perform Conversion" button
 	 * is pressed.
 	 */
+	
 	private void makeConvertEventHandler() {
 		fsmNameField.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) convertBtn.fire();
@@ -106,14 +127,18 @@ public class ConvertFSMOperationPane extends VBox {
 		});
 	} // makePerformOperationEventHandler()
 	
+//---  Manipulations   ------------------------------------------------------------------------
+	
 	/**
 	 * Helper method o add an FSM to the model and reset the text field.
 	 * 
 	 * @param newFSM - TransitionSystem to add to the model.
 	 */
+	
 	private void addFSM(TransitionSystem<? extends Transition> newFSM) {
 		model.addTS(newFSM);
 		fsmNameField.setText("");
 		fsmNameField.requestFocus();
 	} // addFSM(DeterministicFSM, String)
+
 } // class ConvertFSMOperationPane

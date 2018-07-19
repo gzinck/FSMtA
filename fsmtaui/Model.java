@@ -14,10 +14,15 @@ import support.transition.Transition;
  * that need to be accessed throughout many components where events are
  * controlled and the model is viewed.
  * 
+ * This class is a part of the fsmtaui package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 public class Model {
+	
+//---  Constants   ----------------------------------------------------------------------------
+	
 	/** String for requesting a new file path. */
 	private static final String CHOOSE_NEW_FILE_PATH_MSG = "Choose a path for the new file";
 	/** String for when a user creates an FSM with a name that is already used by another FSM. */
@@ -27,17 +32,20 @@ public class Model {
 	/** String for the an invalid fsm title error's title bar. */
 	private static final String INVALID_FSM_NAME_TITLE = "Invalid FSM Name";
 	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** List of open TransitionSystems. */
 	private ObservableList<TransitionSystem<? extends Transition>> openTSs;
 	/** List of openFSM ids, used for the ListView. */
 	private ObservableList<String> openTSStrings;
-	/** TabPane containing all the tabs of open FSMs. This is kept in the Model class
-	 * so that other panes can add on openFSMs. */
+	/** TabPane containing all the tabs of open FSMs. This is kept in the Model class so that other panes can add on openFSMs. */
 	private TabPane openTSTabs;
 	/** File object representing the directory being used for temporary files. */
 	private File workingDirectory;
 	/** String representing the path to the GraphViz configuration file. */
 	private String graphVizConfigPath;
+	
+//---  Constructors   -------------------------------------------------------------------------
 	
 	/**
 	 * Creates a new Model object where other classes in the UI can
@@ -47,6 +55,7 @@ public class Model {
 	 * @param inOpenTSStrings - ObservableList of all the String ids of the open transition system objects.
 	 * @param inWorkingDirectory - File representing the working path for the FSMtA session.
 	 */
+	
 	Model(ObservableList<TransitionSystem<? extends Transition>> inOpenTSs, ObservableList<String> inOpenTSStrings,
 			File inWorkingDirectory, String inGraphVizConfigPath) {
 		openTSs = inOpenTSs;
@@ -56,12 +65,15 @@ public class Model {
 		openTSTabs = new TabPane();
 		makeOpenTSStrings();
 	} // Model(ObservableList, ObservableList, File)
+
+//---  Operations   ---------------------------------------------------------------------------
 	
 	/**
 	 * Makes the openTSStrings object, which is an observable ArrayList
 	 * storing all the IDs for the Transition Systems that are open. A listener is added
 	 * to make sure the list is updated whenever the openTSs list is updated.
 	 */
+
 	public void makeOpenTSStrings() {
 		// Make the observable list
 		ArrayList<String> openTSStringList = new ArrayList<String>();
@@ -94,15 +106,15 @@ public class Model {
 		}); // addListener(ListChangeListener<TransitionSystem<Transition>>)
 	} // makeOpenFSMStrings()
 	
-	//----------------------------------------------------------------------
-	// Getter methods.
-	//----------------------------------------------------------------------
+//---  Getter Methods   -----------------------------------------------------------------------
+	
 	/**
 	 * Getter method to get the String id's of all the open TransitionSystems.
 	 * 
 	 * @return - ObservableList of Strings representing the ids
 	 * of all the open TransitionSystems.
 	 */
+
 	public ObservableList<String> getOpenTSStrings() {
 		return openTSStrings;
 	} // getOpenFSMStrings()
@@ -114,6 +126,7 @@ public class Model {
 	 * @return ObservableList of Strings representing the ids of all the open
 	 * FSMs.
 	 */
+
 	public ObservableList<String> getOpenFSMStrings() {
 		ArrayList<String> openFSMStringList = new ArrayList<String>();
 		
@@ -132,73 +145,23 @@ public class Model {
 	 * @return - TabPane object with all the open TransitionSystem viewports and their
 	 * String ids as the tab identifiers.
 	 */
+
 	public TabPane getOpenTSTabs() {
 		return openTSTabs;
 	} // getOpenFSMTabs()
 	
-	//----------------------------------------------------------------------
-	// Methods to access files.
-	//----------------------------------------------------------------------
 	/**
-	 * Getter method to get the working directory as a file.
+	 * Gets the current TransitionSystem visible in the viewport.
 	 * 
-	 * @return - File representing the working directory of the
-	 * FSMtA session.
+	 * @return - TransitionSystem that is visible in the current viewport.
 	 */
-	public File getWorkingDirectoryFile() {
-		return workingDirectory;
-	} // getWorkingDirectoryFile()
-	
-	/**
-	 * Getter method to get the working directory as a String.
-	 * 
-	 * @return - String representing the working directory of the
-	 * FSMtA session.
-	 */
-	public String getWorkingDirectoryString() {
-		return workingDirectory.getPath();
-	} // getWorkingDirectoryString()
-	
-	/**
-	 * Getter method to get the GraphViz config file path as a
-	 * String.
-	 * 
-	 * @return - String representing the GraphViz config file path.
-	 */
-	public String getGraphVizConfigPath() {
-		return graphVizConfigPath;
-	} // getGraphVizConfigPath()
-	
-	//----------------------------------------------------------------------
-	// Methods to add, remove, and check FSMs.
-	//----------------------------------------------------------------------
-	/**
-	 * Adds a new Transition System to the set of OpenTSs
-	 * 
-	 * @param ts - TransitionSystem to add to the set of
-	 * open transition systems in the GUI.
-	 */
-	public void addTS(TransitionSystem<? extends Transition> ts) {
-		openTSs.add(ts);
-	} // addTS(TransitionSystem<Transition>)
-	
-	/**
-	 * Helper method that removes an TransitionSystem with a given String id from the
-	 * list of open TSs by searching through all the open TSs.
-	 * 
-	 * @param id - String representing the id of the transition system to remove.
-	 * @return - True if the FSM was found and removed, false otherwise.
-	 */
-	public boolean removeTS(String id) {
-		for(int i = 0; i < openTSs.size(); i++) {
-			TransitionSystem<? extends Transition> curr = openTSs.get(i);
-			if(curr.getId().equals(id)) {
-				openTSs.remove(i);
-				return true;
-			} // if
-		} // for
-		return false;
-	} // removeTS(String)
+
+	public TransitionSystem<? extends Transition> getCurrTS() {
+		Tab currTab = openTSTabs.getSelectionModel().getSelectedItem();
+		if(currTab == null) return null;
+		TSViewport currViewport = (TSViewport) currTab.getContent();
+		return currViewport.getFSM();
+	} // getCurrFSM()
 	
 	/**
 	 * Gets the TransitionSystem with the desired String id and returns it.
@@ -206,6 +169,7 @@ public class Model {
 	 * @param id - String representing the id associated with an open TransitionSystem.
 	 * @return - The TransitionSystem associated with the id.
 	 */
+
 	public TransitionSystem<? extends Transition> getTS(String id) {
 		for(TransitionSystem<? extends Transition> curr : openTSs) {
 			if(curr.getId().equals(id)) {
@@ -221,6 +185,7 @@ public class Model {
 	 * @param id - String id of the TS to look for.
 	 * @return - True if the TS exists, false otherwise.
 	 */
+
 	public boolean tsExists(String id) {
 		return openTSStrings.contains(id);
 	} // tsExists(String)
@@ -233,6 +198,7 @@ public class Model {
 	 * @return - True if the name is acceptable, false if it already exists
 	 * or it is an empty string.
 	 */
+
 	public boolean checkIfValidTSId(String id) {
 		// Error if name already exists, or if empty.
 		if(tsExists(id)) {
@@ -248,28 +214,49 @@ public class Model {
 		} // if/elseif
 		return true;
 	} // checkIfValidTSId(String)
+
+//---  Getter Methods - File Access   ---------------------------------------------------------
 	
 	/**
-	 * Gets the current TransitionSystem visible in the viewport.
+	 * Getter method to get the working directory as a file.
 	 * 
-	 * @return - TransitionSystem that is visible in the current viewport.
+	 * @return - File representing the working directory of the
+	 * FSMtA session.
 	 */
-	public TransitionSystem<? extends Transition> getCurrTS() {
-		Tab currTab = openTSTabs.getSelectionModel().getSelectedItem();
-		if(currTab == null) return null;
-		TSViewport currViewport = (TSViewport) currTab.getContent();
-		return currViewport.getFSM();
-	} // getCurrFSM()
+
+	public File getWorkingDirectoryFile() {
+		return workingDirectory;
+	} // getWorkingDirectoryFile()
 	
-	//----------------------------------------------------------------------
-	// General I/O
-	//----------------------------------------------------------------------
+	/**
+	 * Getter method to get the working directory as a String.
+	 * 
+	 * @return - String representing the working directory of the
+	 * FSMtA session.
+	 */
+
+	public String getWorkingDirectoryString() {
+		return workingDirectory.getPath();
+	} // getWorkingDirectoryString()
+	
+	/**
+	 * Getter method to get the GraphViz config file path as a
+	 * String.
+	 * 
+	 * @return - String representing the GraphViz config file path.
+	 */
+
+	public String getGraphVizConfigPath() {
+		return graphVizConfigPath;
+	} // getGraphVizConfigPath()
+
 	/**
 	 * Prompts the user for a path to save a file and returns the
 	 * corresponding File object.
 	 * 
 	 * @return - File object representing the path for the new file.
 	 */
+
 	public static File getPathToSaveFile() {
 		// Prompts the user for a file
 		FileChooser chooser = new FileChooser();
@@ -277,10 +264,41 @@ public class Model {
 		File file = chooser.showSaveDialog(null);
 		return file;
 	} // getPathToSaveFile()
+
+//---  Manipulations   ------------------------------------------------------------------------
+
+	/**
+	 * Adds a new Transition System to the set of OpenTSs
+	 * 
+	 * @param ts - TransitionSystem to add to the set of
+	 * open transition systems in the GUI.
+	 */
+
+	public void addTS(TransitionSystem<? extends Transition> ts) {
+		openTSs.add(ts);
+	} // addTS(TransitionSystem<Transition>)
 	
-	//----------------------------------------------------------------------
-	// Methods to work with FSM viewports.
-	//----------------------------------------------------------------------
+	/**
+	 * Helper method that removes an TransitionSystem with a given String id from the
+	 * list of open TSs by searching through all the open TSs.
+	 * 
+	 * @param id - String representing the id of the transition system to remove.
+	 * @return - True if the FSM was found and removed, false otherwise.
+	 */
+
+	public boolean removeTS(String id) {
+		for(int i = 0; i < openTSs.size(); i++) {
+			TransitionSystem<? extends Transition> curr = openTSs.get(i);
+			if(curr.getId().equals(id)) {
+				openTSs.remove(i);
+				return true;
+			} // if
+		} // for
+		return false;
+	} // removeTS(String)
+
+//---  Viewport Facilitation   ----------------------------------------------------------------
+
 	/**
 	 * Checks if a viewport already exists for a given TransitionSystem id.
 	 * 
@@ -289,6 +307,7 @@ public class Model {
 	 * @return - True if the TS already has a viewport; false
 	 * otherwise.
 	 */
+
 	public boolean viewportExists(String id) {
 		ObservableList<Tab> tabs = openTSTabs.getTabs();
 		for(int i = 0; i < tabs.size(); i++)
@@ -305,6 +324,7 @@ public class Model {
 	 * @return - True if the viewport was added, false if the viewport already
 	 * existed.
 	 */
+
 	public boolean addViewport(TransitionSystem<? extends Transition> ts, String name) {
 		// First, check if the viewport exists, and if it does,
 		// open it
@@ -333,6 +353,7 @@ public class Model {
 	 * @param name - String id of the TransitionSystem tab to remove.
 	 * @return - True if the TransitionSystem was removed; false otherwise.
 	 */
+
 	public boolean removeViewport(String name) {
 		ObservableList<Tab> tabs = openTSTabs.getTabs();
 		for(int i = 0; i < tabs.size(); i++) {
@@ -348,6 +369,7 @@ public class Model {
 	/**
 	 * Refreshes the viewport with the current image.
 	 */
+
 	public void refreshViewport() {
 		Tab currTab = openTSTabs.getSelectionModel().getSelectedItem();
 		if(currTab == null) return;
@@ -360,9 +382,11 @@ public class Model {
 	 * 
 	 * @return - FSMViewport that is currently visible.
 	 */
+
 	public TSViewport getCurrViewport() {
 		Tab currTab = openTSTabs.getSelectionModel().getSelectedItem();
 		if(currTab == null) return null;
 		return (TSViewport) currTab.getContent();
 	} // getCurrViewport()
+
 } // class Model

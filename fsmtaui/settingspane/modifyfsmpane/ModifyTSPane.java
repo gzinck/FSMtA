@@ -7,21 +7,25 @@ import javafx.scene.layout.*;
 /**
  * ModifyTSPane is a specialized javafx VBox element which contains all the settings
  * for modifying characteristics of a single TransitionSystem in the GUI.
-
+ * 
+ * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 public class ModifyTSPane extends VBox {
+	
+//---  Constants   ----------------------------------------------------------------------------
 	
 	/** Integer for the number of pixels wide the settings sidebar will be. */
 	private static final int OPTIONS_WIDTH = 382;
 	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
-	
 	/** Accordion with all the options for the pane. */
 	private VBox optionBoxes;
-	
 	/** TitledPane containing all the options for the events. */
 	private TitledPane eventOptions;
 	/** TitledPane containing all the options for adding/removing states. */
@@ -31,6 +35,8 @@ public class ModifyTSPane extends VBox {
 	/** TitledPane containing all the options for editing the properties of preexisting events. */
 	private TitledPane eventPropertiesOptions;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a new ModifyFSMPane, which allows the user to change the
 	 * events, transitions, etc. of the currently open FSM.
@@ -38,6 +44,7 @@ public class ModifyTSPane extends VBox {
 	 * @param inModel - Model with all the important information to
 	 * display in the GUI.
 	 */
+	
 	public ModifyTSPane(Model inModel) {
 		super();
 		model = inModel;
@@ -57,4 +64,5 @@ public class ModifyTSPane extends VBox {
 		
 		getChildren().addAll(titleLabel, scrollable);
 	} // SettingsPane()
+
 } // class ModifyFSMPane

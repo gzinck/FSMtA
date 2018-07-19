@@ -23,10 +23,12 @@ import java.io.*;
  * This is part of the fsmtaui package, which holds all the UI elements.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
 
 public class FSMtAUI extends Application {
+	
+//---  Constants   ----------------------------------------------------------------------------
+	
 	/** String representing the name for the application, appearing at the top of the window. */
 	private static final String APP_NAME = "FSMtA";
 	/** Integer for the number of pixels wide and high the content (i.e., the FSM's visual representation) will be. */
@@ -43,18 +45,17 @@ public class FSMtAUI extends Application {
 	private static final String CHOOSE_WORKING_DIRECTORY_FAIL_MSG = "You must choose a working directory if you wish to start an FSMtA session. Do you wish to quit the application?";
 	/** String used for the title when notifying the user that choosing a working directory failed. */
 	private static final String CHOOSE_WORKING_DIRECTORY_FAIL_TITLE = "Choose Working Directory Failed";
+
+//---  Instance Variables   -------------------------------------------------------------------
 	
 	/** Observable ArrayList of TransitionSystem objects that are open at any given time, as shown in the settings sidebar. */
 	private ObservableList<TransitionSystem<? extends Transition>> openTSs;
-	/** 
-	 * Observable ArrayList of the names of the FSM objects in openFSMs, used for various UI elements. It is
-	 * automatically updated whenever the original FSM list is updated.
-	 */
+	/** Observable ArrayList of the names of the FSM objects in openFSMs, used for various UI elements. It is automatically updated whenever
+	 * the original FSM list is updated. */
 	private ObservableList<String> openFSMStrings;
-	/** Model object modeling everything that happens in the UI. It has the openFSMs
-	 * and Strings, as well as the working directory, stored to pass to other objects. */
+	/** Model object modeling everything that happens in the UI. It has the openFSMs and Strings, as well as the working directory, stored
+	 * to pass to other objects. */
 	private Model model;
-	
 	/** Stage used for the GUI. */
 	private Stage stage;
 	/** BorderPane used as the root for all GUI elements. */
@@ -65,27 +66,29 @@ public class FSMtAUI extends Application {
 	private SettingsPane settingsPane;
 	/** ContentPane object which holds all the tabs of FSMViewports that are open, with visual representations of the FSMs. */
 	private ContentPane content;
-	
 	/** File object representing the directory being used for temporary files. */
 	private File workingDirectory;
 	/** Configuration path for GraphViz, which is calculated based on the location of files in the project. */
 	private String graphVizConfigPath;
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Starts the application.
-	 * @param args
+	 * @param args - String[] object
 	 */
+	
 	public static void main(String[] args)
 	{
 		launch(args);
 	} // main(String[])
 	
 	/**
-	 * Starts the application and places all the GUI elements in
-	 * the window.
+	 * Starts the application and places all the GUI elements in the window.
 	 * 
-	 * @param inStage - Stage to place everything in the application
+	 * @param inStage - Stage object to place everything in the application
 	 */
+	
 	public void start(Stage inStage)
 	{
 		// Create a list of FSMs
@@ -129,6 +132,8 @@ public class FSMtAUI extends Application {
 		} // if
 	} // start(Stage)
 	
+//---  Getter Methods   -----------------------------------------------------------------------
+	
 	/**
 	 * Gets a directory from the user.
 	 * 
@@ -137,6 +142,7 @@ public class FSMtAUI extends Application {
 	 * @throws FileNotFoundException - Throws a FileNotFoundException if there
 	 * was no directory selected by the user. 
 	 */
+
 	private File getDirectoryFromUser() throws FileNotFoundException {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle(CHOOSE_WORKING_DIRECTORY_TITLE);
@@ -153,9 +159,10 @@ public class FSMtAUI extends Application {
 	 * select a working directory, it prompts the user if s/he wishes to
 	 * quit the application or try selecting again.
 	 * 
-	 * @return - A File representing the working directory selected, or null
+	 * @return - A File object representing the working directory selected, or null
 	 * if the user wishes to quit.
 	 */
+
 	private File getWorkingDirectory() {
 		// Alerts the user of what's about to happen
 		Alert request = new Alert(Alert.AlertType.INFORMATION, CHOOSE_WORKING_DIRECTORY_MSG);
@@ -188,4 +195,5 @@ public class FSMtAUI extends Application {
 		
 		return file;
 	} // getWorkingDirectory()
+
 } // FSMtAUI class

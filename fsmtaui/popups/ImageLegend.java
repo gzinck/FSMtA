@@ -9,11 +9,15 @@ import javafx.scene.control.Label;
  * ImageLegend is an object which contains a whole new window that is always in front with all the
  * explanations of what the different colours and symbols mean in an FSM image.
  * 
+ * This class is a part of the fsmtaui.popups package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
 
 public class ImageLegend {
+	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** GridPane with all the information of the legend contained within. */
 	private HBox root;
 	/** GridPane with the legend for what states mean. */
@@ -25,9 +29,12 @@ public class ImageLegend {
 	/** Scene to set on the stage of the window. */
 	private Scene scene;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a new window with the image's legend.
 	 */
+
 	public ImageLegend() {
 		root = new HBox();
 		
@@ -45,6 +52,12 @@ public class ImageLegend {
         stage.setAlwaysOnTop(true);
         stage.show();
 	}
+
+//---  Manipulations   ------------------------------------------------------------------------
+	
+	/**
+	 * This method
+	 */
 	
 	private void makeStateLegend() {
 		stateLegend = new GridPane();
@@ -80,6 +93,10 @@ public class ImageLegend {
 		Label markedStateLabel = new Label("Marked State");
 		stateLegend.addRow(4, markedState, markedStateLabel);
 	}
+
+	/**
+	 * This method
+	 */
 	
 	private void makeTransitionLegend() {
 		transitionLegend = new GridPane();

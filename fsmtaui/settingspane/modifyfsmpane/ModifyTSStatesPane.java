@@ -15,13 +15,17 @@ import support.transition.Transition;
  * Class extending the javafx VBox element which stores all the
  * options for adding and removing states from the open FSM.
  * 
+ * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 public class ModifyTSStatesPane extends VBox {
+	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
-	
 	/** TextField to name a new state as the user specifies. */
 	private TextField stateNameField;
 	/** Button to add a new state to the FSM open in the current tab. */
@@ -29,12 +33,14 @@ public class ModifyTSStatesPane extends VBox {
 	/** Button to remove a state from the FSM open in the current tab. */
 	private Button removeStateBtn;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a new pane to add/remove states.
 	 * 
-	 * @param inModel - Model with the important information all GUI elements
-	 * need access to.
+	 * @param inModel - Model object with the important information all GUI elements need access to.
 	 */
+	
 	public ModifyTSStatesPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
@@ -56,9 +62,12 @@ public class ModifyTSStatesPane extends VBox {
 		makeRemoveStateEventHandler();
 	} // ModifyFSMStatesPane(Model)
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Creates the event handler for creating states.
 	 */
+	
 	private void makeAddStateEventHandler() {
 		stateNameField.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) addStateBtn.fire();
@@ -89,6 +98,7 @@ public class ModifyTSStatesPane extends VBox {
 	/**
 	 * Creates the event handler for removing states.
 	 */
+
 	private void makeRemoveStateEventHandler() {
 		removeStateBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) removeStateBtn.fire();
@@ -112,4 +122,5 @@ public class ModifyTSStatesPane extends VBox {
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeRemoveStateEventHandler()
+
 } // class ModifyFSMStatesPane

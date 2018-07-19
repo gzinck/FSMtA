@@ -18,16 +18,27 @@ import support.transition.Transition;
 /**
  * Allows the program to create a dialog box where the user can select various open TransitionSystems.
  *  
+ * This class is a part of the fsmtaui.popups package.
+ *  
  * @author Mac Clevinger and Graeme Zinck
- *
  */
 
 public class SelectFSMDialog {
+	
+//---  Instance Variables   -------------------------------------------------------------------
+	
+	/** Dialog which asks the user for FSMs to perform an operation upon. */
 	Dialog<LinkedList<FSM<? extends Transition>>> dialog;
+	/** List of all the open FSMs when the dialog opened. */
 	ListView<String> openFSMBox;
+	/** List of all the FSMs the user selects for the operation. */
 	ListView<String> selectedFSMBox;
+	/** TextField for the name for the new FSM to create */
 	TextField fsmNameField;
+	/** String for the id of the FSM to create */
 	String id;
+	
+//---  Constructors   -------------------------------------------------------------------------
 	
 	/**
 	 * Creates a dialog for selecting FSMs that are open. It's possible to get the
@@ -98,17 +109,22 @@ public class SelectFSMDialog {
 	    		} // if illegal name
 		});
 	}
+
+//---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
 	 * Makes a name TextField for the new FSM that is created.
 	 * 
 	 * @return - HBox containing the name TextField and its Label.
 	 */
+
 	private HBox makeFSMNameField() {
 		Label fsmNameLabel = new Label("New FSM Name:");
 		fsmNameField = new TextField();
 		return new HBox(fsmNameLabel, fsmNameField);
 	} // makeFSMNameField()
+
+//---  Getter Methods   -----------------------------------------------------------------------
 	
 	private void addDragHandlers(ListView<String> listView) {
 		listView.setOnDragOver(e -> {
@@ -135,8 +151,9 @@ public class SelectFSMDialog {
 	/**
 	 * Gets the user's FSM selection that they specify in the dialog and returns it.
 	 * 
-	 * @return Collection of FSM objects to perform the operation.
+	 * @return - Returns a LinkedList Collection of FSM objects to perform the operation.
 	 */
+
 	public LinkedList<FSM<? extends Transition>> getTSs() {
 		// Shows the dialog and returns results
 		Optional<LinkedList<FSM<? extends Transition>>> optionalResult = dialog.showAndWait();
@@ -150,13 +167,28 @@ public class SelectFSMDialog {
 	/**
 	 * Gets the id of the FSM to create.
 	 * 
-	 * @return String representing the id for the FSM to create
+	 * @return - Returns a String object representing the id for the FSM to create
 	 */
+
 	public String getId() {
 		return id;
 	}
 	
+	/**
+	 * Class for each cell containing an FSM name in the fsm name lists.
+	 * This enables the contents to be copied elsewhere for drag-and-drop
+	 * operations.
+	 * 
+	 * @author Mac Clevinger and Graeme Zinck
+	 */
+	
 	public class FSMNameCell extends ListCell<String> {
+		
+		/**
+		 * Creates a new FSMNameCell with all the event handlers
+		 * for drag-and-drop interactions.
+		 */
+		
 		public FSMNameCell() {
 			this.setOnDragDetected(e -> {
 				if(getItem() == null) return;
