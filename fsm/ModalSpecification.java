@@ -668,6 +668,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	
 	@Override
 	public void addInitialState(String newInitial) {
+		if(initialState != null) initialState.setStateInitial(false);
 		State theState = states.addState(newInitial);
 		theState.setStateInitial(true);
 		initialState = theState;
@@ -675,6 +676,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 
 	@Override
 	public void addInitialState(State newState) {
+		if(initialState != null) initialState.setStateInitial(false);
 		State theState = states.addState(newState);
 		theState.setStateInitial(true);
 		initialState = theState;
@@ -683,7 +685,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	@Override
 	public boolean removeInitialState(String stateName) {
 		State theState = states.getState(stateName);
-		if(theState != null) {
+		if(theState != null && theState.getStateInitial()) {
 			theState.setStateInitial(false);
 			initialState = null;
 			return true;
