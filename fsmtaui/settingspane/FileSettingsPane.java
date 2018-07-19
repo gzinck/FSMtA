@@ -182,7 +182,6 @@ public class FileSettingsPane extends VBox {
 						newFSM = new NonDetObsContFSM(file, newFSMName);
 					} else if(fsmClass.equals(TS_TYPES.get(2))) {
 						// Modal Specification
-						Alerts.makeError(new String[] {"WHOOPS", "Haven't implemented file I/O yet."});
 						newFSM = new ModalSpecification(file, newFSMName);
 					}
 					model.addTS(newFSM);

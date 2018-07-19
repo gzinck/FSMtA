@@ -85,6 +85,20 @@ public class EventMap {
 	}
 	
 	/**
+	 * Getter method that retrieves the String names of all the private events of the EventMap with respect to some
+	 * other EventMap. If they share no events, returns a HashSet with all the String names present.
+	 * 
+	 * @param other - EventMap with the events to compare, evaluating which events are unique to the calling EventMap.
+	 * @return - HashSet of Strings which are the names for the private events.
+	 */
+	public HashSet<String> getPrivateEvents(EventMap other) {
+		HashSet<String> privateEvents = new HashSet<String>();
+		for(String thisEvent : this.events.keySet())
+			if(!other.eventExists(thisEvent)) privateEvents.add(thisEvent);
+		return privateEvents;
+	}
+	
+	/**
 	 * Getter method that returns a boolean value describing whether or not a given Event extending
 	 * object exists within this EventMap as denoted by a provided String object.
 	 * 

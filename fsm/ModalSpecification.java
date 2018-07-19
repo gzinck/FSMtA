@@ -584,6 +584,131 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return newState;
 	}
 	
+//---  Multi-MS Operations   -----------------------------------------------------------------------
+	// TODO: Make sure this stops looping when already processed a state.
+	// TODO: Make this code NOT hecking terrifying.
+	public ModalSpecification getPseudoLowerBound(ModalSpecification other) {
+		ModalSpecification newMS = new ModalSpecification(this.id + " Lower Bound");
+		
+		// First, we need to identify which events are shared and which are private
+		HashSet<String> thisPrivateEvents = this.events.getPrivateEvents(other.events);
+		HashSet<String> otherPrivateEvents = other.events.getPrivateEvents(this.events);
+		
+		// Start at the beginning of each MS
+		LinkedList<State> thisNext = new LinkedList<State>();
+		thisNext.add(this.initialState);
+		LinkedList<State> otherNext = new LinkedList<State>();
+		otherNext.add(other.initialState);
+		LinkedList<State> newNext = new LinkedList<State>();
+		newNext.add(newMS.states.addState(this.initialState, other.initialState));
+		
+		while(!thisNext.isEmpty()) {
+			State thisCurr = thisNext.poll();
+			State otherCurr = otherNext.poll();
+			State newCurr = newNext.poll();
+			ArrayList<DetTransition> thisTransitions = this.transitions.getSortedTransitions(thisCurr);
+			ArrayList<DetTransition> otherTransitions = other.transitions.getSortedTransitions(otherCurr);
+			
+			// Go through all the MAY transitions common in both
+			int thisIndex = 0, otherIndex = 0;
+			while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size()) {
+				// Increment thisIndex and otherIndex
+				while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size() && thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex)) < 0) thisIndex++;
+				while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size() && thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex)) > 0) otherIndex++;
+				// If they share the same event
+				if(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size() && thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex)) == 0) {
+					Event e = thisTransitions.get(thisIndex).getTransitionEvent();
+					State thisTo = thisTransitions.get(thisIndex).getTransitionState();
+					State otherTo = otherTransitions.get(otherIndex).getTransitionState();
+					State newTo = newMS.states.addState(thisTo, otherTo);
+					newMS.addTransition(newCurr, newMS.events.addEvent(e), newTo);
+					thisNext.add(thisTo);
+					otherNext.add(otherTo);
+					newNext.add(newTo);
+					thisIndex++;
+					otherIndex++;
+				} // if shared the event
+			} // while
+			// Now, just go through all the private events for MAY transitions
+			for(DetTransition thisT : thisTransitions) if(thisPrivateEvents.contains(thisT.getTransitionEvent().getEventName())) {
+				State thisTo = thisT.getTransitionState();
+				State newTo = newMS.states.addState(thisTo, otherCurr);
+				newMS.addTransition(newCurr, newMS.events.addEvent(thisT.getTransitionEvent()), newTo);
+				thisNext.add(thisTo);
+				otherNext.add(otherCurr);
+				newNext.add(newTo);
+			} // for each thisT with a private event
+			for(DetTransition otherT : otherTransitions) if(otherPrivateEvents.contains(otherT.getTransitionEvent().getEventName())) {
+				State otherTo = otherT.getTransitionState();
+				State newTo = newMS.states.addState(thisCurr, otherTo);
+				newMS.addTransition(newCurr, newMS.events.addEvent(otherT.getTransitionEvent()), newTo);
+				thisNext.add(thisCurr);
+				otherNext.add(otherTo);
+				newNext.add(newTo);
+			} // for
+			
+			thisTransitions = this.mustTransitions.getSortedTransitions(thisCurr);
+			otherTransitions = other.mustTransitions.getSortedTransitions(otherCurr);
+			
+			// Finally, go through all the MUST transitions in either
+			thisIndex = 0; otherIndex = 0;
+			while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size()) {
+				// Increment thisIndex and otherIndex
+				int compareResult = thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex));
+				if(compareResult < 0) {
+					State thisTo = thisTransitions.get(thisIndex).getTransitionState();
+					State newTo = newMS.states.addState(thisTo, otherCurr);
+					newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(thisTransitions.get(thisIndex).getTransitionEvent()), newTo);
+					thisNext.add(thisTo);
+					otherNext.add(otherCurr);
+					newNext.add(newTo);
+					thisIndex++;
+				}
+				else if(compareResult > 0) {
+					State otherTo = otherTransitions.get(otherIndex).getTransitionState();
+					State newTo = newMS.states.addState(thisCurr, otherTo);
+					newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(otherTransitions.get(otherIndex).getTransitionEvent()), newTo);
+					thisNext.add(thisCurr);
+					otherNext.add(otherTo);
+					newNext.add(newTo);
+					otherIndex++;
+				}
+				else {
+					Event e = thisTransitions.get(thisIndex).getTransitionEvent();
+					State thisTo = thisTransitions.get(thisIndex).getTransitionState();
+					State otherTo = otherTransitions.get(otherIndex).getTransitionState();
+					State newTo = newMS.states.addState(thisTo, otherTo);
+					newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(e), newTo);
+					thisNext.add(thisTo);
+					otherNext.add(otherTo);
+					newNext.add(newTo);
+					thisIndex++;
+					otherIndex++;
+				} // if shared the event
+			} // while
+			while(thisIndex < thisTransitions.size()) {
+				State thisTo = thisTransitions.get(thisIndex).getTransitionState();
+				State newTo = newMS.states.addState(thisTo, otherCurr);
+				newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(thisTransitions.get(thisIndex).getTransitionEvent()), newTo);
+				thisNext.add(thisTo);
+				otherNext.add(otherCurr);
+				newNext.add(newTo);
+				thisIndex++;
+			}
+			while(otherIndex < otherTransitions.size()) {
+				State otherTo = otherTransitions.get(otherIndex).getTransitionState();
+				State newTo = newMS.states.addState(thisCurr, otherTo);
+				newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(otherTransitions.get(otherIndex).getTransitionEvent()), newTo);
+				thisNext.add(thisCurr);
+				otherNext.add(otherTo);
+				newNext.add(newTo);
+				otherIndex++;
+			}
+		} // while there are states in the queue
+		
+		return newMS;
+	}
+	
 //---  Copy methods that steal from other systems   -----------------------------------------------------------------------
 	
 	/**
