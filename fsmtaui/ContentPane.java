@@ -14,9 +14,12 @@ import javafx.geometry.*;
  * This is part of the fsmtaui package, which holds all the UI elements.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 class ContentPane extends BorderPane {
+	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** Model containing all the important information to display in the GUI. */
 	Model model;
 	/** Button to zoom in. */
@@ -26,13 +29,16 @@ class ContentPane extends BorderPane {
 	/** Button to get help and see the legend for the image. */
 	Button helpBtn;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a ContentPane to hold the tabs.
 	 * 
 	 * @param inModel - Model with all the important information to
 	 * display in the GUI.
 	 */
-	ContentPane(Model inModel) {
+	
+	public ContentPane(Model inModel) {
 		model = inModel;
 		HBox zoomBtns = makeBtns();
 		
@@ -45,12 +51,15 @@ class ContentPane extends BorderPane {
 		makeHelpBtnEventHandler();
 	} // ContentPane()
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Makes buttons to zoom in and out of the image and to get the legend popup.
 	 * 
 	 * @return - HBox containing zoom buttons.
 	 */
-	HBox makeBtns() {
+
+	public HBox makeBtns() {
 		HBox btnBox = new HBox();
 		btnBox.setAlignment(Pos.CENTER_RIGHT);
 		zoomInBtn = new Button();
@@ -69,7 +78,8 @@ class ContentPane extends BorderPane {
 	/**
 	 * Handles zooming into and out of FSMs via keyboard presses.
 	 */
-	void makeZoomKeyboardEventHandler() {
+
+	public void makeZoomKeyboardEventHandler() {
 		setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent e) {
@@ -91,7 +101,8 @@ class ContentPane extends BorderPane {
 	/**
 	 * Handles zooming into and out of FSMs via buttons on screen.
 	 */
-	void makeZoomBtnEventHandler() {
+
+	public void makeZoomBtnEventHandler() {
 		zoomInBtn.setOnAction(e -> {
 			model.getCurrViewport().zoomIn();
 		}); // setOnAction
@@ -101,9 +112,14 @@ class ContentPane extends BorderPane {
 		}); // setOnAction
 	}
 	
-	void makeHelpBtnEventHandler() {
+	/**
+	 * 
+	 */
+	
+	public void makeHelpBtnEventHandler() {
 		helpBtn.setOnAction(e -> {
 			new ImageLegend();
 		}); // setOnAction
 	}
+
 } // class ContentPane

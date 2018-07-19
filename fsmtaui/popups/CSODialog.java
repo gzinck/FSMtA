@@ -10,13 +10,28 @@ import javafx.scene.control.Alert.AlertType;
 import support.State;
 import support.transition.Transition;
 
+/**
+ * This class
+ * 
+ * This class is a part of the fsmtaui.popups package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
+ */
+
 public class CSODialog {
+	
+//---  Constants   ----------------------------------------------------------------------------
+	
+	//-- Prompts  ---------------------------------------
+	
 	/** String for the prompt title. */
 	private static final String PROMPT_TITLE_STR = "Check Current State Opacity";
 	/** String for the prompt header. */
 	private static final String PROMPT_HEADER_STR = "FSM Must Be Determinized";
 	/** String for the prompt text. */
 	private static final String PROMPT_TEXT_STR = "To perform this operation correctly, the FSM must first be determinized. Would you like to determinize the current FSM?";
+	
+	//-- Results  ---------------------------------------
 	
 	/** String for the results title. */
 	private static final String RESULTS_TITLE_STR = "Current State Opacity Results";
@@ -27,6 +42,8 @@ public class CSODialog {
 	/** String for the non-opaque results header. */
 	private static final String RESULTS_NON_OPAQUE_HEADER_STR = "The FSM is Not Opaque";
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Allows a user to check if the input FSM is current-state opaque. It requires that the input FSM
 	 * is already determinized, and it asks the user if they would like to determinize it first.
@@ -34,6 +51,7 @@ public class CSODialog {
 	 * @param fsmToUse FSM object for checking current state opacity.
 	 * @return Determinized version of the FSM, if the user asked to determinize the old FSM.
 	 */
+
 	public static FSM<? extends Transition> testCSO(FSM<?> fsmToUse) {
 		FSM<? extends Transition> newFSM = null;
 		

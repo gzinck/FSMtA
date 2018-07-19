@@ -1,8 +1,10 @@
+package fsmtaui;
+
 /**
  * 
- */
-/**
- * @author graemezinck
+ * 
+ * This file is a part of the fsmtaui package.
+ * 
+ * @author Mac Clevinger and Graeme Zinck
  *
  */
-package fsmtaui;

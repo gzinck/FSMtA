@@ -13,19 +13,23 @@ import javafx.scene.layout.*;
 import support.transition.Transition;
 
 /**
- * Class extends the JavaFX VBox class, providing options
- * to perform an operation involving multiple FSMs (typically 2).
+ * Class extends the JavaFX VBox class, providing options to perform an operation involving multiple FSMs (typically 2).
+ * 
+ * This class is a part of the fsmtaui.settingspane.operationspane package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
 
 public class MultiFSMOperationPane extends VBox {
+
+//---  Constants   ----------------------------------------------------------------------------
+	
 	/** String message for what the section does. */
 	private static final String TITLE_MSG = "Perform Operations with Multiple FSMs";
-	/** ObservableList of Strings with all the possible operations involving
-	 * multiple FSMs that a user can choose. */
+	/** ObservableList of Strings with all the possible operations involving multiple FSMs that a user can choose. */
 	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Union", "Product", "Parallel Composition", "Get Supremal Controllable Sublanguage");
+	
+//---  Instance Variables   -------------------------------------------------------------------
 	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
@@ -34,9 +38,14 @@ public class MultiFSMOperationPane extends VBox {
 	/** Button allowing the user to perform the selection operation on the selected FSMs. */
 	private Button performOperationBtn;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a pane for all the operations involving multiple FSMs.
+	 * 
+	 * @param inModel - Model object
 	 */
+	
 	public MultiFSMOperationPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("operations-subpane");
@@ -51,12 +60,15 @@ public class MultiFSMOperationPane extends VBox {
 		makePerformOperationEventHandler();
 	} // MultiFSMOperationPane(Model)
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Makes a ChoiceBox for the user to select what operation s/he
 	 * wishes to perform.
 	 * 
 	 * @return - HBox with the ChoiceBox and its Label.
 	 */
+
 	private VBox makeOperationSelector() {
 		Label operationLabel = new Label("Pick an operation:");
 		operationChoiceBox = new ChoiceBox<String>(MULTI_FSM_OPERATIONS);
@@ -100,6 +112,7 @@ public class MultiFSMOperationPane extends VBox {
 	 * Creates an event handler for when the perform operation button
 	 * is pressed, performing the operation.
 	 */
+
 	private void makePerformOperationEventHandler() {
 //		fsmNameField.setOnKeyPressed(e -> {
 //			if(e.getCode() == KeyCode.ENTER) performOperationBtn.fire();
@@ -141,14 +154,18 @@ public class MultiFSMOperationPane extends VBox {
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makePerformOperationEventHandler()
 	
+//---  Operations   ---------------------------------------------------------------------------
+	
 	/**
 	 * Helper method o add an FSM to the model and reset the text field.
 	 * 
 	 * @param newTS - TransitionSystem to add to the model.
 	 * @param id - String representing the id of the FSM.
 	 */
+
 	private void addFSM(TransitionSystem<?> newTS, String id) {
 		newTS.setId(id);
 		model.addTS(newTS);
 	} // addFSM(TransitionSystem, String)
+
 } // class MultiFSMOperationPane

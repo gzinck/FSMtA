@@ -15,13 +15,17 @@ import support.transition.Transition;
  * Class extending the javafx VBox element which stores all the
  * options for adding and removing events from the open FSM.
  * 
+ * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
+
 public class ModifyTSEventsPane extends VBox {
+	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
-	
 	/** TextField for the initial state for a new event the user wishes to create. */
 	private TextField stateFromField;
 	/** TextField for the resulting state for a new event the user wishes to create. */
@@ -33,12 +37,14 @@ public class ModifyTSEventsPane extends VBox {
 	/** Button to remove the event. */
 	private Button removeEventBtn;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a new pane to add/remove events.
 	 * 
-	 * @param inModel - Model with the important information all GUI elements
-	 * need access to.
+	 * @param inModel - Model with the important information all GUI elements need access to.
 	 */
+	
 	public ModifyTSEventsPane(Model inModel) {
 		model = inModel;
 		this.getStyleClass().add("modify-fsm-subpane");
@@ -76,10 +82,13 @@ public class ModifyTSEventsPane extends VBox {
 		makeAddEventHandler();
 		makeRemoveEventHandler();
 	} // ModifyFSMEventsPane(Model)
+
+//---  Operations   ---------------------------------------------------------------------------
 	
 	/**
 	 * Creates an event handler to add a new event connecting two states.
 	 */
+	
 	private void makeAddEventHandler() {
 		addEventBtn.setOnKeyPressed(e -> {
 			if(e.getCode() == KeyCode.ENTER) addEventBtn.fire();
@@ -115,6 +124,10 @@ public class ModifyTSEventsPane extends VBox {
 			} // handle(ActionEvent)
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeAddEventHandler()
+	
+	/**
+	 * This method
+	 */
 	
 	private void makeRemoveEventHandler() {
 		removeEventBtn.setOnKeyPressed(e -> {

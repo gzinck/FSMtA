@@ -7,20 +7,25 @@ import javafx.scene.layout.*;
 /**
  * FSMOperationsPane is a specialized javafx VBox element which contains all the settings
  * for performing operations on multiple FSMs in the GUI.
-
+ * 
+ * This class is a part of the fsmtaui.settingspane.operationspane package.
+ * 
  * @author Mac Clevinger and Graeme Zinck
- *
  */
-public class FSMOperationPane extends VBox {	
+
+public class FSMOperationPane extends VBox {
+	
+//---  Constants   ----------------------------------------------------------------------------
+	
 	/** Integer for the number of pixels wide the settings sidebar will be. */
 	private static final int OPTIONS_WIDTH = 382;
 	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	/** Model containing all the important information to display in the GUI. */
 	private Model model;
-	
 	/** Accordion with all the options for the pane. */
 	private VBox optionBoxes;
-	
 	/** Pane with the options to evaluate properties of a single FSM. */
 	private TitledPane evaluateFSMOperationPane;
 	/** Pane with the options to perform an operation on a single FSM. */
@@ -30,6 +35,8 @@ public class FSMOperationPane extends VBox {
 	/** Pane with the options to perform an operation on multiple FSMs. */
 	private TitledPane multiFSMOperationPane;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	/**
 	 * Creates a new FSMOperationsPane which has all the options for performing
 	 * operations on the FSMs the user has already opened.
@@ -37,6 +44,7 @@ public class FSMOperationPane extends VBox {
 	 * @param inOpenFSMStrings - An observable ArrayList of the openFSMs' ids, used
 	 * for listing all the open FSMs in various ChoiceBoxes.
 	 */
+	
 	public FSMOperationPane(Model inModel) {
 		model = inModel;
 		
@@ -56,4 +64,5 @@ public class FSMOperationPane extends VBox {
 		
 		getChildren().addAll(titleLabel, scrollable);
 	} // FSMOperationsPane(ObservableList<String>)
+
 } // class FSMOperationsPane
