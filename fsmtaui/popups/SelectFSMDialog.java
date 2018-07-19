@@ -5,8 +5,13 @@ import java.util.*;
 import fsm.FSM;
 import fsm.TransitionSystem;
 import fsmtaui.Model;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import support.transition.Transition;
 
@@ -17,9 +22,10 @@ import support.transition.Transition;
  *
  */
 
-public class SelectTSDialog {
+public class SelectFSMDialog {
 	Dialog<LinkedList<FSM<? extends Transition>>> dialog;
 	ListView<String> openFSMBox;
+	ListView<String> selectedFSMBox;
 	TextField fsmNameField;
 	String id;
 	
@@ -31,31 +37,45 @@ public class SelectTSDialog {
 	 * @param title Title for the dialog box.
 	 * @param header Header for the dialog box.
 	 */
-	public SelectTSDialog(Model model, String title, String header) {
+	public SelectFSMDialog(Model model, String title, String header) {
 		dialog = new Dialog<LinkedList<FSM<? extends Transition>>>();
 		dialog.setTitle(title);
 		dialog.setHeaderText(header);
 		
 		// Create the grid for all the options
 		HBox name = makeFSMNameField();
-		openFSMBox = new ListView<String>(model.getOpenFSMStrings());
-		openFSMBox.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		String[] openFSMs = model.getOpenFSMStrings().toArray(new String[model.getOpenFSMStrings().size()]);
+		
+		Label openFSMBoxLabel = new Label("Available FSMs");
+		openFSMBox = new ListView<String>(FXCollections.observableArrayList(openFSMs));
+		openFSMBox.setCellFactory(param -> new FSMNameCell());
+		openFSMBox.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		
+		Label selectedFSMBoxLabel = new Label("Selected FSMs");
+		selectedFSMBox = new ListView<String>();
+		selectedFSMBox.setCellFactory(param -> new FSMNameCell());
+		selectedFSMBox.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		addDragHandlers(openFSMBox);
+		addDragHandlers(selectedFSMBox);
+		
+		GridPane fsmChooser = new GridPane();
+		fsmChooser.addRow(0, openFSMBoxLabel, selectedFSMBoxLabel);
+		fsmChooser.addRow(1, openFSMBox, selectedFSMBox);
 		
 		// Add the options and buttons.
 		DialogPane dPane = dialog.getDialogPane();
-		dPane.setContent(new VBox(name, openFSMBox));
+		dPane.setContent(new VBox(name, fsmChooser));
 		dPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
 		// Sets up the return result as an FSMParameter object
 		dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
-            		Collection<String> fsmNames = openFSMBox.getSelectionModel().getSelectedItems();
+            		Collection<String> fsmNames = selectedFSMBox.getItems();
             		LinkedList<FSM<? extends Transition>> tsList = new LinkedList<FSM<? extends Transition>>();
-            		for(String n : fsmNames) {
-            			TransitionSystem<? extends Transition> fsm = model.getTS(n);
+            		for(String fsmName : fsmNames) {
+            			TransitionSystem<? extends Transition> fsm = model.getTS(fsmName);
             			if(fsm != null && fsm instanceof FSM<?>) tsList.add((FSM<?>)fsm); // Add the fsm, if it exists
             		} // for each fsm name
-            		
             		// Must have an id
             		id = fsmNameField.getText();
             		return tsList;
@@ -69,7 +89,7 @@ public class SelectTSDialog {
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {
 			// Check whether some conditions are fulfilled
 			id = fsmNameField.getText();    
-			if (openFSMBox.getSelectionModel().getSelectedItems().size() < 2) {
+			if (selectedFSMBox.getItems().size() < 2) {
 				Alerts.makeError(Alerts.ERROR_MULTI_OPERATION_NO_FSM);
 	        		event.consume();
 	        } else if(id.equals("") || model.tsExists(id)) {
@@ -89,6 +109,28 @@ public class SelectTSDialog {
 		fsmNameField = new TextField();
 		return new HBox(fsmNameLabel, fsmNameField);
 	} // makeFSMNameField()
+	
+	private void addDragHandlers(ListView<String> listView) {
+		listView.setOnDragOver(e -> {
+			Dragboard db = e.getDragboard();
+			if(db.hasString()) e.acceptTransferModes(TransferMode.MOVE);
+			e.consume();
+		});
+		
+		listView.setOnDragDropped(e -> {
+			ObservableList<String> items = listView.getItems();
+			Dragboard db = e.getDragboard();
+			
+			boolean success = false;
+			if(db.hasString()) {
+				items.add(db.getString());
+				success = true;
+			}
+			
+			e.setDropCompleted(success);
+			e.consume();
+		});
+	}
 	
 	/**
 	 * Gets the user's FSM selection that they specify in the dialog and returns it.
@@ -112,5 +154,54 @@ public class SelectTSDialog {
 	 */
 	public String getId() {
 		return id;
+	}
+	
+	public class FSMNameCell extends ListCell<String> {
+		public FSMNameCell() {
+			this.setOnDragDetected(e -> {
+				if(getItem() == null) return;
+				Dragboard db = startDragAndDrop(TransferMode.MOVE);
+				ClipboardContent content = new ClipboardContent();
+				content.putString(getItem());
+				db.setContent(content);
+				e.consume();
+			});
+			
+			this.setOnDragOver(e -> {
+				if(e.getGestureSource() != this && e.getDragboard().hasString())
+					e.acceptTransferModes(TransferMode.MOVE);
+				e.consume();
+			});
+			
+			this.setOnDragDropped(e -> {
+				ObservableList<String> items = getListView().getItems();
+				Dragboard db = e.getDragboard();
+				
+				if(getItem() == null) {
+					return;
+				} else {
+					boolean success = false;
+					if(db.hasString()) {
+						items.add(db.getString());
+						success = true;
+					}
+					
+					e.setDropCompleted(success);
+					e.consume();
+				}
+			});
+			
+			this.setOnDragDone(e -> {
+				if (e.getTransferMode() == TransferMode.MOVE) {
+					ObservableList<String> items = getListView().getItems();
+					items.remove(getItem());
+				}
+			});
+		}
+		@Override
+		protected void updateItem(String text, boolean empty) {
+	         super.updateItem(text, empty);
+	         setText(text);
+		}
 	}
 }

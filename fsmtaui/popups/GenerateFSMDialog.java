@@ -175,6 +175,7 @@ public class GenerateFSMDialog {
 			sizeSecret = Integer.parseInt(secret);
 			sizeUnobserv = Integer.parseInt(unobservable);
 			sizeUncontrol = Integer.parseInt(uncontrollable);
+			sizeInitial = 1;
 			return this;
 		} // setDeterministicParameters()
 		

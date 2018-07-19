@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import fsm.*;
 import fsmtaui.Model;
 import fsmtaui.popups.Alerts;
-import fsmtaui.popups.SelectTSDialog;
+import fsmtaui.popups.SelectFSMDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -109,7 +109,7 @@ public class MultiFSMOperationPane extends VBox {
 			if(operation == null) {
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
 			} else {
-				SelectTSDialog selectionDialog = new SelectTSDialog(model, "Operation Selection Options", "Write a name for the new FSM, and select the FSMs to perform the operation.");
+				SelectFSMDialog selectionDialog = new SelectFSMDialog(model, "Operation Selection Options", "Write a name for the new FSM, and drag the desired FSMs to the right box to perform the operation.");
 				LinkedList<FSM<? extends Transition>> fsmList = selectionDialog.getTSs();
 				
 				// Exit if there was a problem
