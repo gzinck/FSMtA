@@ -1,19 +1,18 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
-import fsm.TransitionSystem;
-import fsmtaui.Model;
-import fsmtaui.popups.Alerts;
+import javafx.scene.control.TextField;
+import support.transition.Transition;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import support.transition.Transition;
+import fsmtaui.popups.Alerts;
+import fsm.TransitionSystem;
+import fsmtaui.Model;
 
 /**
- * Class extending the javafx VBox element which stores all the
- * options for adding and removing states from the open FSM.
+ * Class extending the javafx VBox element which stores all the options for adding and removing states from the open FSM.
  * 
  * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
  * 
@@ -24,19 +23,19 @@ public class ModifyTSStatesPane extends VBox {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** TextField to name a new state as the user specifies. */
+	/** TextField object instance variable to name a new state as the user specifies. */
 	private TextField stateNameField;
-	/** Button to add a new state to the FSM open in the current tab. */
+	/** Button object instance variable to add a new state to the FSM open in the current tab. */
 	private Button addStateBtn;
-	/** Button to remove a state from the FSM open in the current tab. */
+	/** Button object instance variable to remove a state from the FSM open in the current tab. */
 	private Button removeStateBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a new pane to add/remove states.
+	 * Constructor for a ModifyTSStatesPane object that creates a new pane to add/remove states.
 	 * 
 	 * @param inModel - Model object with the important information all GUI elements need access to.
 	 */
@@ -65,7 +64,7 @@ public class ModifyTSStatesPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Creates the event handler for creating states.
+	 * This method creates the event handler for creating states.
 	 */
 	
 	private void makeAddStateEventHandler() {
@@ -96,7 +95,7 @@ public class ModifyTSStatesPane extends VBox {
 	} // makeAddStateEventHandler()
 	
 	/**
-	 * Creates the event handler for removing states.
+	 * This method creates the event handler for removing states.
 	 */
 
 	private void makeRemoveStateEventHandler() {

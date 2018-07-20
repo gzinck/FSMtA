@@ -1,19 +1,18 @@
 package fsmtaui.settingspane.operationspane;
 
-import java.util.LinkedList;
-
-import fsm.*;
-import fsmtaui.Model;
-import fsmtaui.popups.Alerts;
-import fsmtaui.popups.SelectFSMDialog;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
+import fsmtaui.popups.SelectFSMDialog;
+import support.transition.Transition;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import support.transition.Transition;
+import java.util.LinkedList;
+import fsmtaui.popups.Alerts;
+import fsmtaui.Model;
+import fsm.*;
 
 /**
- * Class extends the JavaFX VBox class, providing options to perform an operation involving multiple FSMs (typically 2).
+ * This class extends the JavaFX VBox class, providing options to perform an operation involving multiple FSMs (typically 2).
  * 
  * This class is a part of the fsmtaui.settingspane.operationspane package.
  * 
@@ -24,26 +23,26 @@ public class MultiFSMOperationPane extends VBox {
 
 //---  Constants   ----------------------------------------------------------------------------
 	
-	/** String message for what the section does. */
+	/** String object constant representing the message for what the section does. */
 	private static final String TITLE_MSG = "Perform Operations with Multiple FSMs";
-	/** ObservableList of Strings with all the possible operations involving multiple FSMs that a user can choose. */
+	/** ObservableList of String object constants with all the possible operations involving multiple FSMs that a user can choose. */
 	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Union", "Product", "Parallel Composition", "Get Supremal Controllable Sublanguage");
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** ChoiceBox of Strings allowing the user to choose which operation to perform. */
+	/** ChoiceBox of String object instance variables allowing the user to choose which operation to perform. */
 	private ChoiceBox<String> operationChoiceBox;
-	/** Button allowing the user to perform the selection operation on the selected FSMs. */
+	/** Button object instance variable allowing the user to perform the selection operation on the selected FSMs. */
 	private Button performOperationBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a pane for all the operations involving multiple FSMs.
+	 * Constructor for a MultiFSMOperationsPane object that creates a pane for all the operations involving multiple FSMs.
 	 * 
-	 * @param inModel - Model object
+	 * @param inModel - Model object TODO:
 	 */
 	
 	public MultiFSMOperationPane(Model inModel) {
@@ -63,10 +62,9 @@ public class MultiFSMOperationPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Makes a ChoiceBox for the user to select what operation s/he
-	 * wishes to perform.
+	 * This method makes a ChoiceBox for the user to select what operation they wish to perform.
 	 * 
-	 * @return - HBox with the ChoiceBox and its Label.
+	 * @return - Returns an HBox object with the ChoiceBox and its Label.
 	 */
 
 	private VBox makeOperationSelector() {
@@ -109,8 +107,7 @@ public class MultiFSMOperationPane extends VBox {
 //	} // makeFSMNameField()
 	
 	/**
-	 * Creates an event handler for when the perform operation button
-	 * is pressed, performing the operation.
+	 * This method creates an event handler for when the perform operation button is pressed, performing the operation.
 	 */
 
 	private void makePerformOperationEventHandler() {
@@ -159,8 +156,8 @@ public class MultiFSMOperationPane extends VBox {
 	/**
 	 * Helper method o add an FSM to the model and reset the text field.
 	 * 
-	 * @param newTS - TransitionSystem to add to the model.
-	 * @param id - String representing the id of the FSM.
+	 * @param newTS - TransitionSystem object to add to the model.
+	 * @param id - String object representing the id of the FSM.
 	 */
 
 	private void addFSM(TransitionSystem<?> newTS, String id) {

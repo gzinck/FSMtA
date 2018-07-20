@@ -1,19 +1,19 @@
 package fsmtaui.settingspane.modifyfsmpane;
 
-import fsm.*;
-import fsm.attribute.*;
-import fsmtaui.Model;
-import fsmtaui.popups.Alerts;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
 import support.transition.Transition;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import fsmtaui.popups.Alerts;
+import javafx.scene.layout.*;
+import fsm.attribute.*;
+import fsmtaui.Model;
+import fsm.*;
 
 /**
- * Class extending the javafx VBox element which stores all the
+ * This class extends the javafx VBox element which stores all the
  * options for adding and removing states from the open TransitionSystem.
  * 
  * This class is a part of the fsmtaui.settingspane.modifyfsmpane package.
@@ -23,66 +23,65 @@ import support.transition.Transition;
 
 public class ModifyTSStatePropertiesPane extends VBox {
 	
-//---  Constructors   -------------------------------------------------------------------------
+//---  Constants   ------------------------------------------------------------------------------
 	
-	/** String title for the section. */
+	/** String object instance variable representing the title for the section. */
 	private static final String LABEL_STR = "Modify State Properties";
-	/** String name for the button to toggle initial states. */
+	/** String object instance variable representing the name for the button to toggle initial states. */
 	private static final String TOGGLE_INITIAL_STR = "Toggle Initial State";
-	/** String name for the button to toggle marked states. */
+	/** String object instance variable representing the name for the button to toggle marked states. */
 	private static final String TOGGLE_MARKED_STR = "Toggle Marked State";
-	/** String name for the button to toggle secret states. */
+	/** String object instance variable representing the name for the button to toggle secret states. */
 	private static final String TOGGLE_SECRET_STR = "Toggle Secret State";
-	/** String name for the button to toggle bad states. */
+	/** String object instance variable representing the name for the button to toggle bad states. */
 	private static final String TOGGLE_BAD_STR = "Toggle Bad State";
 	
-	/** String name for the button to mark all states. */
+	/** String object instance variable representing the name for the button to mark all states. */
 	private static final String MARK_ALL_STR = "Mark All States";
-	/** String name for the button to unmark all states. */
+	/** String object instance variable representing the name for the button to unmark all states. */
 	private static final String UNMARK_ALL_STR = "Unmark All States";
-	/** String name for the button to make bad states good. */
+	/** String object instance variable representing the name for the button to make bad states good. */
 	private static final String MAKE_ALL_GOOD_STR = "Make All States Good";
-	/** String name for the button to remove bad states from the FSM. */
+	/** String object instance variable representing the name for the button to remove bad states from the FSM. */
 	private static final String REMOVE_ALL_BAD_STR = "Remove Bad States";
-	/** String name for the button to rename all states in the FSM. */
+	/** String object instance variable representing the name for the button to rename all states in the FSM. */
 	private static final String RENAME_ALL_STR = "Rename All States";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** Label for the section (changes depending on the type of FSM). */
+	/** Label object instance variable for the section (changes depending on the type of FSM). */
 	private Label initialOptionsLabel;
-	/** TextField to name an initial state as the user specifies. */
+	/** TextField object instance variable to name an initial state as the user specifies. */
 	private TextField stateNameField;
-	/** Button to add/remove an initial state to the FSM open in the current tab. */
+	/** Button object instance variable to add/remove an initial state to the FSM open in the current tab. */
 	private Button toggleInitialStateBtn;
-	/** Button to add/remove a marked state to the FSM open in the current tab. */
+	/** Button object instance variable to add/remove a marked state to the FSM open in the current tab. */
 	private Button toggleMarkedBtn;
-	/** Button to add/remove a secret state to the FSM open in the current tab. */
+	/** Button object instance variable to add/remove a secret state to the FSM open in the current tab. */
 	private Button toggleSecretBtn;
-	/** Button to add/remove a bad state to the FSM open in the current tab. */
+	/** Button object instance variable to add/remove a bad state to the FSM open in the current tab. */
 	private Button toggleBadBtn;
 	
-	/** Button to mark all states. */
+	/** Button object instance variable to mark all states. */
 	private Button markAllBtn;
-	/** Button to unmark all states. */
+	/** Button object instance variable to unmark all states. */
 	private Button unmarkAllBtn;
-	/** Button to make all bad states good again. */
+	/** Button object instance variable to make all bad states good again. */
 	private Button makeAllGoodBtn;
-	/** Button to remove all the bad states from the FSM. */
+	/** Button object instance variable to remove all the bad states from the FSM. */
 	private Button removeAllBadBtn;
-	/** Button to rename states from the FSM open in the current tab. */
+	/** Button object instance variable to rename states from the FSM open in the current tab. */
 	private Button renameStatesBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a box with all the initial state options in it.
-	 * Allows the user to add and remove initial states.
+	 * Constructor for a ModifyTSStatePropertiesPane object that creates a box with all the initial state
+	 * options in it. Allows the user to add and remove initial states.
 	 * 
-	 * @param inModel - Model containing all the important information
-	 * to display in the GUI.
+	 * @param inModel - Model object containing all the important information to display in the GUI.
 	 */
 	
 	public ModifyTSStatePropertiesPane(Model inModel) {
@@ -133,7 +132,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Creates the event handler for changing initial states.
+	 * This method creates the event handler for changing initial states.
 	 */
 	
 	private void makeToggleInitialStateEventHandler() {
@@ -174,7 +173,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeToggleInitialStateEventHandler()
 	
 	/**
-	 * Creates the event handler for changing marked states.
+	 * This method creates the event handler for changing marked states.
 	 */
 
 	private void makeToggleMarkedEventHandler() {
@@ -203,7 +202,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeToggleMarkedEventHandler()
 	
 	/**
-	 * Creates the event handler for changing bad states.
+	 * This method creates the event handler for changing bad states.
 	 */
 
 	private void makeToggleSecretEventHandler() {
@@ -232,7 +231,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeToggleSecretEventHandler()
 	
 	/**
-	 * Creates the event handler for changing bad states.
+	 * This method creates the event handler for changing bad states.
 	 */
 
 	private void makeToggleBadEventHandler() {
@@ -261,7 +260,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeToggleBadEventHandler()
 	
 	/**
-	 * Creates the event handler for marking all states.
+	 * This method creates the event handler for marking all states.
 	 */
 
 	private void makeMarkAllEventHandler() {
@@ -283,7 +282,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeMarkAllEventHandler()
 	
 	/**
-	 * Creates the event handler for marking all states.
+	 * This method creates the event handler for marking all states.
 	 */
 
 	private void makeUnmarkAllEventHandler() {
@@ -305,7 +304,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeUnmarkAllEventHandler()
 	
 	/**
-	 * Creates the event handler for marking all states.
+	 * This method creates the event handler for marking all states.
 	 */
 
 	private void makeMakeAllGoodEventHandler() {
@@ -327,7 +326,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeMakeAllGoodEventHandler()
 	
 	/**
-	 * Creates the event handler for marking all states.
+	 * This method creates the event handler for marking all states.
 	 */
 
 	private void makeRemoveAllBadEventHandler() {
@@ -349,8 +348,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 	} // makeRemoveAllBadEventHandler()
 	
 	/**
-	 * Creates the event handler for when the rename states button
-	 * is pressed.
+	 * This method creates the event handler for when the rename states button is pressed.
 	 */
 
 	private void makeRenameStatesEventHandler() {

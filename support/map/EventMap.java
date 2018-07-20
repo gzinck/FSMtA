@@ -10,22 +10,19 @@ import java.util.*;
  * This class is a part of the support package.
  * 
  * @author Mac Clevinger and Graeme Zinck
- * @param <E> Classes that extends Event.
  */
 
 public class EventMap {
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** HashMap<<r>String, E extends Event> mapping String names of events to their corresponding Event objects. */
+	/** HashMap<<r>String, Event> mapping String object names of events to their corresponding Event objects. */
 	private HashMap<String, Event> events;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for an EventMap that initializes the events HashMap<<r>String, E>.
-	 * 
-	 * @param inClass - Class<<r>E extends Event> object representing the class of Event the map will hold, used for instantiation.
+	 * Constructor for an EventMap object that initializes the events HashMap<<r>String, Event>.
 	 */
 	
 	public EventMap() {

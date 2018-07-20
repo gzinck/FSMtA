@@ -7,8 +7,8 @@ import support.Event;
 
 /**
  * This class models a path that connects a State to another State in an FSM, storing an Event
- * and the Single State that it leads to. This is the base variation of a Transition, only
- * storing the one State, and thus modeling in a Deterministic manner.
+ * and the Single State that it leads to. This is the Deterministic variation of a Transition, only
+ * storing the one State for a given Event.
  * 
  * This class is a part of the support.transition package.
  * 
@@ -17,16 +17,17 @@ import support.Event;
 
 public class DetTransition implements Transition {
 
-	/** Event extending instance variable representing the Event associated to this object*/
+//---  Instance Variables   -------------------------------------------------------------------
+	
+	/** Event object instance variable representing the Event associated to this object*/
 	public Event event;
-	/** State extending instance variable representing the target State associated to this object*/
+	/** State object instance variable representing the destination State associated to this object and its Event*/
 	protected State state;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a Transition object, assigning the provided Event and State to their
-	 * corresponding instance variables.
+	 * Constructor for a DetTransition object, assigning the provided Event and State to their corresponding instance variables.
 	 * 
 	 * @param inEvent - Event object representing the Event associated to this Transition
 	 * @param inState - State object representing the State being led to by the Event of this Transition
@@ -38,8 +39,7 @@ public class DetTransition implements Transition {
 	}
 	
 	/**
-	 * Constructor for a Transition object, assigning the event and state null values
-	 * until added later on. This is essential for instantiation in generic types.
+	 * Constructor for a Transition object, assigning the event and state null values until later manipulation.
 	 */
 	
 	public DetTransition() {
@@ -75,12 +75,11 @@ public class DetTransition implements Transition {
 	}
 	
 	/**
-	 * Generates a String object which has the dot representation of this Transition, but
-	 * with a dotted line to indicate that it is a may transition, which
-	 * can be used for converting an Modal Specification to a .jpg image via GraphViz.
+	 * This method generates a String object which has the dot representation of this Transition,
+	 * but with the addition of specifying dotted/solid lines for May/Must transitions in a
+	 * ModalSpecification object.
 	 * 
-	 * @param firstState - State object associated to this Transition. This is used to
-	 * determine the exact text for the dot representation.
+	 * @param firstState - State object possessing this Transition; it leads to the instance variable State via the associated Event. 
 	 * @return - Returns a String object containing the dot representation of this Transition.
 	 */
 	
@@ -158,6 +157,7 @@ public class DetTransition implements Transition {
 	
 //---  Manipulations   -----------------------------------------------------------------------
 
+	@Override
 	public boolean addTransitionState(State inState) {
 		if(state != null)
 			return false;

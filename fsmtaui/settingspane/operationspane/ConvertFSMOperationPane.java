@@ -1,19 +1,19 @@
 package fsmtaui.settingspane.operationspane;
 
-import fsm.*;
-import fsmtaui.Model;
-import fsmtaui.popups.Alerts;
 import javafx.collections.FXCollections;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
 import support.transition.Transition;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import fsmtaui.popups.Alerts;
+import javafx.scene.layout.*;
+import fsmtaui.Model;
+import fsm.*;
 
 /**
- * This class
+ * This class TODO:
  * 
  * This class is a part of the fsmtaui.settingspane.operationspane package.
  * 
@@ -24,25 +24,27 @@ public class ConvertFSMOperationPane extends VBox {
 	
 //---  Constants   ----------------------------------------------------------------------------
 	
-	/** String message for what the section does. */
+	/** String constant object representing the message for what the section does. */
 	private static final String TITLE_MSG = "Convert the Current FSM";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** Box with the possible types of FSMs to convert to. */
+	/** Box object instance variable containing the possible types of FSMs to convert to. */
 	private ChoiceBox<String> fsmTypeChoiceBox;
-	/** Field for the name of the new FSM to create. */
+	/** Field object instance variable for the name of the new FSM to create. */
 	private TextField fsmNameField;
-	/** Button allowing the user to perform the conversion on the selected FSM. */
+	/** Button object instance variable allowing the user to perform the conversion on the selected FSM. */
 	private Button convertBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a DeterminizationPane with all the options
-	 * to determinize an FSM.
+	 * Constructor for a ConvertFSMOperationPane object that creates a DeterminizationPane with all
+	 * the options to determinize an FSM.
+	 * 
+	 * @param inModel - Model object that TODO:
 	 */
 	
 	public ConvertFSMOperationPane(Model inModel) {
@@ -63,10 +65,10 @@ public class ConvertFSMOperationPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Makes a VBox with options for the type of FSM the user wishes to convert to.
+	 * This method makes a VBox object with options for the type of FSM the user wishes to convert to.
 	 * 
-	 * @return - VBox with a ChoiceBox (for determinism properties) and two CheckBoxes
-	 * for enabling unobservable/uncontrollable events.
+	 * @return - Returns a VBox object with a ChoiceBox (for determinism properties) and two CheckBoxes for
+	 * enabling unobservable/uncontrollable events.
 	 */
 	
 	private HBox makeConversionSelector() {
@@ -76,9 +78,9 @@ public class ConvertFSMOperationPane extends VBox {
 	} // makeConversionSelector()
 	
 	/**
-	 * Makes a name TextField for the new FSM that is created.
+	 * This method makes a name TextField for the new FSM that is created.
 	 * 
-	 * @return - HBox containing the name TextField and its Label.
+	 * @return - Returns an HBox object containing the name TextField and its Label.
 	 */
 	
 	private HBox makeFSMNameField() {
@@ -88,8 +90,7 @@ public class ConvertFSMOperationPane extends VBox {
 	} // makeFSMNameField()
 	
 	/**
-	 * Makes the event handler for when the "Perform Conversion" button
-	 * is pressed.
+	 * This method makes the event handler for when the "Perform Conversion" button is pressed.
 	 */
 	
 	private void makeConvertEventHandler() {
@@ -130,9 +131,9 @@ public class ConvertFSMOperationPane extends VBox {
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * Helper method o add an FSM to the model and reset the text field.
+	 * Helper method to add an FSM to the model and reset the text field.
 	 * 
-	 * @param newFSM - TransitionSystem to add to the model.
+	 * @param newFSM - TransitionSystem object to add to the model.
 	 */
 	
 	private void addFSM(TransitionSystem<? extends Transition> newFSM) {

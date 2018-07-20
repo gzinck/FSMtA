@@ -22,8 +22,7 @@ public interface Transition extends Comparable<Transition> {
 	 * Generates a String object which has the dot representation of this Transition, which
 	 * can be used for converting an FSM to a .jpg image via GraphViz.
 	 * 
-	 * @param firstState - State object associated to this Transition. This is used to
-	 * determine the exact text for the dot representation.
+	 * @param firstState - State object associated to this Transition.
 	 * @return - Returns a String object containing the dot representation of this Transition.
 	 */
 	
@@ -37,7 +36,7 @@ public interface Transition extends Comparable<Transition> {
 	 * deterministic, the state will overwrite the previous state.
 	 * If the State was already a transition state, it is not duplicated.
 	 * 
-	 * @param in - State extending object representing the Transition object's Event's new target State
+	 * @param in - State object representing the Transition object's Event's new target State
 	 */
 	
 	public void setTransitionState(State in);
@@ -73,7 +72,7 @@ public interface Transition extends Comparable<Transition> {
 	/**
 	 * Getter method to access the Event associated to this Transition object
 	 * 
-	 * @return - Returns an Event extending object representing the Event associated to this Transition object
+	 * @return - Returns an Event representing the Event associated to this Transition object
 	 */
 	
 	public Event getTransitionEvent();
@@ -90,7 +89,7 @@ public interface Transition extends Comparable<Transition> {
 	 * Getter method that requests a blank-slate Transition object of a type that matches that of the object
 	 * to whom this method belongs with no correspondence to the object calling this method.
 	 * 
-	 * @return - Returns an object extending the Transition<<r>S, E> interface that is empty.
+	 * @return - Returns a Transition object, or a descendant of the class, that is empty.
 	 */
 	
 	public <T extends Transition> T generateTransition();
@@ -98,17 +97,20 @@ public interface Transition extends Comparable<Transition> {
 //---  Manipulations   ------------------------------------------------------------------------	
 
 	/**
+	 * This method permits the inclusion of a new State into the Transition object's storage
+	 * of destination State objects which are led to by an assigned Event, varying in implementation
+	 * depending on the permissiveness of having multiple target States with the same Event.
 	 * 
-	 * @param state
-	 * @return
+	 * @param state - State object representing the new State to be led to by the Transition object's Event.
+	 * @return - Returns a boolean value; true if successful inclusion, false if the State were already present.
 	 */
 	
 	public boolean addTransitionState(State state);
 	
 	/**
-	 * Removes a State from the Transition object as described by a provided String; or, if the State is
-	 * the only item in the Transition object (as it is for the base Transition object), it returns true
-	 * to indicate that the Transition object should be deleted entirely.
+	 * This method removes a State from the Transition object as described by a provided String; or, if the
+	 * State is the only item in the Transition object (as it is for the base Transition object), it returns
+	 * true to indicate that the Transition object should be deleted entirely.
 	 * 
 	 * @param state - String object representing the State to delete from the transition object.
 	 * @return - Returns a boolean value; true if the Transition object is empty after this operation, otherwise false.
@@ -117,9 +119,9 @@ public interface Transition extends Comparable<Transition> {
 	public boolean removeTransitionState(String stateName);
 	
 	/**
-	 * Removes the provided State from the Transition object, and, if the State is the only item in the Transition
-	 * object(as it is for the base Transition object), it returns true to indicate that the Transition
-	 * object should be deleted entirely.
+	 * This method removes the provided State from the Transition object, and, if the State is the only item
+	 * in the Transition object(as it is for the base Transition object), it returns true to indicate that the
+	 * Transition object should be deleted entirely.
 	 * 
 	 * @param inState - State object to delete from the Transition object.
 	 * @return - Returns a boolean value; true if the Transition object is empty after this operation, otherwise false.
@@ -128,10 +130,11 @@ public interface Transition extends Comparable<Transition> {
 	public boolean removeTransitionState(State inState);
 	
 	/**
-	 * Removes the provided set of States from the transition object, and if those States were the only items
-	 * in the Transition object, it returns true to indicate that the Transition object should be deleted entirely.
+	 * This method removes the provided set of States from the transition object, and if those States were
+	 * the only items in the Transition object, it returns true to indicate that the Transition object should
+	 * be deleted entirely.
 	 * 
-	 * @param inState - Collection of State extending objects to delete from the transition object.
+	 * @param inState - Collection of State objects to delete from the transition object.
 	 * @return - Returns a boolean value; true if the Transition object has no States to which it points, otherwise false.
 	 */
 	

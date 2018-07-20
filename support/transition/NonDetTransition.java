@@ -18,22 +18,20 @@ public class NonDetTransition implements Transition {
 
 //--- Instance Variables   --------------------------------------------------------------------
 	
-	/** Event extending instance variable representing the Event associated to this object*/
+	/** Event instance variable representing the Event associated to this object*/
 	public Event event;
-	/** ArrayList<<r>State> object holding all State extending objects associated to the Event associated to this NonDetTransition object*/
+	/** ArrayList<<r>State> object holding all State objects associated to the Event associated to this NonDetTransition object*/
 	private ArrayList<State> states;
 	
 //--- Constructors   --------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a NonDetTransition object, assigning a single Event object
-	 * and a list of States which the event can lead to.
+	 * Constructor for a NonDetTransition object, assigning a single Event object and a list of States which the event can lead to.
 	 * 
 	 * @param inEvent - Event object representing the event that leads to the associated transition states.
 	 * @param inStates - List of State objects representing the States led to by the Event associated with this NonDetTransition object.
 	 */
 	
-	@SafeVarargs
 	public NonDetTransition(Event inEvent, State ... inStates) {
 		event = inEvent;
 		states = new ArrayList<State>();
@@ -42,8 +40,7 @@ public class NonDetTransition implements Transition {
 	}
 	
 	/**
-	 * Constructor for a NonDetTransition object, assigning a single Event object
-	 * and a list of States which the event can lead to.
+	 * Constructor for a NonDetTransition object, assigning a single Event object and a list of States which the event can lead to.
 	 * 
 	 * @param inEvent - Event object representing the event that leads to the associated transition states.
 	 * @param inStates - Collection of State objects representing the States led to by the Event associated with this NonDetTransition object.
@@ -55,8 +52,7 @@ public class NonDetTransition implements Transition {
 	}
 	
 	/**
-	 * Constructor for a NonDetTransition object, assigning the event and states empty values
-	 * until added later on. This is essential for instantiation in generic types.
+	 * Constructor for a NonDetTransition object, assigning the event and states empty values until added later on.
 	 */
 	
 	public NonDetTransition() {
@@ -155,6 +151,7 @@ public class NonDetTransition implements Transition {
 	
 //--- Manipulations   -------------------------------------------------------------------------
 	
+	@Override
 	public boolean addTransitionState(State stateNew) {
 		if(states.indexOf(stateNew) == -1) {
 			states.add(stateNew);

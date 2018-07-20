@@ -17,7 +17,7 @@ public class ModifyTSPane extends VBox {
 	
 //---  Constants   ----------------------------------------------------------------------------
 	
-	/** int constant for the number of pixels wide the settings sidebar will be. */
+	/** int constant value for the number of pixels wide the settings sidebar will be. */
 	private static final int OPTIONS_WIDTH = 382;
 	
 //---  Instance Variables   -------------------------------------------------------------------

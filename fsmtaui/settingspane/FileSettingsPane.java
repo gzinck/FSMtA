@@ -17,7 +17,7 @@ import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 
 /**
- * FileSettingsPane is a specialized javafx VBox element which contains all the settings
+ * This class is a specialized javafx VBox element which contains all the settings
  * for file I/O in the GUI. It allows loading in, generating, opening, closing, and saving
  * files.
  * 

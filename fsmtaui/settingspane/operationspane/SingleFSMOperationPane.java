@@ -1,18 +1,18 @@
 package fsmtaui.settingspane.operationspane;
 
-import fsmtaui.Model;
-import fsmtaui.popups.Alerts;
-import fsm.*;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.collections.FXCollections;
 import support.transition.Transition;
+import javafx.scene.input.KeyCode;
+import javafx.scene.control.*;
+import fsmtaui.popups.Alerts;
+import javafx.scene.layout.*;
+import fsmtaui.Model;
+import fsm.*;
 
 /**
- * Javafx VBox element which has all the options to perform
- * operations on a single FSM (the FSM that is currently in view)
+ * This class creates a Javafx VBox element which has all the options to perform operations on a
+ * single FSM (the FSM that is currently in view)
  * 
  * This class is a part of the fsmtaui.settingspane.operationspane package.
  * 
@@ -23,26 +23,26 @@ public class SingleFSMOperationPane extends VBox {
 	
 //---  Constants   ----------------------------------------------------------------------------
 	
-	/** String message for what the section does. */
+	/** String object constant representing the message for what the section does. */
 	private static final String TITLE_MSG = "Perform an Operation on the Current FSM";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** Model containing all the important information to display in the GUI. */
+	/** Model object instance variable containing all the important information to display in the GUI. */
 	private Model model;
-	/** ChoiceBox of Strings allowing the user to choose which operation to perform. */
+	/** ChoiceBox of String object instance variables allowing the user to choose which operation to perform. */
 	private ChoiceBox<String> operationChoiceBox;
-	/** Field for the name of the new FSM to create. */
+	/** Field object instance variable for the name of the new FSM to create. */
 	private TextField fsmNameField;
-	/** ObservableList of Strings with all the possible operations involving one FSM that a user can choose. */
+	/** ObservableList of String object instance variables with all the possible operations involving one FSM that a user can choose. */
 	private static final ObservableList<String> SINGLE_FSM_OPERATIONS = FXCollections.observableArrayList("Determinize", "Make Accessible", "Make CoAccessible", "Trim");
-	/** Button allowing the user to perform the selection operation on the selected FSM. */
+	/** Button object instance variable allowing the user to perform the selection operation on the selected FSM. */
 	private Button performOperationBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	/**
-	 * Creates a pane with all the single FSM operations.
+	 * Constructor for a SingleFSMOperationPane that creates a pane with all the single FSM operations.
 	 */
 	
 	public SingleFSMOperationPane(Model inModel) {
@@ -63,10 +63,10 @@ public class SingleFSMOperationPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Makes a ChoiceBox for the user to select what operation s/he
+	 * This method makes a ChoiceBox for the user to select what operation s/he
 	 * wishes to perform.
 	 * 
-	 * @return - HBox with the ChoiceBox and its Label.
+	 * @return - Returns an HBox object with the ChoiceBox and its Label.
 	 */
 
 	private HBox makeOperationSelector() {
@@ -76,9 +76,9 @@ public class SingleFSMOperationPane extends VBox {
 	} // makeOperationSelector()
 	
 	/**
-	 * Makes a name TextField for the new FSM that is created.
+	 * This method makes a name TextField for the new FSM that is created.
 	 * 
-	 * @return - HBox containing the name TextField and its Label.
+	 * @return - Returns an HBox object containing the name TextField and its Label.
 	 */
 
 	private HBox makeFSMNameField() {
@@ -88,9 +88,8 @@ public class SingleFSMOperationPane extends VBox {
 	} // makeFSMNameField()
 	
 	/**
-	 * Makes the event handler for when the "Perform Operation"
-	 * button is pressed to perform the operation on the current
-	 * FSM.
+	 * This method makes the event handler for when the "Perform Operation" button is pressed to
+	 * perform the operation on the current FSM.
 	 */
 
 	private void makePerformOperationEventHandler() {
@@ -135,10 +134,10 @@ public class SingleFSMOperationPane extends VBox {
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	/**
-	 * Helper method o add an FSM to the model and reset the text field.
+	 * Helper method to add an FSM to the model and reset the text field.
 	 * 
-	 * @param newTS - TransitionSystem to add to the model.
-	 * @param id - String representing the id of the FSM.
+	 * @param newTS - TransitionSystem object to add to the model.
+	 * @param id - String object representing the id of the FSM.
 	 */
 	
 	private void addTS(TransitionSystem<? extends Transition> newTS, String id) {
