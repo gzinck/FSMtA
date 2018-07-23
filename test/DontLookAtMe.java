@@ -113,9 +113,11 @@ public class DontLookAtMe {
 		File f2 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/ModalSpecTests/modal2.mdl");
 		ModalSpecification ms2 = new ModalSpecification(f2, "OK");
 		ms2.addMustTransition("2", "c", "4");
+		ModalSpecification ms3 = ms1.getPseudoLowerBound(ms2);
+		
 		FSMToDot.createImgFromFSM(ms1, GRAEME_WORKING_FOLDER + "modal1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(ms2, GRAEME_WORKING_FOLDER + "modal2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(ms1.getPseudoLowerBound(ms2), GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 	}
 	
 	@Test

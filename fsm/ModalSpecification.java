@@ -582,129 +582,183 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	}
 	
 //---  Multi-MS Operations   -----------------------------------------------------------------------
-	// TODO: Make sure this stops looping when already processed a state.
-	// TODO: Make this code NOT hecking terrifying.
+	
+	/**
+	 * This method gets the pseudo-modal specification representing the lower bound of
+	 * the calling and parameter ModalSpecification inputs. This means:
+	 * - All "may" transitions for a common event must be present in both to exist.
+	 * - All "may" transitions for a private event must only be present in one to exist.
+	 * - All "must" transitions for any event must be present in at least one to exist.
+	 * 
+	 * @param other ModalSpecification which will be used in conjunction with the calling
+	 * modal specification to create a new ModalSpecification. The result will be the lower
+	 * bound of the two.
+	 * @return Pseudo modal specification representing the lower bound of the two. This
+	 * result needs to be pruned to remove states where there exists a must transition but
+	 * no corresponding may transition.
+	 */
+	
 	public ModalSpecification getPseudoLowerBound(ModalSpecification other) {
 		ModalSpecification newMS = new ModalSpecification(this.id + " Lower Bound");
 		
-		// First, we need to identify which events are shared and which are private
-		HashSet<String> thisPrivateEvents = this.events.getPrivateEvents(other.events);
-		HashSet<String> otherPrivateEvents = other.events.getPrivateEvents(this.events);
+		// Also, identify which states are already visited so we don't go in loops
+		HashSet<String> visited = new HashSet<String>();
 		
 		// Start at the beginning of each MS
-		LinkedList<State> thisNext = new LinkedList<State>();
-		thisNext.add(this.initialState);
-		LinkedList<State> otherNext = new LinkedList<State>();
-		otherNext.add(other.initialState);
-		LinkedList<State> newNext = new LinkedList<State>();
-		newNext.add(newMS.states.addState(this.initialState, other.initialState));
+		LinkedList<NextStates> next = new LinkedList<NextStates>();
+		next.add(new NextStates(this.initialState, other.initialState, newMS.states.addState(this.initialState, other.initialState)));
 		
-		while(!thisNext.isEmpty()) {
-			State thisCurr = thisNext.poll();
-			State otherCurr = otherNext.poll();
-			State newCurr = newNext.poll();
-			ArrayList<DetTransition> thisTransitions = this.transitions.getSortedTransitions(thisCurr);
-			ArrayList<DetTransition> otherTransitions = other.transitions.getSortedTransitions(otherCurr);
+		while(!next.isEmpty()) {
+			NextStates curr = next.poll();
+			
+			if(visited.contains(curr.stateNew.getStateName())) continue; // If we already added the state, skip this iteration
+			visited.add(curr.stateNew.getStateName());
 			
 			// Go through all the MAY transitions common in both
-			int thisIndex = 0, otherIndex = 0;
-			while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size()) {
-				// Increment thisIndex and otherIndex
-				while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size() && thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex)) < 0) thisIndex++;
-				while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size() && thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex)) > 0) otherIndex++;
-				// If they share the same event
-				if(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size() && thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex)) == 0) {
-					Event e = thisTransitions.get(thisIndex).getTransitionEvent();
-					State thisTo = thisTransitions.get(thisIndex).getTransitionState();
-					State otherTo = otherTransitions.get(otherIndex).getTransitionState();
-					State newTo = newMS.states.addState(thisTo, otherTo);
-					newMS.addTransition(newCurr, newMS.events.addEvent(e), newTo);
-					thisNext.add(thisTo);
-					otherNext.add(otherTo);
-					newNext.add(newTo);
-					thisIndex++;
-					otherIndex++;
-				} // if shared the event
-			} // while
-			// Now, just go through all the private events for MAY transitions
-			for(DetTransition thisT : thisTransitions) if(thisPrivateEvents.contains(thisT.getTransitionEvent().getEventName())) {
-				State thisTo = thisT.getTransitionState();
-				State newTo = newMS.states.addState(thisTo, otherCurr);
-				newMS.addTransition(newCurr, newMS.events.addEvent(thisT.getTransitionEvent()), newTo);
-				thisNext.add(thisTo);
-				otherNext.add(otherCurr);
-				newNext.add(newTo);
-			} // for each thisT with a private event
-			for(DetTransition otherT : otherTransitions) if(otherPrivateEvents.contains(otherT.getTransitionEvent().getEventName())) {
-				State otherTo = otherT.getTransitionState();
-				State newTo = newMS.states.addState(thisCurr, otherTo);
-				newMS.addTransition(newCurr, newMS.events.addEvent(otherT.getTransitionEvent()), newTo);
-				thisNext.add(thisCurr);
-				otherNext.add(otherTo);
-				newNext.add(newTo);
-			} // for
-			
-			thisTransitions = this.mustTransitions.getSortedTransitions(thisCurr);
-			otherTransitions = other.mustTransitions.getSortedTransitions(otherCurr);
-			
-			// Finally, go through all the MUST transitions in either
-			thisIndex = 0; otherIndex = 0;
-			while(thisIndex < thisTransitions.size() && otherIndex < otherTransitions.size()) {
-				// Increment thisIndex and otherIndex
-				int compareResult = thisTransitions.get(thisIndex).compareTo(otherTransitions.get(otherIndex));
-				if(compareResult < 0) {
-					State thisTo = thisTransitions.get(thisIndex).getTransitionState();
-					State newTo = newMS.states.addState(thisTo, otherCurr);
-					newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(thisTransitions.get(thisIndex).getTransitionEvent()), newTo);
-					thisNext.add(thisTo);
-					otherNext.add(otherCurr);
-					newNext.add(newTo);
-					thisIndex++;
-				}
-				else if(compareResult > 0) {
-					State otherTo = otherTransitions.get(otherIndex).getTransitionState();
-					State newTo = newMS.states.addState(thisCurr, otherTo);
-					newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(otherTransitions.get(otherIndex).getTransitionEvent()), newTo);
-					thisNext.add(thisCurr);
-					otherNext.add(otherTo);
-					newNext.add(newTo);
-					otherIndex++;
-				}
-				else {
-					Event e = thisTransitions.get(thisIndex).getTransitionEvent();
-					State thisTo = thisTransitions.get(thisIndex).getTransitionState();
-					State otherTo = otherTransitions.get(otherIndex).getTransitionState();
-					State newTo = newMS.states.addState(thisTo, otherTo);
-					newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(e), newTo);
-					thisNext.add(thisTo);
-					otherNext.add(otherTo);
-					newNext.add(newTo);
-					thisIndex++;
-					otherIndex++;
-				} // if shared the event
-			} // while
-			while(thisIndex < thisTransitions.size()) {
-				State thisTo = thisTransitions.get(thisIndex).getTransitionState();
-				State newTo = newMS.states.addState(thisTo, otherCurr);
-				newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(thisTransitions.get(thisIndex).getTransitionEvent()), newTo);
-				thisNext.add(thisTo);
-				otherNext.add(otherCurr);
-				newNext.add(newTo);
-				thisIndex++;
-			}
-			while(otherIndex < otherTransitions.size()) {
-				State otherTo = otherTransitions.get(otherIndex).getTransitionState();
-				State newTo = newMS.states.addState(thisCurr, otherTo);
-				newMS.mustTransitions.addTransitionState(newCurr, newMS.events.addEvent(otherTransitions.get(otherIndex).getTransitionEvent()), newTo);
-				thisNext.add(thisCurr);
-				otherNext.add(otherTo);
-				newNext.add(newTo);
-				otherIndex++;
-			}
+			next.addAll(newMS.copyCommonTransitions(curr, this, other));
+			next.addAll(newMS.copyPrivateTransitions(curr, this, other));
+			next.addAll(newMS.copyMustTransitions(curr, this, other));
 		} // while there are states in the queue
-		
 		return newMS;
 	}
+	
+	/**
+	 * This helper method copies transitions in common between two Modal Specifications which are
+	 * in common. That is, a transition must exist in both thisTransitions and otherTransitions to
+	 * be copied into the calling MS, with a transition starting at the State newCurr.
+	 * 
+	 * @param curr - NextStates object with the current node in msA, msB and the calling ModalSpecifications.
+	 * @param msA - The first ModalSpecification from which to copy common transitions.
+	 * @param msB - The second ModalSpecification from which to copy common transitions. 
+	 */
+	
+	private LinkedList<NextStates> copyCommonTransitions(NextStates curr, ModalSpecification msA, ModalSpecification msB) {
+		ArrayList<DetTransition> transitionsA = msA.transitions.getSortedTransitions(curr.stateA);
+		ArrayList<DetTransition> transitionsB = msB.transitions.getSortedTransitions(curr.stateB);
+		// Go through all the MAY transitions common in both
+		LinkedList<NextStates> nextStates = new LinkedList<NextStates>();
+		int indexA = 0, indexB = 0;
+		while(indexA < transitionsA.size() && indexB < transitionsB.size()) {
+			// Increment thisIndex and otherIndex
+			while(indexA < transitionsA.size() && indexB < transitionsB.size() && transitionsA.get(indexA).compareTo(transitionsB.get(indexB)) < 0) indexA++;
+			while(indexA < transitionsA.size() && indexB < transitionsB.size() && transitionsA.get(indexA).compareTo(transitionsB.get(indexB)) > 0) indexB++;
+			// If they share the same event
+			if(indexA < transitionsA.size() && indexB < transitionsB.size() && transitionsA.get(indexA).compareTo(transitionsB.get(indexB)) == 0) {
+				Event e = transitionsA.get(indexA).getTransitionEvent();
+				State thisTo = transitionsA.get(indexA).getTransitionState();
+				State otherTo = transitionsB.get(indexB).getTransitionState();
+				State newTo = this.states.addState(thisTo, otherTo);
+				this.addTransition(curr.stateNew, this.events.addEvent(e), newTo);
+				nextStates.add(new NextStates(thisTo, otherTo, newTo));
+				indexA++;
+				indexB++;
+			} // if shared the event
+		} // while
+		return nextStates;
+	} // copyCommonTransitions(NextStates, ModalSpeciication, ModalSpecification)
+	
+	/**
+	 * This helper method copies transitions private to one of the two Modal Specifications.
+	 * That is, the transition's event must exist in only one of the two Modal Specifications
+	 * be copied into the calling MS, with a transition starting at the State curr.stateNew.
+	 * 
+	 * @param curr - NextStates object with the current node in msA, msB and the calling ModalSpecification.
+	 * @param msA - The first ModalSpecification from which to copy private transitions.
+	 * @param msB - The second ModalSpecification from which to copy private transitions. 
+	 */
+	
+	private LinkedList<NextStates> copyPrivateTransitions(NextStates curr, ModalSpecification msA, ModalSpecification msB) {
+		// First, we need to identify which events are shared and which are private
+		HashSet<String> privateEventsA = msA.events.getPrivateEvents(msB.events);
+		HashSet<String> privateEventsB = msB.events.getPrivateEvents(msA.events);
+		
+		// Now, get the transitions
+		ArrayList<DetTransition> transitionsA = msA.transitions.getSortedTransitions(curr.stateA);
+		ArrayList<DetTransition> transitionsB = msB.transitions.getSortedTransitions(curr.stateB);
+		
+		// Now, just go through all the private events for MAY transitions and add the transitions
+		LinkedList<NextStates> next = new LinkedList<NextStates>();
+		for(DetTransition thisT : transitionsA) if(privateEventsA.contains(thisT.getTransitionEvent().getEventName())) {
+			State thisTo = thisT.getTransitionState();
+			State newTo = this.states.addState(thisTo, curr.stateB);
+			this.addTransition(curr.stateNew, this.events.addEvent(thisT.getTransitionEvent()), newTo);
+			next.add(new NextStates(thisTo, curr.stateB, newTo));
+		} // for each thisT with a private event
+		for(DetTransition otherT : transitionsB) if(privateEventsB.contains(otherT.getTransitionEvent().getEventName())) {
+			State otherTo = otherT.getTransitionState();
+			State newTo = this.states.addState(curr.stateA, otherTo);
+			this.addTransition(curr.stateNew, this.events.addEvent(otherT.getTransitionEvent()), newTo);
+			next.add(new NextStates(curr.stateA, otherTo, newTo));
+		} // for
+		return next;
+	} // copyPrivateTransitions(NextStates, ModalSpeciication, ModalSpecification)
+	
+	/**
+	 * This helper method copies all must transitions from either ModalSpecification msA or msB.
+	 * That is, if a must transtition exists in either (or both), it is copied to the calling
+	 * ModalSpecification. 
+	 * 
+	 * @param curr - NextStates object with the current node in msA, msB and the calling ModalSpecification.
+	 * @param msA - The first ModalSpecification from which to copy must transitions.
+	 * @param msB - The second ModalSpecification from which to copy must transitions. 
+	 */
+	
+	private LinkedList<NextStates> copyMustTransitions(NextStates curr, ModalSpecification msA, ModalSpecification msB) {
+		LinkedList<NextStates> next = new LinkedList<NextStates>();
+		
+		// Go through all the MUST transitions in either
+		ArrayList<DetTransition> transitionsA = msA.mustTransitions.getSortedTransitions(curr.stateA);
+		ArrayList<DetTransition> transitionsB = msB.mustTransitions.getSortedTransitions(curr.stateB);
+		
+		// We are going through by incrementing indices until one ModalSpecification runs out of transitions
+		int msAIndex = 0, msBIndex = 0;
+		while(msAIndex < transitionsA.size() && msBIndex < transitionsB.size()) {
+			int compareResult = transitionsA.get(msAIndex).compareTo(transitionsB.get(msBIndex));
+			if(compareResult < 0) {
+				Event e = transitionsA.get(msAIndex).getTransitionEvent();
+				State thisTo = transitionsA.get(msAIndex).getTransitionState();
+				State newTo = this.states.addState(thisTo, curr.stateB);
+				this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
+				next.add(new NextStates(thisTo, curr.stateB, newTo));
+				msAIndex++;
+			} else if(compareResult > 0) {
+				Event e = transitionsB.get(msBIndex).getTransitionEvent();
+				State otherTo = transitionsB.get(msBIndex).getTransitionState();
+				State newTo = this.states.addState(curr.stateA, otherTo);
+				this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
+				next.add(new NextStates(curr.stateA, otherTo, newTo));
+				msBIndex++;
+			} else {
+				Event e = transitionsA.get(msAIndex).getTransitionEvent();
+				State thisTo = transitionsA.get(msAIndex).getTransitionState();
+				State otherTo = transitionsB.get(msBIndex).getTransitionState();
+				State newTo = this.states.addState(thisTo, otherTo);
+				this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
+				next.add(new NextStates(thisTo, otherTo, newTo));
+				msAIndex++;
+				msBIndex++;
+			} // if shared the event
+		} // while
+		// Now, increment the indices of whichever MS did not reach the end.
+		while(msAIndex < transitionsA.size()) {
+			Event e = transitionsA.get(msAIndex).getTransitionEvent();
+			State thisTo = transitionsA.get(msAIndex).getTransitionState();
+			State newTo = this.states.addState(thisTo, curr.stateB);
+			this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
+			next.add(new NextStates(thisTo, curr.stateB, newTo));
+			msAIndex++;
+		}
+		while(msBIndex < transitionsB.size()) {
+			Event e = transitionsB.get(msBIndex).getTransitionEvent();
+			State otherTo = transitionsB.get(msBIndex).getTransitionState();
+			State newTo = this.states.addState(curr.stateA, otherTo);
+			this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
+			next.add(new NextStates(curr.stateA, otherTo, newTo));
+			msBIndex++;
+		}
+		
+		return next;
+	} // copyMustTransitions(NextStates, ModalSpeciication, ModalSpecification)
 	
 //---  Copy methods that steal from other systems   -----------------------------------------------------------------------
 	
@@ -813,5 +867,15 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			return true;
 		}
 		return false;
+	}
+	
+	
+	class NextStates {
+		State stateA, stateB, stateNew;
+		NextStates(State stateFromA, State stateFromB, State stateFromNew) {
+			stateA = stateFromA;
+			stateB = stateFromB;
+			stateNew = stateFromNew;
+		}
 	}
 }
