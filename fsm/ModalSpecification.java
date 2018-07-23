@@ -387,9 +387,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		
 		while(keepGoing) {
 			boolean keepGoing1 = markBadStates(fsm, specFSM, product, badStates);
-			System.out.println(badStates.toString());
 			boolean keepGoing2 = markDeadEnds(universalObserverView, universalObserverViewMap, product, badStates);
-			System.out.println(badStates.toString());
 			
 			keepGoing = keepGoing1 || keepGoing2;
 		} // while

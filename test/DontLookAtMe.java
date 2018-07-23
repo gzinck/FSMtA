@@ -151,9 +151,28 @@ public class DontLookAtMe {
 		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 	}
 	
+	private void modalTest7() {
+		// Test for the modal specification lower bound operation
+		ModalSpecification ms1 = new ModalSpecification("OK");
+		ms1.addInitialState("1");
+		ms1.addMustTransition("1", "a", "2");
+		ms1.addTransition("1", "b", "3");
+//		ms1.addTransition("2", "b", "3");
+		ModalSpecification ms2 = new ModalSpecification("OK");
+		ms2.addInitialState("1");
+		ms2.addTransition("1", "b", "2");
+		ms2.addTransition("2", "b", "1");
+		
+		ModalSpecification ms3 = ms1.getGreatestLowerBound(ms2);
+		
+		FSMToDot.createImgFromFSM(ms1, GRAEME_WORKING_FOLDER + "modal1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms2, GRAEME_WORKING_FOLDER + "modal2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+	}
+	
 	@Test
 	public void test() {
-		modalTest6();
+		modalTest7();
 		// (int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath)
 //		File f1 = new File(GenerateFSM.createNewFSM(7, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
 //		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));

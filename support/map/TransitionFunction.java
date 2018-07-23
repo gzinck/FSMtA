@@ -147,7 +147,6 @@ public class TransitionFunction <T extends Transition>{
 			int mustIndex = 0, mayIndex = 0;
 			while(mustIndex < mustTransitions.size() && mayIndex < mayTransitions.size()) {
 				// Find the matching may transition
-				System.out.println(mustTransitions.get(mustIndex));
 				while(mayIndex < mayTransitions.size() && !mustTransitions.get(mustIndex).equals(mayTransitions.get(mayIndex))) mayIndex++;
 				// If there is no corresponding may transition, we have a bad state.
 				if(mayIndex >= mayTransitions.size()) badStates.add(fromState.getStateName());
