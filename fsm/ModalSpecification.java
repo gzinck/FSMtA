@@ -110,6 +110,49 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	} // ModalSpecification(TransitionSystem, String)
 	
 	/**
+	 * Constructor for a ModalSpecification that takes any TransitionSystem as a parameter and
+	 * creates a new ModalSpecification using that as the basis. Any information which is not
+	 * permissible in a ModalSpecification is thrown away, because it does not have any means to handle it.
+	 * It excludes any states included in the HashSet of badStates.
+	 * 
+	 * @param other - TransitionSystem object to copy as a ModalSpecification.
+	 * @param badStates - HashSet of Strings representing the states which are bad and should not be copied
+	 * to the new ModalSpecification in any way.
+	 * @param inId - String object representing Id for the new ModalSpecification to carry.
+	 */
+	
+	public <T1 extends Transition> ModalSpecification(TransitionSystem<T1> other, HashSet<String> badStates, String inId) {
+		id = inId;
+		states = new StateMap();
+		events = new EventMap();
+		transitions = new TransitionFunction<DetTransition>(new DetTransition());
+		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
+		
+		// If the initial state is bad, then we don't do anything
+		if(!badStates.contains(other.getInitialStates().get(0).getStateName())) {
+			// Add in all the states NOT in the badStates set
+			for(State s : other.states.getStates())
+				if(!badStates.contains(s.getStateName())) this.states.addState(s).setStateInitial(false);
+			// Add in all the events
+			copyEvents(other);
+			// Add in all the transitions (but only take the first state it transitions to) IF NOT in badStates set
+			for(State s : other.states.getStates()) if(!badStates.contains(s.getStateName())) {
+				for(Transition t : other.transitions.getTransitions(s)) {
+					String toStateName = t.getTransitionStates().get(0).getStateName();
+					if(!badStates.contains(toStateName))
+						this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toStateName);
+				} // for every transition
+			} // for every state
+			if(other instanceof ModalSpecification) 
+				copyMustTransitions((ModalSpecification)other, badStates);
+			// Add in the initial state
+			initialState = this.getState(other.getInitialStates().get(0)); // If it was a bad state, it'll just be null
+			if(initialState != null)
+				initialState.setStateInitial(true);
+		}
+	} // ModalSpecification(TransitionSystem, String)
+	
+	/**
 	 * Constructor for an ModalSpecification object that contains no transitions or states, allowing the
 	 * user to add those elements themselves.
 	 * 
@@ -218,6 +261,42 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return specFSM;
 	}
 	
+//---  Operations for pruning a MS   -----------------------------------------------------------------------
+	
+	/**
+	 * This method prunes a ModalSpecification by going through all states and removing those that
+	 * have a must transition without a corresponding may transition, and then removing all states
+	 * with a transition going to those bad states.
+	 * 
+	 * @return 
+	 */
+	public ModalSpecification prune() {
+		// First, get all the inconsistent states
+		HashSet<String> badStates = transitions.getInconsistentStates(mustTransitions);
+		// Now, go through all the states and see if there are must transitions to these inconsistent
+		// states. If there are, those states must be removed (iteratively).
+		while(getBadMustTransitionStates(badStates));
+		
+		return new ModalSpecification(this, badStates, this.id);
+	}
+	
+	private boolean getBadMustTransitionStates(HashSet<String> badStates) {
+		boolean markedAState = false;
+		// Go through all nodes, and if there is a state that leads to a badState with a
+		// must transition, add the state to the badStates.
+		for(State curr : states.getStates()) {
+			for(DetTransition transition : mustTransitions.getTransitions(curr)) {
+				if(badStates.contains(transition.getTransitionState().getStateName())) {
+					badStates.add(curr.getStateName());
+					markedAState = true;
+				}
+			}
+		}
+		return markedAState;
+	}
+	
+//---  Operations for getting the optimal supervisor   -----------------------------------------------------------------------
+	
 	/**
 	 * This method tries to get the maximally permissive (optimal) supervisor for an fsm
 	 * (which will have certain transitions which are controllable and uncontrollable, etc.)
@@ -238,8 +317,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * is illegal in this implementation.
 	 */
 	
-	public <T extends Transition>
-			DetObsContFSM makeOptimalSupervisor(FSM<T> fsm) throws IllegalArgumentException {
+	public <T extends Transition> DetObsContFSM makeOptimalSupervisor(FSM<T> fsm) throws IllegalArgumentException {
 		//--------------------------------------------
 		// Step 1: Create the reachable part of the combo
 		DetObsContFSM universalObserverView = new DetObsContFSM("UniObsView");
@@ -280,10 +358,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	
 	/**
 	 * This marks states that are bad states in a supervisor for an FSM that is trying to satisfy a
-	 * modal specification. There are two types of bad states:
+	 * modal specification. There are two types of bad states:<br/>
 	 * 1) When there is some uncontrollable and observable event where there is a possible state in
 	 * the determinized collection of states where the event is possible, but there is no such possible
-	 * transition in the specification; and
+	 * transition in the specification; and<br/>
 	 * 2) When there is some observable event where the event must be possible according to the specification,
 	 * but there is no such transition defined for the determinized collection of states.
 	 * 
@@ -622,6 +700,8 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return newMS;
 	}
 	
+//---  Copy methods that steal from other systems   -----------------------------------------------------------------------
+	
 	/**
 	 * This helper method copies transitions in common between two Modal Specifications which are
 	 * in common. That is, a transition must exist in both thisTransitions and otherTransitions to
@@ -760,8 +840,6 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return next;
 	} // copyMustTransitions(NextStates, ModalSpeciication, ModalSpecification)
 	
-//---  Copy methods that steal from other systems   -----------------------------------------------------------------------
-	
 	/**
 	 * Copies the must transitions of another ModalSpecification into the current ModalSpecification.
 	 * 
@@ -773,10 +851,28 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			ArrayList<DetTransition> thisTransitions = other.mustTransitions.getTransitions(s);
 			if(thisTransitions != null)
 				for(DetTransition t : thisTransitions) {
-					// Add every state the transition leads to
-					for(State toState : t.getTransitionStates())
-						this.addMustTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toState.getStateName());
+					// Add the state the transition leads to
+					this.addMustTransition(s.getStateName(), t.getTransitionEvent().getEventName(), t.getTransitionState().getStateName());
 				} // for every transition
+		} // for every state
+	} // copyMustTransitions(ModalSpecification)
+	
+	/**
+	 * Copies the must transitions of another ModalSpecification into the current ModalSpecification,
+	 * excluding the transitions in the HashSet of bad states.
+	 * 
+	 * @param other - ModalSpecification object whose transitions are to be copied.
+	 */
+	
+	public void copyMustTransitions(ModalSpecification other, HashSet<String> badStates) {
+		for(State s : other.states.getStates()) if(!badStates.contains(s.getStateName())) {
+			ArrayList<DetTransition> thisTransitions = other.mustTransitions.getTransitions(s);
+			if(thisTransitions != null) for(DetTransition t : thisTransitions) {
+				// Add every state the transition leads to
+				String toStateName = t.getTransitionState().getStateName();
+				if(!badStates.contains(toStateName))
+					this.addMustTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toStateName);
+			} // for every transition
 		} // for every state
 	} // copyMustTransitions(ModalSpecification)
 	
@@ -869,7 +965,13 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return false;
 	}
 	
-	
+	/**
+	 * NextStates is an object containing three states: the state from some transition system A,
+	 * the state from some transition system B, and the state from some new transition system which
+	 * is being created. This simply makes cleaner code in other areas.
+	 * 
+//	 * @author Mac Clevinger and Graeme Zinck
+	 */
 	class NextStates {
 		State stateA, stateB, stateNew;
 		NextStates(State stateFromA, State stateFromB, State stateFromNew) {

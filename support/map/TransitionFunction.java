@@ -125,6 +125,38 @@ public class TransitionFunction <T extends Transition>{
 		return epsilonReach;
 	} // getEpsilonReaches(Collection<S>)
 	
+	/**
+	 * Method to be called on the may transition function with a must transition function passed
+	 * in (for all the transitions which must occur). It returns all the states that have transitions
+	 * that exist in the mustTransitionFunction but not in the calling function, making the state
+	 * inconsistent with the definition of a ModalSpecification.
+	 * 
+	 * @param mustTransitionFunction - TransitionFunction with the transitions that must occur for
+	 * the TransitionSystem.
+	 * @return - HashSet of all the States which were found to be inconsistent.
+	 */
+	public HashSet<String> getInconsistentStates(TransitionFunction<T> mustTransitionFunction) {
+		// This is the must transitions; we want all the states where there is no transition in
+		// other that corresponds to the one in this.
+		HashSet<String> badStates = new HashSet<String>();
+		
+		for(State fromState : mustTransitionFunction.transitions.keySet()) {
+			// Get the corresponding sorted transitions from each
+			ArrayList<T> mustTransitions = mustTransitionFunction.getSortedTransitions(fromState);
+			ArrayList<T> mayTransitions = this.getSortedTransitions(fromState);
+			int mustIndex = 0, mayIndex = 0;
+			while(mustIndex < mustTransitions.size() && mayIndex < mayTransitions.size()) {
+				// Find the matching may transition
+				while(mayIndex < mayTransitions.size() && !mustTransitions.get(mustIndex).equals(mayTransitions.get(mayIndex))) mayIndex++;
+				// If there is no corresponding may transition, we have a bad state.
+				if(mayIndex >= mayTransitions.size()) badStates.add(fromState.getStateName());
+				mustIndex++;
+			}
+			if(mustIndex < mustTransitions.size()) badStates.add(fromState.getStateName());
+		}
+		return badStates;
+	} // getInconsistentStates(TransitionFunction<T>)
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
