@@ -129,7 +129,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
 		
 		// If the initial state is bad, then we don't do anything
-		if(!badStates.contains(other.getInitialStates().get(0).getStateName())) {
+		if(other.getInitialStates().size() > 0 && !badStates.contains(other.getInitialStates().get(0).getStateName())) {
 			// Add in all the states NOT in the badStates set
 			for(State s : other.states.getStates())
 				if(!badStates.contains(s.getStateName())) this.states.addState(s).setStateInitial(false);
@@ -277,7 +277,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		// states. If there are, those states must be removed (iteratively).
 		while(getBadMustTransitionStates(badStates));
 		
-		return new ModalSpecification(this, badStates, this.id);
+		return (ModalSpecification)(new ModalSpecification(this, badStates, this.id)).makeAccessible();
 	}
 	
 	private boolean getBadMustTransitionStates(HashSet<String> badStates) {
@@ -684,7 +684,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		
 		// Start at the beginning of each MS
 		LinkedList<NextStates> next = new LinkedList<NextStates>();
-		next.add(new NextStates(this.initialState, other.initialState, newMS.states.addState(this.initialState, other.initialState)));
+		State newInitial = newMS.states.addState(this.initialState, other.initialState);
+		newMS.initialState = newInitial;
+		next.add(new NextStates(this.initialState, other.initialState, newInitial));
 		
 		while(!next.isEmpty()) {
 			NextStates curr = next.poll();

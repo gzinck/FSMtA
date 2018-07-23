@@ -114,10 +114,12 @@ public class DontLookAtMe {
 		ModalSpecification ms2 = new ModalSpecification(f2, "OK");
 		ms2.addMustTransition("2", "c", "4");
 		ModalSpecification ms3 = ms1.getPseudoLowerBound(ms2);
+		ModalSpecification ms4 = ms3.prune();
 		
 		FSMToDot.createImgFromFSM(ms1, GRAEME_WORKING_FOLDER + "modal1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(ms2, GRAEME_WORKING_FOLDER + "modal2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms4, GRAEME_WORKING_FOLDER + "modal4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 	}
 	
 	@Test
