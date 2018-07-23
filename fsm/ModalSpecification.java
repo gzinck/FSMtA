@@ -129,26 +129,18 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
 		
 		// If the initial state is bad, then we don't do anything
-		if(other.getInitialStates().size() > 0 && !badStates.contains(other.getInitialStates().get(0).getStateName())) {
-			// Add in all the states NOT in the badStates set
-			for(State s : other.states.getStates())
-				if(!badStates.contains(s.getStateName())) this.states.addState(s).setStateInitial(false);
-			// Add in all the events
-			copyEvents(other);
-			// Add in all the transitions (but only take the first state it transitions to) IF NOT in badStates set
-			for(State s : other.states.getStates()) if(!badStates.contains(s.getStateName())) {
-				for(Transition t : other.transitions.getTransitions(s)) {
-					String toStateName = t.getTransitionStates().get(0).getStateName();
-					if(!badStates.contains(toStateName))
-						this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toStateName);
-				} // for every transition
-			} // for every state
-			if(other instanceof ModalSpecification) 
-				copyMustTransitions((ModalSpecification)other, badStates);
-			// Add in the initial state
-			initialState = this.getState(other.getInitialStates().get(0)); // If it was a bad state, it'll just be null
-			if(initialState != null)
-				initialState.setStateInitial(true);
+		copyStates(other, badStates); // Add in all the states NOT in the badStates set
+		copyEvents(other); // Add in all the events
+		// Add in all the transitions (but only take the first state it transitions to) IF NOT in badStates set
+		for(State s : other.states.getStates()) if(!badStates.contains(s.getStateName())) {
+			for(Transition t : other.transitions.getTransitions(s)) {
+				String toStateName = t.getTransitionStates().get(0).getStateName();
+				if(!badStates.contains(toStateName))
+					this.addTransition(s.getStateName(), t.getTransitionEvent().getEventName(), toStateName);
+			} // for every transition
+		} // for every state
+		if(other instanceof ModalSpecification) {
+			copyMustTransitions((ModalSpecification)other, badStates);
 		}
 	} // ModalSpecification(TransitionSystem, String)
 	
@@ -261,6 +253,48 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return specFSM;
 	}
 	
+	@Override
+	public ModalSpecification makeAccessible() {
+		// Make a queue to keep track of states that are accessible and their neighbours.
+		LinkedList<State> queue = new LinkedList<State>();
+		
+		// Initialize a new ModalSpecification with initial states.
+		ModalSpecification newMS = new ModalSpecification(this.id + " Accessible");
+		if(initialState != null) {
+			State newInitial = newMS.addState(initialState);
+			newMS.addInitialState(newInitial);
+			queue.add(initialState);
+			
+			while(!queue.isEmpty()) {
+				State curr = queue.poll();
+				// Go through the transitions
+				ArrayList<DetTransition> currMayTransitions = this.transitions.getTransitions(curr);
+				ArrayList<DetTransition> currMustTransitions = this.mustTransitions.getTransitions(curr);
+				if(currMayTransitions != null) for(DetTransition t : currMayTransitions) {
+					// Add the states; it goes to to the queue if not already present in the newFSM
+					State s = t.getTransitionState();
+					if(!newMS.stateExists(s.getStateName())) {
+						newMS.addState(s);
+						queue.add(s);
+					}
+					// Add the transition by copying the old one.
+					newMS.addTransition(newMS.getState(curr), t);
+				}
+				if(currMustTransitions != null) for(DetTransition t : currMustTransitions) {
+					// Add the states; it goes to to the queue if not already present in the newFSM
+					State s = t.getTransitionState();
+					if(!newMS.stateExists(s.getStateName())) {
+						newMS.addState(s);
+						queue.add(s);
+					}
+					// Add the transition by copying the old one.
+					newMS.addMustTransition(newMS.getState(curr), t);
+				}
+			} // while
+		} // if initial is not null
+		return newMS;	
+	} // makeAccessible()
+	
 //---  Operations for pruning a MS   -----------------------------------------------------------------------
 	
 	/**
@@ -268,7 +302,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * have a must transition without a corresponding may transition, and then removing all states
 	 * with a transition going to those bad states.
 	 * 
-	 * @return 
+	 * @return - The pruned ModalSpecification
 	 */
 	public ModalSpecification prune() {
 		// First, get all the inconsistent states
@@ -280,11 +314,20 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return (ModalSpecification)(new ModalSpecification(this, badStates, this.id)).makeAccessible();
 	}
 	
+	/**
+	 * Gets all the states that have must transitions to a state marked as a bad state
+	 * in the badStates parameter. All the states with these must transitions are then added
+	 * to badStates.
+	 * 
+	 * @param badStates - HashSet of Strings representing the States which are bad and will
+	 * be removed from the TransitionSystem.
+	 * @return - Boolean representing if the method added any bad states to the set.
+	 */
 	private boolean getBadMustTransitionStates(HashSet<String> badStates) {
 		boolean markedAState = false;
-		// Go through all nodes, and if there is a state that leads to a badState with a
+		// Go through all OK nodes, and if there is a state that leads to a badState with a
 		// must transition, add the state to the badStates.
-		for(State curr : states.getStates()) {
+		for(State curr : states.getStates()) if(!badStates.contains(curr.getStateName())) {
 			for(DetTransition transition : mustTransitions.getTransitions(curr)) {
 				if(badStates.contains(transition.getTransitionState().getStateName())) {
 					badStates.add(curr.getStateName());
@@ -293,7 +336,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			}
 		}
 		return markedAState;
-	}
+	} // getBadMustTransitionStates(HashSet<String>)
 	
 //---  Operations for getting the optimal supervisor   -----------------------------------------------------------------------
 	
@@ -662,6 +705,20 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 //---  Multi-MS Operations   -----------------------------------------------------------------------
 	
 	/**
+	 * This method gets the ModalSpecification representing the greatest lower bound between
+	 * the calling and parameter ModalSpecifications.
+	 * 
+	 * @param other - ModalSpecification to use for calculating the greatest lower bound.
+	 * @return - ModalSpecification representing the greatest lower bound between the two
+	 * ModalSpecifications.
+	 */
+	
+	public ModalSpecification getGreatestLowerBound(ModalSpecification other) {
+		ModalSpecification newMS = getPseudoLowerBound(other);
+		return newMS.prune();
+	}
+	
+	/**
 	 * This method gets the pseudo-modal specification representing the lower bound of
 	 * the calling and parameter ModalSpecification inputs. This means:
 	 * - All "may" transitions for a common event must be present in both to exist.
@@ -676,7 +733,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * no corresponding may transition.
 	 */
 	
-	public ModalSpecification getPseudoLowerBound(ModalSpecification other) {
+	private ModalSpecification getPseudoLowerBound(ModalSpecification other) {
 		ModalSpecification newMS = new ModalSpecification(this.id + " Lower Bound");
 		
 		// Also, identify which states are already visited so we don't go in loops
@@ -684,10 +741,11 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		
 		// Start at the beginning of each MS
 		LinkedList<NextStates> next = new LinkedList<NextStates>();
-		State newInitial = newMS.states.addState(this.initialState, other.initialState);
-		newMS.initialState = newInitial;
-		next.add(new NextStates(this.initialState, other.initialState, newInitial));
-		
+		if(this.initialState != null && other.initialState != null) { // If one doesn't have an initial, we have a problem.
+			State newInitial = newMS.states.addState(this.initialState, other.initialState);
+			newMS.initialState = newInitial;
+			next.add(new NextStates(this.initialState, other.initialState, newInitial));
+		}
 		while(!next.isEmpty()) {
 			NextStates curr = next.poll();
 			
@@ -798,17 +856,27 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			int compareResult = transitionsA.get(msAIndex).compareTo(transitionsB.get(msBIndex));
 			if(compareResult < 0) {
 				Event e = transitionsA.get(msAIndex).getTransitionEvent();
-				State thisTo = transitionsA.get(msAIndex).getTransitionState();
-				State newTo = this.states.addState(thisTo, curr.stateB);
+				State aTo = transitionsA.get(msAIndex).getTransitionState();
+				
+				// Get where the other modal specification goes with the event
+				ArrayList<State> bToPossible = msB.transitions.getTransitionStates(curr.stateB, msB.events.getEvent(e));
+				State bTo = (bToPossible != null && bToPossible.size() > 0) ? bToPossible.get(0) : curr.stateB;
+				
+				State newTo = this.states.addState(aTo, bTo);
 				this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
-				next.add(new NextStates(thisTo, curr.stateB, newTo));
+				next.add(new NextStates(aTo, bTo, newTo));
 				msAIndex++;
 			} else if(compareResult > 0) {
 				Event e = transitionsB.get(msBIndex).getTransitionEvent();
-				State otherTo = transitionsB.get(msBIndex).getTransitionState();
-				State newTo = this.states.addState(curr.stateA, otherTo);
+				State bTo = transitionsB.get(msBIndex).getTransitionState();
+				
+				// Get where the other modal specification goes with the event
+				ArrayList<State> aToPossible = msA.transitions.getTransitionStates(curr.stateA, msA.events.getEvent(e));
+				State aTo = (aToPossible != null && aToPossible.size() > 0) ? aToPossible.get(0) : curr.stateA;
+				
+				State newTo = this.states.addState(aTo, bTo);
 				this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
-				next.add(new NextStates(curr.stateA, otherTo, newTo));
+				next.add(new NextStates(aTo, bTo, newTo));
 				msBIndex++;
 			} else {
 				Event e = transitionsA.get(msAIndex).getTransitionEvent();
@@ -824,18 +892,28 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		// Now, increment the indices of whichever MS did not reach the end.
 		while(msAIndex < transitionsA.size()) {
 			Event e = transitionsA.get(msAIndex).getTransitionEvent();
-			State thisTo = transitionsA.get(msAIndex).getTransitionState();
-			State newTo = this.states.addState(thisTo, curr.stateB);
+			State aTo = transitionsA.get(msAIndex).getTransitionState();
+			
+			// Get where the other modal specification goes with the event
+			ArrayList<State> bToPossible = msB.transitions.getTransitionStates(curr.stateB, msB.events.getEvent(e));
+			State bTo = (bToPossible != null && bToPossible.size() > 0) ? bToPossible.get(0) : curr.stateB;
+			
+			State newTo = this.states.addState(aTo, bTo);
 			this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
-			next.add(new NextStates(thisTo, curr.stateB, newTo));
+			next.add(new NextStates(aTo, bTo, newTo));
 			msAIndex++;
 		}
 		while(msBIndex < transitionsB.size()) {
 			Event e = transitionsB.get(msBIndex).getTransitionEvent();
-			State otherTo = transitionsB.get(msBIndex).getTransitionState();
-			State newTo = this.states.addState(curr.stateA, otherTo);
+			State bTo = transitionsB.get(msBIndex).getTransitionState();
+			
+			// Get where the other modal specification goes with the event
+			ArrayList<State> aToPossible = msA.transitions.getTransitionStates(curr.stateA, msA.events.getEvent(e));
+			State aTo = (aToPossible != null && aToPossible.size() > 0) ? aToPossible.get(0) : curr.stateA;
+			
+			State newTo = this.states.addState(aTo, bTo);
 			this.mustTransitions.addTransitionState(curr.stateNew, this.events.addEvent(e), newTo);
-			next.add(new NextStates(curr.stateA, otherTo, newTo));
+			next.add(new NextStates(aTo, bTo, newTo));
 			msBIndex++;
 		}
 		
@@ -938,6 +1016,24 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		outbound.setTransitionEvent(e);
 		outbound.setTransitionState(s2);
 		mustTransitions.addTransition(s1, outbound);
+	}
+	
+	/**
+	 * This method handles the adding of a new must transition to the calling ModalSpecification by
+	 * passing in a state and transition from another transition system. It copies the pieces into
+	 * the current ModalSpecification.
+	 * 
+	 * @param state - State extending object representing the State acquiring a new Transition.
+	 * @param transition - Transition extending object representing the Transition being added to the provided State extending object.
+	 */
+	
+	public void addMustTransition(State state, DetTransition transition) {
+		State fromState = states.addState(state); // Get the state or make it
+		Event e = events.addEvent(transition.getTransitionEvent()); // Get the event or make it
+		DetTransition outbound = transitions.getEmptyTransition(); // New transition object
+		outbound.setTransitionEvent(e);
+		outbound.setTransitionState(states.addState(transition.getTransitionState()));
+		mustTransitions.addTransition(fromState, outbound);
 	}
 	
 	@Override

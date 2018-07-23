@@ -1,6 +1,7 @@
 package support.transition;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.ArrayList;
 import support.State;
 import support.Event;
@@ -198,5 +199,20 @@ public class DetTransition implements Transition {
 	public int compareTo(Transition o) {
 		// Simply compares the names of the two tranisitons' events
 		return this.event.getEventName().compareTo(o.getTransitionEvent().getEventName());
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Transition) {
+			Transition otherT = (Transition)o;
+			if(otherT.getTransitionEvent().getEventName().equals(this.getTransitionEvent().getEventName()))
+				return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return event.getEventName() + " goes to the state " + state.getStateName();
 	}
 }

@@ -184,4 +184,14 @@ public class NonDetTransition implements Transition {
 		return this.event.getEventName().compareTo(o.getTransitionEvent().getEventName());
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(event.getEventName() + " goes to the states: ");
+		Iterator<State> itr = states.iterator();
+		while(itr.hasNext()) {
+			sb.append(itr.next().getStateName());
+			if(itr.hasNext()) sb.append(", ");
+		}
+		return sb.toString();
+	}
 }

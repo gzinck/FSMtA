@@ -109,10 +109,10 @@ public abstract class TransitionSystem<T extends Transition> {
 			} // for initial state
 			
 			while(!queue.isEmpty()) {
-				State stateName = queue.poll();
-				newFSM.addState(stateName);
+				State curr = queue.poll();
+				newFSM.addState(curr);
 				// Go through the transitions
-				ArrayList<T> currTransitions = this.transitions.getTransitions(getState(stateName));
+				ArrayList<T> currTransitions = this.transitions.getTransitions(getState(curr));
 				if(currTransitions != null) {
 					for(T t : currTransitions) {
 						// Add the states; it goes to to the queue if not already present in the newFSM
@@ -120,7 +120,7 @@ public abstract class TransitionSystem<T extends Transition> {
 							if(!newFSM.stateExists(s.getStateName()))
 								queue.add(s);
 						// Add the transition by copying the old one.
-						newFSM.addTransition(newFSM.getState(stateName.getStateName()), t);
+						newFSM.addTransition(newFSM.getState(curr.getStateName()), t);
 					} // for
 				} // if not null
 			} // while
@@ -328,6 +328,21 @@ public abstract class TransitionSystem<T extends Transition> {
 	public <T1 extends Transition> void copyStates(TransitionSystem<T1> other) {
 		copyStates(other, "");
 	} // copyStates(FSM)
+	
+	/**
+	 * This method copies the states of a provided FSM object into the current FSM object,
+	 * excluding the states in badStates.
+	 * 
+	 * @param other - FSM object whose states are copied.
+	 * @param badStates - HashSet of State String names which are excluded from copying.
+	 */
+	
+	public <T1 extends Transition> void copyStates(TransitionSystem<T1> other, HashSet<String> badStates) {
+		for(State s : other.getStates()) if(!badStates.contains(s.getStateName()))
+			states.addState(s).setStateInitial(false);
+		for(State s : other.getInitialStates()) if(!badStates.contains(s.getStateName()))
+			addInitialState(s.getStateName());
+	}
 	
 	/**
 	 * This method copies the events of a provided FSM object into the current FSM object.

@@ -113,18 +113,47 @@ public class DontLookAtMe {
 		File f2 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/ModalSpecTests/modal2.mdl");
 		ModalSpecification ms2 = new ModalSpecification(f2, "OK");
 		ms2.addMustTransition("2", "c", "4");
-		ModalSpecification ms3 = ms1.getPseudoLowerBound(ms2);
-		ModalSpecification ms4 = ms3.prune();
+		ModalSpecification ms3 = ms1.getGreatestLowerBound(ms2);
 		
 		FSMToDot.createImgFromFSM(ms1, GRAEME_WORKING_FOLDER + "modal1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(ms2, GRAEME_WORKING_FOLDER + "modal2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(ms4, GRAEME_WORKING_FOLDER + "modal4", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+	}
+	
+	private void modalTest5() {
+		// Test for the modal specification lower bound operation
+		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/ModalSpecTests/modal3.mdl");
+		ModalSpecification ms1 = new ModalSpecification(f1, "OK");
+//		ms1.addMustTransition("1", "a", "2");
+		ms1.addMustTransition("2", "b", "4");
+		ms1.addMustTransition("4", "c", "5");
+		ms1.addMustTransition("5", "d", "6");
+		ModalSpecification ms2 = new ModalSpecification(f1, "OK");
+		ModalSpecification ms3 = ms1.getGreatestLowerBound(ms2);
+		
+		FSMToDot.createImgFromFSM(ms1, GRAEME_WORKING_FOLDER + "modal1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms2, GRAEME_WORKING_FOLDER + "modal2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+	}
+	
+	private void modalTest6() {
+		// Test for the modal specification lower bound operation
+		ModalSpecification ms1 = new ModalSpecification("OK");
+		ms1.addInitialState("1");
+		ms1.addMustTransition("1", "a", "2");
+		ModalSpecification ms2 = new ModalSpecification("OK");
+		ms2.addTransition("1", "b", "3");
+		ms2.addInitialState("1");
+		ModalSpecification ms3 = ms1.getGreatestLowerBound(ms2);
+		
+		FSMToDot.createImgFromFSM(ms1, GRAEME_WORKING_FOLDER + "modal1", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms2, GRAEME_WORKING_FOLDER + "modal2", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 	}
 	
 	@Test
 	public void test() {
-		modalTest4();
+		modalTest6();
 		// (int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath)
 //		File f1 = new File(GenerateFSM.createNewFSM(7, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
 //		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));
