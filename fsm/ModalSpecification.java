@@ -174,7 +174,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
 	} // ModalSpecification()
 	
-//---  Operations   -----------------------------------------------------------------------
+//---  Operations   ---------------------------------------------------------------------------
 	
 	/**
 	 * Gets the underlying FSM representation of the Modal Specification by copying all the
@@ -297,7 +297,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return newMS;	
 	} // makeAccessible()
 	
-//---  Operations for pruning a MS   -----------------------------------------------------------------------
+//---  Operations for pruning a MS   ----------------------------------------------------------
 	
 	/**
 	 * This method prunes a ModalSpecification by going through all states and removing those that
@@ -342,7 +342,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return markedAState;
 	} // getBadMustTransitionStates(HashSet<String>)
 	
-//---  Operations for getting the optimal supervisor   -----------------------------------------------------------------------
+//---  Operations for getting the optimal supervisor   ----------------------------------------
 	
 	/**
 	 * This method tries to get the maximally permissive (optimal) supervisor for an fsm
@@ -583,7 +583,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return false;
 	} // canReachMarked(FSM, HashSet)
 	
-//---  Operations for converting the observer view of the fsm at any given state   -----------------------------------------------------------------------
+//---  Operations for converting the observer view of the fsm at any given state   ------------
 	
 	/**
 	 * Creates a universal observer view that allows you to look up possible transitions from any possible
@@ -703,7 +703,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return newState;
 	}
 	
-//---  Multi-MS Operations   -----------------------------------------------------------------------
+//---  Multi-MS Operations   ------------------------------------------------------------------
 	
 	/**
 	 * This method gets the ModalSpecification representing the greatest lower bound between
