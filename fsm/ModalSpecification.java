@@ -44,11 +44,11 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 //---  Constructors  --------------------------------------------------------------------------
 	
 	/**
-	 * Constructor for a ModalSpecification object that reads a provided File object to construct
-	 * the ModalSpecification thus defined and named by the provided String object.
+	 * Constructor for a ModalSpecification that takes in a file and a String id,
+	 * reading and interpreting the file as a ModalSpecification.
 	 * 
-	 * @param in - File object containing information that describes the structure of the ModalSpecification object.
-	 * @param inId - String object representing the name of the newly created ModalSpecification object.
+	 * @param in - File input with the ModalSpecification's information (states, transitions, events...)
+	 * @param inId - String representing the ModalSpecification's id.
 	 */
 	
 	public ModalSpecification(File in, String inId) {

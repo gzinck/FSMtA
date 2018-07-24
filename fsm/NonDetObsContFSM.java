@@ -348,7 +348,7 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 				Event e = t.getTransitionEvent();
 				
 				// If the event is not present in the specification, then break
-				if(!otherFSM.transitions.eventExists(otherFSM.getState(s), e)) {
+				if(!otherFSM.transitions.eventExists(otherFSM.getState(curr), e)) {
 					currDE.disableEvent(e.getEventName());
 					transitionEventDisabled = true;
 					break loopThroughTransitionStates;
