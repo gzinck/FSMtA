@@ -393,6 +393,7 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 			HashSet<String> visitedStates = new HashSet<String>();
 			disabledMap.put(s.getStateName(), getDisabledEvents(s, other, visitedStates, disabledMap));
 		} // for every state
+		System.out.println(disabledMap.toString());
 		
 		// Now, build the FSM that we will return
 		DetObsContFSM newFSM = new DetObsContFSM(this.id + " supremal controllable sublanguage");
@@ -456,9 +457,13 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 			Event e = t.getTransitionEvent();
 			
 			// If the event is not present in the specification, then break
-			if(!otherFSM.transitions.eventExists(otherFSM.getState(t.getTransitionState()), e)) {
+			if(!otherFSM.transitions.eventExists(otherFSM.getState(curr), e)) {
+//				System.out.println("Event did not exist in other: " + e.getEventName() + " for state " + curr.getStateName());
 				currDE.disableEvent(e.getEventName());
 			} // if event not present in spec
+			else {
+//				System.out.println("Event DID exist in other: " + e.getEventName() + " for state " + curr.getStateName());
+			}
 			
 			if(nextDE != null) { // As long as we're not backtracking...
 				// If the transition state is bad, must disable the event.

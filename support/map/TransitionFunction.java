@@ -226,10 +226,12 @@ public class TransitionFunction <T extends Transition>{
 	
 	public boolean eventExists(State state, Event event) {
 		ArrayList<T> thisTransitions = transitions.get(state);
-		if(thisTransitions != null)
+		if(thisTransitions != null) {
+//			System.out.println("In state " + state.getStateName() + ", we're looking for " + event.getEventName() + " in " + thisTransitions.toString());
 			for(T t : thisTransitions)
 				if(t.getTransitionEvent().equals(event))
 					return true;
+		}
 		return false;
 	}
 	

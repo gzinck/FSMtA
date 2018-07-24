@@ -170,9 +170,21 @@ public class DontLookAtMe {
 		FSMToDot.createImgFromFSM(ms3, GRAEME_WORKING_FOLDER + "modal3", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
 	}
 	
+	private void supremalContSubTest1() {
+		File f1 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/SupremalCont/FullLang.fsm");
+		NonDetObsContFSM fsm1 = new NonDetObsContFSM(f1, "OK");
+		File f2 = new File("/Users/graemezinck/Documents/OneDrive/Documents/Work/2018 Summer Research/GraphViz/SupremalCont/SmallLang.fsm");
+		NonDetObsContFSM fsm2 = new NonDetObsContFSM(f2, "OK");
+		
+		NonDetObsContFSM fsm3 = fsm1.getSupremalControllableSublanguage(fsm2);
+		FSMToDot.createImgFromFSM(fsm1, GRAEME_WORKING_FOLDER + "sbigger", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(fsm2, GRAEME_WORKING_FOLDER + "smaller", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(fsm3, GRAEME_WORKING_FOLDER + "supremal", GRAEME_WORKING_FOLDER, GRAEME_CONFIG_FILE_PATH);
+	}
+	
 	@Test
 	public void test() {
-		modalTest7();
+		supremalContSubTest1();
 		// (int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath)
 //		File f1 = new File(GenerateFSM.createNewFSM(7, 3, 2, 2, 2, 1, 1, 2, true, "fileName1", GRAEME_WORKING_FOLDER));
 //		File f2 = new File(GenerateFSM.createNewFSM(3, 3, 2, 2, 1, 1, 1, 2, true, "fileName2", GRAEME_WORKING_FOLDER));
