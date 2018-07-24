@@ -1,6 +1,7 @@
 package fsm.attribute;
 
 import support.transition.Transition;
+import fsm.DetObsContFSM;
 
 /**
  * This interface defines the methods that any FSM object with the characteristic of Observable
@@ -14,18 +15,7 @@ import support.transition.Transition;
 public interface Observability<T extends Transition> {
 
 //---  Operations   ---------------------------------------------------------------------------
-	
-	/**
-	 * This abstract method must be implemented by any class implementing the Observability interface.
-	 * 
-	 * This method creates a new FSM object representing the version of itself that an Observer would see,
-	 * excluding all Unobservable Events from the end-result and processing their removal as it changes
-	 * the structure of the FSM graph.
-	 * 
-	 * @return - Returns a NonDeterministic object representing the Observer-View version of the original FSM, removing Unobservable events.
-	 */
-	
-	public abstract Deterministic createObserverView();
+
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	

@@ -1039,37 +1039,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		outbound.setTransitionState(states.addState(transition.getTransitionState()));
 		mustTransitions.addTransition(fromState, outbound);
 	}
-	
-	/**
-	 * This class models an object containing three states: the state from some transition system A,
-	 * the state from some transition system B, and the state from some new transition system which
-	 * is being created. This simply makes cleaner code in other areas.
-	 * 
-	 * This class is a part of the fsm package.
-	 * 
-	 * @author Mac Clevinger and Graeme Zinck
-	 */
 
-	class NextStates {
-		
-		/** */
-		State stateA, stateB, stateNew;
-		
-		/**
-		 * Constructor for a NextStates object.
-		 * 
-		 * @param stateFromA - State object.
-		 * @param stateFromB - State object.
-		 * @param stateFromNew - State object.
-		 */
-		
-		public NextStates(State stateFromA, State stateFromB, State stateFromNew) {
-			stateA = stateFromA;
-			stateB = stateFromB;
-			stateNew = stateFromNew;
-		}
-	}
-	
 	@Override
 	public void addInitialState(String newInitial) {
 		if(initialState != null) initialState.setStateInitial(false);
@@ -1103,4 +1073,36 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return(super.removeTransition(state1, eventName, state2));
 	}
 
+//---  Support Classes   ----------------------------------------------------------------------
+	
+	/**
+	 * This class models an object containing three states: the state from some transition system A,
+	 * the state from some transition system B, and the state from some new transition system which
+	 * is being created. This simply makes cleaner code in other areas.
+	 * 
+	 * This class is a part of the fsm package.
+	 * 
+	 * @author Mac Clevinger and Graeme Zinck
+	 */
+
+	class NextStates {
+		
+		/** */
+		State stateA, stateB, stateNew;
+		
+		/**
+		 * Constructor for a NextStates object.
+		 * 
+		 * @param stateFromA - State object.
+		 * @param stateFromB - State object.
+		 * @param stateFromNew - State object.
+		 */
+		
+		public NextStates(State stateFromA, State stateFromB, State stateFromNew) {
+			stateA = stateFromA;
+			stateB = stateFromB;
+			stateNew = stateFromNew;
+		}
+	}
+		
 }

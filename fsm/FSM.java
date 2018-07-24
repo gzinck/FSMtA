@@ -2,6 +2,7 @@ package fsm;
 
 import fsm.attribute.Controllability;
 import support.transition.Transition;
+import fsm.attribute.Deterministic;
 import fsm.attribute.Observability;
 import fsm.attribute.OpacityTest;
 import support.Event;
@@ -18,10 +19,9 @@ import java.util.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public abstract class FSM<T extends Transition> extends TransitionSystem<T> 
-		implements Observability<T>,
-		Controllability<T>,
-		OpacityTest {
+public abstract class FSM<T extends Transition> extends TransitionSystem<T> implements Observability<T>,	
+																					 Controllability<T>,
+																					 OpacityTest {
 	
 //---  Constant Values   ----------------------------------------------------------------------
 	
@@ -39,10 +39,10 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	/**
-	 * This method performs a union operation between multiple FSM objects and returns the result.
+	 * This method performs a union operation between multiple FSM objects and returns the resulting FSM object.
 	 * 
-	 * @param other - Array of FSM<<r>State, T, Event> extending objects that is added to the calling FSM object in order to create a unioned FSM<<r>State, T, Event> extending object.
-	 * @return - Returns a FSM<<r>State, T, Event> extending object representing the result of all union operation.
+	 * @param other - Array of FSM extending objects that is added to the calling FSM object in order to create a unioned FSM extending object.
+	 * @return - Returns an FSM extending object representing the result of all union operation.
 	 */
 	
 	public abstract FSM<? extends Transition> union(FSM<?> ... other);
@@ -55,8 +55,8 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 	 * Performs a Union operation on the two provided FSM objects by dynamically adding
 	 * to the provided generic FSM, newFSM.
 	 * 
-	 * @param other - FSM<<r>State, T, Event> extending object that is provided as one of two FSM object's being adjoined via Union
-	 * @param newFSM - FSM<<r>State, T, Event> extending object that is provided as the holding place for the product of the two FSM object's being adjoined via Union
+	 * @param other - FSM extending object that is provided as one of two FSM object's being adjoined via Union
+	 * @param newFSM - FSM extending object that is provided as the holding place for the product of the two FSM object's being adjoined via Union
 	 */
 	
 	protected <T1 extends Transition, NewT extends Transition> void unionHelper(FSM<T1> other, FSM<NewT> newFSM) {
@@ -106,8 +106,8 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 	 * This method performs a Product(or Intersection) operation between multiple FSM objects, one provided as an
 	 * argument and the other being the FSM object calling this method, and returns the resulting FSM object.
 	 * 
-	 * @param other - Array of FSM<<r>State, T, Event> extending objects that performs the product operation on with the current FSM.
-	 * @return - Returns a FSM<<r>State, T, Event> extending object representing the FSM object resulting from all Product operations.
+	 * @param other - Array of FSM extending objects that performs the product operation on with the current FSM.
+	 * @return - Returns a FSM extending object representing the FSM object resulting from all Product operations.
 	 */
 	
 	public abstract FSM<? extends Transition> product(FSM<?> ... other);
@@ -120,8 +120,8 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 	 * Performs a product operation on the calling FSM with the first parameter FSM, and builds the
 	 * resulting FSM in the second FSM. Has no return, does its action by side-effect.
 	 * 
-	 * @param other - FSM<<r>State, T, Event> object representing the FSM object performing the Product operation with the calling FSM object.
-	 * @param newFSM - FSM<<r>State, T, Event> object representing the FSM holding the contents of the product of the Product operation.
+	 * @param other - FSM object representing the FSM object performing the Product operation with the calling FSM object.
+	 * @param newFSM - FSM object representing the FSM holding the contents of the product of the Product operation.
 	 */
 	
 	protected <T1 extends Transition> void productHelper(FSM<T1> other, FSM<T> newFSM) {
@@ -194,8 +194,8 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 	 * This method performs the Parallel Composition of multiple FSMs: the FSM calling this method and the FSMs
 	 * provided as arguments. The resulting, returned, FSM will be the same type as the calling FSM.
 	 * 
-	 * @param other - Array of FSM<<r>State, T, Event> extending objects provided to perform Parallel Composition with the calling FSM object.
-	 * @return - Returns a FSM<<r>State, T, Event> extending object representing the result of all Parallel Composition operations.
+	 * @param other - Array of FSM extending objects provided to perform Parallel Composition with the calling FSM object.
+	 * @return - Returns a FSM extending object representing the result of all Parallel Composition operations.
 	 */
 	
 	public abstract FSM<? extends Transition> parallelComposition(FSM<?> ... other);
@@ -208,8 +208,8 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 	 * Performs a Parallel Composition operation on the FSM object calling this method with the FSM object provided as
 	 * an argument (other), and places the results of this operation into the provided FSM object (newFSM).
 	 * 
-	 * @param other - FSM<<r>State, T, Event> extending object that performs the Parallel Composition operation with FSM object calling this method.
-	 * @param newFSM - FSM<<r>State, T, Event> extending object that is provided to contain the results of this Parallel Composition operation.
+	 * @param other - FSM extending object that performs the Parallel Composition operation with FSM object calling this method.
+	 * @param newFSM - FSM extending object that is provided to contain the results of this Parallel Composition operation.
 	 */
 	
 	protected <T1 extends Transition> void parallelCompositionHelper(FSM<T1> other, FSM<T> newFSM) {
@@ -331,12 +331,12 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T>
 	} // parallelCompositionHelper(FSM)
 
 	/**
+	 * This method creates a modified FSM derived from the calling FSM object by removing Observable Events
+	 * and enforcing a Determinized status.
 	 * 
-	 * TODO:
-	 * 
-	 * @return
+	 * @return - Returns an FSM object representing the Determinized Observer-View derivation of the calling FSM object.
 	 */
 	
-	public abstract <T1 extends Transition> FSM<?> buildObserver();
+	public abstract DetObsContFSM buildObserver();
 	
 } // class FSM

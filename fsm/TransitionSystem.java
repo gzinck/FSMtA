@@ -70,7 +70,7 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * that are reachable from Initial States and can reach Marked States are
 	 * included.
 	 * 
-	 * @return - Returns an TransitionSystem extending object representing the trimmed
+	 * @return - Returns a TransitionSystem<<r>T> object representing the trimmed
 	 * version of the calling TransitionSystem object.
 	 */
 	
@@ -90,7 +90,7 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * 
 	 * Some post-processing may be required by more advanced types of FSM.
 	 * 
-	 * @return - Returns a TransitionSystem extending object representing the accessible
+	 * @return - Returns a TransitionSystem object representing the accessible
 	 * version of the calling TransitionSystem object. 
 	 */
 	
@@ -141,7 +141,7 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * after which the contents of the old FSM object are processed with respect to this list as they construct
 	 * the new FSM object.
 	 * 
-	 * @return - Returns an TransitionSystem extending object representing the CoAccessible version of the original
+	 * @return - Returns an TransitionSystem object representing the CoAccessible version of the original
 	 * TransitionSystem.
 	 */
 	
@@ -221,10 +221,10 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * 
 	 * The method getCoAccessibleMap() uses this to generate the list of States and their statuses.
 	 * 
-	 * @param curr - State extending object that represents the current 'State' to process recursively.
+	 * @param curr - State object that represents the current 'State' to process recursively.
 	 * @param results - HashMap<<r>String, Boolean> object that records the status of each State as CoAccessible or not.
 	 * @param visited - HashSet<<r>String> object that keeps track of which States have been already visited.
-	 * @return - Returns a boolean value: true if the State extending object curr is coaccessible, false otherwise.
+	 * @return - Returns a boolean value: true if the State object curr is coaccessible, false otherwise.
 	 */
 	
 	private boolean recursivelyFindMarked(State curr, HashMap<String, Boolean> results, HashSet<String> visited) {
@@ -469,9 +469,10 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
+	 * Getter method that requests a HashMap<<r>State, ArrayList<<r>State>> object holding pairs made up of a 
+	 * State and the Composite States that it was built fromt.
 	 * 
-	 * 
-	 * @return
+	 * @return - Returns a HashMap<<r>State, ArrayList<<r>State>> object containing pairs of States and their Composite State.
 	 */
 	
 	public HashMap<State, ArrayList<State>> getComposedStates(){
@@ -479,9 +480,12 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
+	 * Getter method that requests a particular ArrayList<<r>State> object corresponding to a particular
+	 * State object that, if found within the HashMap<<r>State, ArrayList<<r>State>>, is composed of
+	 * a set of States store within the ArrayList<<r>State> object.
 	 * 
-	 * @param state
-	 * @return
+	 * @param state - State object representing the aggregate-State composed of the returned set of States.
+	 * @return - Returns an ArrayList<<r>State> object representing the States that compose the provided State object.
 	 */
 	
 	public ArrayList<State> getStateComposition(State state){
@@ -489,9 +493,10 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
+	 * Getter method that requests a particular ArrayList<<r>T> object corresponding to a provided State object.
 	 * 
-	 * @param state
-	 * @return
+	 * @param state - State object provided as a key to search for its associated Transition objects. 
+	 * @return - Returns an ArrayList<<r>T> object containing all the Transitions associated to the provided State object.
 	 */
 	
 	public ArrayList<T> getStateTransitions(State state){
@@ -499,12 +504,12 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * Getter method that searches within the FSM object's StateMap for a State extending object which corresponds
-	 * to the provided State extending object; it searches by the name associated to the State extending object, which
+	 * Getter method that searches within the FSM object's StateMap for a State object which corresponds
+	 * to the provided State object; it searches by the name associated to the State object, which
 	 * may find a match while being distinctly separate objects.
 	 * 
-	 * @param state - State extending object provided as a search reference for a matching State in the FSM object's StateMap.
-	 * @return - Returns a State extending object that corresponds to the provided State extending object's name in the current FSM.
+	 * @param state - State object provided as a search reference for a matching State in the FSM object's StateMap.
+	 * @return - Returns a State object that corresponds to the provided State object's name in the current FSM.
 	 */
 	
 	public State getState(State state) {
@@ -512,9 +517,9 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * Getter method that obtains the Collection of State extending objects stored within this FSM object's StateMap.
+	 * Getter method that obtains the Collection of State objects stored within this FSM object's StateMap.
 	 * 
-	 * @return - Returns a Collection<<r>State> object representing the State extending objects associated to this FSM object.
+	 * @return - Returns a Collection<<r>State> object representing the State objects associated to this FSM object.
 	 */
 	
 	public Collection<State> getStates() {
@@ -522,9 +527,9 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * Getter method that obtains the Collection of Event extending objects stored within this FSM object's EventMap.
+	 * Getter method that obtains the Collection of Event objects stored within this FSM object's EventMap.
 	 * 
-	 * @return - Returns a Collection<<r>Event> object representing the Event extending objects associated to this FSM object.
+	 * @return - Returns a Collection<<r>Event> object representing the Event objects associated to this FSM object.
 	 */
 	
 	public Collection<Event> getEvents(){
@@ -532,10 +537,10 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * Getter method that obtains the State extending object associated to the provided String representing a State's name.
+	 * Getter method that obtains the State object associated to the provided String representing a State's name.
 	 * 
-	 * @param stateName - String object representing the name of the State extending object to search for.
-	 * @return - Returns the State extending object in this FSM object's StateMap corresponding to the provided String name.
+	 * @param stateName - String object representing the name of the State object to search for.
+	 * @return - Returns the State object in this FSM object's StateMap corresponding to the provided String name.
 	 */
 	
 	public State getState(String stateName) {
@@ -554,9 +559,9 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * Getter method that returns all of the Initial States in the FSM object as an ArrayList of State extending objects.
+	 * Getter method that returns all of the Initial States in the FSM object as an ArrayList of State objects.
 	 * 
-	 * @return - Returns an ArrayList<<r>State> of State extending objects which are the Initial States associated to this FSM object.
+	 * @return - Returns an ArrayList<<r>State> of State objects which are the Initial States associated to this FSM object.
 	 */
 	
 	public abstract ArrayList<State> getInitialStates();
@@ -565,18 +570,18 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * Getter method that requests whether the calling FSM object possesses an Initial State with
 	 * the provided String name or not.
 	 * 
-	 * @param stateName - String object representing the name of the State extending object.
-	 * @return - Returns a boolean value, true if the State extending object is an Initial State, false otherwise.
+	 * @param stateName - String object representing the name of the State object.
+	 * @return - Returns a boolean value, true if the State object is an Initial State, false otherwise.
 	 */
 	
 	public abstract boolean hasInitialState(String stateName);
 	
 	/**
-	 * Getter method that requests whether or not a State extending object exists in the calling FSM object's
-	 * StateMap, the supplied String object representing the State extending object.
+	 * Getter method that requests whether or not a State object exists in the calling FSM object's
+	 * StateMap, the supplied String object representing the State object.
 	 * 
-	 * @param stateName - String object representing the State extending object to query the FSM object's StateMap for; represents its name.
-	 * @return - Returns a boolean value; true if the State extending object exists in the FSM, false otherwise.
+	 * @param stateName - String object representing the State object to query the FSM object's StateMap for; represents its name.
+	 * @return - Returns a boolean value; true if the State object exists in the FSM, false otherwise.
 	 */
 	
 	public boolean stateExists(String stateName) {
@@ -595,9 +600,9 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * Getter method that requests whether a specified State extending object is a Marked State.
+	 * Getter method that requests whether a specified State object is a Marked State.
 	 * 
-	 * @param stateName - String object representing the name of the State extending object being queried for its status as Marked.
+	 * @param stateName - String object representing the name of the State object being queried for its status as Marked.
 	 * @return - Returns a boolean value; true if the state is Marked, false otherwise.
 	 */
 	
@@ -620,11 +625,11 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * This method adds a new State extending object to the calling FSM object's StateMap, using the provided
-	 * State extending object to perform this task. It creates a weak copy, only respecting the State extending
+	 * This method adds a new State object to the calling FSM object's StateMap, using the provided
+	 * State object to perform this task. It creates a weak copy, only respecting the State extending
 	 * object's name and nothing else.
 	 * 
-	 * @param state - State extending object provided as the schematic of what to add to the calling FSM object's StateMap.
+	 * @param state - State object provided as the schematic of what to add to the calling FSM object's StateMap.
 	 * @return - Returns a State object representing the corresponding State in the FSM that was just added.
 	 */
 	
@@ -646,12 +651,12 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * This method adds a new series of Transition extending objects to a given State extending object, accessing
+	 * This method adds a new series of Transition objects to a given State object, accessing
 	 * the calling FSM object's TransitionFunction object to either create a new entry for the State or
 	 * append the new Transitions to its pre-existing entry.
 	 * 
-	 * @param state - State extending object representing the State to which the Transitions belong.
-	 * @param newTransitions - ArrayList of Transition objects describing what Transitions belong to the provided State extending object.
+	 * @param state - State object representing the State to which the Transitions belong.
+	 * @param newTransitions - ArrayList of Transition objects describing what Transitions belong to the provided State object.
 	 */
 	
 	public void addStateTransitions(State state, ArrayList<T> newTransitions) {
@@ -671,21 +676,21 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * This method handles the introduction of a new State extending object as an Initial State
+	 * This method handles the introduction of a new State object as an Initial State
 	 * via a String object representing its name, behaving differently between Deterministic and 
 	 * NonDeterministic FSM objects as their definitions specify and require.
 	 * 
-	 * @param newInitial - String object representing the name of the State extending object being introduced as an Initial State.
+	 * @param newInitial - String object representing the name of the State object being introduced as an Initial State.
 	 */
 	
 	public abstract void addInitialState(String newInitial);
 
 	/**
-	 * This method handles the introduction of a new State extending object as an Initial State,
+	 * This method handles the introduction of a new State object as an Initial State,
 	 * behaving differently between Deterministic and NonDeterministic FSM objects as their
 	 * definitions specify and require.
 	 * 
-	 * @param newState - State extending object representing the State being introduced as an Initial State.
+	 * @param newState - State object representing the State being introduced as an Initial State.
 	 */
 	
 	public abstract void addInitialState(State newState);
@@ -731,8 +736,8 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * format of State and Transition objects, acquiring a reference to that State within
 	 * the StateMap and appending them jointly to the TransitionFunction.
 	 * 
-	 * @param state - State extending object representing the State acquiring a new Transition.
-	 * @param transition - Transition extending object representing the Transition being added to the provided State extending object.
+	 * @param state - State object representing the State acquiring a new Transition.
+	 * @param transition - Transition object representing the Transition being added to the provided State object.
 	 */
 	
 	public void addTransition(State state, T transition) {
@@ -768,11 +773,11 @@ public abstract class TransitionSystem<T extends Transition> {
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
 	/**
-	 * This method removes a State extending object from the calling FSM object as described by the
+	 * This method removes a State object from the calling FSM object as described by the
 	 * provided String object, further handling the cases of the State being Initial or appearing
 	 * in the TransitionFunction associated to this FSM object.
 	 * 
-	 * @param stateName - String object representing the name of the State extending object to remove from the calling FSM object.
+	 * @param stateName - String object representing the name of the State object to remove from the calling FSM object.
 	 * @return - Returns a boolean value representing the outcome of the operation: true if the state was removed, false if the state did not exist.
 	 */
 	
@@ -790,26 +795,26 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * This method removes a State extending object from the calling FSM object's method of storing
+	 * This method removes a State object from the calling FSM object's method of storing
 	 * Initial States, the State being described by a provided String representation of its name.
 	 * 
 	 * The exact details are handled by the FSM class implementing this, as Deterministic and NonDeterministic
 	 * FSMs handle Initial States differently.
 	 * 
-	 * @param stateName - String object representing the State extending object's name, denoting which State to remove from storage of Initial States.
+	 * @param stateName - String object representing the State object's name, denoting which State to remove from storage of Initial States.
 	 * @return - Returns a boolean value; true if the denoted State was successfully removed from the set of Initial States, false otherwise.
 	 */
 	
 	public abstract boolean removeInitialState(String stateName);
 	
 	/**
-	 * This method handles the removing of a Transition extending object from the calling FSM object's
+	 * This method handles the removing of a Transition object from the calling FSM object's
 	 * TransitionFunction, as described by the provided format of Transition information: 3 String objects
 	 * representing the State leading, by a defined Event, to another State.
 	 * 
-	 * @param state1 - String object corresponding to the origin State extending object for the Transition object.
+	 * @param state1 - String object corresponding to the origin State object for the Transition object.
 	 * @param eventName - String object corresponding to the Event for the Transition object.
-	 * @param state2 - String object corresponding to the destination State extending object for the Transition object.
+	 * @param state2 - String object corresponding to the destination State object for the Transition object.
 	 * @return - Returns a boolean value; true if the Transition was removed, false if it did not exist.
 	 */
 		
@@ -881,7 +886,7 @@ public abstract class TransitionSystem<T extends Transition> {
 
 	/**
 	 * This method handles the toggling of a State object's status as Marked, reversing
-	 * its current status to its opposite. (true -> false, false -> true). The State extending object
+	 * its current status to its opposite. (true -> false, false -> true). The State object
 	 * is so defined by a provided String object representing its name.
 	 * 
 	 * @param stateName - String object representing the name of the State object to have its status as Marked be toggled.
