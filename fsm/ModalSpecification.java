@@ -30,6 +30,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	
 //--- Constants  ----------------------------------------------------------------------
 	
+	/** String object constant representing the file extension of a file representing a ModalSpecification object. */
 	public static final String MODAL_EXTENSION = ".mdl";
 	
 //--- Instance Variables  ----------------------------------------------------------------------
@@ -175,6 +176,22 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	
 //---  Operations   -----------------------------------------------------------------------
 	
+	/**
+	 * Gets the underlying FSM representation of the Modal Specification by copying all the
+	 * data to a new deterministic FSM. It loses information about the must transitions.
+	 * 
+	 * @return - Returns a DetObsContFSM which uses the underlying transition system of the modal specification.
+	 */
+
+	public DetObsContFSM getUnderlyingFSM() {
+		DetObsContFSM specFSM = new DetObsContFSM();
+		// Make the underlying FSM of the specification
+		specFSM.copyEvents(this);
+		specFSM.copyStates(this);
+		specFSM.copyTransitions(this);
+		return specFSM;
+	}
+		
 	@Override
 	public void toTextFile(String filePath, String name) {
 		//Initial, Marked, Secret, Must-Transition
@@ -237,23 +254,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		String mustTransitionsInDot = mustTransitions.makeDotString();
 		return statesInDot + transitionsInDot + mustTransitionsInDot;	//Return 'em all
 	}
-	
-	/**
-	 * Gets the underlying FSM representation of the Modal Specification by copying all the
-	 * data to a new deterministic FSM. It loses information about the must transitions.
-	 * 
-	 * @return DetObsContFSM which uses the underlying transition system of the modal specification.
-	 */
 
-	public DetObsContFSM getUnderlyingFSM() {
-		DetObsContFSM specFSM = new DetObsContFSM();
-		// Make the underlying FSM of the specification
-		specFSM.copyEvents(this);
-		specFSM.copyStates(this);
-		specFSM.copyTransitions(this);
-		return specFSM;
-	}
-	
 	@Override
 	public ModalSpecification makeAccessible() {
 		// Make a queue to keep track of states that are accessible and their neighbours.
@@ -303,8 +304,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * have a must transition without a corresponding may transition, and then removing all states
 	 * with a transition going to those bad states.
 	 * 
-	 * @return - The pruned ModalSpecification
+	 * @return - Returns a pruned ModalSpecification object.
 	 */
+
 	public ModalSpecification prune() {
 		// First, get all the inconsistent states
 		HashSet<String> badStates = transitions.getInconsistentStates(mustTransitions);
@@ -322,8 +324,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * 
 	 * @param badStates - HashSet of Strings representing the States which are bad and will
 	 * be removed from the TransitionSystem.
-	 * @return - Boolean representing if the method added any bad states to the set.
+	 * @return - Returns a boolean value representing if the method added any bad states to the set.
 	 */
+
 	private boolean getBadMustTransitionStates(HashSet<String> badStates) {
 		boolean markedAState = false;
 		// Go through all OK nodes, and if there is a state that leads to a badState with a
@@ -493,14 +496,14 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * that cannot reach a marked state in the universalObserverView using only transitions that are
 	 * allowed in the product.
 	 * 
-	 * @param universalObserverView Observer view of the original FSM with states for every possible
+	 * @param universalObserverView - Observer view of the original FSM with states for every possible
 	 * starting state (for instance, if the FSM had a state 2, then there will be a state representing
 	 * the epsilon-reach of 2 in this universal view).
-	 * @param universalObserverViewMap Map between the original FSM's states and their epsilon reach state
+	 * @param universalObserverViewMap - Map between the original FSM's states and their epsilon reach state
 	 * name, which is present in the universalObserverView.
-	 * @param product Product FSM between the observer view of the original fsm and the specification.
-	 * @param badStates HashSet of String state names which are bad and to be removed.
-	 * @return True if the method marked a bad state, false otherwise.
+	 * @param product - Product FSM between the observer view of the original fsm and the specification.
+	 * @param badStates - HashSet of String state names which are bad and to be removed.
+	 * @return - Returns a boolean value; true if the method marked a bad state, false otherwise.
 	 */
 
 	static public boolean markDeadEnds(FSM<DetTransition> universalObserverView, HashMap<String, String> universalObserverViewMap, FSM<DetTransition> product, HashSet<String> badStates) {
@@ -548,11 +551,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * @param fsm Deterministic FSM to check.
 	 * @param state State to look 
 	 * @param badStates
-	 * @return
+	 * @return - Returns TODO:
 	 */
 	
-	static protected 
-	boolean canReachMarked(FSM<DetTransition> fsm, State state, HashSet<String> badStates) {
+	static protected boolean canReachMarked(FSM<DetTransition> fsm, State state, HashSet<String> badStates) {
 		// Get the name of the state in the right side of the product in the fsm (second part of the state).
 		String name = fsm.getStateComposition(state).get(1).getStateName();
 		if(badStates.contains(name)) return false;
@@ -589,9 +591,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * observer state is marked (which is more useful for trying to find if you can possibly reach a marked
 	 * state from a given initial state).
 	 * 
-	 * @param fsm FSM with which to create the observer view
-	 * @param newFSM FSM to fill with all the observer view states and transitions, etc.
-	 * @return HashMap mapping the name of the original states in the fsm to the name of its epsilon reach state
+	 * @param fsm - FSM with which to create the observer view
+	 * @param newFSM - FSM to fill with all the observer view states and transitions, etc.
+	 * @return - Returns a HashMap mapping the name of the original states in the fsm to the name of its epsilon reach state
 	 * which is present in the resulting observer view FSM. 
 	 */
 	
@@ -664,9 +666,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * Adds a composed state made of all the all the states in the parameter HashSet to the parameter FSM
 	 * and returns the state.
 	 * 
-	 * @param fsm FSM to which to add a new state.
-	 * @param stateCollection HashSet of states to combine into a single state in the FSM.
-	 * @return State that was composed from the state collection and added to the FSM.
+	 * @param fsm - FSM to which to add a new state.
+	 * @param stateCollection - HashSet of states to combine into a single state in the FSM.
+	 * @return - Returns a State object that was composed from the state collection and added to the FSM.
 	 */
 
 	private static <T extends Transition> State addComposedState(FSM<T> fsm, HashSet<State> stateCollection) {
@@ -708,7 +710,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * the calling and parameter ModalSpecifications.
 	 * 
 	 * @param other - ModalSpecification to use for calculating the greatest lower bound.
-	 * @return - ModalSpecification representing the greatest lower bound between the two
+	 * @return - Returns a ModalSpecification representing the greatest lower bound between the two
 	 * ModalSpecifications.
 	 */
 	
@@ -724,11 +726,11 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * - All "may" transitions for a private event must only be present in one to exist.
 	 * - All "must" transitions for any event must be present in at least one to exist.
 	 * 
-	 * @param other ModalSpecification which will be used in conjunction with the calling
+	 * @param other - ModalSpecification which will be used in conjunction with the calling
 	 * modal specification to create a new ModalSpecification. The result will be the lower
 	 * bound of the two.
-	 * @return Pseudo modal specification representing the lower bound of the two. This
-	 * result needs to be pruned to remove states where there exists a must transition but
+	 * @return - Returns a Pseudo modal specification representing the lower bound of the two.
+	 * This result needs to be pruned to remove states where there exists a must transition but
 	 * no corresponding may transition.
 	 */
 	
@@ -769,6 +771,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * @param curr - NextStates object with the current node in msA, msB and the calling ModalSpecifications.
 	 * @param msA - The first ModalSpecification from which to copy common transitions.
 	 * @param msB - The second ModalSpecification from which to copy common transitions. 
+	 * @return - Returns a LinkedList<<r>NextStates> object
 	 */
 	
 	private LinkedList<NextStates> copyCommonTransitions(NextStates curr, ModalSpecification msA, ModalSpecification msB) {
@@ -804,6 +807,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * @param curr - NextStates object with the current node in msA, msB and the calling ModalSpecification.
 	 * @param msA - The first ModalSpecification from which to copy private transitions.
 	 * @param msB - The second ModalSpecification from which to copy private transitions. 
+	 * @return - Returns a LinkedList<<r>NextStates> object.
 	 */
 	
 	private LinkedList<NextStates> copyPrivateTransitions(NextStates curr, ModalSpecification msA, ModalSpecification msB) {
@@ -840,6 +844,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * @param curr - NextStates object with the current node in msA, msB and the calling ModalSpecification.
 	 * @param msA - The first ModalSpecification from which to copy must transitions.
 	 * @param msB - The second ModalSpecification from which to copy must transitions. 
+	 * @return - Returns a LinkedList<<r>NextStates> object.
 	 */
 	
 	private LinkedList<NextStates> copyMustTransitions(NextStates curr, ModalSpecification msA, ModalSpecification msB) {
@@ -1035,6 +1040,36 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		mustTransitions.addTransition(fromState, outbound);
 	}
 	
+	/**
+	 * This class models an object containing three states: the state from some transition system A,
+	 * the state from some transition system B, and the state from some new transition system which
+	 * is being created. This simply makes cleaner code in other areas.
+	 * 
+	 * This class is a part of the fsm package.
+	 * 
+	 * @author Mac Clevinger and Graeme Zinck
+	 */
+
+	class NextStates {
+		
+		/** */
+		State stateA, stateB, stateNew;
+		
+		/**
+		 * Constructor for a NextStates object.
+		 * 
+		 * @param stateFromA - State object.
+		 * @param stateFromB - State object.
+		 * @param stateFromNew - State object.
+		 */
+		
+		public NextStates(State stateFromA, State stateFromB, State stateFromNew) {
+			stateA = stateFromA;
+			stateB = stateFromB;
+			stateNew = stateFromNew;
+		}
+	}
+	
 	@Override
 	public void addInitialState(String newInitial) {
 		if(initialState != null) initialState.setStateInitial(false);
@@ -1062,19 +1097,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return false;
 	}
 	
-	/**
-	 * NextStates is an object containing three states: the state from some transition system A,
-	 * the state from some transition system B, and the state from some new transition system which
-	 * is being created. This simply makes cleaner code in other areas.
-	 * 
-//	 * @author Mac Clevinger and Graeme Zinck
-	 */
-	class NextStates {
-		State stateA, stateB, stateNew;
-		NextStates(State stateFromA, State stateFromB, State stateFromNew) {
-			stateA = stateFromA;
-			stateB = stateFromB;
-			stateNew = stateFromNew;
-		}
+	@Override
+	public boolean removeTransition(String state1, String eventName, String state2) {
+		mustTransitions.removeTransition(getState(state1), getEvent(eventName), getState(state2));
+		return(super.removeTransition(state1, eventName, state2));
 	}
+
 }

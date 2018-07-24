@@ -23,9 +23,7 @@ import java.util.*;
  * 
  * @author Mac Clevinger and Graeme Zinck
  *
- * @param <<r>State> - Generic object with the stipulation that it extend the State class.
  * @param <<r>T> - Generic object with the stipulation that it extend the Transition class.
- * @param <<r>Event> - Generic object with the stipulation that it extend the Event class.
  */
 
 public abstract class TransitionSystem<T extends Transition> {
@@ -545,6 +543,17 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
+	 * Getter method that obtains the Event object associated to the provided String object representing an Event's name.
+	 * 
+	 * @param eventName - String object representing the name of the Event object being searched for in this TransitionSystem object.
+	 * @return - Returns an Event object stored by this TransitionSystem object as defined by the provided String object.
+	 */
+	
+	public Event getEvent(String eventName) {
+		return events.getEvent(eventName);
+	}
+	
+	/**
 	 * Getter method that returns all of the Initial States in the FSM object as an ArrayList of State extending objects.
 	 * 
 	 * @return - Returns an ArrayList<<r>State> of State extending objects which are the Initial States associated to this FSM object.
@@ -871,11 +880,11 @@ public abstract class TransitionSystem<T extends Transition> {
 //---  Manipulations - Other   ----------------------------------------------------------------
 
 	/**
-	 * This method handles the toggling of a State extending object's status as Marked, reversing
+	 * This method handles the toggling of a State object's status as Marked, reversing
 	 * its current status to its opposite. (true -> false, false -> true). The State extending object
 	 * is so defined by a provided String object representing its name.
 	 * 
-	 * @param stateName - String object representing the name of the State extending object to have its status as Marked be toggled.
+	 * @param stateName - String object representing the name of the State object to have its status as Marked be toggled.
 	 * @return - Returns a Boolean object; true if the state is now marked, false if the state is now unmarked, or null if it did not exist.
 	 */
 	
@@ -889,11 +898,11 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * This method handles the toggling of a State extending object's status as bad, reversing
+	 * This method handles the toggling of a State object's status as bad, reversing
 	 * its current status to its opposite. (true -> false, false -> true). The State is identified
 	 * by passing in its String name.
 	 * 
-	 * @param stateName - String object representing the name of the State extending object to have its status as Marked be toggled.
+	 * @param stateName - String object representing the name of the State object to have its status as Marked be toggled.
 	 * @return - Returns a Boolean object; true if the state is now bad, false if the state is now not bad, or null if it did not exist.
 	 */
 	
@@ -906,11 +915,11 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * This method handles the toggling of a State extending object's status as secret, reversing
+	 * This method handles the toggling of a State object's status as secret, reversing
 	 * its current status to its opposite. (true -> false, false -> true). The State is identified
 	 * by passing in its String name.
 	 * 
-	 * @param stateName - String object representing the name of the State extending object to have its status as secret be toggled.
+	 * @param stateName - String object representing the name of the State object to have its status as secret be toggled.
 	 * @return - Returns a Boolean object; true if the state is now secret, false if the state is now not secret, or null if it did not exist.
 	 */
 	
