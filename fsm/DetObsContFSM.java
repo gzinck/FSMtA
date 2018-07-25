@@ -76,10 +76,15 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 				events.addEvent(special.get(3).get(i));
 			events.getEvent(special.get(3).get(i)).setEventObservability(false);
 		}
-		for(int i = 0; i < special.get(4).size(); i++) {			//Special ArrayList 4-entry is Controllable Event
+		for(int i = 0; i < special.get(4).size(); i++) {			//Special ArrayList 4-entry is ObservableEvent
 			if(events.getEvent(special.get(4).get(i)) == null)
 				events.addEvent(special.get(4).get(i));
-			events.getEvent(special.get(4).get(i)).setEventControllability(false);
+			events.getEvent(special.get(4).get(i)).setEventAttackerObservability(false);
+		}
+		for(int i = 0; i < special.get(5).size(); i++) {			//Special ArrayList 5-entry is Controllable Event
+			if(events.getEvent(special.get(5).get(i)) == null)
+				events.addEvent(special.get(5).get(i));
+			events.getEvent(special.get(5).get(i)).setEventControllability(false);
 		}
 	}
 	
@@ -267,11 +272,12 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 			name = id;
 		String truePath = "";
 		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
-		String special = "5\n";
+		String special = "6\n";
 		ArrayList<String> init = new ArrayList<String>();
 		ArrayList<String> mark = new ArrayList<String>();
 		ArrayList<String> priv = new ArrayList<String>();
 		ArrayList<String> unob = new ArrayList<String>();
+		ArrayList<String> atta = new ArrayList<String>();
 		ArrayList<String> cont = new ArrayList<String>();
 		for(State s : this.getStates()) {
 			if(s.getStateMarked()) 
@@ -286,6 +292,8 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 				unob.add(e.getEventName());
 			if(!e.getEventControllability())
 				cont.add(e.getEventName());
+			if(!e.getEventAttackerObservability())
+				atta.add(e.getEventName());
 		}
 		special += init.size() + "\n";
 		for(String s : init)
@@ -298,6 +306,9 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 			special += s + "\n";
 		special += unob.size() + "\n";
 		for(String s : unob)
+			special += s + "\n";
+		special += atta.size() + "\n";
+		for(String s : atta)
 			special += s + "\n";
 		special += cont.size() + "\n";
 		for(String s : cont)
@@ -421,18 +432,6 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 	}
 	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
-
-	@Override
-	public NonDetObsContFSM union(FSM<?> ... other) {
-		NonDetObsContFSM newFSM = new NonDetObsContFSM();
-		this.unionHelper(other[0], newFSM);
-		for(int i = 1; i < other.length; i++) {
-			NonDetObsContFSM newerFSM = new NonDetObsContFSM();
-			newFSM.unionHelper(other[i], newerFSM);
-			newFSM = newerFSM;
-		}
-		return newFSM;
-	}
 
 	//TODO: Figure out product Det x NonDet, produces multiple initial States but only accesses one due to Det nature.
 	

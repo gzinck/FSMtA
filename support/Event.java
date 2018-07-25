@@ -19,10 +19,12 @@ public class Event implements EventControllability, EventObservability{
 	
 	/** String instance variable representing the name of the Event*/
 	protected String id;
-	/** boolean instance variable representing the status of this Event's being Controllable*/
+	/** boolean instance variable representing the status of this Event object's being Controllable*/
 	private boolean controllability;
-	/** boolean instance variable representing the status of this Observable Event obejct's being Observable*/
-	private boolean observability;
+	/** boolean instance variable representing the status of this Event object's being Observable to the System*/
+	private boolean systemObservability;
+	/** boolean instance variable representing the status of this Event object's being Observable to the Attacker*/
+	private boolean attackerObservability;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -35,7 +37,8 @@ public class Event implements EventControllability, EventObservability{
 	public Event() {
 		id = "";
 		controllability = true;
-		observability = true;
+		systemObservability = true;
+		attackerObservability = true;
 	}
 	
 	/**
@@ -48,7 +51,8 @@ public class Event implements EventControllability, EventObservability{
 	public Event(String eventName) {
 		id = eventName;
 		controllability = true;
-		observability = true;
+		systemObservability = true;
+		attackerObservability = true;
 	}
 	
 	/**
@@ -57,13 +61,15 @@ public class Event implements EventControllability, EventObservability{
 	 * 
 	 * @param eventName - String object that represents the name of the Event object.
 	 * @param cont - boolean value that represents the status of the Event's being Controllable.
-	 * @param obs - boolean value that represents the status of the Event's being Observable.
+	 * @param obs - boolean value that represents the status of the Event's being Observable to the System.
+	 * @param atk - boolean value that represents the status of the Event's being Observable to the Attacker.
 	 */
 	
-	public Event(String eventName, boolean cont, boolean obs) {
+	public Event(String eventName, boolean cont, boolean obs, boolean atk) {
 		id = eventName;
 		controllability = cont;
-		observability = obs;
+		systemObservability = obs;
+		attackerObservability = atk;
 	}
 	
 	/**
@@ -75,7 +81,8 @@ public class Event implements EventControllability, EventObservability{
 	public Event(Event oldEvent) {
 		id = oldEvent.getEventName();
 		controllability = oldEvent.getEventControllability();
-		observability = oldEvent.getEventObservability();
+		systemObservability = oldEvent.getEventObservability();
+		attackerObservability = oldEvent.getEventAttackerObservability();
 	}
 	
 	/**
@@ -89,7 +96,7 @@ public class Event implements EventControllability, EventObservability{
 	public Event(Event other1, Event other2) {
 		id = other1.id;
 		controllability = (other1.getEventControllability() && other2.getEventControllability());
-		observability = (other1.getEventObservability() && other2.getEventObservability());
+		systemObservability = (other1.getEventObservability() && other2.getEventObservability());
 	}
 	
 //---  Setter Methods   -----------------------------------------------------------------------
@@ -106,7 +113,11 @@ public class Event implements EventControllability, EventObservability{
 	
 	@Override
 	public void setEventObservability(boolean obs) {
-		observability = obs;
+		systemObservability = obs;
+	}
+	
+	public void setEventAttackerObservability(boolean obs) {
+		attackerObservability = obs;
 	}
 	
 	@Override
@@ -126,13 +137,27 @@ public class Event implements EventControllability, EventObservability{
 		return id;
 	}
 
+	/**
+	 * Getter method that requests the status of this Event object in terms of its being Controllable and
+	 * Observable to the System and an Attacker.
+	 * 
+	 * @return - Returns an int value representing the status of this Event's attributes. 
+	 */
+	
 	public int getEventType() {
-		return !controllability && !observability ? 3 : !controllability ? 2 : !observability ? 1 : 0;
+		int control = controllability ? 0 : 1;
+		int system = systemObservability ? 0 : 2;
+		int attacker = attackerObservability ? 0 : 4;
+		return control + system + attacker;
 	}
 		
 	@Override
 	public boolean getEventObservability() {
-		return observability;
+		return systemObservability;
+	}
+	
+	public boolean getEventAttackerObservability() {
+		return attackerObservability;
 	}
 	
 	@Override

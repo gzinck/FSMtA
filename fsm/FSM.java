@@ -39,15 +39,6 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> impl
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 	
 	/**
-	 * This method performs a union operation between multiple FSM objects and returns the resulting FSM object.
-	 * 
-	 * @param other - Array of FSM extending objects that is added to the calling FSM object in order to create a unioned FSM extending object.
-	 * @return - Returns an FSM extending object representing the result of all union operation.
-	 */
-	
-	public abstract FSM<? extends Transition> union(FSM<?> ... other);
-	
-	/**
 	 * Helper method that performs the brunt of the operations involved with a single Union operation
 	 * between two FSM objects, leaving the specialized features in more advanced FSM types to their
 	 * own interpretations after this function has occurred.
@@ -330,13 +321,4 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> impl
 		} // for thisInitial
 	} // parallelCompositionHelper(FSM)
 
-	/**
-	 * This method creates a modified FSM derived from the calling FSM object by removing Observable Events
-	 * and enforcing a Determinized status.
-	 * 
-	 * @return - Returns an FSM object representing the Determinized Observer-View derivation of the calling FSM object.
-	 */
-	
-	public abstract DetObsContFSM buildObserver();
-	
 } // class FSM

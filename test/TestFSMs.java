@@ -19,9 +19,19 @@ public class TestFSMs {
 	
 	
 	/**
-	 * TODO:  
+	 * DONE TODO:  Events need second type of Observability
+	 * DONE TODO:  Modal Specification needs Observable Events in File constructor, and a second type of Observable
+	 * DONE TODO:  Attacker Observability and System Observability in FSM as well. 
+	 * DONE TODO:  Adjust GenerateFSM class for new data types
 	 * 
+	 * TODO:  Determinization of ModalSpec using second kind of Observable Event; if May and Must of same Event, for now, force Must. 
+	 * TODO:  Make some examples of two opaque combining to make non-opaque
+	 * DONE TODO:  remove Union, it was Parallel Composition all along, don't need it.
+	 * TODO:  Randomly generate some Modal Specifications with constraints to achieve our desires.
+	 * TODO:  We are working on the last of the project, square this section away, nothing else is ahead.
 	 * 
+	 * TODO:  Graeme gone August 2'nd, 3'rd, 7'th.
+	 * TODO:  August 17'th is last day of work, excluding work on the Paper.
 	 */
 	
 	
@@ -29,17 +39,28 @@ public class TestFSMs {
 	@Test
 	public void test() {
 		int count = 0;
-	while(true) {
+		int max = 1;
+	while(count < max) {
 		System.out.println(count++);
 		
-		File m1 = new File(GenerateFSM.createModalSpec(5, 2, 3, 3, 2, 1, 3, "modalSpec1", MAC_WORKING_FOLDER));
+		int sizeState = 5;
+		int sizeMarked = 2;
+		int sizeEvents = 5;
+		int sizePaths = 3;
+		int sizePrivate = 1;
+		int sizeUnobserv = 1;
+		int sizeAttacker = 0;
+		int sizeControl = 1;
+		int sizeMust = 3;
+		
+		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
 		
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
 
 		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "mod1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		mod1.toTextFile(MAC_WORKING_FOLDER, "modalSpec2");
 		
-		ModalSpecification mod2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "modalSpec2" + ".mdl"), "mod2");
+		ModalSpecification mod2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "modalSpec2" + ".mdl"), "mod2").buildObserver();
 		
 		FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "mod2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		System.out.println(count);

@@ -2,6 +2,7 @@ package fsm;
 
 import support.map.TransitionFunction;
 import support.transition.Transition;
+import fsm.attribute.Deterministic;
 import java.util.LinkedList;
 import java.util.Collection;
 import support.map.EventMap;
@@ -41,6 +42,20 @@ public abstract class TransitionSystem<T extends Transition> {
 	
 //---  Single-FSM Operations   ----------------------------------------------------------------
 
+	/**
+	 * This method creates a modified FSM or Modal Specification derived from the calling object by removing Observable Events
+	 * and enforcing a Determinized status.
+	 * 
+	 * Collapse Unobservable
+	 *  - Map singular States to their Collectives
+	 * Calculate Transitions from Collective Groups
+	 * - Will produce new States, need to then process these as well	
+	 * 
+	 * @return - Returns a TransitionSystem object representing the Determinized Observer-View derivation of the calling FSM or Modal Specification object.
+	 */
+	
+	public abstract TransitionSystem buildObserver();
+	
 	/**
 	 * Renames all the states in the set of states in the FSM so that
 	 * states are named sequentially ("0", "1", "2"...).

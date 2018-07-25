@@ -3,6 +3,7 @@ package fsm;
 import support.attribute.EventControllability;
 import support.attribute.EventObservability;
 import support.map.TransitionFunction;
+import support.DisabledEvents;
 import support.map.StateMap;
 import support.map.EventMap;
 import support.transition.*;
@@ -26,7 +27,10 @@ import java.util.*;
  * @author Mac Clevinger and Graeme Zinck
  */
 
-public class ModalSpecification extends TransitionSystem<DetTransition> implements Deterministic<DetTransition> {
+public class ModalSpecification extends TransitionSystem<DetTransition> implements Deterministic<DetTransition>,
+																				 Observability,
+																				 Controllability,
+																				 OpacityTest{
 	
 //--- Constants  ----------------------------------------------------------------------
 	
@@ -77,13 +81,24 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 				states.addState(new State(special.get(2).get(i)));
 			states.getState(special.get(2).get(i)).setStatePrivate(true);
 		}
-		for(int i = 0; i < special.get(3).size(); i++) {			//Special ArrayList 4-entry is Controllable Event
+		for(int i = 0; i < special.get(3).size(); i++) {			//Special ArrayList 3-entry is Controllable Event
 			if(events.getEvent(special.get(3).get(i)) == null)
 				events.addEvent(special.get(3).get(i));
-			events.getEvent(special.get(3).get(i)).setEventControllability(false);
+			events.getEvent(special.get(3).get(i)).setEventObservability(false);
 		}
-		for(int i = 0; i < special.get(4).size(); i++) {
-			String grab[] = special.get(4).get(i).split(" ");
+		for(int i = 0; i < special.get(4).size(); i++) {			//Special ArrayList 4-entry is ObservableEvent
+			System.out.println(special.get(4).get(i));
+			if(events.getEvent(special.get(4).get(i)) == null)
+				events.addEvent(special.get(4).get(i));
+			events.getEvent(special.get(4).get(i)).setEventAttackerObservability(false);
+		}
+		for(int i = 0; i < special.get(5).size(); i++) {			//Special ArrayList 5-entry is Controllable Event
+			if(events.getEvent(special.get(5).get(i)) == null)
+				events.addEvent(special.get(5).get(i));
+			events.getEvent(special.get(5).get(i)).setEventControllability(false);
+		}
+		for(int i = 0; i < special.get(6).size(); i++) {			//Special ArrayList 6-entry is Must Transitions
+			String grab[] = special.get(6).get(i).split(" ");
 			mustTransitions.addTransitionState(states.getState(grab[0]), events.getEvent(grab[2]), states.getState(grab[1]));
 		}	
 	}
@@ -175,7 +190,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	} // ModalSpecification()
 	
 //---  Operations   ---------------------------------------------------------------------------
-	
+
 	/**
 	 * Gets the underlying FSM representation of the Modal Specification by copying all the
 	 * data to a new deterministic FSM. It loses information about the must transitions.
@@ -191,7 +206,77 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		specFSM.copyTransitions(this);
 		return specFSM;
 	}
+
+	@Override
+	public ModalSpecification buildObserver() {
+		ModalSpecification newFSM = new ModalSpecification();
 		
+		HashMap<State, State> map = new HashMap<State, State>();
+		
+		for(State s : getStates()) {
+			
+			HashSet<State> reach = new HashSet<State>();
+			LinkedList<State> queue = new LinkedList<State>();
+			queue.add(s);
+			
+			while(!queue.isEmpty()) {
+				State top = queue.poll();
+				if(reach.contains(top))
+					continue;
+				reach.add(top);
+			    for(DetTransition t : getTransitions().getTransitions(top)) {
+				   if(!t.getTransitionEvent().getEventAttackerObservability()) {
+					  queue.add(t.getTransitionState());
+			 	  }
+			  }
+			}
+			ArrayList<State> composite = new ArrayList<State>(reach);
+			Collections.sort(composite);
+			State made = new State(composite.toArray(new State[composite.size()]));
+			newFSM.setStateComposition(made, composite.toArray(new State[composite.size()]));
+			map.put(s, made);
+		}
+		
+		LinkedList<State> queue = new LinkedList<State>();
+		HashSet<String> visited = new HashSet<String>();
+		
+		queue.add(map.get(getInitialState()));
+		newFSM.addState(map.get(getInitialState()));
+		
+		while(!queue.isEmpty()) {
+			State top = queue.poll();
+			if(visited.contains(top.getStateName()))
+				continue;
+			visited.add(top.getStateName());
+			HashMap<Event, HashSet<State>> tran = new HashMap<Event, HashSet<State>>();
+			for(State s : newFSM.getStateComposition(top)) {
+				for(DetTransition t : getTransitions().getTransitions(s)) {
+					if(t.getTransitionEvent().getEventAttackerObservability()) {
+						if(tran.get(t.getTransitionEvent()) == null) {
+							tran.put(t.getTransitionEvent(), new HashSet<State>());
+						}
+						tran.get(t.getTransitionEvent()).addAll(newFSM.getStateComposition(map.get(t.getTransitionState())));
+						
+					}
+				}
+			}
+			for(Event e : tran.keySet()) {
+				State bot = newFSM.addState(tran.get(e).toArray(new State[tran.get(e).size()]));
+				newFSM.setStateComposition(bot, tran.get(e).toArray(new State[tran.get(e).size()]));
+				queue.add(bot);
+				newFSM.addTransition(top, e, bot);
+				newFSM.addState(top);
+				newFSM.addState(bot);
+			}
+		}
+		
+		//TODO: May/Must Transition Handling
+		
+		newFSM.addInitialState(map.get(getInitialState()));
+		return newFSM;
+		
+	}
+	
 	@Override
 	public void toTextFile(String filePath, String name) {
 		//Initial, Marked, Secret, Must-Transition
@@ -199,11 +284,13 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			name = id;
 		String truePath = "";
 		truePath = filePath + (filePath.charAt(filePath.length()-1) == '/' ? "" : "/") + name;
-		String special = "5\n";
+		String special = "7\n";
 		
 		ArrayList<String> init = new ArrayList<String>();
 		ArrayList<String> mark = new ArrayList<String>();
 		ArrayList<String> priv = new ArrayList<String>();
+		ArrayList<String> unob = new ArrayList<String>();
+		ArrayList<String> atta = new ArrayList<String>();
 		ArrayList<String> cont = new ArrayList<String>();
 		ArrayList<String> must = new ArrayList<String>();
 		
@@ -219,6 +306,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		for(Event e : this.getEvents()) {
 			if(!e.getEventControllability())
 				cont.add(e.getEventName());
+			if(!e.getEventObservability())
+				unob.add(e.getEventName());
+			if(!e.getEventAttackerObservability())
+				atta.add(e.getEventName());
 		}
 		
 		for(Map.Entry<State, ArrayList<DetTransition>> map : mustTransitions.getAllTransitions()) {
@@ -235,6 +326,12 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			special += s + "\n";
 		special += priv.size() + "\n";
 		for(String s : priv)
+			special += s + "\n";
+		special += unob.size() + "\n";
+		for(String s : unob)
+			special += s + "\n";
+		special += atta.size() + "\n";
+		for(String s : atta)
 			special += s + "\n";
 		special += cont.size() + "\n";
 		for(String s : cont)
@@ -296,6 +393,12 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		} // if initial is not null
 		return newMS;	
 	} // makeAccessible()
+
+	@Override
+	public FSM getSupremalControllableSublanguage(FSM other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 //---  Operations for pruning a MS   ----------------------------------------------------------
 	
@@ -981,6 +1084,44 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return initialState.equals(s);
 	}
 
+	@Override
+	public DisabledEvents getDisabledEvents(State curr, FSM otherFSM, HashSet visitedStates, HashMap disabledMap) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean getEventControllability(String eventName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean getEventObservability(String eventName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<State> testCurrentStateOpacity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+//---  Setter Methods   -----------------------------------------------------------------------
+	
+	@Override
+	public void setEventControllability(String eventName, boolean value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean setEventObservability(String eventName, boolean status) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 //---  Manipulations   -----------------------------------------------------------------------
 	
 	/**
@@ -1104,5 +1245,5 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			stateNew = stateFromNew;
 		}
 	}
-		
+
 }

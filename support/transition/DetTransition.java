@@ -53,22 +53,39 @@ public class DetTransition implements Transition {
 	@Override
 	public String makeDotString(State firstState) {
 		String eventDeal = "";
+		
 		switch(event.getEventType()) {
 		case 0:
 			// Observable and controllable
 			eventDeal = "color = \"black\"";
 			break;
 		case 1:
-			// Unobservable but controllable
-			eventDeal = "color = \"red\" arrowhead = \"normalicurve\"";
+			// Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normallcurve\"";
 			break;
 		case 2:
-			// Observable and uncontrollable
-			eventDeal = "color = \"blue\" arrowhead = \"normaldiamond\"";
+			// Unobservable to System
+			eventDeal = "color = \"red\" arrowhead = \"normalrdiamond\"";
 			break;
 		case 3:
-			// Unobservable and uncontrollable
-			eventDeal = "color = \"purple\" arrowhead = \"normalodot\"";
+			// Unobservable to System and Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normallcurverdiamond\"";
+			break;
+		case 4:
+			//Unobservable to the Attacker
+			eventDeal = "color = \"red\" arrowhead = \"normalodot\"";
+			break;
+		case 5:
+			//Unobservable to the Attacker and Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normalodotlcurve\"";
+			break;
+		case 6:
+			//Unobservable to the Attacker and Unobservable to the System
+			eventDeal = "color = \"red\" arrowhead = \"normalodotrdiamond\"";
+			break;
+		case 7:
+			//Unobservable to the Attacker and Unobservable to the System and Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normalodoticurverdiamond\"";
 			break;
 		default: break;
 		}
@@ -92,16 +109,32 @@ public class DetTransition implements Transition {
 			eventDeal = "color = \"black\"";
 			break;
 		case 1:
-			// Unobservable but controllable
-			eventDeal = "color = \"red\" arrowhead = \"normalicurve\"";
+			// Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normallicurve\"";
 			break;
 		case 2:
-			// Observable and uncontrollable
-			eventDeal = "color = \"blue\" arrowhead = \"normaldiamond\"";
+			// Unobservable to System
+			eventDeal = "color = \"red\" arrowhead = \"normalrdiamond\"";
 			break;
 		case 3:
-			// Unobservable and uncontrollable
-			eventDeal = "color = \"purple\" arrowhead = \"normalodot\"";
+			// Unobservable to System and Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normallicurverdiamond\"";
+			break;
+		case 4:
+			//Unobservable to the Attacker
+			eventDeal = "color = \"red\" arrowhead = \"normalodot\"";
+			break;
+		case 5:
+			//Unobservable to the Attacker and Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normalodotlicurve\"";
+			break;
+		case 6:
+			//Unobservable to the Attacker and Unobservable to the System
+			eventDeal = "color = \"red\" arrowhead = \"normalodotrdiamond\"";
+			break;
+		case 7:
+			//Unobservable to the Attacker and Unobservable to the System and Uncontrollable
+			eventDeal = "color = \"red\" arrowhead = \"normalodotlicurverdiamond\"";
 			break;
 		default: break;
 		}

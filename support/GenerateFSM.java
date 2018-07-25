@@ -61,7 +61,8 @@ public class GenerateFSM {
 	 * @param sizePaths - int value describing the maximal number of Paths leading out from a given State in the FSM.
 	 * @param sizeInitial - int value describing how many Initial States to include in the FSM.
 	 * @param sizePrivate - int value describing how many Private States to include in the FSM.
-	 * @param sizeUnobserv - int value describing how many Events to mark as Unobservable in the FSM. 
+	 * @param sizeUnobserv - int value describing how many Events to mark as Unobservable to the System in the FSM. 
+	 * @param sizeAtacker - int value describing how many Events to mark as Unobservable to the Attacker in the FSM on top of those to the System.
 	 * @param sizeControl - int value describing how many Events to mark as Uncontrollable in the FSM.
 	 * @param nonDet - boolean value denoting whether or not the FSM is Deterministic or Non-Deterministic.
 	 * @param name - String object used to denote the title of the File being generated.
@@ -69,7 +70,7 @@ public class GenerateFSM {
 	 * @return - Returns a String describing the location of the generated File in the file system.
 	 */
 
-	public static String createNewFSM(int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeControl, boolean nonDet, String name, String filePath) {
+	public static String createNewFSM(int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizeInitial, int sizePrivate, int sizeUnobserv, int sizeAttacker, int sizeControl, boolean nonDet, String name, String filePath) {
 		File f = new File(filePath + name + ".fsm");		//Creates a new file with a unique extension
 		f.delete();											//If there already exists a file, remove it.
 		events = new ArrayList<String>();					//Initiates the ArrayLists for usage
@@ -88,7 +89,7 @@ public class GenerateFSM {
 		try{													//To catch IOExceptions
 		  RandomAccessFile raf = new RandomAccessFile(f, "rw");	//Allows us to write to the file
 		  Random rand = new Random();				//Create random object for randomness
-		  raf.writeBytes("5");			//Initial, Marked, Private, Unobservable, TODO: Controllable
+		  raf.writeBytes("6");			//Initial, Marked, Private, Unobservable, TODO: Controllable
 		  raf.writeBytes(lineSkip);
 		  raf.writeBytes(("" + sizeInitial));
 		  raf.writeBytes(lineSkip);
@@ -123,12 +124,32 @@ public class GenerateFSM {
 			  raf.writeBytes(rand1+"");
 			  raf.writeBytes(lineSkip);
 		  }
+		  
+		  HashSet<String> unsee = new HashSet<String>();
+		  
 		  raf.writeBytes(("" + sizeUnobserv));
 		  raf.writeBytes(lineSkip);
 		  for(int i = 0; i < sizeUnobserv; i++) {
+			  String val = events.get(rand.nextInt(sizeEvents));
+			  while(unsee.contains(val))
+				  val = events.get(rand.nextInt(sizeEvents));
+			  unsee.add(val);
 			  raf.writeBytes(events.get(rand.nextInt(sizeEvents)));
 			  raf.writeBytes(lineSkip);
 		  }
+		  
+		  while(unsee.size() < sizeAttacker + sizeUnobserv) {
+			  String val = events.get(rand.nextInt(sizeEvents));
+			  while(unsee.contains(val))
+				  val = events.get(rand.nextInt(sizeEvents));
+			  unsee.add(val);
+		  }
+		  
+		  raf.writeBytes(("" + (sizeAttacker + sizeUnobserv)));
+		  raf.writeBytes(lineSkip);
+		  for(String s : unsee)
+			  raf.writeBytes(s + lineSkip);
+		  
 		  raf.writeBytes((""+sizeControl));
 		  raf.writeBytes(lineSkip);
 		  for(int i = 0; i < sizeControl; i++) {
@@ -188,6 +209,8 @@ public class GenerateFSM {
 	 * @param sizeEvents - int value describing how many Unique Events to include in the Modal Specification.
 	 * @param sizePaths - int value describing the maximal number of Paths leading out from a given State in the Modal Specification.
 	 * @param sizePrivate - int value describing how many Private States to include in the Modal Specification.
+	 * @param sizeUnobserv - int value describing how many Events to mark as Unobservable to the System in the Modal Specification. 
+	 * @param sizeAtacker - int value describing how many Events to mark as Unobservable to the Attacker in the Modal Specification on top of those to the System.
 	 * @param sizeControl - int value describing how many Uncontrollable States to include in the Modal Specification.
 	 * @param sizeMust - int value describing how many Must Transitions to include in the Modal Specification.
 	 * @param name - String object used to denote the title of the File being generated.
@@ -195,7 +218,7 @@ public class GenerateFSM {
 	 * @return - Returns a String describing the location of the generated File in the file system.
 	 */
 	
-	public static String createModalSpec(int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizePrivate, int sizeControl, int sizeMust, String name, String filePath) {
+	public static String createModalSpec(int sizeStates, int sizeMarked, int sizeEvents, int sizePaths, int sizePrivate, int sizeUnobserv, int sizeAttacker, int sizeControl, int sizeMust, String name, String filePath) {
 		File f = new File(filePath + name + ".mdl");		//Creates a new file with a unique extension
 		f.delete();											//If there already exists a file, remove it.
 		events = new ArrayList<String>();					//Initiates the ArrayLists for usage
@@ -214,7 +237,7 @@ public class GenerateFSM {
 		try{													//To catch IOExceptions
 		  RandomAccessFile raf = new RandomAccessFile(f, "rw");	//Allows us to write to the file
 		  Random rand = new Random();				//Create random object for randomness
-		  raf.writeBytes("5");			//Initial, Marked, Private, Must
+		  raf.writeBytes("7");			//Initial, Marked, Private, Must
 		  raf.writeBytes(lineSkip);
 		  raf.writeBytes(("" + 1));
 		  raf.writeBytes(lineSkip);
@@ -249,6 +272,32 @@ public class GenerateFSM {
 			  raf.writeBytes(rand1+"");
 			  raf.writeBytes(lineSkip);
 		  }
+		  
+		  HashSet<String> unsee = new HashSet<String>();
+		  
+		  raf.writeBytes(("" + sizeUnobserv));
+		  raf.writeBytes(lineSkip);
+		  for(int i = 0; i < sizeUnobserv; i++) {
+			  String val = events.get(rand.nextInt(sizeEvents));
+			  while(unsee.contains(val))
+				  val = events.get(rand.nextInt(sizeEvents));
+			  unsee.add(val);
+			  raf.writeBytes(events.get(rand.nextInt(sizeEvents)));
+			  raf.writeBytes(lineSkip);
+		  }
+		  
+		  while(unsee.size() < sizeUnobserv + sizeAttacker) {
+			  String val = events.get(rand.nextInt(sizeEvents));
+			  while(unsee.contains(val))
+				  val = events.get(rand.nextInt(sizeEvents));
+			  unsee.add(val);
+		  }
+		  
+		  raf.writeBytes(("" + (unsee.size())));
+		  raf.writeBytes(lineSkip);
+		  for(String s : unsee)
+			  raf.writeBytes(s + lineSkip);
+		  
 		  raf.writeBytes((""+sizeControl));
 		  raf.writeBytes(lineSkip);
 		  for(int i = 0; i < sizeControl; i++) {

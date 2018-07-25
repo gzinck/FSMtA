@@ -242,14 +242,15 @@ public class FileSettingsPane extends VBox {
 						// Modal specification
 						tsFile = new File(GenerateFSM.createModalSpec(
 								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
-								parameters.sizeMay, parameters.sizeSecret, parameters.sizeUncontrol,
+								parameters.sizeMay, parameters.sizeSecret, parameters.sizeUnobserv,
+								parameters.sizeAttacker, parameters.sizeUncontrol,
 								parameters.sizeMust, newTSName, model.getWorkingDirectoryString() + "/"));
 					} else {
 						tsFile = new File(GenerateFSM.createNewFSM(
 								parameters.sizeStates, parameters.sizeMarked, parameters.sizeEvents,
 								parameters.sizePaths, parameters.sizeInitial, parameters.sizeSecret,
-								parameters.sizeUnobserv, parameters.sizeUncontrol, tsClass.equals("Deterministic"),
-								newTSName, model.getWorkingDirectoryString() + "/"));
+								parameters.sizeUnobserv, parameters.sizeAttacker, parameters.sizeUncontrol,
+								tsClass.equals("Deterministic"), newTSName, model.getWorkingDirectoryString() + "/"));
 					}
 					// If deterministic
 					if(tsClass.equals(TS_TYPES.get(0)))

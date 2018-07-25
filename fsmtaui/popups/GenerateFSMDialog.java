@@ -30,7 +30,7 @@ public class GenerateFSMDialog {
 	/** GridPane instance variable object */
 	GridPane optionGrid;
 	/** TextField instance variable objects */
-	TextField sizeStates, sizeMarked, sizeEvents, sizePaths, sizeInitial, sizeSecret, sizeUnobserv, sizeUncontrol, sizeMay, sizeMust;
+	TextField sizeStates, sizeMarked, sizeEvents, sizePaths, sizeInitial, sizeSecret, sizeUnobserv, sizeAttacker, sizeUncontrol, sizeMay, sizeMust;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -59,8 +59,10 @@ public class GenerateFSMDialog {
 		sizePaths = new TextField("2");
 		Label sizeSecretLabel = new Label("Number of Secret States");
 		sizeSecret = new TextField("3");
-		Label sizeUnobservLabel = new Label("Number of Unobservable Events");
+		Label sizeUnobservLabel = new Label("Number of Unobservable Events to the System");
 		sizeUnobserv = new TextField("1");
+		Label sizeAttackerLabel = new Label("Number of Unobservable Events to the Attacker");
+		sizeAttacker = new TextField("1");
 		Label sizeUncontrolLabel = new Label("Number of Uncontrollable Events");
 		sizeUncontrol = new TextField("2");
 		Label sizeInitialLabel = new Label("Number of Initial States");
@@ -73,16 +75,16 @@ public class GenerateFSMDialog {
 		// Add extra option if the type is non-deterministic:
 		if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(0))) {
 			// If deterministic
-			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel);
-			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeUncontrol);
+			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeAttackerLabel, sizeUncontrolLabel);
+			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeAttacker, sizeUncontrol);
 		} else if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(1))) {
 			// If nondeterministic
-			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeUncontrolLabel, sizeInitialLabel);
-			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeUncontrol, sizeInitial);
+			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizePathsLabel, sizeSecretLabel, sizeUnobservLabel, sizeAttackerLabel, sizeUncontrolLabel, sizeInitialLabel);
+			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizePaths, sizeSecret, sizeUnobserv, sizeAttacker, sizeUncontrol, sizeInitial);
 		} else if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(2))) {
 			// If modal specification
-			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizeSecretLabel, sizeUncontrolLabel, sizeMayLabel, sizeMustLabel);
-			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizeSecret, sizeUncontrol, sizeMay, sizeMust);
+			optionGrid.addColumn(0, sizeStatesLabel, sizeMarkedLabel, sizeEventsLabel, sizeSecretLabel, sizeUncontrolLabel, sizeUnobservLabel, sizeAttackerLabel, sizeMayLabel, sizeMustLabel);
+			optionGrid.addColumn(1, sizeStates, sizeMarked, sizeEvents, sizeSecret, sizeUnobserv, sizeAttacker, sizeUncontrol, sizeMay, sizeMust);
 		}
 		
 		// Add the options and buttons.
@@ -108,7 +110,8 @@ public class GenerateFSMDialog {
             				return param.setNonDeterministicParameters(sizeStates.getText(),
 	            					sizeMarked.getText(), sizeEvents.getText(),
 	            					sizePaths.getText(), sizeSecret.getText(),
-	            					sizeUnobserv.getText(), sizeUncontrol.getText(), sizeInitial.getText());
+	            					sizeUnobserv.getText(), sizeAttacker.getText(), 
+	            					sizeUncontrol.getText(), sizeInitial.getText());
             			} else if(fsmClass.equals(FileSettingsPane.TS_TYPES.get(2))) {
             				// Modal specification
             				return param.setModalSpecParameters(sizeStates.getText(),
@@ -174,6 +177,8 @@ public class GenerateFSMDialog {
 		/** integer instance variable */
 		public int sizeUnobserv;
 		/** integer instance variable */
+		public int sizeAttacker;
+		/** integer instance variable */
 		public int sizeUncontrol;
 		/** integer instance variable */
 		public int sizeInitial;
@@ -203,18 +208,20 @@ public class GenerateFSMDialog {
 		 * @param paths
 		 * @param secret
 		 * @param unobservable
+		 * @param attacker
 		 * @param uncontrollable
 		 * @param initial
 		 * @return
 		 */
 		
-		FSMParameters setNonDeterministicParameters(String states, String marked, String events, String paths, String secret, String unobservable, String uncontrollable, String initial) {
+		FSMParameters setNonDeterministicParameters(String states, String marked, String events, String paths, String secret, String unobservable, String attacker, String uncontrollable, String initial) {
 			sizeStates = Integer.parseInt(states);
 			sizeMarked = Integer.parseInt(marked);
 			sizeEvents = Integer.parseInt(events);
 			sizePaths = Integer.parseInt(paths);
 			sizeSecret = Integer.parseInt(secret);
 			sizeUnobserv = Integer.parseInt(unobservable);
+			sizeAttacker = Integer.parseInt(attacker);
 			sizeUncontrol = Integer.parseInt(uncontrollable);
 			sizeInitial = Integer.parseInt(initial);
 			return this;

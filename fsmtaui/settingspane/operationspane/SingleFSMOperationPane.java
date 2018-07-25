@@ -43,6 +43,8 @@ public class SingleFSMOperationPane extends VBox {
 	
 	/**
 	 * Constructor for a SingleFSMOperationPane that creates a pane with all the single FSM operations.
+	 * 
+	 * @param inModel - Model object
 	 */
 	
 	public SingleFSMOperationPane(Model inModel) {
@@ -112,8 +114,10 @@ public class SingleFSMOperationPane extends VBox {
 			} else {
 				if(operation.equals(SINGLE_FSM_OPERATIONS.get(0))) {
 					// Determinize
-					if(currTS instanceof FSM<?>) addTS(((FSM<?>)currTS).buildObserver(), id);
-					else Alerts.makeError(Alerts.ERROR_OPERATION_ONLY_FOR_FSMS);
+					if(currTS instanceof FSM<?>) 
+						addTS(((FSM<?>)currTS).buildObserver(), id);
+					else
+						Alerts.makeError(Alerts.ERROR_OPERATION_ONLY_FOR_FSMS);
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(1))) {
 					// Accessible
 					addTS(currTS.makeAccessible(), id);

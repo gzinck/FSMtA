@@ -69,9 +69,9 @@ public class ReadWrite <T extends Transition>{
 	 * Events, and Transitions that are passed to this method, returning the additional information
 	 * that each class handles separately. (Initial States, Marked States, etc.)
 	 * 
-	 * @param states - StateMap<<r>S> object that represents the empty set of States to be filled.
-	 * @param events - EventMap<<r>E> object that represents the empty set of Events to be filled.
-	 * @param transitions - TransitionFunction<r>S, T, E> object that represents the empty set of Transitions to be filled.
+	 * @param states - StateMap object that represents the empty set of States to be filled.
+	 * @param events - EventMap object that represents the empty set of Events to be filled.
+	 * @param transitions - TransitionFunction<<r>T> object that represents the empty set of Transitions to be filled.
 	 * @param file - File object that holds the provided information instructing how to construct the FSM object.
 	 * @return - Returns an ArrayList<<r>ArrayList<<r>String>> object that contains the additional information about this FSM object based on its type.
 	 */

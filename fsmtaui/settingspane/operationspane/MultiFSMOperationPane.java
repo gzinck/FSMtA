@@ -26,7 +26,7 @@ public class MultiFSMOperationPane extends VBox {
 	/** String object constant representing the message for what the section does. */
 	private static final String TITLE_MSG = "Perform Operations with Multiple FSMs";
 	/** ObservableList of String object constants with all the possible operations involving multiple FSMs that a user can choose. */
-	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Union", "Product", "Parallel Composition", "Get Supremal Controllable Sublanguage");
+	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Product", "Parallel Composition", "Get Supremal Controllable Sublanguage");
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
@@ -73,47 +73,11 @@ public class MultiFSMOperationPane extends VBox {
 		return new VBox(operationLabel, operationChoiceBox);
 	} // makeOperationSelector()
 	
-//	/**
-//	 * Makes the ChoiceBoxes for the user to select two FSMs to perform
-//	 * an operation. It does not enforce that these two FSMs be different,
-//	 * just that they both exist.
-//	 * 
-//	 * @return - GridPane with two ChoiceBoxes and their Labels.
-//	 */
-//	private GridPane makeFSMSelectors() {
-//		GridPane fsmSelectors = new GridPane();
-//		
-//		Label choice1 = new Label("First FSM to use:");
-//		fsmChoiceBox1 = new ChoiceBox<String>(model.getOpenFSMStrings());
-//		
-//		Label choice2 = new Label("Second FSM to use:");
-//		fsmChoiceBox2 = new ChoiceBox<String>(model.getOpenFSMStrings());
-//		
-//		fsmSelectors.addColumn(0, choice1, choice2);
-//		fsmSelectors.addColumn(1, fsmChoiceBox1, fsmChoiceBox2);
-//		
-//		return fsmSelectors;
-//	} // makeFSMSelectors()
-	
-//	/**
-//	 * Makes a name TextField for the new FSM that is created.
-//	 * 
-//	 * @return - HBox containing the name TextField and its Label.
-//	 */
-//	private HBox makeFSMNameField() {
-//		Label fsmNameLabel = new Label("New FSM Name:");
-//		fsmNameField = new TextField();
-//		return new HBox(fsmNameLabel, fsmNameField);
-//	} // makeFSMNameField()
-	
 	/**
 	 * This method creates an event handler for when the perform operation button is pressed, performing the operation.
 	 */
 
 	private void makePerformOperationEventHandler() {
-//		fsmNameField.setOnKeyPressed(e -> {
-//			if(e.getCode() == KeyCode.ENTER) performOperationBtn.fire();
-//		});
 		performOperationBtn.setOnAction(e -> {
 			String operation = operationChoiceBox.getSelectionModel().getSelectedItem();
 			if(operation == null) {
@@ -129,15 +93,12 @@ public class MultiFSMOperationPane extends VBox {
 				FSM<?> fsm1 = fsmList.removeFirst();
 				FSM<?>[] fsms = fsmList.toArray(new FSM<?>[fsmList.size()]);
 				if(operation.equals(MULTI_FSM_OPERATIONS.get(0))) {
-					// Perform union
-					addFSM(fsm1.union(fsms), id);
-				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(1))) {
 					// Perform product
 					addFSM(fsm1.product(fsms), id);
-				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(2))) {
+				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(1))) {
 					// Perform parallel composition
 					addFSM(fsm1.parallelComposition(fsms), id);
-				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(3))) {
+				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(2))) {
 					// Get Supremal Controllable Sublanguage
 					if(fsm1 instanceof NonDetObsContFSM)
 						addFSM(((NonDetObsContFSM)fsm1).getSupremalControllableSublanguage(fsms[0]), id);
