@@ -1,7 +1,10 @@
 package fsmtaui;
 
+import support.Event;
 import support.transition.Transition;
 import javafx.scene.control.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.*;
 import java.util.ArrayList;
 import javafx.stage.*;
@@ -37,6 +40,10 @@ public class Model {
 	private ObservableList<TransitionSystem<? extends Transition>> openTSs;
 	/** List of openFSM ids, used for the ListView. */
 	private ObservableList<String> openTSStrings;
+	/** Transition system which is currently open in the UI. */
+	private TransitionSystem<?> currTS;
+	/** List of all the events which are open in a ListView for the current TS. */
+	private ObservableList<Event> currTSEvents;
 	/** TabPane containing all the tabs of open FSMs. This is kept in the Model class so that other panes can add on openFSMs. */
 	private TabPane openTSTabs;
 	/** File object representing the directory being used for temporary files. */
@@ -62,7 +69,36 @@ public class Model {
 		graphVizConfigPath = inGraphVizConfigPath;
 		openTSTabs = new TabPane();
 		makeOpenTSStrings();
+		
+		makeCurrentTSListener();
+		// Get the events for the current FSM
+		TransitionSystem<?> curr = getCurrTS();
+		if(curr != null) currTSEvents = FXCollections.observableArrayList(curr.getEvents());
+		else currTSEvents = FXCollections.observableArrayList();
 	} // Model(ObservableList, ObservableList, File)
+	
+	/**
+	 * Creates a listener that updates the current TS every time the TS tab changes.
+	 * It also updates all the editable events in the UI to reflect the change in TS.
+	 */
+	
+	private void makeCurrentTSListener() {
+		openTSTabs.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+			@Override
+			public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+				Tab currTab = ov.getValue();
+				if(currTab != null) {
+					TSViewport currViewport = (TSViewport)(currTab.getContent());
+					currTS = currViewport.getFSM();
+					// Also, update the events
+					currTSEvents.clear();
+					currTSEvents.addAll(currTS.getEvents());
+				} else {
+					currTS = null;
+				}
+			}
+		});
+	}
 
 //---  Operations   ---------------------------------------------------------------------------
 	
@@ -151,11 +187,19 @@ public class Model {
 	 */
 
 	public TransitionSystem<? extends Transition> getCurrTS() {
-		Tab currTab = openTSTabs.getSelectionModel().getSelectedItem();
-		if(currTab == null) return null;
-		TSViewport currViewport = (TSViewport) currTab.getContent();
-		return currViewport.getFSM();
+		return currTS;
 	} // getCurrFSM()
+	
+	/**
+	 * Gets the ObservableList of Events which are applicable to the current TS in the
+	 * viewport.
+	 * 
+	 * @return - Returns an ObservableList of Event objects.
+	 */
+	
+	public ObservableList<Event> getCurrTSEvents() {
+		return currTSEvents;
+	}
 	
 	/**
 	 * Gets the TransitionSystem with the desired String id and returns it.

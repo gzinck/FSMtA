@@ -1073,6 +1073,38 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return(super.removeTransition(state1, eventName, state2));
 	}
 
+//---  Getter Methods   -----------------------------------------------------------------------
+
+	/**
+	 * Getter method that requests the status of the defined Event's being Controllable, returning
+	 * true if it is Controllable, false if it is not, and null if the Event did not exist.
+	 * 
+	 * @param event - String object representing the Event whose status of Controllability is being checked.
+	 * @return - Returns a Boolean object representing the result of this method's query; null if the object did not exist, true/false representing the result of the query
+	 */
+	
+	public Boolean getEventControllability(String eventName) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			return curr.getEventControllability();
+		return null;
+	}
+	
+//---  Setter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * Setter method that assigns a new value to the defined Event object's status of being Controllable.
+	 * 
+	 * @param event - String object representing the Event whose status of Controllability is being edited.
+	 * @param value - boolean value representing the new value to assign to the defined Event object.
+	 */
+	
+	public void setEventControllability(String eventName, boolean value) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			curr.setEventControllability(value);
+	}
+	
 //---  Support Classes   ----------------------------------------------------------------------
 	
 	/**
