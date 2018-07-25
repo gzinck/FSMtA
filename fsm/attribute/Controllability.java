@@ -77,7 +77,6 @@ public interface Controllability<T extends Transition> {
 	 * 
 	 * @param event - String object representing the Event whose status of Controllability is being edited.
 	 * @param value - boolean value representing the new value to assign to the defined Event object.
-	 * @return - Returns a boolean value representing the result of this process; false if the event was not found, true otherwise.
 	 */
 	
 	public abstract void setEventControllability(String eventName, boolean value);

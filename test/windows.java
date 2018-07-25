@@ -15,7 +15,7 @@ public class windows {
 	@Test
 	public void test() {
 		File f = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 3, 1, 2, false, "fileName", MAC_WORKING_FOLDER));
-		DetObsContFSM fsm = new NonDetObsContFSM(f, "fsm").createObserverView();
+		DetObsContFSM fsm = new NonDetObsContFSM(f, "fsm").buildObserver();
 		System.out.println(fsm.makeDotString());
 		
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
