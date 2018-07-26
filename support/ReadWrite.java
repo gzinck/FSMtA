@@ -24,8 +24,6 @@ public class ReadWrite <T extends Transition>{
 	/**
 	 * This method converts the data structures configuring the provided FSM to a File format.
 	 * 
-	 * TODO: Can do special characteristics here as well? No longer have varying cases.
-	 * 
 	 * @param - String object representing the File Path to write the converted FSM to.
 	 * @param - String object representing the pre-calculated special attributes that are written before any Transitions.
 	 * @param - TransitionFunction<<r>S, T, E> object representing the Transitions that are written after the Special Attributes.

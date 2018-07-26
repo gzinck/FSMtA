@@ -39,31 +39,76 @@ public class TestFSMs {
 	@Test
 	public void test() {
 		int count = 0;
-		int max = 1;
+		int max = 100;
+		Random rand = new Random();
 	while(count < max) {
-		System.out.println(count++);
+		//System.out.println(count++ + " " + max++);
 		
-		int sizeState = 5;
-		int sizeMarked = 2;
+		int sizeState = 7;
+		int sizeMarked = 5;
 		int sizeEvents = 5;
 		int sizePaths = 3;
-		int sizePrivate = 1;
+		int sizePrivate = 2;
 		int sizeUnobserv = 1;
-		int sizeAttacker = 0;
+		int sizeAttacker = 1;
 		int sizeControl = 1;
-		int sizeMust = 3;
+		int sizeMust = 4;
 		
 		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
+		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
+		
+		
+		
+		ModalSpecification test1 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m1.mdl.txt"), "m1");
+		FSMToDot.createImgFromFSM(test1, MAC_WORKING_FOLDER + "_img_m1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+
+		ModalSpecification test2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m2.mdl.txt"), "m2");
+		FSMToDot.createImgFromFSM(test2, MAC_WORKING_FOLDER + "_img_m2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		ModalSpecification test3 = test1.getGreatestLowerBound(test2);
+		FSMToDot.createImgFromFSM(test3, MAC_WORKING_FOLDER + "_img_m3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		
 		
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
+		
+		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
+		
+		ModalSpecification mod3 = mod1.getGreatestLowerBound(mod2);
 
-		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "mod1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		mod1.toTextFile(MAC_WORKING_FOLDER, "modalSpec2");
+		//System.out.println(mod1.testCurrentStateOpacity().isEmpty() + " " + mod2.testCurrentStateOpacity().isEmpty() + " " + !mod3.testCurrentStateOpacity().isEmpty());
 		
-		ModalSpecification mod2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "modalSpec2" + ".mdl"), "mod2").buildObserver();
+
+		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		mod1.toTextFile(MAC_WORKING_FOLDER, "_1");
+		FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "_img_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		mod1.toTextFile(MAC_WORKING_FOLDER, "_2");
+		FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "_img_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		mod1.toTextFile(MAC_WORKING_FOLDER, "_3");
 		
-		FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "mod2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		System.out.println(count);
+		
+		if(mod1.buildObserver().testCurrentStateOpacity().isEmpty() && mod2.buildObserver().testCurrentStateOpacity().isEmpty() && !mod3.buildObserver().testCurrentStateOpacity().isEmpty()) {
+			int id = rand.nextInt(10000);
+			System.out.println("success" + " " + id);
+			FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_1");
+			FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_2");
+			FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_3");
+		}
+		
+		if(!mod1.buildObserver().testCurrentStateOpacity().isEmpty() && !mod2.buildObserver().testCurrentStateOpacity().isEmpty() && mod3.buildObserver().testCurrentStateOpacity().isEmpty()) {
+			int id = rand.nextInt(10000);
+			System.out.println("weird" + " " + id);
+			FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "weirdCase/" + id + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			mod1.toTextFile(MAC_WORKING_FOLDER + "weirdCase/", id + "_1");
+			FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "weirdCase/" + id + "_img_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			mod1.toTextFile(MAC_WORKING_FOLDER + "weirdCase/", id + "_2");
+			FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "weirdCase/" + id + "_img_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			mod1.toTextFile(MAC_WORKING_FOLDER + "weirdCase/", id + "_3");
+		}
+
 	}
 		
 	/*

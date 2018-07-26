@@ -64,42 +64,30 @@ public class NonDetTransition implements Transition {
 
 	@Override
 	public String makeDotString(State firstState) {
-		String eventDeal = "";
-		switch(event.getEventType()) {
-		case 0:
-			// Observable and controllable
-			eventDeal = "color = \"black\"";
-			break;
-		case 1:
-			// Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normallcurve\"";
-			break;
-		case 2:
-			// Unobservable to System
-			eventDeal = "color = \"red\" arrowhead = \"normalrdiamond\"";
-			break;
-		case 3:
-			// Unobservable to System and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normallcurverdiamond\"";
-			break;
-		case 4:
-			//Unobservable to the Attacker
-			eventDeal = "color = \"red\" arrowhead = \"normalodot\"";
-			break;
-		case 5:
-			//Unobservable to the Attacker and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normalodotlcurve\"";
-			break;
-		case 6:
-			//Unobservable to the Attacker and Unobservable to the System
-			eventDeal = "color = \"red\" arrowhead = \"normalodotrdiamond\"";
-			break;
-		case 7:
-			//Unobservable to the Attacker and Unobservable to the System and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normalodoticurverdiamond\"";
-			break;
-		default: break;
+		boolean obs = event.getEventObservability();
+		boolean atk = event.getEventAttackerObservability();
+		boolean con = event.getEventControllability();
+		
+		String eventDeal = "color = ";
+		
+		if(event.getEventObservability()) {		//Red means System can't see
+			eventDeal += "\"black\"";
 		}
+		else {
+			eventDeal += "\"red\"";
+		}
+		
+		eventDeal += " arrowhead = \"normal";
+		
+		if(!event.getEventAttackerObservability()) {		//Dot means Attacker can't see
+			eventDeal += "odot";
+		}
+		
+		if(!event.getEventControllability()) {		//Diamond means System can't control
+			eventDeal += "diamond";
+		}
+		
+		eventDeal += "\"";
 		StringBuilder sb = new StringBuilder();
 		sb.append("\"" + firstState.getStateName() + "\"->{\"");
 		Iterator<State> itr = states.iterator();

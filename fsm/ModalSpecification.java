@@ -87,7 +87,6 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			events.getEvent(special.get(3).get(i)).setEventObservability(false);
 		}
 		for(int i = 0; i < special.get(4).size(); i++) {			//Special ArrayList 4-entry is ObservableEvent
-			System.out.println(special.get(4).get(i));
 			if(events.getEvent(special.get(4).get(i)) == null)
 				events.addEvent(special.get(4).get(i));
 			events.getEvent(special.get(4).get(i)).setEventAttackerObservability(false);
@@ -138,7 +137,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * @param inId - String object representing Id for the new ModalSpecification to carry.
 	 */
 	
-	public <T1 extends Transition> ModalSpecification(TransitionSystem<T1> other, HashSet<String> badStates, String inId) {
+	public ModalSpecification(ModalSpecification other, HashSet<String> badStates, String inId) {
 		id = inId;
 		states = new StateMap();
 		events = new EventMap();
@@ -146,6 +145,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		mustTransitions = new TransitionFunction<DetTransition>(new DetTransition());
 		
 		// If the initial state is bad, then we don't do anything
+		initialState = other.getInitialState();
 		copyStates(other, badStates); // Add in all the states NOT in the badStates set
 		copyEvents(other); // Add in all the events
 		// Add in all the transitions (but only take the first state it transitions to) IF NOT in badStates set
@@ -399,6 +399,271 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public ArrayList<State> testCurrentStateOpacity() {
+		ArrayList<State> secrets = new ArrayList<State>();
+		for(State s : this.getStates()) {
+			if(s.getStatePrivate())
+				secrets.add(s);
+		}
+		return secrets;
+	}
+
+//---  Multi-FSM Operations   -----------------------------------------------------------------
+	
+	/**
+	 * This method performs a Product(or Intersection) operation between multiple FSM objects, one provided as an
+	 * argument and the other being the FSM object calling this method, and returns the resulting FSM object.
+	 * 
+	 * TODO: Make sure this works, as it is repurposed from FSM algorithms
+	 * 
+	 * @param other - Array of FSM extending objects that performs the product operation on with the current FSM.
+	 * @return - Returns a FSM extending object representing the FSM object resulting from all Product operations.
+	 */
+	
+	public ModalSpecification product(ModalSpecification ... other) {
+		ModalSpecification newFSM = new ModalSpecification();
+		this.productHelper(other[0], newFSM);
+		for(int i = 1; i < other.length; i++) {
+			ModalSpecification newerFSM = new ModalSpecification();
+			newFSM.productHelper(other[i], newerFSM);
+			newFSM = newerFSM;
+		}
+		return newFSM;
+	}
+	
+	/**
+	 * Helper method that performs the brunt of the operations involved with a single Product operation
+	 * between two FSM objects, leaving the specialized features in more advanced FSM types to their
+	 * own interpretations after this function has occurred.
+	 * 
+	 * Performs a product operation on the calling FSM with the first parameter FSM, and builds the
+	 * resulting FSM in the second FSM. Has no return, does its action by side-effect.
+	 * 
+	 * TODO: Make sure this works, as it is repurposed from FSM algorithms
+	 * 
+	 * @param other - FSM object representing the FSM object performing the Product operation with the calling FSM object.
+	 * @param newFSM - FSM object representing the FSM holding the contents of the product of the Product operation.
+	 */
+	
+	protected void productHelper(ModalSpecification other, ModalSpecification newFSM) {
+		// Get all the events the two have in common
+		for(Event thisEvent : this.events.getEvents()) {
+			for(Event otherEvent : other.events.getEvents()) {
+				// All common events are added
+				if(thisEvent.getEventName().equals(otherEvent.getEventName())) {
+					newFSM.events.addEvent(thisEvent, otherEvent);
+				} // if the event is identical
+			} // for otherEvent
+		} // for thisEvent
+		
+		// Go through all the initial states and add everything they connect to with shared events.
+		for(State thisInitial : this.getInitialStates()) {
+			for(State otherInitial : other.getInitialStates()) {
+				// Now, start going through the paths leading out from this new initial state.
+				LinkedList<State> thisNextState = new LinkedList<State>();
+				thisNextState.add(thisInitial);
+				LinkedList<State> otherNextState = new LinkedList<State>();
+				otherNextState.add(otherInitial);
+				
+				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
+					State thisState = thisNextState.poll();
+					State otherState = otherNextState.poll();
+					State newState = newFSM.states.addState(thisState, otherState); // Add the new state
+					if(thisState.getStateInitial() && otherState.getStateInitial())
+						newFSM.addInitialState(newState);
+					
+					newFSM.setStateComposition(newState, thisState, (State)otherState);
+					
+					// Go through all the transitions in each, see what they have in common
+					ArrayList<DetTransition> thisTransitions = this.transitions.getTransitions(thisState);
+					ArrayList<DetTransition> otherTransitions = other.transitions.getTransitions(otherState);
+					if(thisTransitions != null && otherTransitions != null) {
+						for(DetTransition thisTrans : thisTransitions) {
+							for(DetTransition otherTrans : otherTransitions) {
+								
+								// If they share the same event
+								Event thisEvent = thisTrans.getTransitionEvent();
+								if(thisEvent.getEventName().equals(otherTrans.getTransitionEvent().getEventName())) {
+									
+									// Then create transitions to all the combined neighbours
+									for(State thisToState : thisTrans.getTransitionStates()) {
+										for(State otherToState : otherTrans.getTransitionStates()) {
+											
+											// If the state doesn't exist, add to queue
+											if(!newFSM.stateExists("(" + thisToState.getStateName() + "," + otherToState.getStateName() + ")")) {
+												thisNextState.add(thisToState);
+												otherNextState.add(otherToState);
+											} // if state doesn't exist
+											
+											// Add the state, then add the transition
+											State newToState = newFSM.states.addState(thisToState, otherToState);
+											newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+										} // for every state in other transition
+									} // for every state in this transition
+								} // if they share the event
+							} // for other transitions
+						} // for this transitions
+					} // if transitions not null
+				} // while there are more states connected to the 2-tuple of initial states
+			} // for otherInitial
+		} // for thisInitial
+		newFSM.addStateComposition(this.getComposedStates());
+		newFSM.addStateComposition(other.getComposedStates());
+	} // productHelper(FSM)
+	
+	/**
+	 * This method performs the Parallel Composition of multiple FSMs: the FSM calling this method and the FSMs
+	 * provided as arguments. The resulting, returned, FSM will be the same type as the calling FSM.
+	 * 
+	 * TODO: Make sure this works, as it is repurposed from FSM algorithms
+	 * 
+	 * @param other - Array of FSM extending objects provided to perform Parallel Composition with the calling FSM object.
+	 * @return - Returns a FSM extending object representing the result of all Parallel Composition operations.
+	 */
+	
+	public ModalSpecification parallelComposition(ModalSpecification ... other) {
+		ModalSpecification newFSM = this;
+		for(int i = 0; i < other.length; i++) {
+			ModalSpecification newerFSM = new ModalSpecification();
+			newFSM.parallelCompositionHelper(other[i], newerFSM);
+			newFSM = newerFSM;
+		}
+		return newFSM;
+	}
+	
+	/**
+	 * Helper method that performs the brunt of the operations involved with a single Parallel Composition
+	 * operation between two FSM objects, leaving the specialized features in more advanced FSM types to
+	 * their own interpretations after this function has occurred.
+	 * 
+	 * Performs a Parallel Composition operation on the FSM object calling this method with the FSM object provided as
+	 * an argument (other), and places the results of this operation into the provided FSM object (newFSM).
+	 * 
+	 * TODO: Make sure this works, as it is repurposed from FSM algorithms
+	 * 
+	 * @param other - FSM extending object that performs the Parallel Composition operation with FSM object calling this method.
+	 * @param newFSM - FSM extending object that is provided to contain the results of this Parallel Composition operation.
+	 */
+	
+	protected void parallelCompositionHelper(ModalSpecification other, ModalSpecification newFSM) {
+		// Get all the events the two have in common
+		HashSet<String> commonEvents = new HashSet<String>();
+		for(Event thisEvent : this.events.getEvents()) {
+			for(Event otherEvent : other.events.getEvents()) {
+				// If it is a common event
+				if(thisEvent.getEventName().equals(otherEvent.getEventName())) {
+					Event newEvent = newFSM.events.addEvent(thisEvent, otherEvent);
+					commonEvents.add(newEvent.getEventName());
+				} // if the event is identical
+			} // for otherEvent
+		} // for thisEvent
+		
+		// Add all the events unique to each FSM
+		for(Event thisEvent : this.events.getEvents())
+			if(!commonEvents.contains(thisEvent.getEventName()))
+				newFSM.events.addEvent(thisEvent);
+		for(Event otherEvent : other.events.getEvents())
+			if(!commonEvents.contains(otherEvent.getEventName()))
+				newFSM.events.addEvent(otherEvent);
+		
+		// Go through all the initial states and add everything they connect to.
+		for(State thisInitial : this.getInitialStates()) {
+			for(State otherInitial : other.getInitialStates()) {
+				
+				// Now, start going through the paths leading out from this new initial state.
+				LinkedList<State> thisNextState = new LinkedList<State>();
+				thisNextState.add(thisInitial);
+				LinkedList<State> otherNextState = new LinkedList<State>();
+				otherNextState.add(otherInitial);
+				
+				while(!thisNextState.isEmpty() && !otherNextState.isEmpty()) { // Go through all the states connected
+					State thisState = thisNextState.poll();
+					State otherState = otherNextState.poll();
+					State newState = newFSM.states.addState(thisState, otherState); // Add the new state
+					if(newState.getStateInitial())
+						newFSM.addInitialState(newState);
+					
+					newFSM.setStateComposition(newState, thisState, (State)otherState);
+					
+					// Go through all the transitions in each, see what they have in common
+					ArrayList<DetTransition> thisTransitions = this.transitions.getTransitions(thisState);
+					ArrayList<DetTransition> otherTransitions = other.transitions.getTransitions(otherState);
+					if(thisTransitions != null && otherTransitions != null) {
+						for(DetTransition thisTrans : thisTransitions) {
+							for(DetTransition otherTrans : otherTransitions) {
+								
+								// If they share the same event
+								Event thisEvent = thisTrans.getTransitionEvent();
+								if(thisEvent.getEventName().equals(otherTrans.getTransitionEvent().getEventName())) {
+									
+									// Then create transitions to all the combined neighbours
+									for(State thisToState : thisTrans.getTransitionStates()) {
+										for(State otherToState : otherTrans.getTransitionStates()) {
+											
+											// If the state doesn't exist, add to queue
+											if(!newFSM.stateExists("(" + thisToState.getStateName() + "," + otherToState.getStateName() + ")")) {
+												thisNextState.add(thisToState);
+												otherNextState.add(otherToState);
+											} // if state doesn't exist
+											
+											// Add the state, then add the transition
+											State newToState = newFSM.states.addState(thisToState, otherToState);
+											newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+										} // for every state in other transition
+									} // for every state in this transition
+								} // if they share the event
+							} // for other transitions
+						} // for this transitions
+					} // if transitions are not null
+					// Go through all the transitions and see what is unique
+					if(thisTransitions != null) {
+						for(DetTransition thisTrans : thisTransitions) {
+							// If it's NOT a common event
+							Event thisEvent = thisTrans.getTransitionEvent();
+							if(!commonEvents.contains(thisTrans.getTransitionEvent().getEventName())) {
+								// Then, add all the transitions
+								for(State thisToState : thisTrans.getTransitionStates()) {
+									
+									// If it doesn't exist, add it to the queue
+									if(!newFSM.stateExists("(" + thisToState.getStateName() + "," + otherState.getStateName() + ")")) {
+										thisNextState.add(thisToState);
+										otherNextState.add(otherState);
+									} // if state doesn't exist
+									
+									// Add the state, then add the transition
+									State newToState = newFSM.states.addState(thisToState, otherState);
+									newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+								} // for the toStates
+							} // if not a common event
+						} // for this transitions
+					} // if transitions are not null
+					if(otherTransitions != null) {
+						for(DetTransition otherTrans : other.transitions.getTransitions(otherState)) {
+							// If it's NOT a common event
+							Event thisEvent = otherTrans.getTransitionEvent();
+							if(!commonEvents.contains(otherTrans.getTransitionEvent().getEventName())) {
+								// Then, add all the transitions
+								for(State otherToState : otherTrans.getTransitionStates()) {
+									
+									// If it doesn't exist, add it to the queue
+									if(!newFSM.stateExists("(" + thisState.getStateName() + "," + otherToState.getStateName() + ")")) {
+										thisNextState.add(thisState);
+										otherNextState.add(otherToState);
+									} // if state doesn't exist
+									
+									// Add the state, then add the transition
+									State newToState = newFSM.states.addState(thisState, otherToState);
+									newFSM.addTransition(newState.getStateName(), thisEvent.getEventName(), newToState.getStateName());
+								} // for the toStates
+							} // if not a common event
+						} // for other transitions
+					} // if transitions are not null
+				} // while there are more states connected to the 2-tuple of initial states
+			} // for otherInitial
+		} // for thisInitial
+	} // parallelCompositionHelper(FSM)
 	
 //---  Operations for pruning a MS   ----------------------------------------------------------
 	
@@ -416,6 +681,8 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		// Now, go through all the states and see if there are must transitions to these inconsistent
 		// states. If there are, those states must be removed (iteratively).
 		while(getBadMustTransitionStates(badStates));
+		
+		//TODO: Something here doesn't work right, only leaves the initial State.
 		
 		return (ModalSpecification)(new ModalSpecification(this, badStates, this.id)).makeAccessible();
 	}
@@ -853,7 +1120,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		while(!next.isEmpty()) {
 			NextStates curr = next.poll();
 			
-			if(visited.contains(curr.stateNew.getStateName())) continue; // If we already added the state, skip this iteration
+			if(visited.contains(curr.stateNew.getStateName()))
+				continue; // If we already added the state, skip this iteration
+			
 			visited.add(curr.stateNew.getStateName());
 			
 			// Go through all the MAY transitions common in both
@@ -1092,18 +1361,14 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 
 	@Override
 	public Boolean getEventControllability(String eventName) {
-		// TODO Auto-generated method stub
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			return curr.getEventControllability();
 		return null;
 	}
-
+	
 	@Override
 	public Boolean getEventObservability(String eventName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<State> testCurrentStateOpacity() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -1112,10 +1377,11 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	
 	@Override
 	public void setEventControllability(String eventName, boolean value) {
-		// TODO Auto-generated method stub
-		
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			curr.setEventControllability(value);
 	}
-
+	
 	@Override
 	public boolean setEventObservability(String eventName, boolean status) {
 		// TODO Auto-generated method stub
@@ -1214,38 +1480,6 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return(super.removeTransition(state1, eventName, state2));
 	}
 
-//---  Getter Methods   -----------------------------------------------------------------------
-
-	/**
-	 * Getter method that requests the status of the defined Event's being Controllable, returning
-	 * true if it is Controllable, false if it is not, and null if the Event did not exist.
-	 * 
-	 * @param event - String object representing the Event whose status of Controllability is being checked.
-	 * @return - Returns a Boolean object representing the result of this method's query; null if the object did not exist, true/false representing the result of the query
-	 */
-	
-	public Boolean getEventControllability(String eventName) {
-		Event curr = events.getEvent(eventName);
-		if(curr != null)
-			return curr.getEventControllability();
-		return null;
-	}
-	
-//---  Setter Methods   -----------------------------------------------------------------------
-	
-	/**
-	 * Setter method that assigns a new value to the defined Event object's status of being Controllable.
-	 * 
-	 * @param event - String object representing the Event whose status of Controllability is being edited.
-	 * @param value - boolean value representing the new value to assign to the defined Event object.
-	 */
-	
-	public void setEventControllability(String eventName, boolean value) {
-		Event curr = events.getEvent(eventName);
-		if(curr != null)
-			curr.setEventControllability(value);
-	}
-	
 //---  Support Classes   ----------------------------------------------------------------------
 	
 	/**

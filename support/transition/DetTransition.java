@@ -52,43 +52,31 @@ public class DetTransition implements Transition {
 	
 	@Override
 	public String makeDotString(State firstState) {
-		String eventDeal = "";
+		boolean obs = event.getEventObservability();
+		boolean atk = event.getEventAttackerObservability();
+		boolean con = event.getEventControllability();
 		
-		switch(event.getEventType()) {
-		case 0:
-			// Observable and controllable
-			eventDeal = "color = \"black\"";
-			break;
-		case 1:
-			// Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normallcurve\"";
-			break;
-		case 2:
-			// Unobservable to System
-			eventDeal = "color = \"red\" arrowhead = \"normalrdiamond\"";
-			break;
-		case 3:
-			// Unobservable to System and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normallcurverdiamond\"";
-			break;
-		case 4:
-			//Unobservable to the Attacker
-			eventDeal = "color = \"red\" arrowhead = \"normalodot\"";
-			break;
-		case 5:
-			//Unobservable to the Attacker and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normalodotlcurve\"";
-			break;
-		case 6:
-			//Unobservable to the Attacker and Unobservable to the System
-			eventDeal = "color = \"red\" arrowhead = \"normalodotrdiamond\"";
-			break;
-		case 7:
-			//Unobservable to the Attacker and Unobservable to the System and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normalodoticurverdiamond\"";
-			break;
-		default: break;
+		String eventDeal = "color = ";
+		
+		if(event.getEventObservability()) {
+			eventDeal += "\"black\"";
 		}
+		else {
+			eventDeal += "\"red\"";
+		}
+		
+		eventDeal += " arrowhead = \"normal";
+		
+		if(!event.getEventAttackerObservability()) {
+			eventDeal += "odot";
+		}
+		
+		if(!event.getEventControllability()) {
+			eventDeal += "diamond";
+		}
+		
+		eventDeal += "\"";
+		
 		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];";
 	}
 	
@@ -102,42 +90,30 @@ public class DetTransition implements Transition {
 	 */
 	
 	public String makeDotStringMayTransition(State firstState) {
-		String eventDeal = "";
-		switch(event.getEventType()) {
-		case 0:
-			// Observable and controllable
-			eventDeal = "color = \"black\"";
-			break;
-		case 1:
-			// Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normallicurve\"";
-			break;
-		case 2:
-			// Unobservable to System
-			eventDeal = "color = \"red\" arrowhead = \"normalrdiamond\"";
-			break;
-		case 3:
-			// Unobservable to System and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normallicurverdiamond\"";
-			break;
-		case 4:
-			//Unobservable to the Attacker
-			eventDeal = "color = \"red\" arrowhead = \"normalodot\"";
-			break;
-		case 5:
-			//Unobservable to the Attacker and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normalodotlicurve\"";
-			break;
-		case 6:
-			//Unobservable to the Attacker and Unobservable to the System
-			eventDeal = "color = \"red\" arrowhead = \"normalodotrdiamond\"";
-			break;
-		case 7:
-			//Unobservable to the Attacker and Unobservable to the System and Uncontrollable
-			eventDeal = "color = \"red\" arrowhead = \"normalodotlicurverdiamond\"";
-			break;
-		default: break;
+		boolean obs = event.getEventObservability();
+		boolean atk = event.getEventAttackerObservability();
+		boolean con = event.getEventControllability();
+		
+		String eventDeal = "color = ";
+		
+		if(event.getEventObservability()) {		//Red means System can't see
+			eventDeal += "\"black\"";
 		}
+		else {
+			eventDeal += "\"red\"";
+		}
+		
+		eventDeal += " arrowhead = \"normal";
+		
+		if(!event.getEventAttackerObservability()) {		//Dot means Attacker can't see
+			eventDeal += "odot";
+		}
+		
+		if(!event.getEventControllability()) {		//Diamond means System can't control
+			eventDeal += "diamond";
+		}
+		
+		eventDeal += "\"";
 		eventDeal += "; style=dotted";
 		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];";
 	}
@@ -230,7 +206,7 @@ public class DetTransition implements Transition {
 	
 	@Override
 	public int compareTo(Transition o) {
-		// Simply compares the names of the two tranisitons' events
+		// Simply compares the names of the two transitions' events
 		return this.event.getEventName().compareTo(o.getTransitionEvent().getEventName());
 	}
 	
