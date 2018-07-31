@@ -89,8 +89,8 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * version of the calling TransitionSystem object.
 	 */
 	
-	public TransitionSystem<T> trim() {
-		TransitionSystem<T> newFSM = this.makeAccessible();
+	public <TS extends TransitionSystem<T>> TS trim() {
+		TS newFSM = this.makeAccessible();
 		return newFSM.makeCoAccessible();
 	}
 	
@@ -109,7 +109,7 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * version of the calling TransitionSystem object. 
 	 */
 	
-	public TransitionSystem<T> makeAccessible() {
+	public <TS extends TransitionSystem<T>> TS makeAccessible() {
 		// Make a queue to keep track of states that are accessible and their neighbours.
 		LinkedList<State> queue = new LinkedList<State>();
 		
@@ -138,7 +138,7 @@ public abstract class TransitionSystem<T extends Transition> {
 				} // if not null
 			} // while
 			
-			return newFSM;
+			return (TS)newFSM;
 		} catch(IllegalAccessException e) {
 			e.printStackTrace();
 			return null;
@@ -160,7 +160,7 @@ public abstract class TransitionSystem<T extends Transition> {
 	 * TransitionSystem.
 	 */
 	
-	public TransitionSystem<T> makeCoAccessible() {
+	public <TS extends TransitionSystem<T>> TS makeCoAccessible() {
 		try {
 			TransitionSystem<T> newTS = this.getClass().newInstance();
 			// First, find what states we need to add.
@@ -192,7 +192,7 @@ public abstract class TransitionSystem<T extends Transition> {
 				if(processedStates.get(state.getStateName()))
 					newTS.addInitialState(state.getStateName());
 			}
-			return newTS;
+			return (TS)newTS;
 		}
 		catch(IllegalAccessException e) {
 			e.printStackTrace();
@@ -472,6 +472,15 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * 
+	 * @return
+	 */
+	
+	public EventMap getEventMap() {
+		return events;
+	}
 	
 	/**
 	 * Getter method that is used to acquire the ID (represented as a String object) associated to this FSM object.

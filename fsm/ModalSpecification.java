@@ -91,7 +91,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 				events.addEvent(special.get(4).get(i));
 			events.getEvent(special.get(4).get(i)).setEventAttackerObservability(false);
 		}
-		for(int i = 0; i < special.get(5).size(); i++) {			//Special ArrayList 5-entry is Controllable Event
+		for(int i = 0; i < special.get(5).size(); i++) {			//Special ArrayList 5-entry is Attacker Observable Event
 			if(events.getEvent(special.get(5).get(i)) == null)
 				events.addEvent(special.get(5).get(i));
 			events.getEvent(special.get(5).get(i)).setEventControllability(false);
@@ -207,6 +207,58 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return specFSM;
 	}
 
+	
+	public DetObsContFSM buildOptimalOpaqueController() {
+		DetObsContFSM optimal = new DetObsContFSM();
+		
+		LinkedList<State> queue = new LinkedList<State>();
+		ArrayList<State> initial = epsilonReach(this, getInitialState(), true); 
+		State init = new State(initial.toArray(new State[initial.size()]));
+		init.setStateName(getInitialState().getStateName() + "," + init.getStateName());
+		queue.add(init);
+		
+		HashMap<State, ArrayList<State>> map = new HashMap<State, ArrayList<State>>();
+		HashMap<State, State> original = new HashMap<State, State>();
+		original.put(init, getInitialState());
+		map.put(init, initial);
+		
+		HashSet<State> visited = new HashSet<State>();
+		
+		while(!queue.isEmpty()) {
+			State top = queue.poll();
+			if(visited.contains(top))
+				continue;
+			visited.add(top);
+			
+			
+		}
+		
+		return optimal;
+	}
+	
+	public ArrayList<State> epsilonReach(ModalSpecification ts, State s, boolean must){
+		ArrayList<State> outbound = new ArrayList<State>();
+		
+		LinkedList<State> queue = new LinkedList<State>();
+		HashSet<State> visited = new HashSet<State>();
+		queue.add(s);
+		
+		while(!queue.isEmpty()) {
+			State st = queue.poll();
+			if(visited.contains(st))
+				continue;
+			visited.add(st);
+			outbound.add(st);
+			for(DetTransition t : ts.getTransitions().getTransitions(st)) {
+				if(!t.getTransitionEvent().getEventAttackerObservability() && (!must || s.equals(st) || ts.getMustTransitions().contains(st, t))) {
+					queue.add(t.getTransitionState());
+				}
+			}
+		}
+		return outbound;
+	}
+	
+	
 	@Override
 	public ModalSpecification buildObserver() {
 		ModalSpecification newFSM = new ModalSpecification();
@@ -1334,6 +1386,15 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
+	/**
+	 * 
+	 * @return
+	 */
+	
+	public TransitionFunction<DetTransition> getMustTransitions() {
+		return mustTransitions;
+	}
+	
 	@Override
 	public ArrayList<State> getInitialStates() {
 		ArrayList<State> s = new ArrayList<State>();
@@ -1509,6 +1570,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			stateA = stateFromA;
 			stateB = stateFromB;
 			stateNew = stateFromNew;
+			if(stateFromA.getStatePrivate() || stateFromB.getStatePrivate())
+				stateFromNew.setStatePrivate(true);
+			else
+				stateFromNew.setStatePrivate(false);
 		}
 	}
 

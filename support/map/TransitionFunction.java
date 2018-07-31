@@ -95,6 +95,7 @@ public class TransitionFunction <T extends Transition>{
 	 * @param fsmStates Collection of states which exists in the FSM.
 	 * @return Hashmap mapping each state to a hashset of states (which are all reachable
 	 */
+
 	public HashMap<State, HashSet<State>> getEpsilonReaches(Collection<State> fsmStates) {
 		HashMap<State, HashSet<State>> epsilonReach = new HashMap<State, HashSet<State>>();	//Maps a State to all States it is attached to
 		for(State s : fsmStates) {						//For all States in the FSM:
@@ -135,6 +136,7 @@ public class TransitionFunction <T extends Transition>{
 	 * the TransitionSystem.
 	 * @return - HashSet of all the States which were found to be inconsistent.
 	 */
+
 	public HashSet<String> getInconsistentStates(TransitionFunction<T> mustTransitionFunction) {
 		// This is the must transitions; we want all the states where there is no transition in
 		// other that corresponds to the one in this.
@@ -176,6 +178,7 @@ public class TransitionFunction <T extends Transition>{
 	 * @param state - State object in an FSM associated to the returned ArrayList<<r>T> of Transition objects
 	 * @return - Returns an ArrayList<<r>T> of sorted Transition objects that are associated to a defined State in an FSM
 	 */
+
 	public ArrayList<T> getSortedTransitions(State state) {
 		ArrayList<T> t = transitions.get(state);
 		if(t != null) {
@@ -250,6 +253,21 @@ public class TransitionFunction <T extends Transition>{
 				if(t.getTransitionEvent().equals(event))
 					return t.getTransitionStates();
 		return null;
+	}
+	
+	/**
+	 * 
+	 * @param reference
+	 * @param transition
+	 * @return
+	 */
+	
+	public boolean contains(State reference, T transition) {
+		for(T t : getTransitions(reference)) {
+			if(t.equals(transition))
+				return true;
+		}
+		return false;
 	}
 	
 //---  Setter Methods   -----------------------------------------------------------------------
