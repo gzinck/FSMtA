@@ -207,6 +207,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return specFSM;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	
 	public DetObsContFSM buildOptimalOpaqueController() {
 		DetObsContFSM optimal = new DetObsContFSM();
@@ -230,7 +234,6 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			if(visited.contains(top)) {
 				continue;
 			}
-			System.out.println(visited);
 			visited.add(top);
 			
 			State orig = original.get(top);
@@ -242,7 +245,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 				HashSet<State> newReach = epsilonReach(this, newReal, true);
 					
 				if(!t.getTransitionEvent().getEventAttackerObservability()) {
-					newReach.add(orig);
+					newReach.addAll(components);
 				}
 					
 				State added = new State(newReach.toArray(new State[newReach.size()]));
@@ -258,7 +261,14 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		
 		return optimal;
 	}
-	
+
+	/**
+	 * 
+	 * @param ts
+	 * @param s
+	 * @param must
+	 * @return
+	 */
 	
 	public HashSet<State> epsilonReach(ModalSpecification ts, State s, boolean must){
 		HashSet<State> outbound = new HashSet<State>();

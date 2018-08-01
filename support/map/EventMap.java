@@ -187,4 +187,10 @@ public class EventMap {
 		events.remove(eventName);
 	}
 
+	public void resetEvents() {
+		for(Event e : events.values()) {
+			e.resetEventAttributes();
+		}
+	}
+	
 }

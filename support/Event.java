@@ -165,6 +165,19 @@ public class Event implements EventControllability, EventObservability{
 		return controllability;
 	}	
 
+//---  Manipulations   ------------------------------------------------------------------------
+
+	/**
+	 * 
+	 * 
+	 */
+	
+	public void resetEventAttributes() {
+		controllability = true;
+		systemObservability = true;
+		attackerObservability = true;
+	}
+	
 //---  Miscellaneous   ------------------------------------------------------------------------
 	
 	@Override
