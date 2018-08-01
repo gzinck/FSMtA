@@ -791,7 +791,7 @@ public abstract class TransitionSystem<T extends Transition> {
 	 */
 	
 	public void addTransition(State state, Event event, State state2) {
-		transitions.addTransitionState(state,  event, state2);
+		transitions.addTransitionState(states.addState(state),  events.addEvent(event), states.addState(state2));
 	}
 	
 //---  Manipulations - Removing   -------------------------------------------------------------

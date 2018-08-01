@@ -212,32 +212,56 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		DetObsContFSM optimal = new DetObsContFSM();
 		
 		LinkedList<State> queue = new LinkedList<State>();
-		ArrayList<State> initial = epsilonReach(this, getInitialState(), true); 
+		HashSet<State> initial = epsilonReach(this, getInitialState(), true); 
 		State init = new State(initial.toArray(new State[initial.size()]));
 		init.setStateName(getInitialState().getStateName() + "," + init.getStateName());
 		queue.add(init);
+		optimal.addInitialState(init);
 		
-		HashMap<State, ArrayList<State>> map = new HashMap<State, ArrayList<State>>();
+		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();
 		HashMap<State, State> original = new HashMap<State, State>();
 		original.put(init, getInitialState());
-		map.put(init, initial);
+		map.put(init, new HashSet<State>(initial));
 		
 		HashSet<State> visited = new HashSet<State>();
 		
 		while(!queue.isEmpty()) {
 			State top = queue.poll();
-			if(visited.contains(top))
+			if(visited.contains(top)) {
 				continue;
+			}
+			System.out.println(visited);
 			visited.add(top);
 			
+			State orig = original.get(top);
+			ArrayList<State> components = new ArrayList<State>(map.get(top));
+			Collections.sort(components);
+			
+			for(DetTransition t : getTransitions().getTransitions(orig)) {
+				State newReal = t.getTransitionState();
+				HashSet<State> newReach = epsilonReach(this, newReal, true);
+					
+				if(!t.getTransitionEvent().getEventAttackerObservability()) {
+					newReach.add(orig);
+				}
+					
+				State added = new State(newReach.toArray(new State[newReach.size()]));
+				added = optimal.addState(newReal.getStateName() + "," + added.getStateName());
+				map.put(added, newReach);
+				original.put(added, newReal);
+				queue.add(added);
+				optimal.addTransition(top, t.getTransitionEvent(), added);
+					
+			}
 			
 		}
 		
 		return optimal;
 	}
 	
-	public ArrayList<State> epsilonReach(ModalSpecification ts, State s, boolean must){
-		ArrayList<State> outbound = new ArrayList<State>();
+	
+	public HashSet<State> epsilonReach(ModalSpecification ts, State s, boolean must){
+		HashSet<State> outbound = new HashSet<State>();
 		
 		LinkedList<State> queue = new LinkedList<State>();
 		HashSet<State> visited = new HashSet<State>();
