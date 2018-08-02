@@ -34,24 +34,25 @@ public class TestFSMs {
 	@Test
 	public void test() {
 		int count = 0;
-		int max = 1;
+		int max = 0;
 		Random rand = new Random();
-	while(count < max) {
+	while(true && max < 5) {
 		System.out.println(count++);
 		
 		int sizeState = 4;
 		int sizeMarked = 3;
-		int sizeEvents = 4;
+		int sizeEvents = 2;
 		int sizePaths = 2;
 		int sizePrivate = 1;
-		int sizeUnobserv = 1;
-		int sizeAttacker = 0;
+		int sizeUnobserv = 0;
+		int sizeAttacker = 1;
 		int sizeControl = 1;
-		int sizeMust = 3;
+		int sizeMust = 4;
 		
 		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
 		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
-		
+
+		/*
 
 		ModalSpecification test1 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m3.mdl.txt"), "m1");
 		ModalSpecification test2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m4.mdl.txt"), "m2");
@@ -72,7 +73,7 @@ public class TestFSMs {
 		FSMToDot.createImgFromFSM(test5, MAC_WORKING_FOLDER + "_img_m6", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(test6, MAC_WORKING_FOLDER + "_img_m7", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-		/*
+		
 		
 		ModalSpecification test1 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m1.mdl.txt"), "m1");
 		FSMToDot.createImgFromFSM(test1, MAC_WORKING_FOLDER + "_img_m1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
@@ -83,7 +84,7 @@ public class TestFSMs {
 		ModalSpecification test3 = test1.getGreatestLowerBound(test2);
 		FSMToDot.createImgFromFSM(test3, MAC_WORKING_FOLDER + "_img_m3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-		
+		*/
 		
 		//TODO: Fix Trim to retain Must Transitions
 		
@@ -91,7 +92,7 @@ public class TestFSMs {
 		
 		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
 		
-		mod2.setFSMEventMap(mod1.getEventMap());
+		//mod2.setFSMEventMap(mod1.getEventMap());
 		
 		ModalSpecification mod3 = mod1.getGreatestLowerBound(mod2);
 
@@ -106,23 +107,28 @@ public class TestFSMs {
 		FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "_img_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		mod1.toTextFile(MAC_WORKING_FOLDER, "_3");
 		
+		*/
 		
+		boolean condition1 = mod1.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod2.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && !mod3.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod3.getStates().size() > 4 /* && !mod3.getInitialState().getStatePrivate()*/; 
+		boolean condition2 = !mod1.getInitialState().getStatePrivate() && !mod2.getInitialState().getStatePrivate() && mod3.getStates().size() > 4 && mod1.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod2.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty();
 		
-		if(mod1.buildObserver().testCurrentStateOpacity().isEmpty() && mod2.buildObserver().testCurrentStateOpacity().isEmpty() && !mod3.buildObserver().testCurrentStateOpacity().isEmpty() && mod3.getStates().size() > 2 && !mod3.getInitialState().getStatePrivate()) {
+		if(condition2) {
 			int id = rand.nextInt(10000);
 			System.out.println("success" + " " + id + " " + ++max);
 			FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-			FSMToDot.createImgFromFSM(mod1.buildObserver(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_det_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			FSMToDot.createImgFromFSM(mod1.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 			//mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_1");
 			FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-			FSMToDot.createImgFromFSM(mod2.buildObserver(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_det_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			FSMToDot.createImgFromFSM(mod2.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 			//mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_2");
 			FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-			FSMToDot.createImgFromFSM(mod3.buildObserver(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_det_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			FSMToDot.createImgFromFSM(mod3.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 			//mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_3");
 		}
 		
-		if(!mod1.buildObserver().testCurrentStateOpacity().isEmpty() && !mod2.buildObserver().testCurrentStateOpacity().isEmpty() && mod3.buildObserver().testCurrentStateOpacity().isEmpty() && mod3.getStates().size() > 2) {
+		/*
+		
+		if(!mod1.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && !mod2.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod3.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod3.getStates().size() > 2) {
 			int id = rand.nextInt(10000);
 			System.out.println("weird" + " " + id);
 			FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "weirdCase/" + id + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);

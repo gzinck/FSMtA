@@ -221,6 +221,12 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		init.setStateName(getInitialState().getStateName() + "," + init.getStateName());
 		queue.add(init);
 		optimal.addInitialState(init);
+		boolean secret = true;
+		for(State s : initial) {
+			if(!s.getStatePrivate())
+				secret = false;
+		}
+		init.setStatePrivate(secret);
 		
 		HashMap<State, HashSet<State>> map = new HashMap<State, HashSet<State>>();
 		HashMap<State, State> original = new HashMap<State, State>();
@@ -239,6 +245,15 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			State orig = original.get(top);
 			ArrayList<State> components = new ArrayList<State>(map.get(top));
 			Collections.sort(components);
+			
+			secret = true;
+			for(State s : components) {
+				System.out.print(s.getStateName() + " " + s.getStatePrivate() + " "); 
+				if(!s.getStatePrivate())
+					secret = false;
+			}
+			System.out.println(secret);
+			top.setStatePrivate(secret);
 			
 			for(DetTransition t : getTransitions().getTransitions(orig)) {
 				State newReal = t.getTransitionState();
@@ -284,14 +299,13 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			visited.add(st);
 			outbound.add(st);
 			for(DetTransition t : ts.getTransitions().getTransitions(st)) {
-				if(!t.getTransitionEvent().getEventAttackerObservability() && (!must || s.equals(st) || ts.getMustTransitions().contains(st, t))) {
+				if(!t.getTransitionEvent().getEventAttackerObservability()) {
 					queue.add(t.getTransitionState());
 				}
 			}
 		}
 		return outbound;
 	}
-	
 	
 	@Override
 	public ModalSpecification buildObserver() {
