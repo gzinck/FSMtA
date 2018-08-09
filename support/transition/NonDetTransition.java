@@ -98,7 +98,7 @@ public class NonDetTransition implements Transition {
 				sb.append("\",\"");
 		} // while there are more states
 			
-		sb.append("\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];");
+		sb.append("\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ]; \n");
 		return sb.toString();
 	}
 	

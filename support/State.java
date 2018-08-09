@@ -241,11 +241,12 @@ public class State implements Comparator<State>, Comparable<State>{
 			sb.append(" color = \"orange\"];");
 		else
 			sb.append(" color = \"black\"];");
-		
+
+		sb.append("\n");
 		// If initial, make the state have a line going into it.
 		if(initial) {
-			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point];");
-			sb.append("{\"" + DUMMY_STATE_NAME + id + "\"}->{\"" + id + "\"};");
+			sb.append("\"" + DUMMY_STATE_NAME + id + "\"[fontSize = 1 shape = point]; \n");
+			sb.append("{\"" + DUMMY_STATE_NAME + id + "\"}->{\"" + id + "\"}; \n");
 		}
 		return sb.toString();
 	}

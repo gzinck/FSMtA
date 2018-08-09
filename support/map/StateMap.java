@@ -171,7 +171,6 @@ public class StateMap {
 		states = inHash;
 	}
 	
-	
 	/**
 	 * Setter method that assigns a new set of State extending objects to individual lists of State extending objects
 	 * which represent the States that have been aggregated to compose the key State in <<r>State, ArrayList<<r>State>> pairs.

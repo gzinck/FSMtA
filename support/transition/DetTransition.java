@@ -77,7 +77,7 @@ public class DetTransition implements Transition {
 		
 		eventDeal += "\"";
 		
-		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];";
+		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ]; \n";
 	}
 	
 	/**
@@ -114,8 +114,8 @@ public class DetTransition implements Transition {
 		}
 		
 		eventDeal += "\"";
-		eventDeal += "; style=dotted";
-		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ];";
+		eventDeal += " style=dotted";
+		return "\"" + firstState.getStateName() + "\"->{\"" + state.getStateName() + "\"} [label = \"" + event.getEventName() + "\" " + eventDeal + " ]; \n";
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------

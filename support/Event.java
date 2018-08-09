@@ -17,7 +17,7 @@ public class Event implements EventControllability, EventObservability{
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
-	/** String instance variable representing the name of the Event*/
+	/** String instance variable object representing the name of the Event*/
 	protected String id;
 	/** boolean instance variable representing the status of this Event object's being Controllable*/
 	private boolean controllability;
@@ -168,8 +168,9 @@ public class Event implements EventControllability, EventObservability{
 //---  Manipulations   ------------------------------------------------------------------------
 
 	/**
-	 * 
-	 * 
+	 * This method reassigns the boolean values associated to the calling Event object to
+	 * return it to a default state, wherein the Event is Controllable and Observable to
+	 * both the System and the Attacker.
 	 */
 	
 	public void resetEventAttributes() {

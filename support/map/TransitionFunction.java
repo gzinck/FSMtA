@@ -198,9 +198,10 @@ public class TransitionFunction <T extends Transition>{
 	}
 	
 	/**
-	 * Getter method that 
+	 * Getter method that returns a Collection of State objects, those being each of the stored
+	 * States leading to an ArrayList of Transitions associated to that leading State.
 	 * 
-	 * @return - Returns a Collection<<r>State> object
+	 * @return - Returns a Collection<<r>State> object containing all the States in this TransitionFunction which have Transitions.
 	 */
 	
 	public Collection<State> getStates(){
@@ -208,7 +209,7 @@ public class TransitionFunction <T extends Transition>{
 	}
 	
 	/**
-	 * Getter method to generate a new object extending Transition<<s>S, E> through a method present in
+	 * Getter method to generate a new object extending Transition<<r>S, E> through a method present in
 	 * the Transition interface that creates a new object of that object 'T' for creating Transition
 	 * objects corresponding to the generic classes used to produce this TransitionFunction object.
 	 * 
@@ -256,10 +257,13 @@ public class TransitionFunction <T extends Transition>{
 	}
 	
 	/**
+	 * This method searches among the Transitions stored by this TransitionFunction object
+	 * for the presence of a Transition provided as an argument for reference. (Does this
+	 * TransitionFunction contain the defined Transition?)
 	 * 
-	 * @param reference
-	 * @param transition
-	 * @return
+	 * @param reference - State object whose associated Transitions in this TransitionFunction object are searched through.
+	 * @param transition - Transition extending object that is to be searched for in the Transitions stored by this TransitionFunction object.
+	 * @return - Returns a boolean value representing the result of this search; true if the Transition exists, false otherwise.
 	 */
 	
 	public boolean contains(State reference, T transition) {
@@ -312,9 +316,13 @@ public class TransitionFunction <T extends Transition>{
 	}
 	
 	/**
+	 * This method adds a new Transition to the TransitionFunction in a format defined as State1, Event, State2;
+	 * State1 leading to State2 via the Event. It creates a new Transition object and appends it to the
+	 * ArrayList associated to the leading State in the Transition.
 	 * 
-	 * @param state
-	 * @param event
+	 * @param inState - State object representing the leading State1 in the format State1 -> State2 via Event.
+	 * @param event - Event object representing the Event in the format State1 -> State2 via Event.
+	 * @param outState - State object representing the target State2 in the format State1 -> State2 via Event.
 	 */
 	
 	public void addTransitionState(State inState, Event event, State outState) {

@@ -35,19 +35,23 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> impl
 	public static final String STATE_PREFIX_2 = "b";
 	
 //---  Single-FSM Operations   ----------------------------------------------------------------
+
+	/**
+	 * This method creates a modified FSM or Modal Specification derived from the calling object by removing Observable Events
+	 * and enforcing a Determinized status.
+	 * 
+	 * Collapse Unobservable
+	 *  - Map singular States to their Collectives
+	 * Calculate Transitions from Collective Groups
+	 * - Will produce new States, need to then process these as well	
+	 * 
+	 * @return - Returns a TransitionSystem object representing the Determinized Observer-View derivation of the calling FSM or Modal Specification object.
+	 */
+	
+	public abstract FSM buildObserver();
 	
 //---  Multi-FSM Operations   -----------------------------------------------------------------
 
-	/**
-	 * This method performs a Product(or Intersection) operation between multiple FSM objects, one provided as an
-	 * argument and the other being the FSM object calling this method, and returns the resulting FSM object.
-	 * 
-	 * @param other - Array of FSM extending objects that performs the product operation on with the current FSM.
-	 * @return - Returns a FSM extending object representing the FSM object resulting from all Product operations.
-	 */
-	
-	public abstract FSM<? extends Transition> product(FSM<?> ... other);
-	
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Product operation
 	 * between two FSM objects, leaving the specialized features in more advanced FSM types to their
@@ -125,17 +129,7 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> impl
 		newFSM.addStateComposition(this.getComposedStates());
 		newFSM.addStateComposition(other.getComposedStates());
 	} // productHelper(FSM)
-	
-	/**
-	 * This method performs the Parallel Composition of multiple FSMs: the FSM calling this method and the FSMs
-	 * provided as arguments. The resulting, returned, FSM will be the same type as the calling FSM.
-	 * 
-	 * @param other - Array of FSM extending objects provided to perform Parallel Composition with the calling FSM object.
-	 * @return - Returns a FSM extending object representing the result of all Parallel Composition operations.
-	 */
-	
-	public abstract FSM<? extends Transition> parallelComposition(FSM<?> ... other);
-	
+
 	/**
 	 * Helper method that performs the brunt of the operations involved with a single Parallel Composition
 	 * operation between two FSM objects, leaving the specialized features in more advanced FSM types to
@@ -266,4 +260,24 @@ public abstract class FSM<T extends Transition> extends TransitionSystem<T> impl
 		} // for thisInitial
 	} // parallelCompositionHelper(FSM)
 
+	/**
+	 * This method performs a Product(or Intersection) operation between multiple FSM objects, one provided as an
+	 * argument and the other being the FSM object calling this method, and returns the resulting FSM object.
+	 * 
+	 * @param other - Array of FSM extending objects that performs the product operation on with the current FSM.
+	 * @return - Returns a FSM extending object representing the FSM object resulting from all Product operations.
+	 */
+	
+	public abstract FSM<? extends Transition> product(FSM<?> ... other);
+	
+	/**
+	 * This method performs the Parallel Composition of multiple FSMs: the FSM calling this method and the FSMs
+	 * provided as arguments. The resulting, returned, FSM will be the same type as the calling FSM.
+	 * 
+	 * @param other - Array of FSM extending objects provided to perform Parallel Composition with the calling FSM object.
+	 * @return - Returns a FSM extending object representing the result of all Parallel Composition operations.
+	 */
+	
+	public abstract FSM<? extends Transition> parallelComposition(FSM<?> ... other);
+	
 } // class FSM

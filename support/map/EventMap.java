@@ -48,6 +48,22 @@ public class EventMap {
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
+	 * 
+	 * @param other
+	 * @return
+	 */
+	
+	public EventMap getSharedEvents(EventMap other) {
+		EventMap out = new EventMap();
+		for(Event e : this.getEvents()) {
+			if(other.contains(e)) {
+				out.addEvent(e);
+			}
+		}
+		return out;
+	}
+	
+	/**
 	 * Getter method that returns an Event extending object using a provided String representing the
 	 * Event's name from the information stored by this Event Map.
 	 * 
@@ -55,6 +71,7 @@ public class EventMap {
 	 * @return - Returns the Event extending object corresponding to the provided String object.
 	 */
 	
+
 	public Event getEvent(String eventName) {
 		return events.get(eventName);
 	}
@@ -88,6 +105,7 @@ public class EventMap {
 	 * @param other - EventMap with the events to compare, evaluating which events are unique to the calling EventMap.
 	 * @return - HashSet of Strings which are the names for the private events.
 	 */
+
 	public HashSet<String> getPrivateEvents(EventMap other) {
 		HashSet<String> privateEvents = new HashSet<String>();
 		for(String thisEvent : this.events.keySet())
@@ -191,6 +209,14 @@ public class EventMap {
 		for(Event e : events.values()) {
 			e.resetEventAttributes();
 		}
+	}
+	
+	public boolean contains(Event in) {
+		for(Event e : this.getEvents()) {
+			if(e.equals(in))
+				return true;
+		}
+		return false;
 	}
 	
 }

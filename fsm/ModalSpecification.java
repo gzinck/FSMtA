@@ -208,8 +208,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	}
 
 	/**
+	 * This method builds the optimal opaque controller of a provided Modal Specification,
+	 * producing a DetObsContFSM object.
 	 * 
-	 * @return
+	 * @return - Returns a DetObsContFSM object representing the optimal controller of the calling ModalSpecification object.
 	 */
 	
 	public DetObsContFSM buildOptimalOpaqueController() {
@@ -248,11 +250,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			
 			secret = true;
 			for(State s : components) {
-				System.out.print(s.getStateName() + " " + s.getStatePrivate() + " "); 
 				if(!s.getStatePrivate())
 					secret = false;
 			}
-			System.out.println(secret);
 			top.setStatePrivate(secret);
 			
 			for(DetTransition t : getTransitions().getTransitions(orig)) {
@@ -278,11 +278,14 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	}
 
 	/**
+	 * This method finds the epsilon-reach of a given State in a ModalSpecification (can be generalized easily);
+	 * that is, all States that that first State can reach via Unobservable Events, returned as a HashSet to avoid
+	 * duplicates.
 	 * 
-	 * @param ts
-	 * @param s
-	 * @param must
-	 * @return
+	 * @param ts - ModalSpecification object provided to have its States searched through.
+	 * @param s - State object provided as the root State to search for's epsilon-reach.
+	 * @param must - boolean value describing whether or not the algorithm should respect May/Must Transitions or not.
+	 * @return - Returns a HashSet<<r>State> object containing all States in the epsilon-reach of the provided first State.
 	 */
 	
 	public HashSet<State> epsilonReach(ModalSpecification ts, State s, boolean must){
@@ -305,76 +308,6 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			}
 		}
 		return outbound;
-	}
-	
-	@Override
-	public ModalSpecification buildObserver() {
-		ModalSpecification newFSM = new ModalSpecification();
-		
-		HashMap<State, State> map = new HashMap<State, State>();
-		
-		for(State s : getStates()) {
-			
-			HashSet<State> reach = new HashSet<State>();
-			LinkedList<State> queue = new LinkedList<State>();
-			queue.add(s);
-			
-			while(!queue.isEmpty()) {
-				State top = queue.poll();
-				if(reach.contains(top))
-					continue;
-				reach.add(top);
-			    for(DetTransition t : getTransitions().getTransitions(top)) {
-				   if(!t.getTransitionEvent().getEventAttackerObservability()) {
-					  queue.add(t.getTransitionState());
-			 	  }
-			  }
-			}
-			ArrayList<State> composite = new ArrayList<State>(reach);
-			Collections.sort(composite);
-			State made = new State(composite.toArray(new State[composite.size()]));
-			newFSM.setStateComposition(made, composite.toArray(new State[composite.size()]));
-			map.put(s, made);
-		}
-		
-		LinkedList<State> queue = new LinkedList<State>();
-		HashSet<String> visited = new HashSet<String>();
-		
-		queue.add(map.get(getInitialState()));
-		newFSM.addState(map.get(getInitialState()));
-		
-		while(!queue.isEmpty()) {
-			State top = queue.poll();
-			if(visited.contains(top.getStateName()))
-				continue;
-			visited.add(top.getStateName());
-			HashMap<Event, HashSet<State>> tran = new HashMap<Event, HashSet<State>>();
-			for(State s : newFSM.getStateComposition(top)) {
-				for(DetTransition t : getTransitions().getTransitions(s)) {
-					if(t.getTransitionEvent().getEventAttackerObservability()) {
-						if(tran.get(t.getTransitionEvent()) == null) {
-							tran.put(t.getTransitionEvent(), new HashSet<State>());
-						}
-						tran.get(t.getTransitionEvent()).addAll(newFSM.getStateComposition(map.get(t.getTransitionState())));
-						
-					}
-				}
-			}
-			for(Event e : tran.keySet()) {
-				State bot = newFSM.addState(tran.get(e).toArray(new State[tran.get(e).size()]));
-				newFSM.setStateComposition(bot, tran.get(e).toArray(new State[tran.get(e).size()]));
-				queue.add(bot);
-				newFSM.addTransition(top, e, bot);
-				newFSM.addState(top);
-				newFSM.addState(bot);
-			}
-		}
-		
-		//TODO: May/Must Transition Handling
-		
-		newFSM.addInitialState(map.get(getInitialState()));
-		return newFSM;
-		
 	}
 	
 	@Override
@@ -768,12 +701,99 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 //---  Operations for pruning a MS   ----------------------------------------------------------
 	
 	/**
+	 * 
+	 * @return
+	 */
+	
+	public ModalSpecification newPrune(ModalSpecification modal1, ModalSpecification modal2, ModalSpecification composedModal) {
+		boolean mustIterate = true;
+		HashSet<State> badStates = new HashSet<State>();
+		
+		while(mustIterate) {
+			mustIterate = false;
+			
+		}
+		
+	
+		
+		return composedModal;
+	}
+	
+	/**
+	 * 
+	 * @param composedModal
+	 * @param s
+	 * @return
+	 */
+	
+	public boolean stateIsBad(ModalSpecification modal1, ModalSpecification modal2, ModalSpecification composedModal, State s) {
+		ArrayList<DetTransition> mustTrans = composedModal.getMustTransitions().getTransitions(s);
+		ArrayList<DetTransition> mayTrans = composedModal.getTransitions().getTransitions(s);
+		ArrayList<State> compos = this.getStateComposition(s);
+		
+		State modalState1 = compos.get(0);
+		State modalState2 = compos.get(1);
+		
+		EventMap shared = modal1.getEventMap().getSharedEvents(modal2.getEventMap());
+		
+		for(DetTransition t : mustTrans) {
+			if(!mayTrans.contains(t)) {
+				boolean isBad = true;
+				if(modal1.getTransitions().getTransitions(modalState1).contains(t)) {
+					isBad = privateEventSearch(modal1, modalState1, shared, t.getTransitionEvent());
+				}
+				else {
+					isBad = privateEventSearch(modal2, modalState2, shared, t.getTransitionEvent());
+				}
+				if(isBad) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 
+	 * @param mod1
+	 * @param modState1
+	 * @param shared
+	 * @param e
+	 * @return
+	 */
+	
+	public boolean privateEventSearch(ModalSpecification mod1, State modState1, EventMap shared, Event e) {
+		LinkedList<State> queue = new LinkedList<State>();
+		HashSet<State> visited = new HashSet<State>();
+		queue.add(modState1);
+		boolean isBad = true;
+		bfs:
+		while(!queue.isEmpty()) {
+			State top = queue.poll();
+			if(visited.contains(top)) 
+				continue;
+			visited.add(top);
+			for(DetTransition trans : mod1.getTransitions().getTransitions(top)){
+				if(!shared.contains(trans.getTransitionEvent())) {
+					queue.add(trans.getTransitionState());
+				}
+				else if(trans.getTransitionEvent().equals(e)) {
+					isBad = false;
+					break bfs;
+				}
+			}
+		}
+		return isBad;
+	}
+	
+	/**
 	 * This method prunes a ModalSpecification by going through all states and removing those that
 	 * have a must transition without a corresponding may transition, and then removing all states
 	 * with a transition going to those bad states.
 	 * 
 	 * @return - Returns a pruned ModalSpecification object.
 	 */
+
 
 	public ModalSpecification prune() {
 		// First, get all the inconsistent states
@@ -782,9 +802,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		// states. If there are, those states must be removed (iteratively).
 		while(getBadMustTransitionStates(badStates));
 		
-		//TODO: Something here doesn't work right, only leaves the initial State.
-		
-		return (ModalSpecification)(new ModalSpecification(this, badStates, this.id)).makeAccessible();
+		return (new ModalSpecification(this, badStates, this.id)).makeAccessible();
 	}
 	
 	/**
@@ -1222,7 +1240,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			
 			if(visited.contains(curr.stateNew.getStateName()))
 				continue; // If we already added the state, skip this iteration
-			
+			curr.addToComposition(newMS);
 			visited.add(curr.stateNew.getStateName());
 			
 			// Go through all the MAY transitions common in both
@@ -1435,8 +1453,10 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
+	 * Getter method that returns the Transition Function object containing the Must Transitions
+	 * associated to the calling Modal Specification object.
 	 * 
-	 * @return
+	 * @return - Returns a TransitionFunction<<r>DetTransition> object containing the Must Transitions associated to this ModalSpecificaiton object.
 	 */
 	
 	public TransitionFunction<DetTransition> getMustTransitions() {
@@ -1589,6 +1609,12 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		return(super.removeTransition(state1, eventName, state2));
 	}
 
+//---  Miscellaneous   ------------------------------------------------------------------------
+	
+	public boolean contains(State s, DetTransition t) {
+		return getTransitions().contains(s, t);
+	}
+	
 //---  Support Classes   ----------------------------------------------------------------------
 	
 	/**
@@ -1622,7 +1648,14 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 				stateFromNew.setStatePrivate(true);
 			else
 				stateFromNew.setStatePrivate(false);
+			}		
+		
+		public void addToComposition(ModalSpecification ms) {
+			ms.setStateComposition(stateNew, stateA, stateB);
+			}
+		
 		}
-	}
+	
+		
 
 }

@@ -39,6 +39,25 @@ public class FSMToDot {
 	    gv.decreaseDpi();
 	    gv.decreaseDpi();
 	    File out = new File(path + "." + type); 
+	    System.out.println("A: " + gv.getDotSource());
+	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
+	}
+	
+	public static void createSVGFromFSM(TransitionSystem fsm, String path, String workingPath, String configPath){
+	    GraphViz gv=new GraphViz(workingPath, configPath);
+	    gv.addln(gv.start_graph());
+	    gv.add(fsm.makeDotString());
+	    gv.addln(gv.end_graph());
+	    String type = "svg";
+	    gv.increaseDpi();
+	    gv.increaseDpi();
+	    gv.increaseDpi();
+	    gv.increaseDpi();
+	    gv.increaseDpi();
+	    //gv.decreaseDpi();
+	    //gv.decreaseDpi();
+	    File out = new File(path + "." + type); 
+	    System.out.println("A: " + gv.getDotSource());
 	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 	}
 

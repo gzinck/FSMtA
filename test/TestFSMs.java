@@ -19,13 +19,14 @@ public class TestFSMs {
 	
 	
 	/**
+	 * TODO:  Update Composition to account for Graeme's changes - Greatest Lower Bound pruning.
+	 * TODO:  Turn .svg file into TikZ language format. (Parse the former, convert into latter.)
+	 * TODO:  Read some Case Studies and try to make into a working example. (Have the handout; Mac computer wiped via security stuff.)
+	 * TODO:  User Interface up-to-date.
+	 * TODO:  Update commenting all over.
+	 * TODO:  Aug 16'th - Demo the Software, make sure it can be exported and works.
+	 * TODO:  Instruction Manual!
 	 * 
-	 * TODO:  Further work on example generation
-	 * TODO:  Generate a Controller for the Modal Specifications by Wednesday, August 1'st.
-	 * TODO:  Conversion of a GraphViz jpg image into LateX Tikz graphics library (automata library). SVD Dump of information. (EMF?)
-	 * 
-	 * 
-	 * TODO:  Graeme gone August 2'nd, 3'rd, 7'th.
 	 * TODO:  August 17'th is last day of work, excluding desired excess work.
 	 */
 	
@@ -36,22 +37,25 @@ public class TestFSMs {
 		int count = 0;
 		int max = 0;
 		Random rand = new Random();
-	while(true && max < 5) {
+	while(true && max < 1) {
 		System.out.println(count++);
 		
-		int sizeState = 4;
-		int sizeMarked = 3;
+		int sizeState = 3;
+		int sizeMarked = 2;
 		int sizeEvents = 2;
 		int sizePaths = 2;
 		int sizePrivate = 1;
 		int sizeUnobserv = 0;
 		int sizeAttacker = 1;
 		int sizeControl = 1;
-		int sizeMust = 4;
+		int sizeMust = 3;
 		
 		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
 		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
 
+		
+		
+		
 		/*
 
 		ModalSpecification test1 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m3.mdl.txt"), "m1");
@@ -96,6 +100,9 @@ public class TestFSMs {
 		
 		ModalSpecification mod3 = mod1.getGreatestLowerBound(mod2);
 
+		FSMToDot.createSVGFromFSM(mod1, MAC_WORKING_FOLDER + "_svg_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "_img_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		max++;
 		//System.out.println(mod1.testCurrentStateOpacity().isEmpty() + " " + mod2.testCurrentStateOpacity().isEmpty() + " " + !mod3.testCurrentStateOpacity().isEmpty());
 		
 		/*
@@ -109,17 +116,27 @@ public class TestFSMs {
 		
 		*/
 		
-		boolean condition1 = mod1.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod2.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && !mod3.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod3.getStates().size() > 4 /* && !mod3.getInitialState().getStatePrivate()*/; 
+		DetObsContFSM op1 = mod1.buildOptimalOpaqueController();
+		DetObsContFSM op2 = mod2.buildOptimalOpaqueController();
+		DetObsContFSM op3 = mod3.buildOptimalOpaqueController();
+		
+		boolean condition1 = true &&
+							op1.testCurrentStateOpacity().isEmpty() && 
+							 op2.testCurrentStateOpacity().isEmpty() && 
+							 !op3.testCurrentStateOpacity().isEmpty() && 
+							 mod3.getStates().size() > 4  && 
+							 !mod3.getInitialState().getStatePrivate();
+							 
 		boolean condition2 = !mod1.getInitialState().getStatePrivate() && !mod2.getInitialState().getStatePrivate() && mod3.getStates().size() > 4 && mod1.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty() && mod2.buildOptimalOpaqueController().testCurrentStateOpacity().isEmpty();
 		
-		if(condition2) {
-			int id = rand.nextInt(10000);
+		if(condition1) {
+			int id = max;
 			System.out.println("success" + " " + id + " " + ++max);
-			FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-			FSMToDot.createImgFromFSM(mod1.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			//FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			//FSMToDot.createImgFromFSM(mod1.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 			//mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_1");
-			FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-			FSMToDot.createImgFromFSM(mod2.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			//FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+			//FSMToDot.createImgFromFSM(mod2.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 			//mod1.toTextFile(MAC_WORKING_FOLDER + "toyCase/", id + "_2");
 			FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "toyCase/" + id + "_img_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 			FSMToDot.createImgFromFSM(mod3.buildOptimalOpaqueController(), MAC_WORKING_FOLDER + "toyCase/" + id + "_img_con_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);

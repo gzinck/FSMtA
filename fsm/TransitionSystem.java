@@ -43,20 +43,6 @@ public abstract class TransitionSystem<T extends Transition> {
 //---  Single-FSM Operations   ----------------------------------------------------------------
 
 	/**
-	 * This method creates a modified FSM or Modal Specification derived from the calling object by removing Observable Events
-	 * and enforcing a Determinized status.
-	 * 
-	 * Collapse Unobservable
-	 *  - Map singular States to their Collectives
-	 * Calculate Transitions from Collective Groups
-	 * - Will produce new States, need to then process these as well	
-	 * 
-	 * @return - Returns a TransitionSystem object representing the Determinized Observer-View derivation of the calling FSM or Modal Specification object.
-	 */
-	
-	public abstract TransitionSystem buildObserver();
-	
-	/**
 	 * Renames all the states in the set of states in the FSM so that
 	 * states are named sequentially ("0", "1", "2"...).
 	 */
@@ -474,8 +460,9 @@ public abstract class TransitionSystem<T extends Transition> {
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
+	 * Getter method that returns the EventMap object associated to the TransitionSystem object.
 	 * 
-	 * @return
+	 * @return - Returns an EventMap object containing the Event objects associated to this TransitionSystem object. 
 	 */
 	
 	public EventMap getEventMap() {
@@ -583,24 +570,6 @@ public abstract class TransitionSystem<T extends Transition> {
 	}
 	
 	/**
-	 * Getter method that returns all of the Initial States in the FSM object as an ArrayList of State objects.
-	 * 
-	 * @return - Returns an ArrayList<<r>State> of State objects which are the Initial States associated to this FSM object.
-	 */
-	
-	public abstract ArrayList<State> getInitialStates();
-	
-	/**
-	 * Getter method that requests whether the calling FSM object possesses an Initial State with
-	 * the provided String name or not.
-	 * 
-	 * @param stateName - String object representing the name of the State object.
-	 * @return - Returns a boolean value, true if the State object is an Initial State, false otherwise.
-	 */
-	
-	public abstract boolean hasInitialState(String stateName);
-	
-	/**
 	 * Getter method that requests whether or not a State object exists in the calling FSM object's
 	 * StateMap, the supplied String object representing the State object.
 	 * 
@@ -633,6 +602,24 @@ public abstract class TransitionSystem<T extends Transition> {
 	public boolean isMarked(String stateName) {
 		return states.getState(stateName).getStateMarked();
 	}
+
+	/**
+	 * Getter method that returns all of the Initial States in the FSM object as an ArrayList of State objects.
+	 * 
+	 * @return - Returns an ArrayList<<r>State> of State objects which are the Initial States associated to this FSM object.
+	 */
+	
+	public abstract ArrayList<State> getInitialStates();
+	
+	/**
+	 * Getter method that requests whether the calling FSM object possesses an Initial State with
+	 * the provided String name or not.
+	 * 
+	 * @param stateName - String object representing the name of the State object.
+	 * @return - Returns a boolean value, true if the State object is an Initial State, false otherwise.
+	 */
+	
+	public abstract boolean hasInitialState(String stateName);
 
 //---  Manipulations - Adding   ---------------------------------------------------------------
 	
@@ -698,27 +685,7 @@ public abstract class TransitionSystem<T extends Transition> {
 		map.putAll(composed);
 		setCompositionStates(map);
 	}
-	
-	/**
-	 * This method handles the introduction of a new State object as an Initial State
-	 * via a String object representing its name, behaving differently between Deterministic and 
-	 * NonDeterministic FSM objects as their definitions specify and require.
-	 * 
-	 * @param newInitial - String object representing the name of the State object being introduced as an Initial State.
-	 */
-	
-	public abstract void addInitialState(String newInitial);
 
-	/**
-	 * This method handles the introduction of a new State object as an Initial State,
-	 * behaving differently between Deterministic and NonDeterministic FSM objects as their
-	 * definitions specify and require.
-	 * 
-	 * @param newState - State object representing the State being introduced as an Initial State.
-	 */
-	
-	public abstract void addInitialState(State newState);
-	
 	/**
 	 * This method handles the adding of a new Transition to the calling FSM object via a format
 	 * of 3 String objects representing a State, via an Event, leading to another State, creating
@@ -793,6 +760,26 @@ public abstract class TransitionSystem<T extends Transition> {
 	public void addTransition(State state, Event event, State state2) {
 		transitions.addTransitionState(states.addState(state),  events.addEvent(event), states.addState(state2));
 	}
+	
+	/**
+	 * This method handles the introduction of a new State object as an Initial State
+	 * via a String object representing its name, behaving differently between Deterministic and 
+	 * NonDeterministic FSM objects as their definitions specify and require.
+	 * 
+	 * @param newInitial - String object representing the name of the State object being introduced as an Initial State.
+	 */
+	
+	public abstract void addInitialState(String newInitial);
+
+	/**
+	 * This method handles the introduction of a new State object as an Initial State,
+	 * behaving differently between Deterministic and NonDeterministic FSM objects as their
+	 * definitions specify and require.
+	 * 
+	 * @param newState - State object representing the State being introduced as an Initial State.
+	 */
+	
+	public abstract void addInitialState(State newState);
 	
 //---  Manipulations - Removing   -------------------------------------------------------------
 	
