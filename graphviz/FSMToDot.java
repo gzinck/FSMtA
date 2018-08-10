@@ -35,11 +35,11 @@ public class FSMToDot {
 	    gv.add(fsm.makeDotString());
 	    gv.addln(gv.end_graph());
 	    String type = "jpg";
-	    //gv.increaseDpi();
-	    gv.decreaseDpi();
-	    gv.decreaseDpi();
-	    File out = new File(path + "." + type); 
-	    System.out.println("A: " + gv.getDotSource());
+	    gv.increaseDpi();
+	    gv.increaseDpi();
+	    gv.increaseDpi();
+	    gv.increaseDpi();
+	    File out = new File(path + "." + type);
 	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 	}
 	
@@ -53,11 +53,7 @@ public class FSMToDot {
 	    gv.increaseDpi();
 	    gv.increaseDpi();
 	    gv.increaseDpi();
-	    gv.increaseDpi();
-	    //gv.decreaseDpi();
-	    //gv.decreaseDpi();
 	    File out = new File(path + "." + type); 
-	    System.out.println("A: " + gv.getDotSource());
 	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 	}
 

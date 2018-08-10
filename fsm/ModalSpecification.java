@@ -382,6 +382,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		String statesInDot = states.makeDotString();	//Have the StateMap do its thing
 		String transitionsInDot = transitions.makeDotStringExcluding(mustTransitions);	//Have the TransitionFunction do its thing
 		String mustTransitionsInDot = mustTransitions.makeDotString();
+		System.out.println(statesInDot);
 		return statesInDot + transitionsInDot + mustTransitionsInDot;	//Return 'em all
 	}
 

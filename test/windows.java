@@ -9,13 +9,38 @@ import org.junit.Test;
 
 public class windows {
 
-	private static final String MAC_WORKING_FOLDER = "C:\\Users\\Borinor\\Documents\\testGraph\\";
-	private static final String MAC_CONFIG_FILE_PATH = "C:\\Users\\Borinor\\Documents\\GitHub\\FSM-Implementation-2\\config.properties";
+	private static final String MAC_WORKING_FOLDER = "C:\\Users\\Reithger\\Documents\\TestGraph\\";
+	private static final String MAC_CONFIG_FILE_PATH = "C:\\Users\\Reithger\\Documents\\GitHub\\FSM-Implementation-2\\config.properties";
 	
 	@Test
 	public void test() {
-		File f = new File(GenerateFSM.createNewFSM(10, 4, 3, 2, 2, 3, 1, 2, false, "fileName", MAC_WORKING_FOLDER));
+		int sizeState = 3;
+		int sizeMarked = 2;
+		int sizeEvents = 2;
+		int sizePaths = 2;
+		int sizePrivate = 1;
+		int sizeUnobserv = 0;
+		int sizeAttacker = 1;
+		int sizeControl = 1;
+		int sizeMust = 3;
+		
+		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
+		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
+		
+		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
+		
+		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
+		
+		ModalSpecification mod3 = mod1.getGreatestLowerBound(mod2);
+
+		FSMToDot.createSVGFromFSM(mod1, MAC_WORKING_FOLDER + "_svg_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "_img_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+	/*
+		System.out.println("A");
+		File f = new File(GenerateFSM.createNewModalSpecification(10, 4, 3, 2, 1, 2, 3, 1, 2, false, "fileName", MAC_WORKING_FOLDER));
+		System.out.println("A");
 		DetObsContFSM fsm = new NonDetObsContFSM(f, "fsm").buildObserver();
+		System.out.println("A");
 		System.out.println(fsm.makeDotString());
 		
 		FSMToDot.createImgFromFSM(fsm, MAC_WORKING_FOLDER + "test1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);

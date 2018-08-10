@@ -52,69 +52,17 @@ public class TestFSMs {
 		
 		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
 		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
-
-		
-		
-		
-		/*
-
-		ModalSpecification test1 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m3.mdl.txt"), "m1");
-		ModalSpecification test2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m4.mdl.txt"), "m2");
-		ModalSpecification test3 = test1.getGreatestLowerBound(test2);
-		DetObsContFSM test4 = test1.buildOptimalOpaqueController();
-		DetObsContFSM test5 = test2.buildOptimalOpaqueController();
-		DetObsContFSM test6 = test4.parallelComposition(test5);
-		FSMToDot.createImgFromFSM(test1, MAC_WORKING_FOLDER + "_img_m1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(test2, MAC_WORKING_FOLDER + "_img_m2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(test3, MAC_WORKING_FOLDER + "_img_m3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		DetObsContFSM test = test3.buildOptimalOpaqueController();
-		test.getEventMap().resetEvents();
-		test6.getEventMap().resetEvents();
-		test.renameStates();
-		test6.renameStates();
-		FSMToDot.createImgFromFSM(test, MAC_WORKING_FOLDER + "_img_m4", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(test4, MAC_WORKING_FOLDER + "_img_m5", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(test5, MAC_WORKING_FOLDER + "_img_m6", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(test6, MAC_WORKING_FOLDER + "_img_m7", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		
-		
-		
-		ModalSpecification test1 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m1.mdl.txt"), "m1");
-		FSMToDot.createImgFromFSM(test1, MAC_WORKING_FOLDER + "_img_m1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-
-		ModalSpecification test2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "m2.mdl.txt"), "m2");
-		FSMToDot.createImgFromFSM(test2, MAC_WORKING_FOLDER + "_img_m2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		
-		ModalSpecification test3 = test1.getGreatestLowerBound(test2);
-		FSMToDot.createImgFromFSM(test3, MAC_WORKING_FOLDER + "_img_m3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		
-		*/
-		
-		//TODO: Fix Trim to retain Must Transitions
 		
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
 		
 		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
-		
-		//mod2.setFSMEventMap(mod1.getEventMap());
 		
 		ModalSpecification mod3 = mod1.getGreatestLowerBound(mod2);
 
 		FSMToDot.createSVGFromFSM(mod1, MAC_WORKING_FOLDER + "_svg_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "_img_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		max++;
-		//System.out.println(mod1.testCurrentStateOpacity().isEmpty() + " " + mod2.testCurrentStateOpacity().isEmpty() + " " + !mod3.testCurrentStateOpacity().isEmpty());
-		
-		/*
 
-		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "_img_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		mod1.toTextFile(MAC_WORKING_FOLDER, "_1");
-		FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "_img_2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		mod1.toTextFile(MAC_WORKING_FOLDER, "_2");
-		FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "_img_3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		mod1.toTextFile(MAC_WORKING_FOLDER, "_3");
-		
-		*/
 		
 		DetObsContFSM op1 = mod1.buildOptimalOpaqueController();
 		DetObsContFSM op2 = mod2.buildOptimalOpaqueController();

@@ -109,6 +109,8 @@ public class GraphViz
  
  	public GraphViz(String workingPath, String configPath) {
 	 osName = System.getProperty("os.name").replaceAll("\\s","");
+	 if(osName.contains("Windows"))
+		 osName = "Windows";
 	 tempDir = workingPath;
 	 cfgProp = configPath;
 	 
