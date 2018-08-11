@@ -331,13 +331,14 @@ public class GenerateFSM {
 				  else {
 				      reference.append(nom + " " + rand.nextInt(sizeStates) + " " + theEvent);	//Add a line of State1 State2 Event(Generated on the spot)
 				  }
-				  reference.append(lineSkip);					//Line return - For Windows computers, needs to be Carriage Feed + Line Return, 13 10
+				  if(j + 1 < numFriends || i + 1 < sizeStates)
+					  reference.append(lineSkip);					//Line return - For Windows computers, needs to be Carriage Feed + Line Return, 13 10
 			  }
 		  }
 
 		  raf.writeBytes(("" + sizeMust));
 		  raf.writeBytes(lineSkip);
-		  String[] refe = reference.toString().split("\n");
+		  String[] refe = reference.toString().split("\n\n");
 		  for(int i = 0; i < sizeMust; i++) {
 			  raf.writeBytes(refe[rand.nextInt(refe.length)]);
 			  raf.writeBytes(lineSkip);

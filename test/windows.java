@@ -9,6 +9,30 @@ import org.junit.Test;
 
 public class windows {
 
+	/**
+	 * TODO:  Update Composition to account for Graeme's changes - Greatest Lower Bound pruning.
+	 * 		  TODO:  Test the above ^ - Found Error! Talk to Graeme.
+	 * 
+	 * TODO:  Turn .svg file into TikZ language format. (Parse the former, convert into latter.)
+	 * TODO:  Read some Case Studies and try to make into a working example. (Have the handout; Mac computer wiped via security stuff.)
+	 * TODO:  User Interface up-to-date.
+	 * TODO:  Update commenting all over.
+	 * TODO:  Aug 16'th - Demo the Software, make sure it can be exported and works.
+	 * TODO:  Instruction Manual!
+	 * 
+	 * TODO:  August 17'th is last day of work, excluding desired excess work.
+	 */
+	
+	
+	/*
+	 * 
+	 * Distinction in the isBadState() method between a good state, a bad state, and a bad state that
+	 * can be ignored for breaking its parent. Only distinguishes good/bad (generic)
+	 * 
+	 * 
+	 * 
+	 */
+	
 	private static final String MAC_WORKING_FOLDER = "C:\\Users\\Reithger\\Documents\\TestGraph\\";
 	private static final String MAC_CONFIG_FILE_PATH = "C:\\Users\\Reithger\\Documents\\GitHub\\FSM-Implementation-2\\config.properties";
 	
@@ -27,14 +51,22 @@ public class windows {
 		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
 		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
 		
+		m1 = new File(MAC_WORKING_FOLDER + "m1.mdl");
+		m2 = new File(MAC_WORKING_FOLDER + "m2.mdl");
+
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
-		
 		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
 		
+		
 		ModalSpecification mod3 = mod1.getGreatestLowerBound(mod2);
-
-		FSMToDot.createSVGFromFSM(mod1, MAC_WORKING_FOLDER + "_svg_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "_img_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		//System.out.println(mod3.makeDotString());
+		
+		//System.out.println(mod3.getStates());
+		
+		FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "_img_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		//FSMToDot.createSVGFromFSM(mod1, MAC_WORKING_FOLDER + "_svg_1",  MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
 	/*
 		System.out.println("A");
 		File f = new File(GenerateFSM.createNewModalSpecification(10, 4, 3, 2, 1, 2, 3, 1, 2, false, "fileName", MAC_WORKING_FOLDER));

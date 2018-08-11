@@ -331,6 +331,17 @@ public class StateMap {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param inStates
+	 */
+	
+	public void removeStates(HashSet<State> inStates) {
+		for(State s : inStates) {
+			states.remove(s.getStateName());
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return states.toString();

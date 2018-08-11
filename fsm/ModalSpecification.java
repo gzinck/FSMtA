@@ -382,7 +382,6 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		String statesInDot = states.makeDotString();	//Have the StateMap do its thing
 		String transitionsInDot = transitions.makeDotStringExcluding(mustTransitions);	//Have the TransitionFunction do its thing
 		String mustTransitionsInDot = mustTransitions.makeDotString();
-		System.out.println(statesInDot);
 		return statesInDot + transitionsInDot + mustTransitionsInDot;	//Return 'em all
 	}
 
@@ -712,10 +711,42 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		
 		while(mustIterate) {
 			mustIterate = false;
-			
+			for(State s : composedModal.getStates()) {
+				if(badStates.contains(s))
+					continue;
+				if(stateIsBad(modal1, modal2, composedModal, s)) {
+					System.out.println("bad");
+					badStates.add(s);
+					mustIterate = true;
+					for(State top : composedModal.getStates()) {
+						for(DetTransition t : composedModal.getTransitions().getTransitions(top)) {
+							if(s.equals(t.getTransitionState()))
+								composedModal.getTransitions().getTransitions(top).remove(t);
+						}
+					}
+				}
+			}
 		}
 		
-	
+		System.out.println(badStates);
+		
+		composedModal.getStateMap().removeStates(badStates);
+		composedModal.getTransitions().removeStates(badStates);
+		for(State s : composedModal.getStates()) {
+			ArrayList<DetTransition> mustTrans = composedModal.getMustTransitions().getTransitions(s);
+			ArrayList<DetTransition> mayTrans = composedModal.getTransitions().getTransitions(s);
+			for(int i = 0; i < mustTrans.size(); i++) {
+				DetTransition t = mustTrans.get(i);
+				if(!mayTrans.contains(t)) {
+					composedModal.getMustTransitions().getTransitions(s).remove(t);
+					i--;
+				}
+			}
+		}
+		for(State s : badStates) {
+			composedModal.getMustTransitions().removeState(s);
+			composedModal.getTransitions().removeState(s);
+		}
 		
 		return composedModal;
 	}
@@ -730,7 +761,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	public boolean stateIsBad(ModalSpecification modal1, ModalSpecification modal2, ModalSpecification composedModal, State s) {
 		ArrayList<DetTransition> mustTrans = composedModal.getMustTransitions().getTransitions(s);
 		ArrayList<DetTransition> mayTrans = composedModal.getTransitions().getTransitions(s);
-		ArrayList<State> compos = this.getStateComposition(s);
+		ArrayList<State> compos = composedModal.getStateComposition(s);
 		
 		State modalState1 = compos.get(0);
 		State modalState2 = compos.get(1);
@@ -774,7 +805,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			if(visited.contains(top)) 
 				continue;
 			visited.add(top);
-			for(DetTransition trans : mod1.getTransitions().getTransitions(top)){
+			for(DetTransition trans : mod1.getMustTransitions().getTransitions(top)){
 				if(!shared.contains(trans.getTransitionEvent())) {
 					queue.add(trans.getTransitionState());
 				}
@@ -794,7 +825,6 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * 
 	 * @return - Returns a pruned ModalSpecification object.
 	 */
-
 
 	public ModalSpecification prune() {
 		// First, get all the inconsistent states
@@ -1205,7 +1235,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	
 	public ModalSpecification getGreatestLowerBound(ModalSpecification other) {
 		ModalSpecification newMS = getPseudoLowerBound(other);
-		return newMS.prune();
+		return newPrune(this, other, newMS);
 	}
 	
 	/**
