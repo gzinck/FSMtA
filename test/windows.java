@@ -39,15 +39,15 @@ public class windows {
 	
 	@Test
 	public void test() {
-		int sizeState = 5;
-		int sizeMarked = 3;
-		int sizeEvents = 2;
-		int sizePaths = 2;
-		int sizePrivate = 5;
-		int sizeUnobserv = 2;
-		int sizeAttacker = 0;
-		int sizeControl = 2;
-		int sizeMust = 2;
+		int sizeState = 50;
+		int sizeMarked = 22;
+		int sizeEvents = 7;
+		int sizePaths = 3;
+		int sizePrivate = 6;
+		int sizeUnobserv = 1;
+		int sizeAttacker = 1;
+		int sizeControl = 1;
+		int sizeMust = 12;
 		
 		
 
@@ -55,8 +55,8 @@ public class windows {
 		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
 
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
-		System.out.println("Loop");
 		FSMToDot.createTikZFromFSM(mod1, MAC_WORKING_FOLDER + "out_test_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "out_test_im_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
 	/*
 		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
