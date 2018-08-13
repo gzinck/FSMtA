@@ -748,7 +748,7 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			composedModal.getTransitions().removeState(s);
 		}
 		
-		return composedModal;
+		return composedModal.makeAccessible();
 	}
 	
 	/**
