@@ -71,7 +71,6 @@ public class EventMap {
 	 * @return - Returns the Event extending object corresponding to the provided String object.
 	 */
 	
-
 	public Event getEvent(String eventName) {
 		return events.get(eventName);
 	}

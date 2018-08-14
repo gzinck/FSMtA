@@ -89,6 +89,8 @@ public class ReadWrite <T extends Transition>{
 			}
 			while(sc.hasNextLine()) {
 				String[] in = sc.nextLine().split(" ");
+				if(in.length < 3)
+					break;
 				State fromState = states.addState(in[0]);
 				State toState = states.addState(in[1]);
 				Event event = events.addEvent(in[2]);

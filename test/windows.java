@@ -13,12 +13,15 @@ public class windows {
 
 	/**
 	 * TODO:  Update Composition to account for Graeme's changes - Greatest Lower Bound pruning.
-	 * 
 	 * TODO:  Turn .svg file into TikZ language format. (Parse the former, convert into latter.)
-	 * TODO:  Read some Case Studies and try to make into a working example. (Have the handout; Mac computer wiped via security stuff.)
-	 * TODO:  User Interface up-to-date.
-	 * TODO:  Update commenting all over.
+	 * TODO:  Changed format for Modal Read-In, need to reflect in randomizer. (No explicit overlap of Must/May)
+	 * 		  TODO: toTextFile also needs adjustment, perhaps other. 
+	 * 
+	 * TODO:  Finicky file reading if extra last line on Windows.
 	 * TODO:  Aug 16'th - Demo the Software, make sure it can be exported and works.
+	 * TODO:  User Interface up-to-date.
+	 * TODO:  Read some Case Studies and try to make into a working example. (Have the handout; Mac computer wiped via security stuff.)
+	 * TODO:  Update commenting all over.
 	 * TODO:  Instruction Manual!
 	 * 
 	 * TODO:  August 17'th is last day of work, excluding desired excess work.
@@ -34,8 +37,8 @@ public class windows {
 	 * 
 	 */
 	
-	private static final String MAC_WORKING_FOLDER = "C:\\Users\\Reithger\\Documents\\TestGraph\\";
-	private static final String MAC_CONFIG_FILE_PATH = "C:\\Users\\Reithger\\Documents\\GitHub\\FSM-Implementation-2\\config.properties";
+	public static final String MAC_WORKING_FOLDER = "C:\\Users\\Reithger\\Documents\\TestGraph\\";
+	public static final String MAC_CONFIG_FILE_PATH = "C:\\Users\\Reithger\\Documents\\GitHub\\FSM-Implementation-2\\config.properties";
 	
 	@Test
 	public void test() {
@@ -48,15 +51,29 @@ public class windows {
 		int sizeAttacker = 1;
 		int sizeControl = 1;
 		int sizeMust = 12;
-		
-		
 
 		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
 		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
+		
+		m1 = new File(MAC_WORKING_FOLDER + "m1.mdl");
+		//m2 = new File(MAC_WORKING_FOLDER + "m2.mdl");
 
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
-		FSMToDot.createTikZFromFSM(mod1, MAC_WORKING_FOLDER + "out_test_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
-		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "out_test_im_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		mod1.toTextFile(MAC_WORKING_FOLDER, "cop_1");
+		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
+		mod2.toTextFile(MAC_WORKING_FOLDER, "cop_2");
+		mod1 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "cop_1.mdl"), "mod1");
+		mod2 = new ModalSpecification(new File(MAC_WORKING_FOLDER + "cop_2.mdl"), "mod2");
+		
+		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "mod1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(mod2, MAC_WORKING_FOLDER + "mod2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		ModalSpecification mod3 = mod1.getGreatestLowerBound(mod2);
+		
+		FSMToDot.createImgFromFSM(mod3, MAC_WORKING_FOLDER + "mod3", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		//FSMToDot.createTikZFromFSM(mod1, MAC_WORKING_FOLDER + "out_test_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		//FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "out_test_im_1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
 	/*
 		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
