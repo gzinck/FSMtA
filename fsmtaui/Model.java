@@ -414,7 +414,8 @@ public class Model {
 
 	public TSViewport getCurrViewport() {
 		Tab currTab = openTSTabs.getSelectionModel().getSelectedItem();
-		if(currTab == null) return null;
+		if(currTab == null) 
+			return null;
 		return (TSViewport) currTab.getContent();
 	} // getCurrViewport()
 

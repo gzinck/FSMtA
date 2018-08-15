@@ -103,14 +103,13 @@ public class FSMtAUI extends Application {
 		scene.getStylesheets().add(this.getClass().getResource("css/styles.css").toExternalForm());
 		
 		// Get the working directory from user
-		workingDirectory = new File(this.getClass().getResource("").getPath().replaceAll("%20", " "));
+		workingDirectory = new File(this.getClass().getResource("").getPath().replaceAll("%20", " ").replaceAll("(.*)file:", ""));
 		
 		// Only run the application if we got a working directory
 		if(workingDirectory != null) {
 			
 			// Find where GraphViz has its configuration file
-			graphVizConfigPath = this.getClass().getClassLoader().getResource("config.properties").getPath().replaceAll("%20", " ");
-			
+			graphVizConfigPath = this.getClass().getClassLoader().getResource("config.properties").getPath().replaceAll("%20", " ").replaceAll("file:", "");
 			// Make the model to pass to all the elements of the UI
 			model = new Model(openTSs, openFSMStrings, workingDirectory, graphVizConfigPath);
 			
@@ -127,7 +126,7 @@ public class FSMtAUI extends Application {
 			
 			// Show the stage
 			stage.setScene(scene);
-			stage.setTitle(APP_NAME);
+			//stage.setTitle(APP_NAME);
 			stage.show();
 		} // if
 	} // start(Stage)

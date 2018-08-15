@@ -16,8 +16,8 @@ public class windows {
 	 * TODO:  Turn .svg file into TikZ language format. (Parse the former, convert into latter.)
 	 * TODO:  Changed format for Modal Read-In, need to reflect in randomizer. (No explicit overlap of Must/May)
 	 * 		  TODO: toTextFile also needs adjustment, perhaps other. 
-	 * 
 	 * TODO:  Finicky file reading if extra last line on Windows.
+	 * 
 	 * TODO:  Aug 16'th - Demo the Software, make sure it can be exported and works.
 	 * TODO:  User Interface up-to-date.
 	 * TODO:  Read some Case Studies and try to make into a working example. (Have the handout; Mac computer wiped via security stuff.)
