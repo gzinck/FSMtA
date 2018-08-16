@@ -26,7 +26,8 @@ public class MultiFSMOperationPane extends VBox {
 	/** String object constant representing the message for what the section does. */
 	private static final String TITLE_MSG = "Perform Operations with Multiple FSMs";
 	/** ObservableList of String object constants with all the possible operations involving multiple FSMs that a user can choose. */
-	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Product", "Parallel Composition", "Get Supremal Controllable Sublanguage");
+	private static final ObservableList<String> MULTI_FSM_OPERATIONS = FXCollections.observableArrayList("Product", 
+			"Parallel Composition", "Create Universal Observer View", "Get Greatest Lower Bound"/*, "Make Optimal Supervisor"*/);
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
@@ -83,25 +84,40 @@ public class MultiFSMOperationPane extends VBox {
 			if(operation == null) {
 				Alerts.makeError(Alerts.ERROR_OPERATION_NO_NAME);
 			} else {
+
 				SelectFSMDialog selectionDialog = new SelectFSMDialog(model, "Operation Selection Options", "Write a name for the new FSM, and drag the desired FSMs to the right box to perform the operation.");
-				LinkedList<FSM<? extends Transition>> fsmList = selectionDialog.getTSs();
+				LinkedList<TransitionSystem<?>> fsmList = selectionDialog.getTSs();
 				
 				// Exit if there was a problem
-				if(fsmList == null || fsmList.size() < 2) return;
+				if(fsmList == null || fsmList.size() < 2) {
+					return;
+				}
 				
 				String id = selectionDialog.getId();
-				FSM<?> fsm1 = fsmList.removeFirst();
-				FSM<?>[] fsms = fsmList.toArray(new FSM<?>[fsmList.size()]);
+				TransitionSystem<?> fsm1 = fsmList.removeFirst();
+				TransitionSystem<?>[] fsms = fsmList.toArray(new TransitionSystem[fsmList.size()]);
+				
 				if(operation.equals(MULTI_FSM_OPERATIONS.get(0))) {
 					// Perform product
-					addFSM(fsm1.product(fsms), id);
+					addFSM(((FSM<?>)fsm1).product((FSM<?>[])fsms), id);
 				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(1))) {
 					// Perform parallel composition
-					addFSM(fsm1.parallelComposition(fsms), id);
+					addFSM(((FSM<?>)fsm1).parallelComposition((FSM<?>[])fsms), id);
 				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(2))) {
 					// Get Supremal Controllable Sublanguage
 					if(fsm1 instanceof NonDetObsContFSM)
-						addFSM(((NonDetObsContFSM)fsm1).getSupremalControllableSublanguage(fsms[0]), id);
+						addFSM(((NonDetObsContFSM)fsm1).getSupremalControllableSublanguage((FSM<?>)fsms[0]), id);
+					else
+						Alerts.makeError(Alerts.ERROR_INCOMPATIBLE_FSM_OBSCONT);
+				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(3))) {
+					if(fsm1 instanceof ModalSpecification && fsms[0] instanceof ModalSpecification)
+						addFSM(((ModalSpecification)fsm1).getGreatestLowerBound((ModalSpecification)fsms[0]), id);
+					else
+						Alerts.makeError(Alerts.ERROR_INCOMPATIBLE_FSM_OBSCONT);
+				} else if(operation.equals(MULTI_FSM_OPERATIONS.get(4))) {
+					//Removed because Algorithm is broken; last dealt with pre-overhaul. Can re-include via Constant.
+					if(fsm1 instanceof ModalSpecification && fsms[0] instanceof FSM<?>)
+						addFSM(((ModalSpecification)fsm1).makeOptimalSupervisor((FSM<?>)fsms[0]), id);
 					else
 						Alerts.makeError(Alerts.ERROR_INCOMPATIBLE_FSM_OBSCONT);
 				} else {
@@ -115,7 +131,7 @@ public class MultiFSMOperationPane extends VBox {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * Helper method o add an FSM to the model and reset the text field.
+	 * Helper method to add an FSM to the model and reset the text field.
 	 * 
 	 * @param newTS - TransitionSystem object to add to the model.
 	 * @param id - String object representing the id of the FSM.

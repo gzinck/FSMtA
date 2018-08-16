@@ -43,7 +43,7 @@ public class ImageLegend {
 		root.getChildren().addAll(stateLegend, transitionLegend);
 		
 		scene = new Scene(root);
-		scene.getStylesheets().add(this.getClass().getResource("../css/image-legend-styles.css").toExternalForm());
+		scene.getStylesheets().add(this.getClass().getResource("/css/image-legend-styles.css").toExternalForm());
 		
 		// Create the window
         stage = new Stage();

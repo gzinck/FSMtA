@@ -37,7 +37,7 @@ public class Model {
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** List of open TransitionSystems. */
-	private ObservableList<TransitionSystem<? extends Transition>> openTSs;
+	private ObservableList<TransitionSystem<?>> openTSs;
 	/** List of openFSM ids, used for the ListView. */
 	private ObservableList<String> openTSStrings;
 	/** Transition system which is currently open in the UI. */
@@ -62,7 +62,7 @@ public class Model {
 	 * @param inWorkingDirectory - File representing the working path for the FSMtA session.
 	 */
 	
-	public Model(ObservableList<TransitionSystem<? extends Transition>> inOpenTSs, ObservableList<String> inOpenTSStrings, File inWorkingDirectory, String inGraphVizConfigPath) {
+	public Model(ObservableList<TransitionSystem<?>> inOpenTSs, ObservableList<String> inOpenTSStrings, File inWorkingDirectory, String inGraphVizConfigPath) {
 		openTSs = inOpenTSs;
 		openTSStrings = inOpenTSStrings;
 		workingDirectory = inWorkingDirectory;
@@ -119,9 +119,9 @@ public class Model {
 		} // for
 		
 		// Add a listener so the list reflects the list of actual FSM objects
-		openTSs.addListener(new ListChangeListener<TransitionSystem<? extends Transition>>() {
+		openTSs.addListener(new ListChangeListener<TransitionSystem<?>>() {
 			@Override
-			public void onChanged(ListChangeListener.Change<? extends TransitionSystem<? extends Transition>> change) {
+			public void onChanged(ListChangeListener.Change<? extends TransitionSystem<?>> change) {
 				while(change.next()) {
 					if(change.wasAdded()) {
 						for(TransitionSystem<? extends Transition> ts : change.getAddedSubList()) {
@@ -164,7 +164,7 @@ public class Model {
 		
 		// Get all the FSMs and add them to a list
 		for(TransitionSystem<?> ts : openTSs)
-			if(ts instanceof FSM<?>)
+			//if(ts instanceof FSM<?>)
 				openFSMStringList.add(ts.getId());
 		
 		return FXCollections.observableList(openFSMStringList);
@@ -306,7 +306,7 @@ public class Model {
 	 * @param ts - TransitionSystem object to add to the set of open transition systems in the GUI.
 	 */
 
-	public void addTS(TransitionSystem<? extends Transition> ts) {
+	public void addTS(TransitionSystem<?> ts) {
 		openTSs.add(ts);
 	} // addTS(TransitionSystem<Transition>)
 	
@@ -320,7 +320,7 @@ public class Model {
 
 	public boolean removeTS(String id) {
 		for(int i = 0; i < openTSs.size(); i++) {
-			TransitionSystem<? extends Transition> curr = openTSs.get(i);
+			TransitionSystem<?> curr = openTSs.get(i);
 			if(curr.getId().equals(id)) {
 				openTSs.remove(i);
 				return true;
@@ -354,7 +354,7 @@ public class Model {
 	 * @return - Returns a boolean value; true if the viewport was added, false if the viewport already existed.
 	 */
 
-	public boolean addViewport(TransitionSystem<? extends Transition> ts, String name) {
+	public boolean addViewport(TransitionSystem<?> ts, String name) {
 		// First, check if the viewport exists, and if it does,
 		// open it
 		ObservableList<Tab> tabs = openTSTabs.getTabs();

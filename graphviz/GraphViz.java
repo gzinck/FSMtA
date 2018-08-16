@@ -36,6 +36,8 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
+import fsmtaui.FSMtAUI;
+
 /**
 * <dl>
 * <dt>Purpose: GraphViz Java API
@@ -117,7 +119,7 @@ public class GraphViz
 	 configFile = new Properties() {
 	     private final static long serialVersionUID = 1L; {
 	         try {
-	             load(new FileInputStream(cfgProp));
+	             load(FSMtAUI.class.getResourceAsStream("/config/config.properties"));
 	         } catch (Exception e) {
 	        	 	System.out.println("Could not find the configuration file.");
 	         }

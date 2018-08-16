@@ -100,17 +100,19 @@ public class FSMtAUI extends Application {
 		root = new BorderPane();
 		root.setFocusTraversable(true);
 		scene = new Scene(root);
-		scene.getStylesheets().add(this.getClass().getResource("css/styles.css").toExternalForm());
+		scene.getStylesheets().add(FSMtAUI.class.getResource("/css/styles.css").toExternalForm());
 		
 		// Get the working directory from user
-		workingDirectory = new File(this.getClass().getResource("").getPath().replaceAll("%20", " ").replaceAll("(.*)file:", ""));
+		workingDirectory = new File(this.getClass().getResource("").getPath().replaceAll("%20", " ").replaceAll("(.*)file:", "").replaceAll(".ja(.*)", "/"));
 		
 		// Only run the application if we got a working directory
 		if(workingDirectory != null) {
 			
 			// Find where GraphViz has its configuration file
-			graphVizConfigPath = this.getClass().getClassLoader().getResource("config.properties").getPath().replaceAll("%20", " ").replaceAll("file:", "");
+			graphVizConfigPath = FSMtAUI.class.getResource("/config/config.properties").getPath().replaceAll("%20", " ").replaceAll("file:", "").replaceAll(".jar!", "");
+
 			// Make the model to pass to all the elements of the UI
+			stage.setTitle(graphVizConfigPath);
 			model = new Model(openTSs, openFSMStrings, workingDirectory, graphVizConfigPath);
 			
 			// Set up the pane for all the tabs of settings

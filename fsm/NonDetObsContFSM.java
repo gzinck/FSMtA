@@ -278,54 +278,6 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 	}
 	
 	@Override
-	public <T1 extends Transition> NonDetObsContFSM getSupremalControllableSublanguage(FSM<T1> other) {
-		// Store what events are disabled in the map.
-		HashMap<String, DisabledEvents> disabledMap = new HashMap<String, DisabledEvents>();
-		// Parse the graph and identify disabled states and disabled events
-		for(State s : states.getStates()) {
-			HashSet<String> visitedStates = new HashSet<String>();
-			disabledMap.put(s.getStateName(), getDisabledEvents(s, other, visitedStates, disabledMap));
-		} // for every state
-		
-		// Now, build the FSM that we will return
-		NonDetObsContFSM newFSM = new NonDetObsContFSM(this.id + " supremal controllable sublanguage");
-		newFSM.copyStates(this);
-		newFSM.copyEvents(this);
-		ArrayList<State> statesToRemove = new ArrayList<State>();
-		// Identify and copy the transitions which are legal at each state
-		for(State s : newFSM.getStates()) {
-			DisabledEvents disabled = disabledMap.get(s.getStateName());
-			if(disabled.stateIsDisabled()) {
-				statesToRemove.add(s);
-			} else {
-				ArrayList<NonDetTransition> allowedTransitions = new ArrayList<NonDetTransition>();
-				ArrayList<NonDetTransition> transitions = this.transitions.getTransitions(getState(s));
-				if(transitions != null) {
-					for(NonDetTransition t : transitions) {
-						Event e = t.getTransitionEvent();
-						if(disabled.eventIsEnabled(e.getEventName())) {
-							// Create a list of the states the event leads to
-							ArrayList<State> toStates = new ArrayList<State>();
-							for(State toS : (ArrayList<State>)t.getTransitionStates()) {
-								if(!disabledMap.get(toS.getStateName()).stateIsDisabled())
-									toStates.add(getState(toS.getStateName()));
-							} // for every toState
-							if(toStates.size() > 0)
-								allowedTransitions.add(new NonDetTransition(e, toStates));
-						} // if the event is enabled
-					} // for every transition
-				} // if there are any transitions
-				if(allowedTransitions.size() > 0) {
-					newFSM.addStateTransitions(s, allowedTransitions);
-				} // if there are allowed transitions
-			} // if disabled state/else
-		} // for every state
-//		System.out.println(disabledMap.toString());
-		newFSM.states.removeStates(statesToRemove);
-		return newFSM;
-	} // getSupremalControllableSublanguage(FSM)
-	
-	@Override
 	public <T1 extends Transition> DisabledEvents getDisabledEvents(State curr, FSM<T1> otherFSM, HashSet<String> visitedStates, HashMap<String, DisabledEvents> disabledMap) {
 		String currName = curr.getStateName();
 		State otherCurr = otherFSM.getState(currName);
@@ -431,6 +383,54 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 		return newFSM;
 	}
 
+	@Override
+	public <T1 extends Transition> NonDetObsContFSM getSupremalControllableSublanguage(FSM<T1> other) {
+		// Store what events are disabled in the map.
+		HashMap<String, DisabledEvents> disabledMap = new HashMap<String, DisabledEvents>();
+		// Parse the graph and identify disabled states and disabled events
+		for(State s : states.getStates()) {
+			HashSet<String> visitedStates = new HashSet<String>();
+			disabledMap.put(s.getStateName(), getDisabledEvents(s, other, visitedStates, disabledMap));
+		} // for every state
+		
+		// Now, build the FSM that we will return
+		NonDetObsContFSM newFSM = new NonDetObsContFSM(this.id + " supremal controllable sublanguage");
+		newFSM.copyStates(this);
+		newFSM.copyEvents(this);
+		ArrayList<State> statesToRemove = new ArrayList<State>();
+		// Identify and copy the transitions which are legal at each state
+		for(State s : newFSM.getStates()) {
+			DisabledEvents disabled = disabledMap.get(s.getStateName());
+			if(disabled.stateIsDisabled()) {
+				statesToRemove.add(s);
+			} else {
+				ArrayList<NonDetTransition> allowedTransitions = new ArrayList<NonDetTransition>();
+				ArrayList<NonDetTransition> transitions = this.transitions.getTransitions(getState(s));
+				if(transitions != null) {
+					for(NonDetTransition t : transitions) {
+						Event e = t.getTransitionEvent();
+						if(disabled.eventIsEnabled(e.getEventName())) {
+							// Create a list of the states the event leads to
+							ArrayList<State> toStates = new ArrayList<State>();
+							for(State toS : (ArrayList<State>)t.getTransitionStates()) {
+								if(!disabledMap.get(toS.getStateName()).stateIsDisabled())
+									toStates.add(getState(toS.getStateName()));
+							} // for every toState
+							if(toStates.size() > 0)
+								allowedTransitions.add(new NonDetTransition(e, toStates));
+						} // if the event is enabled
+					} // for every transition
+				} // if there are any transitions
+				if(allowedTransitions.size() > 0) {
+					newFSM.addStateTransitions(s, allowedTransitions);
+				} // if there are allowed transitions
+			} // if disabled state/else
+		} // for every state
+//		System.out.println(disabledMap.toString());
+		newFSM.states.removeStates(statesToRemove);
+		return newFSM;
+	} // getSupremalControllableSublanguage(FSM)
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	@Override

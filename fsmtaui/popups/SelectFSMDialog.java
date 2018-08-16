@@ -27,7 +27,7 @@ public class SelectFSMDialog {
 //---  Instance Variables   -------------------------------------------------------------------
 	
 	/** Dialog<<r>LinkedList<<r>FSM<<r>Transition>>> instance variable which asks the user for FSMs to perform an operation upon. */
-	Dialog<LinkedList<FSM<? extends Transition>>> dialog;
+	Dialog<LinkedList<TransitionSystem<?>>> dialog;
 	/** ListView<<r>String> instance variable representing a list of all the open FSMs when the dialog opened. */
 	ListView<String> openFSMBox;
 	/** ListView<<r>String> instance variable representing a list of all the FSMs the user selects for the operation. */
@@ -48,7 +48,7 @@ public class SelectFSMDialog {
 	 */
 	
 	public SelectFSMDialog(Model model, String title, String header) {
-		dialog = new Dialog<LinkedList<FSM<? extends Transition>>>();
+		dialog = new Dialog<LinkedList<TransitionSystem<?>>>();
 		dialog.setTitle(title);
 		dialog.setHeaderText(header);
 		
@@ -81,10 +81,11 @@ public class SelectFSMDialog {
 		dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
             		Collection<String> fsmNames = selectedFSMBox.getItems();
-            		LinkedList<FSM<? extends Transition>> tsList = new LinkedList<FSM<? extends Transition>>();
+            		LinkedList<TransitionSystem<?>> tsList = new LinkedList<TransitionSystem<?>>();
             		for(String fsmName : fsmNames) {
             			TransitionSystem<? extends Transition> fsm = model.getTS(fsmName);
-            			if(fsm != null && fsm instanceof FSM<?>) tsList.add((FSM<?>)fsm); // Add the fsm, if it exists
+            			if(fsm != null && fsm instanceof TransitionSystem<?>)
+            				tsList.add(fsm); // Add the fsm, if it exists
             		} // for each fsm name
             		// Must have an id
             		id = fsmNameField.getText();
@@ -159,9 +160,9 @@ public class SelectFSMDialog {
 	 * @return - Returns a LinkedList Collection of FSM objects.
 	 */
 
-	public LinkedList<FSM<? extends Transition>> getTSs() {
+	public LinkedList<TransitionSystem<?>> getTSs() {
 		// Shows the dialog and returns results
-		Optional<LinkedList<FSM<? extends Transition>>> optionalResult = dialog.showAndWait();
+		Optional<LinkedList<TransitionSystem<?>>> optionalResult = dialog.showAndWait();
 		try {
 			return optionalResult.get();
 		} catch(NoSuchElementException e) {

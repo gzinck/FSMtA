@@ -1,6 +1,7 @@
 package fsmtaui.settingspane;
 
 import fsm.*;
+import fsmtaui.FSMtAUI;
 import fsmtaui.Model;
 import fsmtaui.popups.*;
 import graphviz.FSMToDot;
@@ -9,6 +10,8 @@ import support.transition.Transition;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 import javafx.collections.*;
 import javafx.scene.control.*;
@@ -237,7 +240,8 @@ public class FileSettingsPane extends VBox {
 				GenerateFSMDialog dialog = new GenerateFSMDialog(tsClass); // pass boolean of whether the FSM is deterministic or not
 				GenerateFSMDialog.FSMParameters parameters = dialog.getFSMParametersFromUser();
 				if(parameters != null) {
-					File tsFile = null;
+					File tsFile = new File(model.getWorkingDirectoryString() + "/");
+					tsFile.mkdir();
 					if(tsClass.equals(TS_TYPES.get(2))) {
 						// Modal specification
 						tsFile = new File(GenerateFSM.createModalSpec(
@@ -336,7 +340,9 @@ public class FileSettingsPane extends VBox {
 				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
 				return;
 			} // if
+			
 			FSMToDot.createImgFromFSM(fsmToSave, file.getName(), file.getParent(), model.getGraphVizConfigPath());
+			
 		}); // setOnMouseClicked
 	} // makeSaveTSEventHandler()
 

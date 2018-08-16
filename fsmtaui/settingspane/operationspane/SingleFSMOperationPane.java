@@ -35,7 +35,8 @@ public class SingleFSMOperationPane extends VBox {
 	/** Field object instance variable for the name of the new FSM to create. */
 	private TextField fsmNameField;
 	/** ObservableList of String object instance variables with all the possible operations involving one FSM that a user can choose. */
-	private static final ObservableList<String> SINGLE_FSM_OPERATIONS = FXCollections.observableArrayList("Determinize", "Make Accessible", "Make CoAccessible", "Trim");
+	private static final ObservableList<String> SINGLE_FSM_OPERATIONS = FXCollections.observableArrayList("Determinize", 
+				"Make Accessible", "Make CoAccessible", "Trim", "Build Optimal Opaque Controller");
 	/** Button object instance variable allowing the user to perform the selection operation on the selected FSM. */
 	private Button performOperationBtn;
 	
@@ -127,6 +128,11 @@ public class SingleFSMOperationPane extends VBox {
 				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(3))) {
 					// Trim
 					addTS(currTS.trim(), id);
+				} else if(operation.equals(SINGLE_FSM_OPERATIONS.get(4))) {
+					if(currTS instanceof ModalSpecification)
+						addTS(((ModalSpecification)currTS).buildOptimalOpaqueController(), id);
+					else
+						Alerts.makeError(Alerts.ERROR_OPERATION_ONLY_FOR_FSMS);
 				} else {
 					// No option chosen
 					Alerts.makeError(Alerts.ERROR_OPERATION_NO_OP);

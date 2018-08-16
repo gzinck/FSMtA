@@ -9,6 +9,12 @@ import javafx.scene.image.*;
 import graphviz.FSMToDot;
 import javafx.scene.*;
 import java.io.File;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * TSViewport is a Parent javafx node which holds a TransitionSystem and its image representation
@@ -63,6 +69,7 @@ public class TSViewport extends Parent {
 		
 		// Create the image representation
 		String imageName = model.getWorkingDirectoryString() + "/" + ts.getId();
+				
 		FSMToDot.createImgFromFSM(ts, imageName, model.getWorkingDirectoryString(), model.getGraphVizConfigPath());
 		
 		// Show the image in the ImageView
@@ -95,7 +102,9 @@ public class TSViewport extends Parent {
 	public void refreshImage() {
 		// Create the image representation
 		String imageName = model.getWorkingDirectoryString() + "/" + ts.getId();
+		
 		FSMToDot.createImgFromFSM(ts, imageName, model.getWorkingDirectoryString(), model.getGraphVizConfigPath());
+		
 		// Show the image in the ImageView
 		image = new Image("file:" + imageName + ".jpg");
 		imageView.setImage(image);
