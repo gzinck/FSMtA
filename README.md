@@ -1,7 +1,7 @@
 # FSM-Implementation-2
 
 ## Getting Started
-Welcome to the FSMtA v2 repository! If you want to get started, first install GraphViz from graphviz.org and ensure you have an up-to-date version of Java. Then you can download the executable .jar file named FSMtA.jar; then you can run it as a normal application.
+Welcome to the FSMtA v2 repository! If you want to get started, first install GraphViz from graphviz.org and ensure you have an up-to-date version of Java. Then download the executable .jar file named FSMtA.jar and run it as a normal application.
 
  - Important: You must install GraphViz to make this program work, it handles the image construction and is vital. (graphviz.org)
 
