@@ -115,7 +115,7 @@ public class ModifyTSStatePropertiesPane extends VBox {
 		allStateModifierGrid.addRow(1, makeAllGoodBtn, removeAllBadBtn);
 		allStateModifierGrid.addRow(2, renameStatesBtn);
 		
-		getChildren().addAll(initialOptionsLabel, toggleGrid, new Separator(), allStateModifierGrid);
+		getChildren().addAll(initialOptionsLabel, toggleGrid, new Separator(), allStateModifierGrid, new Separator());
 		
 		makeToggleInitialStateEventHandler();
 		makeToggleMarkedEventHandler();

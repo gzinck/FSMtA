@@ -29,6 +29,8 @@ public class ModifyTSEventPropertiesPane extends VBox {
 	private Button toggleObservabilityBtn;
 	/** Button object instance variable to toggle the controllability of an event. */
 	private Button toggleControllabilityBtn;
+	/** */
+	private Button toggleAttackerBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -48,15 +50,18 @@ public class ModifyTSEventPropertiesPane extends VBox {
 		
 		Label eventNameLabel = new Label("Event Name:");
 		eventNameField = new TextField();
-		toggleObservabilityBtn = new Button("Toggle Observability");
+		toggleObservabilityBtn = new Button("Toggle System Observability");
 		toggleControllabilityBtn = new Button("Toggle Controllability");
+		toggleAttackerBtn = new Button("Toggle Attacker Observability");
 		
 		GridPane grid = new GridPane();
 		grid.addRow(0, eventNameLabel, eventNameField);
-		grid.addRow(1, toggleObservabilityBtn, toggleControllabilityBtn);
+		grid.addRow(1, toggleObservabilityBtn, toggleAttackerBtn);
+		grid.addRow(2, toggleControllabilityBtn);
 		getChildren().addAll(titleLabel, grid);
 		
 		makeToggleObservableEventHandler();
+		makeToggleAttackerEventHandler();
 		makeToggleControllableEventHandler();
 	} // ModifyFSMObservablePane()
 
@@ -99,6 +104,44 @@ public class ModifyTSEventPropertiesPane extends VBox {
 			} // if/else
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeToggleObservableEventHandler()
+
+	/**
+	 * 
+	 */
+	
+	private void makeToggleAttackerEventHandler() {
+		eventNameField.setOnKeyPressed(e -> {
+			if(e.getCode() == KeyCode.ENTER) toggleAttackerBtn.fire();
+		});
+		toggleObservabilityBtn.setOnKeyPressed(e -> {
+			if(e.getCode() == KeyCode.ENTER) toggleAttackerBtn.fire();
+		});
+		toggleAttackerBtn.setOnAction(e -> {
+			String event = eventNameField.getText();
+			if(event.equals("")) {
+				Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
+			} else {
+				// Then no errors
+				TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+				if(currTS == null) {
+					Alerts.makeError(Alerts.ERROR_ADD_STATE_NO_FSM);
+				} else if(currTS instanceof Observability<?>) {
+					try {
+						Observability<?> currObs = (Observability<?>) model.getCurrTS();
+						// Toggle the observability of the event.
+						currObs.setEventAttackerObservability(event, !currObs.getEventObservability(event));
+						eventNameField.setText("");
+						eventNameField.requestFocus();
+						model.refreshViewport();
+					} catch(NullPointerException err) {
+						Alerts.makeError(Alerts.ERROR_EDIT_EVENT_NO_NAME);
+					}
+				} else {
+					System.err.println("Error: the options for observable events were available for a TransitionSystem that did not have them enabled.");
+				}
+			} // if/else
+		}); // setOnAction(EventHandler<ActionEvent>)
+	}
 	
 	/**
 	 * This method creates the event handler for changing observability of an event.

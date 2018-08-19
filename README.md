@@ -3,6 +3,8 @@
 ## Getting Started
 Welcome to the FSMtA v2 repository! If you want to get started, simply download and install GraphViz and run the software using the main method in the FSMtAUI package, in FSMtAUI.class.
 
+ - Important: You must install GraphViz to make this program work, it handles the image construction and is vital. (graphviz.org)
+
 ## Package Overview
 FSMtAUI is split into a number of packages to organize based on function:
 
@@ -44,4 +46,4 @@ To build an FSM from the beginning...
 9. Use the other options in the "Modify FSM" tab to edit the properties easily.
 
 ## Questions? Comments?
-We love feedback! That's why we're putting our email right here in invisible ink. If you're reading this, you're probably our supervisor. So yeah. Email us.
+We will set up an alias to contact us from soon.

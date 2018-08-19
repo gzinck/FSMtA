@@ -42,7 +42,7 @@ public class windows {
 	
 	@Test
 	public void test() {
-		int sizeState = 50;
+		int sizeState = 150;
 		int sizeMarked = 22;
 		int sizeEvents = 7;
 		int sizePaths = 3;
@@ -59,6 +59,10 @@ public class windows {
 		//m2 = new File(MAC_WORKING_FOLDER + "m2.mdl");
 
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
+		
+		FSMToDot.createImgFromFSM(mod1, MAC_WORKING_FOLDER + "mod1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		/*
 		mod1.toTextFile(MAC_WORKING_FOLDER, "cop_1");
 		ModalSpecification mod2 = new ModalSpecification(m2, "mod2");
 		mod2.toTextFile(MAC_WORKING_FOLDER, "cop_2");

@@ -58,6 +58,10 @@ public class FileSettingsPane extends VBox {
 	private Button saveFSMBtn;
 	/** Button object instance variable for saving the selected FSMs as JPG files. */
 	private Button saveJPGBtn;
+	/** */
+	private Button saveSVGBtn;
+	/** */
+	private Button saveTikZBtn;
 	/** ListView<<r>String> object instance variable containing all the openFSMs listed. */
 	ListView<String> openTSBox;
 	
@@ -152,7 +156,9 @@ public class FileSettingsPane extends VBox {
 		closeTSBtn = new Button("Close selected FSM");
 		saveFSMBtn = new Button("Save selected FSM as FSM file");
 		saveJPGBtn = new Button("Save selected FSM as JPG file");
-		return new VBox(closeTSBtn, saveFSMBtn, saveJPGBtn);
+		saveTikZBtn = new Button("Save selected FSM as TikZ file");
+		saveSVGBtn = new Button("Save selected FSM as SVG file");
+		return new VBox(closeTSBtn, saveFSMBtn, saveJPGBtn, saveTikZBtn, saveSVGBtn);
 	} // makeSaveBtns()
 	
 	//-- Event Handlers  --------------------------------
@@ -344,8 +350,45 @@ public class FileSettingsPane extends VBox {
 			FSMToDot.createImgFromFSM(fsmToSave, file.getName(), file.getParent(), model.getGraphVizConfigPath());
 			
 		}); // setOnMouseClicked
+		
+		saveTikZBtn.setOnMouseClicked(e -> {
+			// Gets the selected FSMs and prompts the user for the path to save it to.
+			String fsmId = openTSBox.getSelectionModel().getSelectedItem();
+			TransitionSystem<? extends Transition> fsmToSave = model.getTS(fsmId);
+			if(fsmToSave == null) {
+				Alerts.makeError(Alerts.ERROR_NO_FSM_SELECTED);
+				return;
+			} // if
+			File file = Model.getPathToSaveFile();
+			if(file == null) {
+				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
+				return;
+			} // if
+			
+			FSMToDot.createTikZFromFSM(fsmToSave, file.getName(), file.getParent(), model.getGraphVizConfigPath());
+			
+		}); // setOnMouseClicked
+		
+		saveSVGBtn.setOnMouseClicked(e -> {
+			// Gets the selected FSMs and prompts the user for the path to save it to.
+			String fsmId = openTSBox.getSelectionModel().getSelectedItem();
+			TransitionSystem<? extends Transition> fsmToSave = model.getTS(fsmId);
+			if(fsmToSave == null) {
+				Alerts.makeError(Alerts.ERROR_NO_FSM_SELECTED);
+				return;
+			} // if
+			File file = Model.getPathToSaveFile();
+			if(file == null) {
+				Alerts.makeError(Alerts.ERROR_FILE_FORMAT);
+				return;
+			} // if
+			
+			FSMToDot.createSVGFromFSM(fsmToSave, file.getName(), file.getParent(), model.getGraphVizConfigPath());
+			
+		}); // setOnMouseClicked
 	} // makeSaveTSEventHandler()
 
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**

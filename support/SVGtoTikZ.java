@@ -88,7 +88,6 @@ public class SVGtoTikZ {
 		  				in = br.readLine();
 		  			}
 				}
-			  System.out.println(in);
 			  in = br.readLine();
 			}
 			for(String s : edges)

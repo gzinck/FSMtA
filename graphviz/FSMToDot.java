@@ -47,6 +47,14 @@ public class FSMToDot {
 	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 	}
 	
+	/**
+	 * 
+	 * @param fsm
+	 * @param path
+	 * @param workingPath
+	 * @param configPath
+	 */
+	
 	public static void createSVGFromFSM(TransitionSystem fsm, String path, String workingPath, String configPath){
 	    GraphViz gv=new GraphViz(workingPath, configPath);
 	    gv.addln(gv.start_graph());
@@ -61,9 +69,23 @@ public class FSMToDot {
 	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 	}
 	
+	/**
+	 * 
+	 * @param svgFile
+	 * @param path
+	 */
+	
 	public static void createTikZFromSVG(File svgFile, String path) {
 		SVGtoTikZ.convertSVGToTikZ(svgFile, path);
 	}
+	
+	/**
+	 * 
+	 * @param fsm
+	 * @param path
+	 * @param workingPath
+	 * @param configPath
+	 */
 
 	public static void createTikZFromFSM(TransitionSystem fsm, String path, String workingPath, String configPath) {
 	    GraphViz gv=new GraphViz(workingPath, configPath);
@@ -78,6 +100,7 @@ public class FSMToDot {
 	    File out = new File(path + "." + type); 
 	    gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 	    SVGtoTikZ.convertSVGToTikZ(out, path);
+	    out.delete();
 	}
 	
 }

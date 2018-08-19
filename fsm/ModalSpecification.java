@@ -1544,7 +1544,15 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	@Override
+	public Boolean getEventAttackerObservability(String eventName) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			return curr.getEventAttackerObservability();
+		return null;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
@@ -1558,6 +1566,16 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	public boolean setEventObservability(String eventName, boolean status) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public boolean setEventAttackerObservability(String eventName, boolean status) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			curr.setEventAttackerObservability(status);
+		else
+			return false;
+		return true;
 	}
 	
 //---  Manipulations   -----------------------------------------------------------------------

@@ -30,6 +30,14 @@ public interface Observability<T extends Transition> {
 	
 	public abstract Boolean getEventObservability(String eventName);
 	
+	/**
+	 * 
+	 * @param eventName
+	 * @return
+	 */
+	
+	public abstract Boolean getEventAttackerObservability(String eventName);
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	/**
@@ -44,5 +52,14 @@ public interface Observability<T extends Transition> {
 	 */
 	
 	public abstract boolean setEventObservability(String eventName, boolean status);
+
+	/**
+	 * 
+	 * @param eventName
+	 * @param status
+	 * @return
+	 */
+	
+	public abstract boolean setEventAttackerObservability(String eventName, boolean status);
 	
 }

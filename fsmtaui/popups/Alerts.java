@@ -25,6 +25,7 @@ public class Alerts {
 	public static final String[] ERROR_ADD_EVENT_NO_STATES = {"Add Event Error", "To add an event, you must define the initial state and final state (from and to)."};
 	public static final String[] ERROR_ADD_EVENT_NO_NAME = {"Add Event Error", "To add an event, you must define the event's name."};
 	public static final String[] ERROR_ADD_EVENT_NO_FSM = {"Add Event Error", "To add an event, you must have an FSM open and active in the right pane."};
+	public static final String[] ERROR_ADD_EVENT_NOT_MODAL = {"Add Event Error", "Must Transitions are only viable for Modal Specifications."};
 	
 	//-- Removing Events  -------------------------------
 

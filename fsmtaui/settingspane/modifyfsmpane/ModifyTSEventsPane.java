@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import fsmtaui.popups.Alerts;
 import fsm.TransitionSystem;
 import fsmtaui.Model;
+import fsm.ModalSpecification;
 
 /**
  * This class extends the javafx VBox element which stores all the
@@ -36,6 +37,8 @@ public class ModifyTSEventsPane extends VBox {
 	private Button addEventBtn;
 	/** Button object instance variable to remove the event. */
 	private Button removeEventBtn;
+	/** */
+	private Button addMustBtn;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -72,14 +75,17 @@ public class ModifyTSEventsPane extends VBox {
 		});
 		
 		// Buttons to actually add/remove the event
-		addEventBtn = new Button("Add Event");
-		removeEventBtn = new Button("Remove Event");
+		addEventBtn = new Button("Add Transition");
+		addMustBtn = new Button("Add Must Transition");
+		removeEventBtn = new Button("Remove Transition");
 		GridPane addRemoveEventBtns = new GridPane();
 		addRemoveEventBtns.addColumn(0, addEventBtn);
-		addRemoveEventBtns.addColumn(1, removeEventBtn);
+		addRemoveEventBtns.addColumn(1, addMustBtn);
+		addRemoveEventBtns.addColumn(2, removeEventBtn);
 		getChildren().addAll(addEventLabel, addRemoveEventFields, addRemoveEventBtns);
 		
 		makeAddEventHandler();
+		makeAddMustHandler();
 		makeRemoveEventHandler();
 	} // ModifyFSMEventsPane(Model)
 
@@ -124,6 +130,49 @@ public class ModifyTSEventsPane extends VBox {
 			} // handle(ActionEvent)
 		}); // setOnAction(EventHandler<ActionEvent>)
 	} // makeAddEventHandler()
+	
+	/**
+	 * 
+	 */
+	
+	private void makeAddMustHandler() {
+		addMustBtn.setOnKeyPressed(e -> {
+			if(e.getCode() == KeyCode.ENTER) addMustBtn.fire();
+		});
+		addMustBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if(stateFromField.getText().equals("") || stateToField.getText().equals("")) {
+					// Then must force the user to define states
+					Alerts.makeError(Alerts.ERROR_ADD_EVENT_NO_STATES);
+				} else {
+					// Then check if the user defined an event
+					if(eventNameField.getText().equals("")) {
+						// Then must force the user to define name
+						Alerts.makeError(Alerts.ERROR_ADD_EVENT_NO_NAME);
+					} else {
+						// Then check if an FSM is open in a viewport
+						TransitionSystem<? extends Transition> currTS = model.getCurrTS();
+						if(currTS == null) {
+							// Then cannot add an event
+							Alerts.makeError(Alerts.ERROR_ADD_EVENT_NO_FSM);
+						} else if(!(currTS instanceof ModalSpecification)) {
+							Alerts.makeError(Alerts.ERROR_ADD_EVENT_NOT_MODAL);
+						}
+						  else {
+							// Then create the event
+							((ModalSpecification)currTS).addMustTransition(stateFromField.getText(), eventNameField.getText(), stateToField.getText());
+							stateFromField.setText("");
+							stateFromField.requestFocus();
+							stateToField.setText("");
+							eventNameField.setText("");
+							model.refreshViewport();
+						} // if/else
+					} // if/else
+				} // if/else
+			} // handle(ActionEvent)
+		}); // setOnAction(EventHandler<ActionEvent>)
+	}
 	
 	/**
 	 * This method creates an event handler to remove an event connecting two states.

@@ -459,6 +459,14 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 		return null;
 	}
 
+	@Override
+	public Boolean getEventAttackerObservability(String eventName) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			return curr.getEventAttackerObservability();
+		return null;
+	}
+	
 //---  Setter Methods   -----------------------------------------------------------------------
 	
 	@Override
@@ -477,7 +485,17 @@ public class NonDetObsContFSM extends FSM<NonDetTransition> implements NonDeterm
 		if(curr != null)
 			curr.setEventControllability(value);
 	}
-
+	
+	@Override
+	public boolean setEventAttackerObservability(String eventName, boolean status) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			curr.setEventAttackerObservability(status);
+		else
+			return false;
+		return true;
+	}
+	
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	@Override

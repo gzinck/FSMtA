@@ -494,6 +494,44 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 		return null;
 	}
 
+	@Override
+	public Boolean getEventAttackerObservability(String eventName) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			return curr.getEventAttackerObservability();
+		return null;
+	}
+
+//---  Setter Methods   -----------------------------------------------------------------------
+	
+
+	@Override
+	public boolean setEventObservability(String eventName, boolean status) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null) {
+			curr.setEventObservability(status);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public void setEventControllability(String eventName, boolean value) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			curr.setEventControllability(value);
+	}
+	
+	@Override
+	public boolean setEventAttackerObservability(String eventName, boolean status) {
+		Event curr = events.getEvent(eventName);
+		if(curr != null)
+			curr.setEventAttackerObservability(status);
+		else
+			return false;
+		return true;
+	}
+	
 //---  Manipulations   ------------------------------------------------------------------------
 	
 	@Override
@@ -524,20 +562,4 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 		return false;
 	}
 
-	@Override
-	public boolean setEventObservability(String eventName, boolean status) {
-		Event curr = events.getEvent(eventName);
-		if(curr != null) {
-			curr.setEventObservability(status);
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public void setEventControllability(String eventName, boolean value) {
-		Event curr = events.getEvent(eventName);
-		if(curr != null)
-			curr.setEventControllability(value);
-	}
 }
