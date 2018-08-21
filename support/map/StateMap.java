@@ -57,7 +57,6 @@ public class StateMap {
 	/**
 	 * This method renames all the states in the set of states in the FSM so that states are named sequentially ("0", "1", "2"...).
 	 * 
-	 * TODO: Could there be incidental overwrite?
 	 */
 	
 	public void renameStates() {
@@ -332,8 +331,10 @@ public class StateMap {
 	}
 	
 	/**
+	 * This method removes a set of States as defined by a HashSet<<r>State> object from
+	 * the StateMap's storage of States.
 	 * 
-	 * @param inStates
+	 * @param inStates - HashSet<<r>State> object containing a list of States to be removed.
 	 */
 	
 	public void removeStates(HashSet<State> inStates) {

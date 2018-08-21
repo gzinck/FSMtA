@@ -357,13 +357,6 @@ public class State implements Comparator<State>, Comparable<State>{
 
 //---  Miscellaneous   ------------------------------------------------------------------------
 	
-	/**
-	 * This method is implemented as a part of the Comparable interface, defining how State objects should be compared.
-	 * 
-	 * @param st1 - State object provided as the first of two objects to compare to one another for sorting purposes. 
-	 * @param st2 - State objects provided as the second of two objects to compare to one another for sorting purposes. 
-	 */
-	
 	@Override
 	public int compare(State st1, State st2) {
 		return st1.getStateName().compareTo(st2.getStateName());

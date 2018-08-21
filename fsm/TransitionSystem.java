@@ -460,8 +460,9 @@ public abstract class TransitionSystem<T extends Transition> {
 //---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
+	 * Getter method that returns the StateMap object associated to the TransitionSystem object.
 	 * 
-	 * @return
+	 * @return - Returns a StateMap object containing the Event objects associated to this TransitionSystem object.
 	 */
 	
 	public StateMap getStateMap() {

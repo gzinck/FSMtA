@@ -12,6 +12,8 @@ import support.SVGtoTikZ;
  * In addition, it also serves to create an .svg file type as well as convert that
  * file into a .tikz file for use in LaTEX or other programs that read through that.
  * 
+ * TODO: Config File is referenced straight from the package, definite location, do not need file pathing.
+ * 
  * This class is a part of the graphviz package.
  * 
  * @author Mac Clevinger and Graeme Zinck
@@ -23,11 +25,10 @@ public class FSMToDot {
 //---  Operations   ---------------------------------------------------------------------------
 	
 	/**
-	 * This method takes any generic object in the fsm package and calls its conversion
-	 * method to dot-String-format and generates a .jpg image from it using
-	 * the GraphViz library.
+	 * This method takes any object extending the TransitionSystem class and converts it to the 
+	 * dot-String-format, using that to generates a .jpg image from it using the GraphViz library.
 	 * 
-	 * @param fsm - A generic FSM object in the family descended from the abstract class FSM.
+	 * @param fsm - A generic TransitionSystem object that will be converted into a .jpg image.
 	 * @param path - A String object denoting the path to which the file should be saved, including its name.
 	 * @param workingPath - A String object denoting the path to the GraphViz working directory.
 	 * @param configPath - A String object denoting the path to the GraphViz config file.
@@ -48,11 +49,15 @@ public class FSMToDot {
 	}
 	
 	/**
+	 * This method creates a file representing the provided TransitionSystem object in the .svg format,
+	 * saving it to a location as defined by the caller. (.svg format is a graphical view of the graph,
+	 * but is composed of a series of instructions on how to draw the graph to be interpreted by another
+	 * program. This permits its conversion in another method in this class.)
 	 * 
-	 * @param fsm
-	 * @param path
-	 * @param workingPath
-	 * @param configPath
+	 * @param fsm - A TransitionSystem extending object that will be converted into .svg format.
+	 * @param path - A String object denoting the path to which the file should be saved, including its name.
+	 * @param workingPath - A String object denoting the path to the GraphViz working directory.
+	 * @param configPath - A String object denoting the path to the GraphViz config file.
 	 */
 	
 	public static void createSVGFromFSM(TransitionSystem fsm, String path, String workingPath, String configPath){
@@ -70,9 +75,12 @@ public class FSMToDot {
 	}
 	
 	/**
+	 * This method converts a provided file in the .svg format into a file in the .tikz
+	 * format for use with LaTEX programs. It calls a support class that can be used disjoint
+	 * from this project to perform the same feat.
 	 * 
-	 * @param svgFile
-	 * @param path
+	 * @param svgFile - A File object containing a TransitionSystem described in the .svg format.
+	 * @param path - A String object representing the file path to save the new file to.
 	 */
 	
 	public static void createTikZFromSVG(File svgFile, String path) {
@@ -80,11 +88,14 @@ public class FSMToDot {
 	}
 	
 	/**
+	 * This method takes in a TransitionSystem object and converts it into a representative file
+	 * of the .tikz format; it firts converts the object to .svg from which it is converted to .tikz
+	 * via the createTikZFromSVG() method included in this class. (Deleting the interim file.)
 	 * 
-	 * @param fsm
-	 * @param path
-	 * @param workingPath
-	 * @param configPath
+	 * @param fsm - A TransitionSystem extending object that will be converted into .tikz format.
+	 * @param path - A String object denoting the path to which the file should be saved, including its name.
+	 * @param workingPath - A String object denoting the path to the GraphViz working directory.
+	 * @param configPath - A String object denoting the path to the GraphViz config file.
 	 */
 
 	public static void createTikZFromFSM(TransitionSystem fsm, String path, String workingPath, String configPath) {

@@ -26,7 +26,7 @@ public class ReadWrite <T extends Transition>{
 	 * 
 	 * @param - String object representing the File Path to write the converted FSM to.
 	 * @param - String object representing the pre-calculated special attributes that are written before any Transitions.
-	 * @param - TransitionFunction<<r>S, T, E> object representing the Transitions that are written after the Special Attributes.
+	 * @param - TransitionFunction<<r>T> object representing the Transitions that are written after the Special Attributes.
 	 * @return - Returns a boolean value representing the result of this method's attempt to write to the File.
 	 */
 	

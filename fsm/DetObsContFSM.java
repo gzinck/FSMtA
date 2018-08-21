@@ -195,14 +195,6 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 	public DetObsContFSM buildObserver() {
 		DetObsContFSM newFSM = new DetObsContFSM();
 		
-		/*
-		 * Collapse Unobservable
-		 *  - Map singular States to their Collectives
-		 * Calculate Transitions from Collective Groups
-		 *  - Will produce new States, need to then process these as well
-		 * 
-		 */
-		
 		HashMap<State, State> map = new HashMap<State, State>();
 		
 		for(State s : getStates()) {

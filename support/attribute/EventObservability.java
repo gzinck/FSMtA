@@ -4,6 +4,8 @@ package support.attribute;
  * This interface defines what methods should be implemented in any class in the Event
  * family that possess the attributes of an Observable Event. 
  * 
+ * It is used for ensuring the implementation of certain features in other classes.
+ * 
  * This interface is a part of the support.attribute package
  * 
  * @author Mac Clevinger and Graeme Zinck

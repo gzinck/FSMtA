@@ -708,24 +708,36 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	} // parallelCompositionHelper(FSM)
 	
 //---  Operations for pruning a MS   ----------------------------------------------------------
-	
+
 	/**
+	 * This method implements the new method of performing a 'prune' on a Modal Specification as
+	 * described by Graeme Zinck's research; the crux point of it being that if a State is found
+	 * to be Bad, it may not be by virtue of finding a legalizing Transition using only Events
+	 * unique to one of the combining Modal Specifications.
 	 * 
-	 * @return
+	 * tldr; There's a second way for a State to be Good.
+	 * 
+	 * Overall the method finds all bad states which break the rules of a Modal Specification
+	 * and removes them alongside their Transitions, leaving only a non-blocking workable system.
+	 * 
+	 * @param modal1 - The first of the two Modal Specification objects being combined in a Greatest Lower Bound operation.
+	 * @param modal2 - The second of the two Modal Specification objects being combined in a Greatest Lower Bound operation.
+	 * @param composedModal - The composed Modal Specification object that we are pruning after having been created.
+	 * @return - Returns the pruned version of the provided composed Modal Specification, composedModal.
 	 */
 	
 	public ModalSpecification newPrune(ModalSpecification modal1, ModalSpecification modal2, ModalSpecification composedModal) {
 		boolean mustIterate = true;
 		HashSet<State> badStates = new HashSet<State>();
 		
-		while(mustIterate) {
-			mustIterate = false;
+		while(mustIterate) {				//Iterate through all States until a pass through does not change anything
+			mustIterate = false;			//In each iteration, check if the State is bad via stateIsBad() method.
 			for(State s : composedModal.getStates()) {
-				if(badStates.contains(s))
+				if(badStates.contains(s))	//Unless already dealt with and found to be bad. (If good, need check again.)
 					continue;
 				if(stateIsBad(modal1, modal2, composedModal, s)) {
-					badStates.add(s);
-					mustIterate = true;
+					badStates.add(s);		//If found bad, add to list, and remove from the Modal Specification entirely.
+					mustIterate = true;		//Requires n-state traversal because we don't have back-referencing.
 					for(State top : composedModal.getStates()) {
 						for(int i = 0; i < composedModal.getTransitions().getTransitions(top).size(); i++){
 							DetTransition t = composedModal.getTransitions().getTransitions(top).get(i);
@@ -737,9 +749,9 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			}
 		}
 		
-		composedModal.getStateMap().removeStates(badStates);
+		composedModal.getStateMap().removeStates(badStates);	//Now remove the bad States
 		composedModal.getTransitions().removeStates(badStates);
-		for(State s : composedModal.getStates()) {
+		for(State s : composedModal.getStates()) {				//Some retention of bad Transitions; we know the State is good, just remove the Transition.
 			ArrayList<DetTransition> mustTrans = composedModal.getMustTransitions().getTransitions(s);
 			ArrayList<DetTransition> mayTrans = composedModal.getTransitions().getTransitions(s);
 			for(int i = 0; i < mustTrans.size(); i++) {
@@ -755,14 +767,19 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			composedModal.getTransitions().removeState(s);
 		}
 		
-		return composedModal.makeAccessible();
+		return composedModal.makeAccessible();		//And some bits will be left in but disjoint, so clean that up.
 	}
 	
+
 	/**
+	 * This is a helper method to the newPrune algorithm that searches through a provided State's transitions
+	 * to decide if it is a 'good' State or a 'bad' State.
 	 * 
-	 * @param composedModal
-	 * @param s
-	 * @return
+	 * @param modal1 - Modal Specification object representing the first of the two composed objects.
+	 * @param modal2 - Modal Specification object representing the second of the two composed objects.
+	 * @param composedModal - Modal Specification object representing the composition of the two Modal Specifications
+	 * @param s - State object representing the State being checked for its status as Good or Bad.
+	 * @return - Returns a boolean value describing whether or not a State is good or bad.
 	 */
 	
 	public boolean stateIsBad(ModalSpecification modal1, ModalSpecification modal2, ModalSpecification composedModal, State s) {
@@ -770,35 +787,38 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		ArrayList<DetTransition> mayTrans = composedModal.getTransitions().getTransitions(s);
 		ArrayList<State> compos = composedModal.getStateComposition(s);
 		
-		State modalState1 = compos.get(0);
-		State modalState2 = compos.get(1);
-		
+		State modalState1 = compos.get(0);	//Get Transitions of the composed Modal Spec. and a State from one of its forebears
+											//Need to get info on event privacy and a reference into one of the composing Modal Spec.
 		EventMap shared = modal1.getEventMap().getSharedEvents(modal2.getEventMap());
 		
-		for(DetTransition t : mustTrans) {
-			if(!mayTrans.contains(t)) {
-				boolean isBad = true;
+		for(DetTransition t : mustTrans) {	//For each Must Transition, there needs to be a May as well
+			if(!mayTrans.contains(t)) {		//If there isn't, can it reach via the second approach? (Traverse along invisible events)
+				boolean isBad = true;		//Use reference State from original Modal Spec. to see which events are allowed.
 				if(!modal1.getMustTransitions().getTransitions(modalState1).contains(t)) {
 					isBad = composedModal.privateEventSearch(modal1.getEventMap(), s, shared, t.getTransitionEvent());
 				}
 				else {
 					isBad = composedModal.privateEventSearch(modal2.getEventMap(), s, shared, t.getTransitionEvent());
 				}
-				if(isBad) {
+				if(isBad) {					//If the result was a positive, then it's bad (no alternate route), say so.
 					return true;
 				}
 			}
 		}
 		return false;
 	}
-	
+
 	/**
+	 * This helper method searches through the calling Modal Specification for a specified Event, traversing using
+	 * only those Events from the provided EventMap that are not found in the second provided EventMap; the former
+	 * representing Event from one of the two Modal Specifications that composed to create the calling Modal Specification,
+	 * and the latter representing the Events shared between them. (Used to find unique Events.) 
 	 * 
-	 * @param mod1
-	 * @param modState1
-	 * @param shared
-	 * @param e
-	 * @return
+	 * @param mod - EventMap object holding Events from a Modal Specification that was used to create the calling object.
+	 * @param modState - State object representing the starting State to perform a search from.
+	 * @param shared - EventMap object holding the Events shared between the two Modal Specifications that formed the calling object.
+	 * @param e - Event object representing the Event being searched for via an alternate route.
+	 * @return - Returns a boolean denoting the result of the search; true if it did not find the event, false otherwise.
 	 */
 	
 	public boolean privateEventSearch(EventMap mod, State modState, EventMap shared, Event e) {
@@ -807,13 +827,13 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 		queue.add(modState);
 		boolean isBad = true;
 		bfs:
-		while(!queue.isEmpty()) {
+		while(!queue.isEmpty()) {	//Breadth-First Search approach
 			State top = queue.poll();
 			if(visited.contains(top)) 
 				continue;
 			visited.add(top);
-			for(DetTransition trans : this.getMustTransitions().getTransitions(top)){
-				if(this.getTransitions().contains(top, trans)) {
+			for(DetTransition trans : this.getMustTransitions().getTransitions(top)){	//Find matching Transitions
+				if(this.getTransitions().contains(top, trans)) {						//Either add to queue or finish.
 					if(!shared.contains(trans.getTransitionEvent()) && mod.contains(trans.getTransitionEvent())) {
 						queue.add(trans.getTransitionState());
 					}
@@ -831,6 +851,8 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 	 * This method prunes a ModalSpecification by going through all states and removing those that
 	 * have a must transition without a corresponding may transition, and then removing all states
 	 * with a transition going to those bad states.
+	 * 
+	 * Superceded by the newPrune() algorithm.
 	 * 
 	 * @return - Returns a pruned ModalSpecification object.
 	 */
@@ -1672,6 +1694,16 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 
 //---  Miscellaneous   ------------------------------------------------------------------------
 	
+	/**
+	 * This method checks whether or not the Modal Specification contains the denoted
+	 * State and Transition, calling a method in its TransitionFunction to query for
+	 * their existence.
+	 * 
+	 * @param s - State object that would potentially possess the Transition t.
+	 * @param t - DetTransition object to search for in the TransitionFunction of the calling Modal Specification.
+	 * @return - Returns a boolean value denoting the result of the search; true if it exists, false otherwise.
+	 */
+	
 	public boolean contains(State s, DetTransition t) {
 		return getTransitions().contains(s, t);
 	}
@@ -1690,15 +1722,15 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 
 	class NextStates {
 		
-		/** */
+		/** State objects representing composite States and their joined product.*/
 		State stateA, stateB, stateNew;
 		
 		/**
 		 * Constructor for a NextStates object.
 		 * 
-		 * @param stateFromA - State object.
-		 * @param stateFromB - State object.
-		 * @param stateFromNew - State object.
+		 * @param stateFromA - State object representing the State from the first Modal Specification being joined.
+		 * @param stateFromB - State object representing the State from the second Modal Specification being joined.
+		 * @param stateFromNew - State object representing the produced State from joining two States.
 		 */
 		
 		public NextStates(State stateFromA, State stateFromB, State stateFromNew) {
@@ -1710,6 +1742,13 @@ public class ModalSpecification extends TransitionSystem<DetTransition> implemen
 			else
 				stateFromNew.setStatePrivate(false);
 			}		
+		
+		/**
+		 * Helper method to assist in building the library of States and their compositions; i.e, what
+		 * States were adjoined to create a new State.
+		 * 
+		 * @param ms - ModalSpecification object into which the new pairing of States will be added.
+		 */
 		
 		public void addToComposition(ModalSpecification ms) {
 			ms.setStateComposition(stateNew, stateA, stateB);

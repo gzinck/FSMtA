@@ -11,6 +11,8 @@ import fsm.FSM;
  * This interface defines the methods that any FSM with the characteristic of Controllable
  * (or, possessing Events that are Controllable or Uncontrollable) should implement.
  * 
+ * It is used for ensuring the implementation of certain features in other classes.
+ * 
  * This interface is a part of the fsm.attribute package.
  * 
  * @author Mac Clevinger and Graeme Zinck

@@ -116,6 +116,7 @@ public class Event implements EventControllability, EventObservability{
 		systemObservability = obs;
 	}
 	
+	@Override
 	public void setEventAttackerObservability(boolean obs) {
 		attackerObservability = obs;
 	}
@@ -156,6 +157,7 @@ public class Event implements EventControllability, EventObservability{
 		return systemObservability;
 	}
 	
+	@Override
 	public boolean getEventAttackerObservability() {
 		return attackerObservability;
 	}

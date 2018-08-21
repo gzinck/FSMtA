@@ -7,6 +7,8 @@ import java.util.*;
  * This interface defines the capabilities of the FSM in regards to testing the
  * FSM for its status as Opaque in varying cases.
  * 
+ * It is used for ensuring the implementation of certain features in other classes.
+ * 
  * This interface is a part of the fsm.attribute package.
  * 
  * @author Mac Clevinger and Graeme Zinck
