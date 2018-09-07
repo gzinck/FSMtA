@@ -218,4 +218,12 @@ public class EventMap {
 		return false;
 	}
 	
+	public boolean contains(String in) {
+		for(Event e : this.getEvents()) {
+			if((e.getEventName()).equals(in))
+				return true;
+		}
+		return false;
+	}
+	
 }

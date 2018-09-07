@@ -496,7 +496,6 @@ public class DetObsContFSM extends FSM<DetTransition> implements Deterministic<D
 
 //---  Setter Methods   -----------------------------------------------------------------------
 	
-
 	@Override
 	public boolean setEventObservability(String eventName, boolean status) {
 		Event curr = events.getEvent(eventName);

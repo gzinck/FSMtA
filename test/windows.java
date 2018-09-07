@@ -8,10 +8,16 @@ import support.SVGtoTikZ;
 
 import java.io.*;
 import org.junit.Test;
+import support.UStructure;
+import support.map.TransitionFunction;
+import support.transition.DetTransition;
+import support.State;
+import support.Event;
+import support.Agent;
 
 public class windows {
 
-	/**
+	/*
 	 * TODO:  Update Composition to account for Graeme's changes - Greatest Lower Bound pruning.
 	 * TODO:  Turn .svg file into TikZ language format. (Parse the former, convert into latter.)
 	 * TODO:  Changed format for Modal Read-In, need to reflect in randomizer. (No explicit overlap of Must/May)
@@ -27,14 +33,13 @@ public class windows {
 	 * TODO:  August 17'th is last day of work, excluding desired excess work.
 	 */
 	
-	
 	/*
-	 * 
-	 * Distinction in the isBadState() method between a good state, a bad state, and a bad state that
-	 * can be ignored for breaking its parent. Only distinguishes good/bad (generic)
-	 * 
-	 * 
-	 * 
+	 * What do we need?
+	 *  - New Transition type denoted as undesired: TransitionFunction Object
+	 *  - New Product Algorithm for n-Agents' perspectives of the same, single, FSM: Store sets of Observable/Controllable? New Class.
+	 *   - Need class for a single Agent (Observable, Controllable info needed)
+	 *   - Primary class stores all Agents, the Plant FSM, and provides Methods to do Product and derive bad States.
+	 *  - The 'U' Structure is the Product of n+1 copies of the Plant
 	 */
 	
 	public static final String MAC_WORKING_FOLDER = "C:\\Users\\Reithger\\Documents\\TestGraph\\";
@@ -42,6 +47,39 @@ public class windows {
 	
 	@Test
 	public void test() {
+		System.out.println("T");
+		
+		DetObsContFSM fsm = new DetObsContFSM();
+		
+		fsm.addTransition("1", "a", "2");
+		fsm.addTransition("1", "b", "3");
+		fsm.addTransition("2", "b", "5");
+		fsm.addTransition("3", "a", "4");
+		fsm.addTransition("5", "c", "6");
+		fsm.addTransition("4", "c", "7");
+		fsm.addInitialState("1");
+		
+		TransitionFunction<DetTransition> bad = new TransitionFunction<DetTransition>(new DetTransition());
+		bad.addTransitionState(new State("5"), new Event("c"), new State("6"));
+		
+		Event a1 = new Event("a");
+		Event a2 = new Event("a");
+		a2.setEventObservability(false);
+		Event b1 = new Event("b");
+		Event b2 = new Event("b");
+		b1.setEventObservability(false);
+		Event c = new Event("c");
+		
+		Agent ag1 = new Agent(a1, b1, c);
+		Agent ag2 = new Agent(a2, b2, c);
+		
+		UStructure uStruc = new UStructure(fsm, bad, ag1, ag2);
+		
+		uStruc.createUStructure();
+		
+		FSMToDot.createImgFromFSM(uStruc.getUStructure(), MAC_WORKING_FOLDER + "_out1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		/*
 		int sizeState = 150;
 		int sizeMarked = 22;
 		int sizeEvents = 7;
@@ -55,7 +93,7 @@ public class windows {
 		File m1 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec1", MAC_WORKING_FOLDER));
 		File m2 = new File(GenerateFSM.createModalSpec(sizeState, sizeMarked, sizeEvents, sizePaths, sizePrivate, sizeUnobserv, sizeAttacker, sizeControl, sizeMust, "modalSpec2", MAC_WORKING_FOLDER));
 		
-		m1 = new File(MAC_WORKING_FOLDER + "m1.mdl");
+		//m1 = new File(MAC_WORKING_FOLDER + "m1.mdl");
 		//m2 = new File(MAC_WORKING_FOLDER + "m2.mdl");
 
 		ModalSpecification mod1 = new ModalSpecification(m1, "mod1");
