@@ -121,7 +121,12 @@ public class GraphViz
 	         try {
 	             load(FSMtAUI.class.getResourceAsStream("/config/config.properties"));
 	         } catch (Exception e) {
-	        	 	System.out.println("Could not find the configuration file.");
+	        	 try {
+	        		 load(new FileInputStream(cfgProp));
+	        	 }
+	        	 catch(Exception e1) {
+	        		 System.out.println("Could not find the configuration file.");
+	        	 }
 	         }
 	     }
 	 };
