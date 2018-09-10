@@ -53,14 +53,14 @@ public class windows {
 		
 		fsm.addTransition("1", "a", "2");
 		fsm.addTransition("1", "b", "3");
-		fsm.addTransition("2", "b", "5");
-		fsm.addTransition("3", "a", "4");
-		fsm.addTransition("5", "c", "6");
-		fsm.addTransition("4", "c", "7");
+		fsm.addTransition("2", "b", "4");
+		fsm.addTransition("3", "a", "5");
+		fsm.addTransition("4", "c", "6");
+		fsm.addTransition("5", "c", "7");
 		fsm.addInitialState("1");
 		
 		TransitionFunction<DetTransition> bad = new TransitionFunction<DetTransition>(new DetTransition());
-		bad.addTransitionState(new State("5"), new Event("c"), new State("6"));
+		bad.addTransitionState(new State("5"), new Event("c"), new State("7"));
 		
 		Event a1 = new Event("a");
 		Event a2 = new Event("a");
@@ -75,9 +75,12 @@ public class windows {
 		
 		UStructure uStruc = new UStructure(fsm, bad, ag1, ag2);
 		
-		uStruc.createUStructure();
+		FSMToDot.createImgFromFSM(uStruc.getPlantFSM(), MAC_WORKING_FOLDER + "_out1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
 		
-		FSMToDot.createImgFromFSM(uStruc.getUStructure(), MAC_WORKING_FOLDER + "_out1", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		FSMToDot.createImgFromFSM(uStruc.getUStructure(), MAC_WORKING_FOLDER + "_out2", MAC_WORKING_FOLDER, MAC_CONFIG_FILE_PATH);
+		
+		System.out.println(uStruc.getIllegalConfigOneStates());
+		System.out.println(uStruc.getIllegalConfigTwoStates());
 		
 		/*
 		int sizeState = 150;

@@ -98,7 +98,7 @@ public class State implements Comparator<State>, Comparable<State>{
 		badState = false;
 		privacy = true;
 		String name = "";
-		Arrays.sort(states);
+		//Arrays.sort(states);		THIS WAS BAD
 		for(State s : states) {
 			//initial = s.getStateInitial() ? true : initial;
 			marked = s.getStateMarked() ? marked : false;

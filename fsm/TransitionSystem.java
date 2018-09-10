@@ -399,6 +399,13 @@ public abstract class TransitionSystem<T extends Transition> {
 				composed.add(in); 
 		states.setStateComposition(aggregate, composed);
 	}
+	
+	public void setStateCompositionDuplicate(State aggregate, State ... pieces) {
+		ArrayList<State> composed = new ArrayList<State>();
+		for(State in : pieces)
+			composed.add(in); 
+		states.setStateComposition(aggregate, composed);
+	}
 
 	/**
 	 * Setter method that allows for the assignation of a new HashMap<<r>State, ArrayList<<r>State>> object
