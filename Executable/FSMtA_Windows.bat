@@ -1,0 +1,1 @@
+C:/Users/Reithger/Documents/Java/bin/java --module-path "./FSMtA_lib/lib" --add-modules javafx.controls,javafx.fxml -jar FSMtA.jar
